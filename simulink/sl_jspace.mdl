@@ -1,12 +1,12 @@
 Model {
-  Name			  "sl_kine"
-  Version		  7.5
+  Name			  "sl_jspace"
+  Version		  7.6
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.25"
+    ComputedModelVersion    "1.26"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -16,6 +16,7 @@ Model {
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
   DataTypeOverride	  "UseLocalSettings"
+  DataTypeOverrideAppliesTo "AllNumericTypes"
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
   MaxMDLFileLineLength	  120
@@ -23,11 +24,11 @@ Model {
   Creator		  "pic"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "corkep"
+  LastModifiedBy	  "n6334687"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Apr  6 06:45:41 2010"
-  RTWModifiedTimeStamp	  192437137
-  ModelVersionFormat	  "1.%<AutoIncrement:25>"
+  LastModifiedDate	  "Mon Feb 06 16:36:59 2012"
+  RTWModifiedTimeStamp	  250447015
+  ModelVersionFormat	  "1.%<AutoIncrement:26>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -126,6 +127,7 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
+	  ConcurrentTasks	  off
 	  Solver		  "ode45"
 	  SolverName		  "ode45"
 	  SolverJacobianMethodControl "auto"
@@ -190,12 +192,12 @@ Model {
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
 	  UseIntDivNetSlope	  off
+	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
 	  EnhancedBackFolding	  off
 	  StrengthReduction	  off
-	  EnforceIntegerDowncast  on
 	  ExpressionFolding	  on
 	  BooleansAsBitfields	  off
 	  BitfieldContainerType	  "uint_T"
@@ -248,6 +250,8 @@ Model {
 	  MinStepSizeMsg	  "warning"
 	  TimeAdjustmentMsg	  "none"
 	  MaxConsecutiveZCsMsg	  "error"
+	  MaskedZcDiagnostic	  "warning"
+	  IgnoredZcDiagnostic	  "warning"
 	  SolverPrmCheckMsg	  "none"
 	  InheritedTsInSrcMsg	  "warning"
 	  DiscreteInheritContinuousMsg "warning"
@@ -284,6 +288,7 @@ Model {
 	  AssertControl		  "UseLocalSettings"
 	  EnableOverflowDetection off
 	  ModelReferenceIOMsg	  "none"
+	  ModelReferenceMultiInstanceNormalModeStructChecksumCheck "error"
 	  ModelReferenceVersionMismatchMessage "none"
 	  ModelReferenceIOMismatchMessage "none"
 	  ModelReferenceCSMismatchMessage "none"
@@ -293,11 +298,17 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "None"
 	  BusNameAdapt		  "WarnAndRepair"
 	  NonBusSignalsTreatedAsBus "none"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
+	  SFUnusedDataAndEventsDiag "warning"
+	  SFUnexpectedBacktrackingDiag "warning"
+	  SFInvalidInputDataAccessInChartInitDiag "warning"
+	  SFNoUnconditionalDefaultTransitionDiag "warning"
+	  SFTransitionOutsideNaturalParentDiag "warning"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
@@ -306,6 +317,11 @@ Model {
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
 	  ProdBitPerLong	  32
+	  ProdBitPerFloat	  32
+	  ProdBitPerDouble	  64
+	  ProdBitPerPointer	  32
+	  ProdLargestAtomicInteger "Char"
+	  ProdLargestAtomicFloat  "None"
 	  ProdIntDivRoundTo	  "Undefined"
 	  ProdEndianess		  "Unspecified"
 	  ProdWordSize		  32
@@ -315,6 +331,11 @@ Model {
 	  TargetBitPerShort	  16
 	  TargetBitPerInt	  32
 	  TargetBitPerLong	  32
+	  TargetBitPerFloat	  32
+	  TargetBitPerDouble	  64
+	  TargetBitPerPointer	  32
+	  TargetLargestAtomicInteger "Char"
+	  TargetLargestAtomicFloat "None"
 	  TargetShiftRightIntArith on
 	  TargetIntDivRoundTo	  "Undefined"
 	  TargetEndianess	  "Unspecified"
@@ -332,6 +353,7 @@ Model {
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
+	  ParallelModelReferenceErrorOnInvalidPool on
 	  ParallelModelReferenceMATLABWorkerInit "None"
 	  ModelReferenceNumInstancesAllowed "Multi"
 	  PropagateVarSize	  "Infer from blocks in model"
@@ -351,6 +373,7 @@ Model {
 	  SimExtrinsic		  on
 	  SimIntegrity		  on
 	  SimUseLocalCustomCode	  off
+	  SimParseCustomCode	  on
 	  SimBuildMode		  "sf_incremental_build"
 	}
 	Simulink.RTWCC {
@@ -397,6 +420,7 @@ Model {
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
+	  GenerateSLWebview	  off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -442,6 +466,7 @@ Model {
 	      IncAutoGenComments      off
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
+	      MATLABFcnDesc	      off
 	      IncDataTypeInIds	      off
 	      MangleLength	      1
 	      CustomSymbolStrGlobalVar "$R$N$M"
@@ -456,7 +481,9 @@ Model {
 	      ParamNamingRule	      "None"
 	      SignalNamingRule	      "None"
 	      InsertBlockDesc	      off
+	      InsertPolySpaceComments off
 	      SimulinkBlockComments   on
+	      MATLABSourceComments    off
 	      EnableCustomComments    off
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
@@ -468,7 +495,7 @@ Model {
 	      Version		      "1.10.0"
 	      Array {
 		Type			"Cell"
-		Dimension		17
+		Dimension		16
 		Cell			"GeneratePreprocessorConditionals"
 		Cell			"IncludeMdlTerminateFcn"
 		Cell			"CombineOutputUpdateFcns"
@@ -480,12 +507,11 @@ Model {
 		Cell			"CPPClassGenCompliant"
 		Cell			"MultiInstanceERTCode"
 		Cell			"PurelyIntegerCode"
-		Cell			"SupportNonFinite"
+		Cell			"PortableWordSizes"
 		Cell			"SupportComplex"
 		Cell			"SupportAbsoluteTime"
 		Cell			"SupportContinuousTime"
 		Cell			"SupportNonInlinedSFcns"
-		Cell			"PortableWordSizes"
 		PropName		"DisabledProps"
 	      }
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
@@ -507,6 +533,7 @@ Model {
 	      IncludeMdlTerminateFcn  on
 	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
+	      CombineSignalStateStructs	off
 	      SuppressErrorStatus     off
 	      ERTFirstTimeCompliant   off
 	      IncludeFileDelimiter    "Auto"
@@ -589,8 +616,8 @@ Model {
   BlockParameterDefaults {
   }
   System {
-    Name		    "sl_kine"
-    Location		    [302, 170, 766, 380]
+    Name		    "sl_jspace"
+    Location		    [2035, 406, 2499, 616]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -604,16 +631,16 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    5
+    SIDHighWatermark	    "6"
     Block {
       BlockType		      Reference
       Name		      "T2xyz"
-      SID		      1
+      SID		      "1"
       Ports		      [1, 3]
       Position		      [275, 112, 325, 168]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.26"
-      SourceBlock	      "roblocks/T2xyz"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Transform Conversion/T2xyz"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -623,14 +650,15 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
     }
     Block {
       BlockType		      Reference
       Name		      "XY Graph"
-      SID		      2
+      SID		      "2"
       Ports		      [2]
       Position		      [390, 108, 430, 152]
-      LibraryVersion	      "1.216"
+      LibraryVersion	      "1.225"
       SourceBlock	      "simulink/Sinks/XY Graph"
       SourceType	      "XY scope."
       ShowPortLabels	      "FromPortIcon"
@@ -641,6 +669,7 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
       xmin		      "-1"
       xmax		      "1"
       ymin		      "-1"
@@ -650,12 +679,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "fkine"
-      SID		      3
+      SID		      "3"
       Ports		      [1, 1]
       Position		      [185, 112, 235, 168]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.26"
-      SourceBlock	      "roblocks/fkine"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Kinematics/fkine"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -665,17 +694,18 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
       robot		      "p560"
     }
     Block {
       BlockType		      Reference
       Name		      "jtraj"
-      SID		      4
+      SID		      "6"
       Ports		      [0, 3]
-      Position		      [55, 36, 105, 104]
+      Position		      [70, 39, 105, 111]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.26"
-      SourceBlock	      "roblocks/jtraj"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Trajectory /jtraj"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -685,6 +715,7 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
       q0		      "[0 0 0 0 0 0]"
       qf		      "[pi/4 pi/2 -pi/2 0 0 0]"
       tmax		      "10"
@@ -692,12 +723,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "plot"
-      SID		      5
+      SID		      "5"
       Ports		      [1]
       Position		      [215, 22, 295, 78]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.26"
-      SourceBlock	      "roblocks/plot"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Robot Graphics/plot"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -707,6 +738,7 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
       robot		      "p560"
     }
     Line {

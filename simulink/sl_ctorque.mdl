@@ -1,6 +1,6 @@
 Model {
   Name			  "sl_ctorque"
-  Version		  7.7
+  Version		  7.6
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
@@ -21,7 +21,7 @@ Model {
       Name		      "tau"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.30"
+    ComputedModelVersion    "1.32"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -40,11 +40,11 @@ Model {
   Creator		  "pic"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "corkep"
+  LastModifiedBy	  "n6334687"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sat Sep 10 13:11:25 2011"
-  RTWModifiedTimeStamp	  237559629
-  ModelVersionFormat	  "1.%<AutoIncrement:30>"
+  LastModifiedDate	  "Mon Feb 06 16:30:47 2012"
+  RTWModifiedTimeStamp	  250446645
+  ModelVersionFormat	  "1.%<AutoIncrement:32>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -119,13 +119,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.11.0"
+      Version		      "1.10.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  StartTime		  "0.0"
 	  StopTime		  "10.0"
 	  AbsTol		  "auto"
@@ -159,7 +159,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -171,7 +171,6 @@ Model {
 	  SaveFinalState	  off
 	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Array"
-	  SignalLoggingSaveFormat "ModelDataLogs"
 	  SaveOutput		  on
 	  SaveState		  off
 	  SignalLogging		  on
@@ -191,7 +190,7 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  BlockReduction	  off
 	  BooleanDataType	  off
 	  ConditionallyExecuteInputs on
@@ -229,11 +228,10 @@ Model {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
-	  AccelParallelForEachSubsystem	on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -304,7 +302,6 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
-	  SimStateOlderReleaseMsg "error"
 	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "None"
 	  BusNameAdapt		  "WarnAndRepair"
@@ -319,7 +316,7 @@ Model {
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -356,7 +353,7 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -371,7 +368,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -386,7 +383,7 @@ Model {
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  SystemTargetFile	  "grt.tlc"
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
@@ -417,7 +414,6 @@ Model {
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
 	  GenerateSLWebview	  off
-	  GenerateCodeMetricsReport off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -426,7 +422,7 @@ Model {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.11.0"
+	      Version		      "1.10.0"
 	      ForceParamTrailComments off
 	      GenerateComments	      on
 	      IgnoreCustomStorageClasses on
@@ -465,15 +461,13 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.11.0"
+	      Version		      "1.10.0"
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
 	      TargetFunctionLibrary   "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
-	      FunctionExecutionProfile off
-	      CodeExecutionProfiling  off
 	      ERTCodeCoverageTool     "None"
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
@@ -519,7 +513,6 @@ Model {
 	      RTWCAPISignals	      off
 	      RTWCAPIParams	      off
 	      RTWCAPIStates	      off
-	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
 	    }
 	    PropName		    "Components"
@@ -529,7 +522,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition     [ 786, 727, 1777, 1357 ] 
+      ConfigPrmDlgPosition    " [ 786, 727, 1777, 1357 ] "
     }
     PropName		    "ConfigurationSets"
   }
@@ -631,7 +624,7 @@ Model {
   }
   System {
     Name		    "sl_ctorque"
-    Location		    [368, 226, 1207, 508]
+    Location		    [1914, 296, 2753, 578]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -645,7 +638,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "36"
+    SIDHighWatermark	    "38"
     Block {
       BlockType		      Clock
       Name		      "Clock"
@@ -676,8 +669,8 @@ Model {
       Ports		      [3, 1]
       Position		      [175, 146, 250, 214]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.57"
-      SourceBlock	      "roblocks/RNE"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Dynamics/RNE"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -699,8 +692,8 @@ Model {
       Position		      [395, 142, 470, 218]
       BackgroundColor	      "red"
       DropShadow	      on
-      LibraryVersion	      "1.57"
-      SourceBlock	      "roblocks/Robot"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Dynamics/Robot"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -778,26 +771,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "jtraj"
-      SID		      "13"
+      SID		      "38"
       Ports		      [0, 3]
-      Position		      [35, 146, 85, 214]
+      Position		      [45, 144, 80, 216]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.57"
-      LinkData {
-	BlockName		"MATLAB Fcn"
-	DialogParameters {
-	  MATLABFcn		  "squeeze(interp1(t,q,u))"
-	}
-	BlockName		"MATLAB Fcn1"
-	DialogParameters {
-	  MATLABFcn		  "squeeze(interp1(t,qd,u))"
-	}
-	BlockName		"MATLAB Fcn2"
-	DialogParameters {
-	  MATLABFcn		  "squeeze(interp1(t,qdd,u))"
-	}
-      }
-      SourceBlock	      "roblocks/jtraj"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Trajectory /jtraj"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -819,8 +798,8 @@ Model {
       Ports		      [1]
       Position		      [700, 127, 780, 183]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.57"
-      SourceBlock	      "roblocks/plot"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Robot Graphics/plot"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -928,7 +907,7 @@ Model {
     Line {
       SrcBlock		      "jtraj"
       SrcPort		      1
-      Points		      [15, 0]
+      Points		      [0, 5; 20, 0]
       Branch {
 	Points			[0, -100]
 	DstBlock		"Sum"
@@ -942,7 +921,7 @@ Model {
     Line {
       SrcBlock		      "jtraj"
       SrcPort		      2
-      Points		      [30, 0]
+      Points		      [35, 0]
       Branch {
 	Points			[0, -75]
 	DstBlock		"Sum1"
@@ -969,6 +948,7 @@ Model {
     Line {
       SrcBlock		      "jtraj"
       SrcPort		      3
+      Points		      [5, 0]
       DstBlock		      "Terminator"
       DstPort		      1
     }

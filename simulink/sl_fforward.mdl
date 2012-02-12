@@ -1,6 +1,6 @@
 Model {
   Name			  "sl_fforward"
-  Version		  7.5
+  Version		  7.6
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
@@ -27,7 +27,7 @@ Model {
       Name		      "tau_fb"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.2"
+    ComputedModelVersion    "1.3"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -37,6 +37,7 @@ Model {
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
   DataTypeOverride	  "UseLocalSettings"
+  DataTypeOverrideAppliesTo "AllNumericTypes"
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
   MaxMDLFileLineLength	  120
@@ -44,11 +45,11 @@ Model {
   Creator		  "corkep"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "corkep"
+  LastModifiedBy	  "n6334687"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Dec 13 07:58:15 2010"
-  RTWModifiedTimeStamp	  214127669
-  ModelVersionFormat	  "1.%<AutoIncrement:2>"
+  LastModifiedDate	  "Mon Feb 06 16:34:11 2012"
+  RTWModifiedTimeStamp	  250446842
+  ModelVersionFormat	  "1.%<AutoIncrement:3>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -147,6 +148,7 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
+	  ConcurrentTasks	  off
 	  Solver		  "ode45"
 	  SolverName		  "ode45"
 	  SolverJacobianMethodControl "auto"
@@ -211,12 +213,12 @@ Model {
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
 	  UseIntDivNetSlope	  off
+	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
 	  EnhancedBackFolding	  off
 	  StrengthReduction	  off
-	  EnforceIntegerDowncast  on
 	  ExpressionFolding	  on
 	  BooleansAsBitfields	  off
 	  BitfieldContainerType	  "uint_T"
@@ -269,6 +271,8 @@ Model {
 	  MinStepSizeMsg	  "warning"
 	  TimeAdjustmentMsg	  "none"
 	  MaxConsecutiveZCsMsg	  "error"
+	  MaskedZcDiagnostic	  "warning"
+	  IgnoredZcDiagnostic	  "warning"
 	  SolverPrmCheckMsg	  "warning"
 	  InheritedTsInSrcMsg	  "warning"
 	  DiscreteInheritContinuousMsg "warning"
@@ -305,6 +309,7 @@ Model {
 	  AssertControl		  "UseLocalSettings"
 	  EnableOverflowDetection off
 	  ModelReferenceIOMsg	  "none"
+	  ModelReferenceMultiInstanceNormalModeStructChecksumCheck "error"
 	  ModelReferenceVersionMismatchMessage "none"
 	  ModelReferenceIOMismatchMessage "none"
 	  ModelReferenceCSMismatchMessage "none"
@@ -314,11 +319,17 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "ErrorLevel1"
 	  BusNameAdapt		  "WarnAndRepair"
 	  NonBusSignalsTreatedAsBus "none"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
+	  SFUnusedDataAndEventsDiag "warning"
+	  SFUnexpectedBacktrackingDiag "warning"
+	  SFInvalidInputDataAccessInChartInitDiag "warning"
+	  SFNoUnconditionalDefaultTransitionDiag "warning"
+	  SFTransitionOutsideNaturalParentDiag "warning"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
@@ -327,6 +338,11 @@ Model {
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
 	  ProdBitPerLong	  32
+	  ProdBitPerFloat	  32
+	  ProdBitPerDouble	  64
+	  ProdBitPerPointer	  32
+	  ProdLargestAtomicInteger "Char"
+	  ProdLargestAtomicFloat  "None"
 	  ProdIntDivRoundTo	  "Undefined"
 	  ProdEndianess		  "Unspecified"
 	  ProdWordSize		  32
@@ -336,6 +352,11 @@ Model {
 	  TargetBitPerShort	  16
 	  TargetBitPerInt	  32
 	  TargetBitPerLong	  32
+	  TargetBitPerFloat	  32
+	  TargetBitPerDouble	  64
+	  TargetBitPerPointer	  32
+	  TargetLargestAtomicInteger "Char"
+	  TargetLargestAtomicFloat "None"
 	  TargetShiftRightIntArith on
 	  TargetIntDivRoundTo	  "Undefined"
 	  TargetEndianess	  "Unspecified"
@@ -353,6 +374,7 @@ Model {
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
+	  ParallelModelReferenceErrorOnInvalidPool on
 	  ParallelModelReferenceMATLABWorkerInit "None"
 	  ModelReferenceNumInstancesAllowed "Multi"
 	  PropagateVarSize	  "Infer from blocks in model"
@@ -372,6 +394,7 @@ Model {
 	  SimExtrinsic		  on
 	  SimIntegrity		  on
 	  SimUseLocalCustomCode	  off
+	  SimParseCustomCode	  on
 	  SimBuildMode		  "sf_incremental_build"
 	}
 	Simulink.RTWCC {
@@ -418,6 +441,7 @@ Model {
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
+	  GenerateSLWebview	  off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -463,6 +487,7 @@ Model {
 	      IncAutoGenComments      off
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
+	      MATLABFcnDesc	      off
 	      IncDataTypeInIds	      off
 	      MangleLength	      1
 	      CustomSymbolStrGlobalVar "$R$N$M"
@@ -477,7 +502,9 @@ Model {
 	      ParamNamingRule	      "None"
 	      SignalNamingRule	      "None"
 	      InsertBlockDesc	      off
+	      InsertPolySpaceComments off
 	      SimulinkBlockComments   on
+	      MATLABSourceComments    off
 	      EnableCustomComments    off
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
@@ -489,7 +516,7 @@ Model {
 	      Version		      "1.10.0"
 	      Array {
 		Type			"Cell"
-		Dimension		17
+		Dimension		16
 		Cell			"GeneratePreprocessorConditionals"
 		Cell			"IncludeMdlTerminateFcn"
 		Cell			"CombineOutputUpdateFcns"
@@ -501,12 +528,11 @@ Model {
 		Cell			"CPPClassGenCompliant"
 		Cell			"MultiInstanceERTCode"
 		Cell			"PurelyIntegerCode"
-		Cell			"SupportNonFinite"
+		Cell			"PortableWordSizes"
 		Cell			"SupportComplex"
 		Cell			"SupportAbsoluteTime"
 		Cell			"SupportContinuousTime"
 		Cell			"SupportNonInlinedSFcns"
-		Cell			"PortableWordSizes"
 		PropName		"DisabledProps"
 	      }
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
@@ -528,6 +554,7 @@ Model {
 	      IncludeMdlTerminateFcn  on
 	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
+	      CombineSignalStateStructs	off
 	      SuppressErrorStatus     off
 	      ERTFirstTimeCompliant   off
 	      IncludeFileDelimiter    "Auto"
@@ -618,16 +645,9 @@ Model {
       Multiplication	      "Element-wise(K.*u)"
       ParamMin		      "[]"
       ParamMax		      "[]"
-      ParameterDataTypeMode   "Same as input"
-      ParameterDataType	      "fixdt(1,16,0)"
-      ParameterScalingMode    "Best Precision: Matrix-wise"
-      ParameterScaling	      "[]"
       ParamDataTypeStr	      "Inherit: Same as input"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Same as input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as input"
       LockScale		      off
       RndMeth		      "Floor"
@@ -637,19 +657,14 @@ Model {
     Block {
       BlockType		      Outport
       Port		      "1"
-      UseBusObject	      off
-      BusObject		      "BusObject"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
       BusOutputAsStruct	      off
       PortDimensions	      "-1"
       VarSizeSig	      "Inherit"
       SampleTime	      "-1"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      DataType		      "auto"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: auto"
-      LockScale		      off
       SignalType	      "auto"
       SamplingMode	      "auto"
       SourceOfInitialOutputValue "Dialog"
@@ -666,9 +681,6 @@ Model {
       AccumDataTypeStr	      "Inherit: Inherit via internal rule"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Same as first input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as first input"
       LockScale		      off
       RndMeth		      "Floor"
@@ -685,7 +697,7 @@ Model {
   }
   System {
     Name		    "sl_fforward"
-    Location		    [811, 135, 1579, 428]
+    Location		    [1845, 255, 2613, 548]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -699,11 +711,11 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    18
+    SIDHighWatermark	    "19"
     Block {
       BlockType		      Clock
       Name		      "Clock"
-      SID		      1
+      SID		      "1"
       Position		      [30, 15, 80, 35]
       DisplayTime	      on
       Decimation	      "10"
@@ -711,14 +723,14 @@ Model {
     Block {
       BlockType		      Gain
       Name		      "Kd"
-      SID		      2
+      SID		      "2"
       Position		      [210, 115, 240, 145]
       ForegroundColor	      "gray"
     }
     Block {
       BlockType		      Gain
       Name		      "Kp"
-      SID		      3
+      SID		      "3"
       Position		      [210, 65, 240, 95]
       ForegroundColor	      "gray"
       Gain		      "100"
@@ -726,12 +738,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "RNE"
-      SID		      4
+      SID		      "4"
       Ports		      [3, 1]
       Position		      [210, 166, 295, 234]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/RNE"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Dynamics/RNE"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -741,19 +753,20 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
       robot		      "p560.nofriction()"
       grav		      "[0 0 9.81]"
     }
     Block {
       BlockType		      Reference
       Name		      "Robot"
-      SID		      5
+      SID		      "5"
       Ports		      [1, 3]
       Position		      [460, 41, 545, 119]
       BackgroundColor	      "red"
       DropShadow	      on
-      LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/Robot"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Dynamics/Robot"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -763,13 +776,14 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
       robot		      "p560"
       q0		      "[0 0 0 0 0 0]"
     }
     Block {
       BlockType		      Sum
       Name		      "Sum"
-      SID		      6
+      SID		      "6"
       Ports		      [2, 1]
       Position		      [135, 70, 155, 90]
       ForegroundColor	      "gray"
@@ -780,7 +794,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum1"
-      SID		      7
+      SID		      "7"
       Ports		      [2, 1]
       Position		      [160, 120, 180, 140]
       ForegroundColor	      "gray"
@@ -791,7 +805,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum2"
-      SID		      8
+      SID		      "8"
       Ports		      [2, 1]
       Position		      [265, 70, 285, 90]
       ForegroundColor	      "gray"
@@ -808,7 +822,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum3"
-      SID		      9
+      SID		      "9"
       Ports		      [2, 1]
       Position		      [410, 70, 430, 90]
       ShowName		      off
@@ -818,34 +832,33 @@ Model {
     Block {
       BlockType		      Terminator
       Name		      "Terminator"
-      SID		      10
+      SID		      "10"
       Position		      [580, 95, 600, 115]
       ShowName		      off
     }
     Block {
       BlockType		      ZeroOrderHold
       Name		      "Tfb"
-      SID		      11
+      SID		      "11"
       Position		      [350, 65, 385, 95]
       SampleTime	      "0.01"
     }
     Block {
       BlockType		      ZeroOrderHold
       Name		      "Tff"
-      SID		      12
+      SID		      "12"
       Position		      [345, 185, 380, 215]
       SampleTime	      "0.01"
     }
     Block {
       BlockType		      Reference
       Name		      "jtraj"
-      SID		      13
+      SID		      "19"
       Ports		      [0, 3]
-      Position		      [35, 61, 85, 159]
-      ForegroundColor	      "blue"
+      Position		      [35, 69, 70, 141]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/jtraj"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Trajectory /jtraj"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -855,6 +868,7 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
       q0		      "[0 0 0 0 0 0]"
       qf		      "[pi/4 pi/2 -pi/2 0 0 0]"
       tmax		      "10"
@@ -862,12 +876,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "plot"
-      SID		      14
+      SID		      "14"
       Ports		      [1]
       Position		      [655, 27, 735, 83]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/plot"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Robot Graphics/plot"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -877,46 +891,39 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
       robot		      "p560"
     }
     Block {
       BlockType		      Outport
       Name		      "q"
-      SID		      15
+      SID		      "15"
       Position		      [610, 63, 640, 77]
       IconDisplay	      "Port number"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
     }
     Block {
       BlockType		      Outport
       Name		      "err"
-      SID		      16
+      SID		      "16"
       Position		      [215, 38, 245, 52]
       Port		      "2"
       IconDisplay	      "Port number"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
     }
     Block {
       BlockType		      Outport
       Name		      "tau_ff"
-      SID		      17
+      SID		      "17"
       Position		      [445, 193, 475, 207]
       Port		      "3"
       IconDisplay	      "Port number"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
     }
     Block {
       BlockType		      Outport
       Name		      "tau_fb"
-      SID		      18
+      SID		      "18"
       Position		      [315, 38, 345, 52]
       Port		      "4"
       IconDisplay	      "Port number"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
     }
     Line {
       SrcBlock		      "Kd"
@@ -1002,7 +1009,7 @@ Model {
     Line {
       SrcBlock		      "jtraj"
       SrcPort		      1
-      Points		      [30, 0]
+      Points		      [45, 0]
       Branch {
 	DstBlock		"Sum"
 	DstPort			2
@@ -1016,7 +1023,7 @@ Model {
     Line {
       SrcBlock		      "jtraj"
       SrcPort		      2
-      Points		      [15, 0]
+      Points		      [0, 5; 30, 0]
       Branch {
 	Points			[0, 20]
 	DstBlock		"Sum1"
@@ -1031,7 +1038,7 @@ Model {
     Line {
       SrcBlock		      "jtraj"
       SrcPort		      3
-      Points		      [5, 0; 0, 80]
+      Points		      [20, 0; 0, 90]
       DstBlock		      "RNE"
       DstPort		      3
     }

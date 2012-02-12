@@ -1,6 +1,6 @@
 Model {
   Name			  "sl_drivepose"
-  Version		  7.7
+  Version		  7.6
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
@@ -11,7 +11,7 @@ Model {
       Name		      "Out1"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.24"
+    ComputedModelVersion    "1.25"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -29,11 +29,11 @@ Model {
   Creator		  "pic"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "corkep"
+  LastModifiedBy	  "n6334687"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Sep  6 19:58:51 2011"
-  RTWModifiedTimeStamp	  237239926
-  ModelVersionFormat	  "1.%<AutoIncrement:24>"
+  LastModifiedDate	  "Mon Feb 06 16:32:19 2012"
+  RTWModifiedTimeStamp	  250446736
+  ModelVersionFormat	  "1.%<AutoIncrement:25>"
   ConfigurationManager	  "customverctrl"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -108,13 +108,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.11.0"
+      Version		      "1.10.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  StartTime		  "0.0"
 	  StopTime		  "20.0"
 	  AbsTol		  "auto"
@@ -148,7 +148,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -160,7 +160,6 @@ Model {
 	  SaveFinalState	  off
 	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Array"
-	  SignalLoggingSaveFormat "ModelDataLogs"
 	  SaveOutput		  on
 	  SaveState		  on
 	  SignalLogging		  on
@@ -180,7 +179,7 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -229,11 +228,10 @@ Model {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
-	  AccelParallelForEachSubsystem	on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -304,7 +302,6 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
-	  SimStateOlderReleaseMsg "error"
 	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "Warning"
 	  BusNameAdapt		  "WarnAndRepair"
@@ -319,7 +316,7 @@ Model {
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -356,7 +353,7 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -371,7 +368,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -386,7 +383,7 @@ Model {
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -428,7 +425,6 @@ Model {
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
 	  GenerateSLWebview	  off
-	  GenerateCodeMetricsReport off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -437,7 +433,7 @@ Model {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.11.0"
+	      Version		      "1.10.0"
 	      Array {
 		Type			"Cell"
 		Dimension		17
@@ -498,7 +494,7 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.11.0"
+	      Version		      "1.10.0"
 	      Array {
 		Type			"Cell"
 		Dimension		15
@@ -525,8 +521,6 @@ Model {
 	      TargetFunctionLibrary   "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
-	      FunctionExecutionProfile off
-	      CodeExecutionProfiling  off
 	      ERTCodeCoverageTool     "None"
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
@@ -572,7 +566,6 @@ Model {
 	      RTWCAPISignals	      off
 	      RTWCAPIParams	      off
 	      RTWCAPIStates	      off
-	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
 	    }
 	    PropName		    "Components"
@@ -582,7 +575,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition     [ 203, 82, 1104, 704 ] 
+      ConfigPrmDlgPosition    " [ 203, 82, 1104, 704 ] "
     }
     PropName		    "ConfigurationSets"
   }
@@ -659,7 +652,6 @@ Model {
     Block {
       BlockType		      Inport
       Port		      "1"
-      OutputFunctionCall      off
       OutMin		      "[]"
       OutMax		      "[]"
       OutDataTypeStr	      "Inherit: auto"
@@ -675,8 +667,8 @@ Model {
       Interpolate	      on
     }
     Block {
-      BlockType		      M-S-Function
-      FunctionName	      "matlabfile"
+      BlockType		      "M-S-Function"
+      FunctionName	      "mlfile"
       DisplayMFileStacktrace  on
     }
     Block {
@@ -788,7 +780,7 @@ Model {
   }
   System {
     Name		    "sl_drivepose"
-    Location		    [95, 78, 928, 362]
+    Location		    [1739, 281, 2572, 565]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -810,8 +802,8 @@ Model {
       Ports		      [2, 3]
       Position		      [290, 68, 350, 142]
       DropShadow	      on
-      LibraryVersion	      "1.57"
-      SourceBlock	      "roblocks/Bicycle"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Dynamics/Bicycle"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -912,7 +904,7 @@ Model {
       SID		      "22"
       Ports		      [2]
       Position		      [435, 165, 465, 200]
-      LibraryVersion	      "1.236"
+      LibraryVersion	      "1.225"
       SourceBlock	      "simulink/Sinks/XY Graph"
       SourceType	      "XY scope."
       ShowPortLabels	      "FromPortIcon"
@@ -1075,7 +1067,7 @@ Model {
 	  DisplayOption		  "bar"
 	}
 	Block {
-	  BlockType		  M-S-Function
+	  BlockType		  "M-S-Function"
 	  Name			  "Level-2 M-file\nS-Function"
 	  SID			  "87"
 	  Ports			  [1, 1]

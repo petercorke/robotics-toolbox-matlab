@@ -1,12 +1,12 @@
 Model {
   Name			  "sl_rrmc2"
-  Version		  7.7
+  Version		  7.6
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.19"
+    ComputedModelVersion    "1.20"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,11 +25,11 @@ Model {
   Creator		  "pic"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "corkep"
+  LastModifiedBy	  "n6334687"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Oct 18 20:39:35 2011"
-  RTWModifiedTimeStamp	  240871172
-  ModelVersionFormat	  "1.%<AutoIncrement:19>"
+  LastModifiedDate	  "Mon Feb 06 16:49:47 2012"
+  RTWModifiedTimeStamp	  250447782
+  ModelVersionFormat	  "1.%<AutoIncrement:20>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -104,13 +104,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.11.0"
+      Version		      "1.10.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  StartTime		  "0.0"
 	  StopTime		  "10.0"
 	  AbsTol		  "auto"
@@ -144,7 +144,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -156,7 +156,6 @@ Model {
 	  SaveFinalState	  off
 	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Array"
-	  SignalLoggingSaveFormat "ModelDataLogs"
 	  SaveOutput		  on
 	  SaveState		  off
 	  SignalLogging		  on
@@ -176,7 +175,7 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  BlockReduction	  off
 	  BooleanDataType	  off
 	  ConditionallyExecuteInputs on
@@ -214,11 +213,10 @@ Model {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
-	  AccelParallelForEachSubsystem	on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -289,7 +287,6 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
-	  SimStateOlderReleaseMsg "error"
 	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "None"
 	  BusNameAdapt		  "WarnAndRepair"
@@ -304,7 +301,7 @@ Model {
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -341,7 +338,7 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -356,7 +353,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -371,7 +368,7 @@ Model {
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.11.0"
+	  Version		  "1.10.0"
 	  SystemTargetFile	  "grt.tlc"
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
@@ -402,7 +399,6 @@ Model {
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
 	  GenerateSLWebview	  off
-	  GenerateCodeMetricsReport off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -411,7 +407,7 @@ Model {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.11.0"
+	      Version		      "1.10.0"
 	      ForceParamTrailComments off
 	      GenerateComments	      on
 	      IgnoreCustomStorageClasses on
@@ -450,15 +446,13 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.11.0"
+	      Version		      "1.10.0"
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
 	      TargetFunctionLibrary   "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
-	      FunctionExecutionProfile off
-	      CodeExecutionProfiling  off
 	      ERTCodeCoverageTool     "None"
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
@@ -504,7 +498,6 @@ Model {
 	      RTWCAPISignals	      off
 	      RTWCAPIParams	      off
 	      RTWCAPIStates	      off
-	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
 	    }
 	    PropName		    "Components"
@@ -514,7 +507,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition     [ 792, 367, 1672, 997 ] 
+      ConfigPrmDlgPosition    " [ 792, 367, 1672, 997 ] "
     }
     PropName		    "ConfigurationSets"
   }
@@ -693,7 +686,6 @@ Model {
       Decimation	      "1"
       SampleTime	      "0"
       FixptAsFi		      off
-      NumInputs		      "1"
     }
     Block {
       BlockType		      Trigonometry
@@ -944,8 +936,8 @@ Model {
       Ports		      [1, 3]
       Position		      [450, 177, 500, 233]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.60"
-      SourceBlock	      "roblocks/T2xyz"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Transform Conversion/T2xyz"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1001,7 +993,7 @@ Model {
       SID		      "16"
       Ports		      [2]
       Position		      [535, 176, 565, 214]
-      LibraryVersion	      "1.236"
+      LibraryVersion	      "1.225"
       SourceBlock	      "simulink/Sinks/XY Graph"
       SourceType	      "XY scope."
       ShowPortLabels	      "FromPortIcon"
@@ -1034,8 +1026,8 @@ Model {
       Position		      [480, 267, 530, 323]
       BlockMirror	      on
       BackgroundColor	      "red"
-      LibraryVersion	      "1.60"
-      SourceBlock	      "roblocks/fkine"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Kinematics/fkine"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1070,8 +1062,8 @@ Model {
       Ports		      [1, 1]
       Position		      [170, 35, 235, 105]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.60"
-      SourceBlock	      "roblocks/jacob0\n"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Kinematics/jacob0\n"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1117,8 +1109,8 @@ Model {
       Ports		      [2, 1]
       Position		      [300, 207, 350, 263]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.60"
-      SourceBlock	      "roblocks/tr2diff"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Kinematics/tr2diff"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1144,8 +1136,8 @@ Model {
       Ports		      [3, 1]
       Position		      [130, 238, 180, 292]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.60"
-      SourceBlock	      "roblocks/xyz2T"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Transform Conversion/xyz2T"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"

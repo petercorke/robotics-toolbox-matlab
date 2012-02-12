@@ -1,6 +1,6 @@
 Model {
   Name			  "sl_driveline"
-  Version		  7.5
+  Version		  7.6
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
@@ -11,7 +11,7 @@ Model {
       Name		      "xy"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.12"
+    ComputedModelVersion    "1.13"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -21,6 +21,7 @@ Model {
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
   DataTypeOverride	  "UseLocalSettings"
+  DataTypeOverrideAppliesTo "AllNumericTypes"
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
   MaxMDLFileLineLength	  120
@@ -28,11 +29,11 @@ Model {
   Creator		  "pic"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "corkep"
+  LastModifiedBy	  "n6334687"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun May 23 08:39:28 2010"
-  RTWModifiedTimeStamp	  196504760
-  ModelVersionFormat	  "1.%<AutoIncrement:12>"
+  LastModifiedDate	  "Mon Feb 06 16:31:18 2012"
+  RTWModifiedTimeStamp	  250446672
+  ModelVersionFormat	  "1.%<AutoIncrement:13>"
   ConfigurationManager	  "customverctrl"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -131,6 +132,7 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
+	  ConcurrentTasks	  off
 	  Solver		  "ode45"
 	  SolverName		  "ode45"
 	  SolverJacobianMethodControl "auto"
@@ -194,12 +196,12 @@ Model {
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
 	  UseIntDivNetSlope	  off
+	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
 	  EnhancedBackFolding	  off
 	  StrengthReduction	  off
-	  EnforceIntegerDowncast  on
 	  ExpressionFolding	  on
 	  BooleansAsBitfields	  off
 	  BitfieldContainerType	  "uint_T"
@@ -252,6 +254,8 @@ Model {
 	  MinStepSizeMsg	  "warning"
 	  TimeAdjustmentMsg	  "none"
 	  MaxConsecutiveZCsMsg	  "error"
+	  MaskedZcDiagnostic	  "warning"
+	  IgnoredZcDiagnostic	  "warning"
 	  SolverPrmCheckMsg	  "warning"
 	  InheritedTsInSrcMsg	  "warning"
 	  DiscreteInheritContinuousMsg "warning"
@@ -288,6 +292,7 @@ Model {
 	  AssertControl		  "UseLocalSettings"
 	  EnableOverflowDetection off
 	  ModelReferenceIOMsg	  "none"
+	  ModelReferenceMultiInstanceNormalModeStructChecksumCheck "error"
 	  ModelReferenceVersionMismatchMessage "none"
 	  ModelReferenceIOMismatchMessage "none"
 	  ModelReferenceCSMismatchMessage "none"
@@ -297,11 +302,17 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "Warning"
 	  BusNameAdapt		  "WarnAndRepair"
 	  NonBusSignalsTreatedAsBus "none"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
+	  SFUnusedDataAndEventsDiag "warning"
+	  SFUnexpectedBacktrackingDiag "warning"
+	  SFInvalidInputDataAccessInChartInitDiag "warning"
+	  SFNoUnconditionalDefaultTransitionDiag "warning"
+	  SFTransitionOutsideNaturalParentDiag "warning"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
@@ -310,6 +321,11 @@ Model {
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
 	  ProdBitPerLong	  32
+	  ProdBitPerFloat	  32
+	  ProdBitPerDouble	  64
+	  ProdBitPerPointer	  32
+	  ProdLargestAtomicInteger "Char"
+	  ProdLargestAtomicFloat  "None"
 	  ProdIntDivRoundTo	  "Undefined"
 	  ProdEndianess		  "Unspecified"
 	  ProdWordSize		  32
@@ -319,6 +335,11 @@ Model {
 	  TargetBitPerShort	  16
 	  TargetBitPerInt	  32
 	  TargetBitPerLong	  32
+	  TargetBitPerFloat	  32
+	  TargetBitPerDouble	  64
+	  TargetBitPerPointer	  32
+	  TargetLargestAtomicInteger "Char"
+	  TargetLargestAtomicFloat "None"
 	  TargetShiftRightIntArith on
 	  TargetIntDivRoundTo	  "Undefined"
 	  TargetEndianess	  "Unspecified"
@@ -336,6 +357,7 @@ Model {
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
+	  ParallelModelReferenceErrorOnInvalidPool on
 	  ParallelModelReferenceMATLABWorkerInit "None"
 	  ModelReferenceNumInstancesAllowed "Multi"
 	  PropagateVarSize	  "Infer from blocks in model"
@@ -355,6 +377,7 @@ Model {
 	  SimExtrinsic		  on
 	  SimIntegrity		  on
 	  SimUseLocalCustomCode	  off
+	  SimParseCustomCode	  on
 	  SimBuildMode		  "sf_incremental_build"
 	}
 	Simulink.RTWCC {
@@ -401,6 +424,7 @@ Model {
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
+	  GenerateSLWebview	  off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -444,6 +468,7 @@ Model {
 	      IncAutoGenComments      off
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
+	      MATLABFcnDesc	      off
 	      IncDataTypeInIds	      off
 	      MangleLength	      1
 	      CustomSymbolStrGlobalVar "$R$N$M"
@@ -458,7 +483,9 @@ Model {
 	      ParamNamingRule	      "None"
 	      SignalNamingRule	      "None"
 	      InsertBlockDesc	      off
+	      InsertPolySpaceComments off
 	      SimulinkBlockComments   on
+	      MATLABSourceComments    off
 	      EnableCustomComments    off
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
@@ -470,7 +497,7 @@ Model {
 	      Version		      "1.10.0"
 	      Array {
 		Type			"Cell"
-		Dimension		16
+		Dimension		15
 		Cell			"IncludeMdlTerminateFcn"
 		Cell			"CombineOutputUpdateFcns"
 		Cell			"SuppressErrorStatus"
@@ -481,12 +508,11 @@ Model {
 		Cell			"CPPClassGenCompliant"
 		Cell			"MultiInstanceERTCode"
 		Cell			"PurelyIntegerCode"
-		Cell			"SupportNonFinite"
+		Cell			"PortableWordSizes"
 		Cell			"SupportComplex"
 		Cell			"SupportAbsoluteTime"
 		Cell			"SupportContinuousTime"
 		Cell			"SupportNonInlinedSFcns"
-		Cell			"PortableWordSizes"
 		PropName		"DisabledProps"
 	      }
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
@@ -508,6 +534,7 @@ Model {
 	      IncludeMdlTerminateFcn  on
 	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
+	      CombineSignalStateStructs	off
 	      SuppressErrorStatus     off
 	      ERTFirstTimeCompliant   off
 	      IncludeFileDelimiter    "Auto"
@@ -595,10 +622,6 @@ Model {
       SamplingMode	      "Sample based"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Inherit from 'Constant value'"
-      OutDataType	      "fixdt(1,16,0)"
-      ConRadixGroup	      "Use specified scaling"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
       LockScale		      off
       SampleTime	      "inf"
@@ -616,16 +639,9 @@ Model {
       Multiplication	      "Element-wise(K.*u)"
       ParamMin		      "[]"
       ParamMax		      "[]"
-      ParameterDataTypeMode   "Same as input"
-      ParameterDataType	      "fixdt(1,16,0)"
-      ParameterScalingMode    "Best Precision: Matrix-wise"
-      ParameterScaling	      "[]"
       ParamDataTypeStr	      "Inherit: Same as input"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Same as input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as input"
       LockScale		      off
       RndMeth		      "Floor"
@@ -643,19 +659,14 @@ Model {
     Block {
       BlockType		      Outport
       Port		      "1"
-      UseBusObject	      off
-      BusObject		      "BusObject"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
       BusOutputAsStruct	      off
       PortDimensions	      "-1"
       VarSizeSig	      "Inherit"
       SampleTime	      "-1"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      DataType		      "auto"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: auto"
-      LockScale		      off
       SignalType	      "auto"
       SamplingMode	      "auto"
       SourceOfInitialOutputValue "Dialog"
@@ -689,9 +700,6 @@ Model {
       AccumDataTypeStr	      "Inherit: Inherit via internal rule"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Same as first input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as first input"
       LockScale		      off
       RndMeth		      "Floor"
@@ -701,7 +709,7 @@ Model {
   }
   System {
     Name		    "sl_driveline"
-    Location		    [1531, 286, 2360, 588]
+    Location		    [1782, 278, 2611, 580]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -715,16 +723,16 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    33
+    SIDHighWatermark	    "33"
     Block {
       BlockType		      Reference
       Name		      "Bicycle"
-      SID		      32
+      SID		      "32"
       Ports		      [2, 3]
       Position		      [450, 123, 510, 197]
       DropShadow	      on
-      LibraryVersion	      "1.38"
-      SourceBlock	      "roblocks/Bicycle"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Dynamics/Bicycle"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -734,66 +742,52 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
       accel		      "1"
       vlim		      "1"
       alim		      "2"
       x0		      "x0"
+      handbrake		      "0"
     }
     Block {
       BlockType		      Constant
       Name		      "Constant"
-      SID		      15
+      SID		      "15"
       Position		      [80, 147, 175, 183]
       ShowName		      off
       Value		      "atan2(-L(1),L(2))"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
     }
     Block {
       BlockType		      Constant
       Name		      "Constant1"
-      SID		      16
+      SID		      "16"
       Position		      [370, 90, 400, 120]
       VectorParams1D	      off
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       SampleTime	      "0.02"
     }
     Block {
       BlockType		      Gain
       Name		      "Gain"
-      SID		      17
+      SID		      "17"
       Position		      [295, 88, 335, 122]
       Gain		      "0.5"
-      ParameterDataTypeMode   "Inherit via internal rule"
-      ParameterDataType	      "fixdt(1, 16)"
-      ParameterScaling	      "2^0"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Gain
       Name		      "Kh"
-      SID		      18
+      SID		      "18"
       Position		      [275, 165, 305, 195]
-      ParameterDataTypeMode   "Inherit via internal rule"
-      ParameterDataType	      "fixdt(1, 16)"
-      ParameterScaling	      "2^0"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Mux
       Name		      "Mux3"
-      SID		      19
+      SID		      "19"
       Ports		      [2, 1]
       Position		      [585, 131, 590, 169]
       ShowName		      off
@@ -803,26 +797,23 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum"
-      SID		      20
+      SID		      "20"
       Ports		      [2, 1]
       Position		      [335, 170, 355, 190]
       ShowName		      off
       IconShape		      "round"
       Inputs		      "-+|"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Reference
       Name		      "XY"
-      SID		      21
+      SID		      "21"
       Ports		      [2]
       Position		      [570, 80, 600, 115]
-      LibraryVersion	      "1.216"
+      LibraryVersion	      "1.225"
       SourceBlock	      "simulink/Sinks/XY Graph"
       SourceType	      "XY scope."
       ShowPortLabels	      "FromPortIcon"
@@ -833,6 +824,7 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
       xmin		      "0"
       xmax		      "10"
       ymin		      "0"
@@ -842,7 +834,7 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "angdiff"
-      SID		      33
+      SID		      "33"
       Ports		      [2, 1]
       Position		      [210, 152, 230, 203]
       LibraryVersion	      "1.38"
@@ -860,7 +852,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "d"
-      SID		      28
+      SID		      "28"
       Ports		      [1]
       Position		      [295, 14, 325, 46]
       Floating		      off
@@ -878,7 +870,7 @@ Model {
     Block {
       BlockType		      Fcn
       Name		      "distance from line"
-      SID		      29
+      SID		      "29"
       Position		      [80, 88, 175, 122]
       Expr		      "(u(1)*L(1)+u(2)*L(2)+L(3))/sqrt(L(1)^2+L(2)^2)"
       Port {
@@ -891,7 +883,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "theta"
-      SID		      30
+      SID		      "30"
       Ports		      [1]
       Position		      [630, 214, 660, 246]
       Floating		      off
@@ -908,11 +900,9 @@ Model {
     Block {
       BlockType		      Outport
       Name		      "xy"
-      SID		      31
+      SID		      "31"
       Position		      [660, 53, 690, 67]
       IconDisplay	      "Port number"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
     }
     Line {
       SrcBlock		      "Mux3"

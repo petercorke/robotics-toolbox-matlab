@@ -1,12 +1,12 @@
 Model {
   Name			  "sl_quadcopter"
-  Version		  7.5
+  Version		  7.6
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.21"
+    ComputedModelVersion    "1.22"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -16,6 +16,7 @@ Model {
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
   DataTypeOverride	  "UseLocalSettings"
+  DataTypeOverrideAppliesTo "AllNumericTypes"
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
   MaxMDLFileLineLength	  120
@@ -25,11 +26,11 @@ Model {
   Creator		  "corkep"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "corkep"
+  LastModifiedBy	  "n6334687"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Mar 16 21:56:27 2011"
-  RTWModifiedTimeStamp	  214157024
-  ModelVersionFormat	  "1.%<AutoIncrement:21>"
+  LastModifiedDate	  "Mon Feb 06 16:43:29 2012"
+  RTWModifiedTimeStamp	  250447386
+  ModelVersionFormat	  "1.%<AutoIncrement:22>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -128,6 +129,7 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
+	  ConcurrentTasks	  off
 	  Solver		  "ode45"
 	  SolverName		  "ode45"
 	  SolverJacobianMethodControl "auto"
@@ -192,12 +194,12 @@ Model {
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
 	  UseIntDivNetSlope	  off
+	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
 	  EnhancedBackFolding	  off
 	  StrengthReduction	  off
-	  EnforceIntegerDowncast  on
 	  ExpressionFolding	  on
 	  BooleansAsBitfields	  off
 	  BitfieldContainerType	  "uint_T"
@@ -250,6 +252,8 @@ Model {
 	  MinStepSizeMsg	  "warning"
 	  TimeAdjustmentMsg	  "none"
 	  MaxConsecutiveZCsMsg	  "error"
+	  MaskedZcDiagnostic	  "warning"
+	  IgnoredZcDiagnostic	  "warning"
 	  SolverPrmCheckMsg	  "warning"
 	  InheritedTsInSrcMsg	  "warning"
 	  DiscreteInheritContinuousMsg "warning"
@@ -286,6 +290,7 @@ Model {
 	  AssertControl		  "UseLocalSettings"
 	  EnableOverflowDetection off
 	  ModelReferenceIOMsg	  "none"
+	  ModelReferenceMultiInstanceNormalModeStructChecksumCheck "error"
 	  ModelReferenceVersionMismatchMessage "none"
 	  ModelReferenceIOMismatchMessage "none"
 	  ModelReferenceCSMismatchMessage "none"
@@ -295,11 +300,17 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "Warning"
 	  BusNameAdapt		  "WarnAndRepair"
 	  NonBusSignalsTreatedAsBus "none"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
+	  SFUnusedDataAndEventsDiag "warning"
+	  SFUnexpectedBacktrackingDiag "warning"
+	  SFInvalidInputDataAccessInChartInitDiag "warning"
+	  SFNoUnconditionalDefaultTransitionDiag "warning"
+	  SFTransitionOutsideNaturalParentDiag "warning"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
@@ -308,6 +319,11 @@ Model {
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
 	  ProdBitPerLong	  32
+	  ProdBitPerFloat	  32
+	  ProdBitPerDouble	  64
+	  ProdBitPerPointer	  32
+	  ProdLargestAtomicInteger "Char"
+	  ProdLargestAtomicFloat  "None"
 	  ProdIntDivRoundTo	  "Undefined"
 	  ProdEndianess		  "Unspecified"
 	  ProdWordSize		  32
@@ -317,6 +333,11 @@ Model {
 	  TargetBitPerShort	  16
 	  TargetBitPerInt	  32
 	  TargetBitPerLong	  32
+	  TargetBitPerFloat	  32
+	  TargetBitPerDouble	  64
+	  TargetBitPerPointer	  32
+	  TargetLargestAtomicInteger "Char"
+	  TargetLargestAtomicFloat "None"
 	  TargetShiftRightIntArith on
 	  TargetIntDivRoundTo	  "Undefined"
 	  TargetEndianess	  "Unspecified"
@@ -334,6 +355,7 @@ Model {
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
+	  ParallelModelReferenceErrorOnInvalidPool on
 	  ParallelModelReferenceMATLABWorkerInit "None"
 	  ModelReferenceNumInstancesAllowed "Multi"
 	  PropagateVarSize	  "Infer from blocks in model"
@@ -353,6 +375,7 @@ Model {
 	  SimExtrinsic		  on
 	  SimIntegrity		  on
 	  SimUseLocalCustomCode	  off
+	  SimParseCustomCode	  on
 	  SimBuildMode		  "sf_incremental_build"
 	}
 	Simulink.RTWCC {
@@ -399,6 +422,7 @@ Model {
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
+	  GenerateSLWebview	  off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -444,6 +468,7 @@ Model {
 	      IncAutoGenComments      off
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
+	      MATLABFcnDesc	      off
 	      IncDataTypeInIds	      off
 	      MangleLength	      1
 	      CustomSymbolStrGlobalVar "$R$N$M"
@@ -458,7 +483,9 @@ Model {
 	      ParamNamingRule	      "None"
 	      SignalNamingRule	      "None"
 	      InsertBlockDesc	      off
+	      InsertPolySpaceComments off
 	      SimulinkBlockComments   on
+	      MATLABSourceComments    off
 	      EnableCustomComments    off
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
@@ -470,7 +497,7 @@ Model {
 	      Version		      "1.10.0"
 	      Array {
 		Type			"Cell"
-		Dimension		17
+		Dimension		16
 		Cell			"GeneratePreprocessorConditionals"
 		Cell			"IncludeMdlTerminateFcn"
 		Cell			"CombineOutputUpdateFcns"
@@ -482,12 +509,11 @@ Model {
 		Cell			"CPPClassGenCompliant"
 		Cell			"MultiInstanceERTCode"
 		Cell			"PurelyIntegerCode"
-		Cell			"SupportNonFinite"
+		Cell			"PortableWordSizes"
 		Cell			"SupportComplex"
 		Cell			"SupportAbsoluteTime"
 		Cell			"SupportContinuousTime"
 		Cell			"SupportNonInlinedSFcns"
-		Cell			"PortableWordSizes"
 		PropName		"DisabledProps"
 	      }
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
@@ -509,6 +535,7 @@ Model {
 	      IncludeMdlTerminateFcn  on
 	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
+	      CombineSignalStateStructs	off
 	      SuppressErrorStatus     off
 	      ERTFirstTimeCompliant   off
 	      IncludeFileDelimiter    "Auto"
@@ -604,10 +631,6 @@ Model {
       SamplingMode	      "Sample based"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Inherit from 'Constant value'"
-      OutDataType	      "fixdt(1,16,0)"
-      ConRadixGroup	      "Use specified scaling"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
       LockScale		      off
       SampleTime	      "inf"
@@ -626,16 +649,9 @@ Model {
       Multiplication	      "Element-wise(K.*u)"
       ParamMin		      "[]"
       ParamMax		      "[]"
-      ParameterDataTypeMode   "Same as input"
-      ParameterDataType	      "fixdt(1,16,0)"
-      ParameterScalingMode    "Best Precision: Matrix-wise"
-      ParameterScaling	      "[]"
       ParamDataTypeStr	      "Inherit: Same as input"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Same as input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as input"
       LockScale		      off
       RndMeth		      "Floor"
@@ -667,9 +683,6 @@ Model {
       InputSameDT	      on
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Same as first input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as first input"
       LockScale		      off
       RndMeth		      "Zero"
@@ -697,6 +710,12 @@ Model {
       BlockType		      Sin
       SineType		      "Time based"
       TimeSource	      "Use simulation time"
+      Amplitude		      "1"
+      Bias		      "0"
+      Frequency		      "1"
+      Phase		      "0"
+      Samples		      "10"
+      Offset		      "0"
       SampleTime	      "-1"
       VectorParams1D	      on
     }
@@ -710,9 +729,6 @@ Model {
       AccumDataTypeStr	      "Inherit: Inherit via internal rule"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Same as first input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as first input"
       LockScale		      off
       RndMeth		      "Floor"
@@ -730,7 +746,7 @@ Model {
   }
   System {
     Name		    "sl_quadcopter"
-    Location		    [401, 506, 1462, 1168]
+    Location		    [1826, 218, 2887, 880]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -744,11 +760,11 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    90
+    SIDHighWatermark	    "93"
     Block {
       BlockType		      BusSelector
       Name		      "Bus\nSelector1"
-      SID		      1
+      SID		      "1"
       Ports		      [1, 1]
       Position		      [125, 71, 130, 109]
       ForegroundColor	      "orange"
@@ -766,7 +782,7 @@ Model {
     Block {
       BlockType		      BusSelector
       Name		      "Bus\nSelector2"
-      SID		      2
+      SID		      "2"
       Ports		      [1, 1]
       Position		      [125, 121, 130, 159]
       ForegroundColor	      "orange"
@@ -784,7 +800,7 @@ Model {
     Block {
       BlockType		      BusSelector
       Name		      "Bus\nSelector3"
-      SID		      3
+      SID		      "3"
       Ports		      [1, 1]
       Position		      [435, 156, 440, 194]
       ForegroundColor	      "blue"
@@ -802,7 +818,7 @@ Model {
     Block {
       BlockType		      BusSelector
       Name		      "Bus\nSelector4"
-      SID		      4
+      SID		      "4"
       Ports		      [1, 1]
       Position		      [435, 206, 440, 244]
       ForegroundColor	      "blue"
@@ -820,7 +836,7 @@ Model {
     Block {
       BlockType		      BusSelector
       Name		      "Bus\nSelector5"
-      SID		      5
+      SID		      "5"
       Ports		      [1, 2]
       Position		      [125, 308, 130, 377]
       ShowName		      off
@@ -841,7 +857,7 @@ Model {
     Block {
       BlockType		      BusSelector
       Name		      "Bus\nSelector6"
-      SID		      6
+      SID		      "6"
       Ports		      [1, 2]
       Position		      [130, 438, 135, 507]
       ForegroundColor	      "red"
@@ -863,7 +879,7 @@ Model {
     Block {
       BlockType		      Clock
       Name		      "Clock"
-      SID		      70
+      SID		      "70"
       Position		      [700, 409, 745, 431]
       BackgroundColor	      "yellow"
       ShowName		      off
@@ -873,12 +889,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "Control Mixer"
-      SID		      86
+      SID		      "93"
       Ports		      [4, 5]
-      Position		      [700, 23, 760, 367]
+      Position		      [700, 45, 760, 355]
       DropShadow	      on
-      LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/Control Mixer"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Dynamics/Control Mixer"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -888,76 +904,53 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
     }
     Block {
       BlockType		      Gain
       Name		      "D_pr"
-      SID		      28
+      SID		      "28"
       Position		      [515, 210, 545, 240]
       ForegroundColor	      "blue"
       Gain		      ".1"
-      ParameterDataTypeMode   "Inherit via internal rule"
-      ParameterDataType	      "sfix(16)"
-      ParameterScaling	      "2^0"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Gain
       Name		      "D_xy"
-      SID		      29
+      SID		      "29"
       Position		      [185, 125, 215, 155]
       ForegroundColor	      "orange"
       Gain		      "2"
-      ParameterDataTypeMode   "Inherit via internal rule"
-      ParameterDataType	      "fixdt(1, 16)"
-      ParameterScaling	      "2^0"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Gain
       Name		      "D_yaw"
-      SID		      30
+      SID		      "30"
       Position		      [220, 345, 250, 375]
-      ParameterDataTypeMode   "Inherit via internal rule"
-      ParameterDataType	      "sfix(16)"
-      ParameterScaling	      "2^0"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Gain
       Name		      "D_z"
-      SID		      31
+      SID		      "31"
       Position		      [220, 475, 250, 505]
       ForegroundColor	      "red"
-      ParameterDataTypeMode   "Inherit via internal rule"
-      ParameterDataType	      "sfix(16)"
-      ParameterScaling	      "2^0"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Demux
       Name		      "Demux"
-      SID		      32
+      SID		      "32"
       Ports		      [1, 2]
       Position		      [665, 61, 670, 99]
       ForegroundColor	      "blue"
@@ -968,7 +961,7 @@ Model {
     Block {
       BlockType		      Mux
       Name		      "Mux"
-      SID		      71
+      SID		      "71"
       Ports		      [3, 1]
       Position		      [840, 410, 845, 470]
       ShowName		      off
@@ -978,7 +971,7 @@ Model {
     Block {
       BlockType		      Mux
       Name		      "Mux1"
-      SID		      35
+      SID		      "35"
       Ports		      [2, 1]
       Position		      [100, 21, 105, 59]
       ShowName		      off
@@ -995,34 +988,22 @@ Model {
     Block {
       BlockType		      Gain
       Name		      "P_pr"
-      SID		      36
+      SID		      "36"
       Position		      [605, 65, 635, 95]
       ForegroundColor	      "blue"
       Gain		      "-400"
-      ParameterDataTypeMode   "Inherit via internal rule"
-      ParameterDataType	      "sfix(16)"
-      ParameterScaling	      "2^0"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Gain
       Name		      "P_xy"
-      SID		      37
+      SID		      "37"
       Position		      [390, 65, 420, 95]
       ForegroundColor	      "orange"
       Gain		      "0.1*[-1, 1]"
-      ParameterDataTypeMode   "Inherit via internal rule"
-      ParameterDataType	      "sfix(16)"
-      ParameterScaling	      "2^0"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
       Port {
@@ -1035,61 +1016,46 @@ Model {
     Block {
       BlockType		      Gain
       Name		      "P_yaw"
-      SID		      38
+      SID		      "38"
       Position		      [340, 310, 370, 340]
       Gain		      "-100"
-      ParameterDataTypeMode   "Inherit via internal rule"
-      ParameterDataType	      "sfix(16)"
-      ParameterScaling	      "2^0"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Gain
       Name		      "P_z"
-      SID		      39
+      SID		      "39"
       Position		      [340, 440, 370, 470]
       ForegroundColor	      "red"
       Gain		      "-40"
-      ParameterDataTypeMode   "Inherit via internal rule"
-      ParameterDataType	      "sfix(16)"
-      ParameterScaling	      "2^0"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Product
       Name		      "Product"
-      SID		      89
+      SID		      "89"
       Ports		      [2, 1]
       Position		      [275, 54, 305, 101]
       ForegroundColor	      "green"
       ShowName		      off
       Multiplication	      "Matrix(*)"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Reference
       Name		      "Quadcopter"
-      SID		      85
+      SID		      "85"
       Ports		      [4, 1]
       Position		      [810, 18, 875, 302]
       DropShadow	      on
-      LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/Quadcopter"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Dynamics/Quadcopter"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1099,17 +1065,18 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
       quad		      "quad"
     }
     Block {
       BlockType		      Reference
       Name		      "Quadcopter plot"
-      SID		      88
+      SID		      "91"
       Ports		      [1]
-      Position		      [650, 411, 680, 469]
+      Position		      [650, 422, 680, 468]
       DropShadow	      on
-      LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/Quadcopter plot"
+      LibraryVersion	      "1.28"
+      SourceBlock	      "roblocks/Robot Graphics/Quadcopter plot"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1119,11 +1086,12 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
     }
     Block {
       BlockType		      MATLABFcn
       Name		      "RZ^T"
-      SID		      78
+      SID		      "78"
       Ports		      [1, 1]
       Position		      [160, 235, 220, 265]
       MATLABFcn		      "inv([cos(u) -sin(u); sin(u) cos(u)])"
@@ -1133,7 +1101,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope"
-      SID		      79
+      SID		      "79"
       Ports		      [1]
       Position		      [285, 379, 315, 411]
       Floating		      off
@@ -1152,23 +1120,20 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum1"
-      SID		      54
+      SID		      "54"
       Ports		      [2, 1]
       Position		      [220, 315, 240, 335]
       ShowName		      off
       IconShape		      "round"
       Inputs		      "+-|"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Sum
       Name		      "Sum15"
-      SID		      55
+      SID		      "55"
       Ports		      [2, 1]
       Position		      [275, 445, 295, 465]
       ForegroundColor	      "red"
@@ -1176,16 +1141,13 @@ Model {
       IconShape		      "round"
       Inputs		      "|+-"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Sum
       Name		      "Sum16"
-      SID		      56
+      SID		      "56"
       Ports		      [2, 1]
       Position		      [560, 70, 580, 90]
       ForegroundColor	      "blue"
@@ -1193,16 +1155,13 @@ Model {
       IconShape		      "round"
       Inputs		      "|+-"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Sum
       Name		      "Sum17"
-      SID		      57
+      SID		      "57"
       Ports		      [2, 1]
       Position		      [185, 80, 205, 100]
       ForegroundColor	      "orange"
@@ -1210,9 +1169,6 @@ Model {
       IconShape		      "round"
       Inputs		      "+-|"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
       Port {
@@ -1225,7 +1181,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum18"
-      SID		      58
+      SID		      "58"
       Ports		      [2, 1]
       Position		      [345, 70, 365, 90]
       ForegroundColor	      "orange"
@@ -1233,16 +1189,13 @@ Model {
       IconShape		      "round"
       Inputs		      "|+-"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Sum
       Name		      "Sum19"
-      SID		      59
+      SID		      "59"
       Ports		      [2, 1]
       Position		      [485, 70, 505, 90]
       ForegroundColor	      "blue"
@@ -1250,9 +1203,6 @@ Model {
       IconShape		      "round"
       Inputs		      "|+-"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
       Port {
@@ -1265,23 +1215,20 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum2"
-      SID		      60
+      SID		      "60"
       Ports		      [2, 1]
       Position		      [265, 315, 285, 335]
       ShowName		      off
       IconShape		      "round"
       Inputs		      "|+-"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Sum
       Name		      "Sum3"
-      SID		      61
+      SID		      "61"
       Ports		      [2, 1]
       Position		      [220, 445, 240, 465]
       ForegroundColor	      "red"
@@ -1289,16 +1236,13 @@ Model {
       IconShape		      "round"
       Inputs		      "+-|"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Sum
       Name		      "Sum4"
-      SID		      62
+      SID		      "62"
       Ports		      [2, 1]
       Position		      [415, 445, 435, 465]
       ForegroundColor	      "red"
@@ -1307,16 +1251,13 @@ Model {
       IconShape		      "round"
       Inputs		      "++|"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      ToWorkspace
       Name		      "To Workspace"
-      SID		      69
+      SID		      "69"
       Ports		      [1]
       Position		      [870, 425, 920, 455]
       ShowName		      off
@@ -1328,7 +1269,7 @@ Model {
     Block {
       BlockType		      ToWorkspace
       Name		      "To Workspace1"
-      SID		      72
+      SID		      "72"
       Ports		      [1]
       Position		      [535, 465, 595, 495]
       ShowName		      off
@@ -1340,50 +1281,39 @@ Model {
     Block {
       BlockType		      Constant
       Name		      "w0"
-      SID		      63
+      SID		      "63"
       Position		      [380, 380, 410, 410]
       ForegroundColor	      "red"
       DropShadow	      on
       Value		      "sqrt(quad.M*quad.g/4/quad.b)"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
       SampleTime	      "0"
     }
     Block {
       BlockType		      Sin
       Name		      "x*"
-      SID		      64
+      SID		      "64"
       Ports		      [0, 1]
       Position		      [25, 15, 55, 45]
-      Amplitude		      "1"
-      Bias		      "0"
       Frequency		      "2*pi*.125"
       Phase		      "-pi/2"
-      Samples		      "10"
-      Offset		      "0"
       SampleTime	      "0"
     }
     Block {
       BlockType		      Sin
       Name		      "y*"
-      SID		      65
+      SID		      "65"
       Ports		      [0, 1]
       Position		      [25, 65, 55, 95]
-      Amplitude		      "1"
-      Bias		      "0"
       Frequency		      "2*pi*.125"
-      Phase		      "0"
-      Samples		      "10"
-      Offset		      "0"
       SampleTime	      "0"
     }
     Block {
       BlockType		      Reference
       Name		      "yaw*"
-      SID		      84
+      SID		      "84"
       Ports		      [0, 1]
       Position		      [25, 280, 55, 310]
-      LibraryVersion	      "1.216"
+      LibraryVersion	      "1.225"
       SourceBlock	      "simulink/Sources/Ramp"
       SourceType	      "Ramp"
       ShowPortLabels	      "FromPortIcon"
@@ -1394,6 +1324,7 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
       slope		      "0.2"
       start		      "2"
       X0		      "0"
@@ -1402,28 +1333,22 @@ Model {
     Block {
       BlockType		      Constant
       Name		      "z*"
-      SID		      68
+      SID		      "68"
       Position		      [25, 405, 55, 435]
       Value		      "-4"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
       SampleTime	      "0"
     }
     Line {
       SrcBlock		      "Control Mixer"
       SrcPort		      1
+      Points		      [0, -25]
       DstBlock		      "Quadcopter"
       DstPort		      1
     }
     Line {
       SrcBlock		      "Control Mixer"
-      SrcPort		      3
-      DstBlock		      "Quadcopter"
-      DstPort		      3
-    }
-    Line {
-      SrcBlock		      "Control Mixer"
       SrcPort		      4
+      Points		      [10, 0; 0, 5]
       DstBlock		      "Quadcopter"
       DstPort		      4
     }
@@ -1493,7 +1418,7 @@ Model {
 	  }
 	}
 	Branch {
-	  Points		  [0, -95]
+	  Points		  [0, -90]
 	  DstBlock		  "Quadcopter plot"
 	  DstPort		  1
 	}
@@ -1684,15 +1609,9 @@ Model {
     Line {
       SrcBlock		      "Demux"
       SrcPort		      2
-      Points		      [0, 65]
+      Points		      [0, 75]
       DstBlock		      "Control Mixer"
       DstPort		      2
-    }
-    Line {
-      SrcBlock		      "Demux"
-      SrcPort		      1
-      DstBlock		      "Control Mixer"
-      DstPort		      1
     }
     Line {
       SrcBlock		      "D_yaw"
@@ -1712,16 +1631,10 @@ Model {
       }
       Branch {
 	Labels			[3, 0]
-	Points			[60, 0; 0, -130]
+	Points			[65, 0; 0, -110; 100, 0; 0, -25; 10, 0; 0, -5]
 	DstBlock		"Control Mixer"
 	DstPort			4
       }
-    }
-    Line {
-      SrcBlock		      "Control Mixer"
-      SrcPort		      2
-      DstBlock		      "Quadcopter"
-      DstPort		      2
     }
     Line {
       SrcBlock		      "Sum1"
@@ -1742,9 +1655,10 @@ Model {
       DstPort		      1
     }
     Line {
+      Labels		      [2, 0]
       SrcBlock		      "Control Mixer"
       SrcPort		      5
-      Points		      [20, 0; 0, 125]
+      Points		      [20, 0; 0, 140]
       DstBlock		      "Mux"
       DstPort		      3
     }
@@ -1781,6 +1695,27 @@ Model {
       Points		      [25, 0; 0, -185]
       DstBlock		      "Product"
       DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Demux"
+      SrcPort		      1
+      Points		      [5, 0; 0, 20]
+      DstBlock		      "Control Mixer"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Control Mixer"
+      SrcPort		      3
+      Points		      [15, 0; 0, -5]
+      DstBlock		      "Quadcopter"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "Control Mixer"
+      SrcPort		      2
+      Points		      [15, 0; 0, -15]
+      DstBlock		      "Quadcopter"
+      DstPort		      2
     }
     Annotation {
       Name		      " "
