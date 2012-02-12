@@ -1,0 +1,49 @@
+Installation:
+------------
+
+simply copy all the .m files into a directory 'robot' 
+
+add the directory robot to your MATLABPATH
+
+add the directory robot/demos to your MATLABPATH
+
+
+Help:
+----
+
+1: manual
+
+robot.pdf is the documentation in standard Mathworks style.  It is
+formatted for double sided printing which makes for a more compact
+manual and saves trees.
+
+2: desktop help GUI
+from the Matlab desktop, choose help, and select the Robotics Toolbox
+option.  HTML format documentation for all functions is available.
+
+3: command line
+use the help command from the command prompt, eg. help ikine
+
+
+Demos:
+-----
+
+1: invoke the demo GUI
+from the command prompt, >>> demos, then select the Robotics Toolbox
+
+2: desktop menu bar
+from the menu bar choose demos, and select the Robotics Toolbox
+
+3: command prompt
+from the prompt, >>> rtdemos.
+
+Options 2 and 3 only work if robot/demos is in your MATLABPATH
+
+
+Home page:
+---------
+	http://www.petercorke.com
+
+Please email bug reports, comments or code contribtions to me.
+
+	Peter Corke	peter.i.corke@gmail.com

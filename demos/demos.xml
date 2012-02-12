@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<demos>
+
+<name>Robotics Toolbox</name>
+<type>toolbox</type>
+<icon>$toolbox/matlab/icons/matlabicon.gif</icon>
+<description>Robotics Toolbox demonstrations of transform and quaternion primitives,
+Jacobians, animations, path planning, forward and inverse kinematics, and forward and inverse dynamics.
+</description>
+
+<website>
+<a href="http://www.petercorke.com"></a></website>
+
+<demosection>
+   <label>MATLAB Examples</label>
+    <icon>$toolbox/matlab/icons/matlabicon.gif</icon>
+   <demoitem>
+      <label>Transform and quaternion primitives</label>
+      <callback>rttrdemo</callback>
+      <description>Show the power of matrices</description>
+   </demoitem>
+   <demoitem>
+      <label>Forward kinematics</label>
+      <callback>rtfkdemo</callback>
+   </demoitem>
+   <demoitem>
+      <label>Jacobians</label>
+      <callback>rtjademo</callback>
+   </demoitem>
+   <demoitem>
+      <label>Trajectories</label>
+      <callback>rttrdemo</callback>
+   </demoitem>
+   <demoitem>
+      <label>Animation</label>
+      <callback>rtandemo</callback>
+   </demoitem>
+   <demoitem>
+      <label>Inverse kinematics</label>
+      <callback>rtikdemo</callback>
+   </demoitem>
+   <demoitem>
+      <label>Forward dynamics</label>
+      <callback>rtfddemo</callback>
+   </demoitem>
+   <demoitem>
+      <label>Inverse dynamics</label>
+      <callback>rtiddemo</callback>
+   </demoitem>
+</demosection>
+
+<demosection>
+    <icon>$toolbox/matlab/icons/simulinkicon.gif</icon>
+   <label>Simulink Examples</label>
+   <demoitem>
+      <label>Puma robot falling under gravity</label>
+      <type>model</type>
+      <source>demo1</source>
+      <dependency>Simulink</dependency>
+   </demoitem>
+</demosection>
+
+</demos>

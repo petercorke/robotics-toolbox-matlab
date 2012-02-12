@@ -1,0 +1,15 @@
+Citing the Toolbox:
+------------------
+
+If you use the Toolbox and want to cite it in a paper please use:
+
+@ARTICLE{Corke96b,
+	AUTHOR             = {P.I. Corke},
+	JOURNAL            = {IEEE Robotics and Automation Magazine},
+	MONTH              = mar,
+	NUMBER             = {1},
+	PAGES              = {24-32},
+	TITLE              = {A Robotics Toolbox for {MATLAB}},
+	VOLUME             = {3},
+	YEAR               = {1996}
+}

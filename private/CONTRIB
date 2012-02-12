@@ -1,0 +1,30 @@
+The Robotics Toolbox for Matlab makes use of several functions/packages that are
+in the public domain, and I thank the authors for permission to distributute them.
+
+%function Ellipse_plot(A, C, varargin)
+%
+%  Nima Moshtagh
+%  nima@seas.upenn.edu
+%  University of Pennsylvania
+%  Feb 1, 2007
+%  Updated: Feb 3, 2007
+
+
+%function [h,yy,zz] = arrow(varargin)
+% Copyright (c)1995-2009, Dr. Erik A. Johnson <JohnsonE@usc.edu>, 5/20/2009
+% http://www.usc.edu/civil_eng/johnsone/
+% Many thanks to Keith Rogers <kerog@ai.mit.com> for his many excellent
+% suggestions and beta testing.  Check out his shareware package MATDRAW
+% (at ftp://ftp.mathworks.com/pub/contrib/v5/graphics/matdraw/) -- he has
+% permission to distribute ARROW with MATDRAW.
+% Permission is granted to distribute ARROW with the toolboxes for the book
+% "Solving Solid Mechanics Problems with MATLAB 5", by F. Golnaraghi et al.
+% (Prentice Hall, 1999).
+% Permission is granted to Dr. Josef Bigun to distribute ARROW with his
+% software to reproduce the figures in his image analysis text.
+
+%function [handles,levels,parentIdx,listing] = findjobj(container,varargin)
+% License to use and modify this code is granted freely to all interested, as long as the original author is
+% referenced and attributed as such. The original author maintains the right to be solely associated with this work.
+% Programmed and Copyright by Yair M. Altman: altmany(at)gmail.com
+% $Revision: 1.21 $  $Date: 2009/05/24 00:47:55 $

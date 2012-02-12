@@ -1,0 +1,14 @@
+Test scripts:
+
+    test.m          test harness, runs all tests
+
+        transform.m     test transform and quaternion primitives
+        trajectory.m    test trajectory functions
+        kinematics.m    test kinematics functions
+        jacobian.m      test Jacobian functions
+        dynamics.m      test dynamics functions
+
+pylab compatibility functions:
+
+    arange.m
+    mat.m

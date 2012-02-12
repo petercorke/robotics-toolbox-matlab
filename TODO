@@ -1,0 +1,11 @@
+[v,theta] = tr2rotvec(T)
+isspherical(r)
+skew()
+L.show()
+r.plot()
+r.fkine()
+r.ikine()
+
+get License files
+
+plotopt, does this still work?

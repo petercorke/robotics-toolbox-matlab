@@ -1,0 +1,48 @@
+------------------------------------------------------------------------
+r667 | pic | 2011-12-11 18:09:18 +1000 (Sun, 11 Dec 2011) | 1 line
+Changed paths:
+   M /matlab/branches/book/@SerialLink/SerialLink.m
+
+Parameters a and alpha transposed in legacy matrix case.
+------------------------------------------------------------------------
+r666 | pic | 2011-12-11 18:08:19 +1000 (Sun, 11 Dec 2011) | 2 lines
+Changed paths:
+   M /matlab/branches/book/Quaternion.m
+
+Error in arg checking for angle, vector case.
+Error in handling overall bad argument to the constructor.
+------------------------------------------------------------------------
+r665 | pic | 2011-12-11 18:06:40 +1000 (Sun, 11 Dec 2011) | 1 line
+Changed paths:
+   M /matlab/branches/book/Link.m
+
+Enforce that positive Tc is greater than negative Tc
+------------------------------------------------------------------------
+r664 | pic | 2011-12-11 18:05:48 +1000 (Sun, 11 Dec 2011) | 3 lines
+Changed paths:
+   M /matlab/branches/book/@SerialLink/teach.m
+
+added comments, option for background color
+changed the layout slightly, looks a bit nicer
+handle management needs to improve
+------------------------------------------------------------------------
+r663 | pic | 2011-12-11 18:03:49 +1000 (Sun, 11 Dec 2011) | 1 line
+Changed paths:
+   M /matlab/branches/book/eul2r.m
+
+fixed bug in trajectory case
+------------------------------------------------------------------------
+r662 | pic | 2011-12-11 17:59:25 +1000 (Sun, 11 Dec 2011) | 1 line
+Changed paths:
+   M /matlab/branches/book/mdl_S4ABB2p8.m
+   M /matlab/branches/book/mdl_fanuc10l.m
+   M /matlab/branches/book/mdl_motomanHP6.m
+
+Change to v9 Link and SerialLink objects
+------------------------------------------------------------------------
+r660 | pic | 2011-12-10 18:06:19 +1000 (Sat, 10 Dec 2011) | 2 lines
+Changed paths:
+   M /matlab/branches/book/@SerialLink/fkine.m
+
+Bug in trajectory mode, should use numel instead of length
+

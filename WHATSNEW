@@ -1,0 +1,22 @@
+What's new in release 8
+=======================
+
+rot[xyz] changed to trot[xyz] and return 4x4
+rot[xyz] now return 3x3
+
+rotation variants of many functions, eg. eul2r and eul2tr
+
+functions of the form tr2X take R or T as argument
+
+new robot models: Motoman, ABB, Fanuc
+
+rpy2r and eul2r accept trajectories as inputs
+
+demos all in separate directory, demos, which is added by startup.m
+or rtdemo.m
+
+fix errors in Simulink demos
+
+HTML doco, integrated with doc help browser
+
+demos integrated with doc demo system

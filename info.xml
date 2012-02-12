@@ -1,0 +1,34 @@
+<productinfo
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="optional">
+<?xml-stylesheet type="text/xsl" href="optional"?>
+
+<matlabrelease>R14</matlabrelease>
+<name>Robotics</name>
+<type>toolbox</type>
+<icon>ApplicationIcon.MATLAB</icon>
+<help_location>info</help_location>
+
+<list>
+
+<listitem>
+<label>Help</label>
+<callback>doc robot/</callback>
+<icon>$toolbox/matlab/general/bookicon.gif</icon>
+</listitem>
+
+<listitem>
+<label>Demos</label>
+<callback>rtbstartup</callback>
+<icon>$toolbox/matlab/general/demoicon.gif</icon>
+</listitem>
+
+<listitem>
+<label>Product Page (Web)</label>
+<callback>web http://www.petercorke.com -browser;</callback>
+<icon>$toolbox/matlab/general/webicon.gif</icon>
+</listitem>
+
+</list>
+
+</productinfo>

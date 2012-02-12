@@ -1,0 +1,21 @@
+Makefile        this does all the work
+
+robot/          code staging area
+  simulink/
+  mex/
+  examples/
+  demos/
+  info/         xml and html doco
+    html/       autogen doco
+common/     
+simulink/
+
+tmpdoc/         staging area for documentation build
+
+html/           autogen HTML doco for the web
+
+The results are:
+robot.tgz       output file
+robot.zip       output file
+
+these are images of {robot,common,simulink} directories here.
