@@ -1,0 +1,178 @@
+%TRPLOT2 Plot a planar transformation
+%
+% TRPLOT2(T, options) draws a 2D coordinate frame represented by the homogeneous 
+% transform T (3x3).
+%
+% Options::
+% 'axis',A           Set dimensions of the MATLAB axes to A=[xmin xmax ymin ymax]
+% 'color', c         The color to draw the axes, MATLAB colorspec
+% 'noaxes'           Don't display axes on the plot
+% 'frame',F          The frame is named {F} and the subscript on the axis labels is F.
+% 'text_opts', opt   A cell array of Matlab text properties
+% 'handle', h        Draw in the MATLAB axes specified by h
+% 'view',V           Set plot view parameters V=[az el] angles, or 'auto' 
+%                    for view toward origin of coordinate frame
+% 'arrow'            Use arrows rather than line segments for the axes
+% 'width', w         Width of arrow tips
+%
+% Examples::
+%
+%       trplot(T, 'frame', 'A')
+%       trplot(T, 'frame', 'A', 'color', 'b')
+%       trplot(T1, 'frame', 'A', 'text_opts', {'FontSize', 10, 'FontWeight', 'bold'})
+%
+% Notes::
+% - The arrow option requires the third party package arrow3.
+% - Generally it is best to set the axis bounds
+%
+% See also TRPLOT.
+
+
+% Copyright (C) 1993-2011, by Peter I. Corke
+%
+% This file is part of The Robotics Toolbox for Matlab (RTB).
+% 
+% RTB is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Lesser General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% RTB is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Lesser General Public License for more details.
+% 
+% You should have received a copy of the GNU Leser General Public License
+% along with RTB.  If not, see <http://www.gnu.org/licenses/>.
+
+%   'frame', name   name of the frame, used for axis subscripts and origin
+%   'color', color  Matlab color specificication for the frame and annotations
+%   'noaxes'        show the frame but no Matlab axes
+%   'arrow'         use the contributed arrow3 function to draw the frame axes
+%   'width', width  width of lines to draw if using arrow3
+
+function hout = trplot2(T, varargin)
+
+    opt.color = 'b';
+    opt.axes = true;
+    opt.axis = [];
+    opt.frame = [];
+    opt.text_opts = [];
+    opt.view = [];
+    opt.width = 1;
+    opt.arrow = false;
+    opt.handle = [];
+
+    opt = tb_optparse(opt, varargin);
+
+    if isempty(opt.text_opts)
+        opt.text_opts = {};
+    end
+    if isempty(opt.axis)
+        if all(size(T) == [3 3]) || norm(transl(T)) < eps
+            c = transl(T);
+            d = 1.2;
+            opt.axis = [c(1)-d c(1)+d c(2)-d c(2)+d];
+        end
+    end
+
+    if ~isempty(opt.handle)
+        hax = opt.handle;
+        hold(hax);
+        hax
+    else
+        ih = ishold;
+        if ~ih
+            % if hold is not on, then clear the axes and set scaling
+            cla
+            if ~isempty(opt.axis)
+                axis(opt.axis);
+            end
+            axis equal
+            
+            if opt.axes
+                xlabel( 'X');
+                ylabel( 'Y');
+            end
+            new_plot = true;
+        else
+            %set(gca, 'XLimMode', 'auto');
+            %set(gca, 'YLimMode', 'auto');
+        end
+        hax = gca;
+        hold on
+    end
+
+	% create unit vectors
+	o =  T*[0 0 1]'; o = o(1:2);
+	x1 = T*[1 0 1]'; x1 = x1(1:2);
+	y1 = T*[0 1 1]'; y1 = y1(1:2);
+    
+    % draw the axes
+    
+    mstart = [o o]';
+    mend = [x1 y1]';
+    
+    hg = hgtransform;
+    if opt.arrow
+        % draw the 2 arrows
+        S = [opt.color num2str(opt.width)];
+        ha = arrow3(mstart, mend, S);
+        for h=ha'
+            set(h, 'Parent', hg);
+        end
+    else
+        for i=1:2
+            plot2([mstart(i,1:2); mend(i,1:2)], 'Color', opt.color);
+        end
+    end
+
+    % label the axes
+    if isempty(opt.frame)
+        fmt = '%c';
+    else
+%             if opt.axlabel(1) == '$'
+%                 fmt = axlabel;
+%                 opt.text_opts = {opt.text_opts{:}, 'Interpreter', 'latex'};
+%             else
+%                 fmt = sprintf('%%c%s', axlabel);
+%             end
+        fmt = sprintf('%%c_{%s}', opt.frame);
+    end
+    
+    % add the labels to each axis
+	h = text(x1(1), x1(2), sprintf(fmt, 'X'));
+    if ~isempty(opt.text_opts)
+        set(h, opt.text_opts{:});
+    end
+    if opt.arrow
+        set(h, 'Parent', hg);
+    end
+
+	h = text(y1(1), y1(2), sprintf(fmt, 'Y'));
+    if ~isempty(opt.text_opts)
+        set(h, opt.text_opts{:});
+    end
+    if opt.arrow
+        set(h, 'Parent', hg);
+    end
+
+    % label the frame
+    if ~isempty(opt.frame)
+        h = text(o(1)-0.04*x1(1), o(2)-0.04*y1(2), ...
+            ['\{' opt.frame '\}']);
+        set(h, 'VerticalAlignment', 'middle', ...
+            'HorizontalAlignment', 'center', opt.text_opts{:});
+    end
+    
+    if ~opt.axes
+        set(gca, 'visible', 'off');
+    end
+	grid on
+	if ~ih
+		hold off
+    end
+    
+    if nargout > 0
+        hout = hg;
+    end
