@@ -1107,6 +1107,8 @@ public class DHFactor {
     // Matlab callable constructor
 	public DHFactor(String src) {
         results = parseString(src);
+        if (!this.isValid())
+            System.out.println("DHFactor: error: Incomplete factorization, no DH equivalent found");
     }
 
     private String angle(Element e) {
@@ -1195,6 +1197,30 @@ public class DHFactor {
 		return s;
 	}
 
+    /*
+     * Check the transform string is valid
+     *
+     */
+    public boolean isValid() {
+        Element e;
+        int iprev = -1;
+
+		for (int i=0; i<results.size(); i++) {
+			e = (Element) results.get(i);
+            if (e.type == Element.DH_STANDARD) {
+                if (iprev >= 0) {
+                    // we've seen a DH factor before
+                    if ((i-iprev) > 1) {
+                        // but it was too long ago, fail!
+                        return false;
+                    }
+                }
+                iprev = i;  // note where we saw it
+            };
+        }
+		return true;
+	}
+
     public String offset() {
 		String	s = "[";
         Element e;
@@ -1240,10 +1266,13 @@ public class DHFactor {
 
     // return Matlab Toolbox robot creation command
     public String command(String name) {
-        return "SerialLink(" + this.dh() + ", 'name', '" + name +
-            "', 'base', " + this.base() +
-            ", 'tool', " + this.tool() +
-            ", 'offset', " + this.offset() + ")";
+        if (this.isValid())
+            return "SerialLink(" + this.dh() + ", 'name', '" + name +
+                "', 'base', " + this.base() +
+                ", 'tool', " + this.tool() +
+                ", 'offset', " + this.offset() + ")";
+        else
+            return "error('incompletely factored transform string')";
     }
 
 	public static ElementList parseFile(String filename) {
