@@ -29,8 +29,6 @@ function h = isvec(v, l)
     if nargin == 1
             l = 3;
     end
-    if min(size(v)) == 1
-        h =  length(v) == l;
-    else
-        h = false;
-    end
+    d = size(v);
+    h = length(d) == 2 && min(d) == 1 && numel(v) == l
+
