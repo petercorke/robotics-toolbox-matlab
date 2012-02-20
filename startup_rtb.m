@@ -2,7 +2,8 @@
 %
 % Adds demos, examples to the MATLAB path, and adds also to 
 % Java class path.
-disp('- Robotics Toolbox for Matlab (release 9)')
+release = load('RELEASE');
+fprintf('- Robotics Toolbox for Matlab (release %.1f)\n', release)
 tbpath = fileparts(which('Link'));
 addpath( fullfile(tbpath, 'demos') );
 addpath( fullfile(tbpath, 'examples') );
