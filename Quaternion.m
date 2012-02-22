@@ -92,14 +92,13 @@ classdef Quaternion
         %
         % Q = Quaternion(TH, V) is a unit quaternion corresponding to rotation of TH about the vector V.
         %
-        % Q = Quaternion(R) is a unit quaternion corresponding to the orthonormal rotation matrix R.
+        % Q = Quaternion(R) is a unit quaternion corresponding to the orthonormal rotation matrix R.  If R (3x3xN) is a sequence then Q (Nx1) is a vector of Quaternions 
+        % corresponding to the elements of R.
         %
         % Q = Quaternion(T) is a unit quaternion equivalent to the rotational
-        % part of the homogeneous transform T.
+        % part of the homogeneous transform T. If T (4x4xN) is a sequence then Q (Nx1) is a vector of Quaternions 
+        % corresponding to the elements of T.
         %
-        % Notes::
-        % - A sequence of rotation or homogeneous matrices cannot be passed, MATLAB constructors
-        %   can return only a single object not a vector.
 
             if nargin == 0
                 q.v = [0,0,0];
@@ -108,16 +107,16 @@ classdef Quaternion
             %   Q = Quaternion(q)       from another quaternion
                 q = a1;
             elseif nargin == 1
-                if all(size(a1) == [1 4]) || all(size(a1) == [4 1])
+                if isvec(a1, 4)
             %   Q = Quaternion([s v1 v2 v3])    from 4 elements
                     a1 = a1(:);
                     q.s = a1(1);
                     q.v = a1(2:4)';
-                elseif all(size(a1) == [3 3])
+                elseif isrot(a1) || ishomog(a1)
             %   Q = Quaternion(R)       from a 3x3 or 4x4 matrix
-                    q = Quaternion( tr2q(a1) );
-                elseif all(size(a1) == [4 4])
-                    q = Quaternion( tr2q(a1(1:3,1:3)) );
+                    for i=1:size(a1,3)
+                        q(i) = Quaternion( tr2q(a1(:,:,i)) );
+                    end
 
                 elseif length(a1) == 3
             %   Q = Quaternion(v)       from a vector
