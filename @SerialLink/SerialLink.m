@@ -22,27 +22,28 @@
 %
 %  plot          display graphical representation of robot
 %  teach         drive the graphical robot
-%  fkine         return forward kinematics
-%  ikine6s       return inverse kinematics for 6-axis spherical wrist robot
-%  ikine         return inverse kinematics using iterative method
-%  jacob0        return Jacobian matrix in world frame
-%  jacobn        return Jacobian matrix in tool frame
-%  jtraj         return a joint space trajectory
+%  fkine         forward kinematics
+%  ikine6s       inverse kinematics for 6-axis spherical wrist revolute robot
+%  ikine3        inverse kinematics for 3-axis revolute robot
+%  ikine         inverse kinematics using iterative method
+%  jacob0        Jacobian matrix in world frame
+%  jacobn        Jacobian matrix in tool frame
+%  jtraj         a joint space trajectory
 %  dyn           show dynamic properties of links
 %  isspherical   true if robot has spherical wrist
 %  islimit       true if robot has spherical wrist
 %  payload       add a payload in end-effector frame
 %
-%  coriolis      return Coriolis joint force
-%  gravload      return gravity joint force
-%  inertia       return joint inertia matrix
-%  accel         return joint acceleration
-%  fdyn          return joint motion
-%  rne           return joint force
-%  perturb       return SerialLink object with perturbed parameters
-%  showlink      return SerialLink object with perturbed parameters
-%  friction      return SerialLink object with perturbed parameters
-%  maniplty      return SerialLink object with perturbed parameters
+%  coriolis      Coriolis joint force
+%  gravload      gravity joint force
+%  inertia       joint inertia matrix
+%  accel         joint acceleration
+%  fdyn          joint motion
+%  rne           joint force
+%  perturb       SerialLink object with perturbed parameters
+%  showlink      SerialLink object with perturbed parameters
+%  friction      SerialLink object with perturbed parameters
+%  maniplty      SerialLink object with perturbed parameters
 %
 % Properties (read/write)::
 %
@@ -109,6 +110,8 @@ classdef SerialLink < handle
         plotopt
         lineopt
         shadowopt
+        
+        qteach
 
     end
 
@@ -531,8 +534,11 @@ classdef SerialLink < handle
                 r.links(j).dyn()
             end
         end
-    end % methods
 
+        function record(r)
+            r.qteach = [r.qteach; r.q];
+        end
+    end % methods
 
 end % classdef
 
