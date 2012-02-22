@@ -16,6 +16,7 @@
 % 'f'   wrist flipped (rotated by 180 deg)
 %
 % Notes::
+% - Only applicable for an all revolute 6-axis robot RRRRRR.
 % - The inverse kinematic solution is generally not unique, and 
 %   depends on the configuration string.
 %
@@ -36,17 +37,17 @@
 
 function theta = ikine6s(robot, T, varargin)
 
-    if robot.n ~= 6,
-        error('Solution only applicable for 6DOF manipulator');
+    if ~strcmp(robot.config, 'RRRRRR')
+        error('Solution only applicable for 6DOF all-revolute manipulator');
     end
 
-    if robot.mdh ~= 0,
+    if robot.mdh ~= 0
         error('Solution only applicable for standard DH conventions');
     end
 
-    if ndims(T) == 3,
+    if ndims(T) == 3
         theta = [];
-        for k=1:size(T,3),
+        for k=1:size(T,3)
             th = ikine6s(robot, T(:,:,k), varargin{:});
             theta = [theta; th];
         end
@@ -67,7 +68,7 @@ function theta = ikine6s(robot, T, varargin)
     d3 = L(3).d;
     d4 = L(4).d;
 
-    if ~ishomog(T),
+    if ~ishomog(T)
         error('T is not a homog xform');
     end
 
@@ -92,7 +93,7 @@ function theta = ikine6s(robot, T, varargin)
     % The configuration parameter determines what n1,n2,n4 values are used
     % and how many solutions are determined which have values of -1 or +1.
 
-    if nargin < 3,
+    if nargin < 3
         configuration = '';
     else
         configuration = lower(varargin{1});
@@ -103,30 +104,30 @@ function theta = ikine6s(robot, T, varargin)
     n1 = -1;    % L
     n2 = -1;    % U
     n4 = -1;    % N
-    if ~isempty(findstr(configuration, 'l')),
+    if ~isempty(findstr(configuration, 'l'))
         n1 = -1;
     end
-    if ~isempty(findstr(configuration, 'r')),
+    if ~isempty(findstr(configuration, 'r'))
         n1 = 1;
     end
-    if ~isempty(findstr(configuration, 'u')),
-        if n1 == 1,
+    if ~isempty(findstr(configuration, 'u'))
+        if n1 == 1
             n2 = 1;
         else
             n2 = -1;
         end
     end
-    if ~isempty(findstr(configuration, 'd')),
-        if n1 == 1,
+    if ~isempty(findstr(configuration, 'd'))
+        if n1 == 1
             n2 = -1;
         else
             n2 = 1;
         end
     end
-    if ~isempty(findstr(configuration, 'n')),
+    if ~isempty(findstr(configuration, 'n'))
         n4 = 1;
     end
-    if ~isempty(findstr(configuration, 'f')),
+    if ~isempty(findstr(configuration, 'f'))
         n4 = -1;
     end
 
@@ -140,7 +141,7 @@ function theta = ikine6s(robot, T, varargin)
     %
 
     r=sqrt(Px^2 + Py^2);
-    if (n1 == 1),
+    if (n1 == 1)
         theta(1)= atan2(Py,Px) + asin(d3/r);
     else
         theta(1)= atan2(Py,Px) + pi - asin(d3/r);
@@ -159,7 +160,7 @@ function theta = ikine6s(robot, T, varargin)
     V114= Px*cos(theta(1)) + Py*sin(theta(1));
     r=sqrt(V114^2 + Pz^2);
     Psi = acos((a2^2-d4^2-a3^2+V114^2+Pz^2)/(2.0*a2*r));
-    if ~isreal(Psi),
+    if ~isreal(Psi)
         warning('point not reachable');
         theta = [NaN NaN NaN NaN NaN NaN];
         return
