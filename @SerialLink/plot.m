@@ -122,7 +122,7 @@ function retval = plot(robot, tg, varargin)
     % opts = PLOT(robot, options)
     %  just convert options list to an options struct
     if (nargin == 2) && iscell(tg)
-        retval = plot_options(robot, tg);
+        retval = plot_options(robot, varargin{:});
         return;
     end
         
@@ -208,15 +208,18 @@ function retval = plot(robot, tg, varargin)
         figure(gcf);
     end
 
-    count = opt.repeat;
-    while count > 0
+    while true
         for p=1:np
-            for r=rh',
+            for r=rh'
                 animate( get(r, 'UserData'), tg(p,:), opt);
-                pause(opt.delay)
+                if opt.delay > 0
+                    pause(opt.delay);
+                end
             end
         end
-        count = count - 1;
+        if ~opt.loop
+            break;
+        end
     end
 
     % save the last joint angles away in the graphical robot
@@ -239,16 +242,18 @@ function retval = plot(robot, tg, varargin)
 
 function o = plot_options(robot, optin)
     % process a cell array of options and return a struct
+
+    % define all possible options and their default values
     o.erasemode = 'normal';
     o.joints = true;
     o.wrist = true;
-    o.repeat = 1;
+    o.loop = false;
     o.shadow = true;
     o.wrist = true;
     o.jaxes = true;
     o.base = true;
     o.wristlabel = 'xyz';
-    o.projection = 'perspective';
+    o.perspective = true;
     o.magscale = 1;
     o.name = true;
     o.delay = 0.1;
@@ -256,17 +261,15 @@ function o = plot_options(robot, optin)
     o.cylinder = [0 0 0.7];
     o.workspace = [];
 
-    % read options string in the order and build up a list
-    %   1. robot.plotopt
-    %   2. the M-file plotbotopt if it exists
+    % build a list of options from all sources
+    %   1. the M-file plotbotopt if it exists
+    %   2. robot.plotopt
     %   3. command line arguments
     if exist('plotbotopt', 'file') == 2
-        options = plotbotopt;
+        options = [plotbotopt robot.plotopt optin];
     else
-        options = {};
+        options = [robot.plotopt optin];
     end
-    options = [options robot.plotopt optin];
-    options = [robot.plotopt optin];
 
     % parse the options
     [o,args] = tb_optparse(o, options);
@@ -274,13 +277,13 @@ function o = plot_options(robot, optin)
         error(['unknown option: ' args{1}]);
     end
 
-    if isempty(o.workspace),
+    if isempty(o.workspace)
         %
         % simple heuristic to figure the maximum reach of the robot
         %
         L = robot.links;
         reach = 0;
-        for i=1:robot.n,
+        for i=1:robot.n
             reach = reach + abs(L(i).a) + abs(L(i).d);
         end
         o.workspace = [-reach reach -reach reach -reach reach];
@@ -326,7 +329,7 @@ function h = create_new_robot(robot, opt)
     %
     % handles not provided, create graphics
     %disp('in creat_new_robot')
-    if ~ishold,
+    if ~ishold
         % if current figure has hold on, then draw robot here
         % otherwise, create a new figure
         axis(opt.workspace);
@@ -341,7 +344,7 @@ function h = create_new_robot(robot, opt)
     zlim = get(gca, 'ZLim');
     h.zmin = zlim(1);
 
-    if opt.base,
+    if opt.base
         b = transl(robot.base);
         line('xdata', [b(1);b(1)], ...
             'ydata', [b(2);b(2)], ...
@@ -350,7 +353,7 @@ function h = create_new_robot(robot, opt)
             'color', 'red');
     end
     
-    if opt.name,
+    if opt.name
         b = transl(robot.base);
         text(b(1), b(2)-opt.mag, [' ' robot.name], 'FontAngle', 'italic', 'FontWeight', 'bold')
     end
@@ -360,7 +363,7 @@ function h = create_new_robot(robot, opt)
     %
     h.robot = line(robot.lineopt{:});
     
-    if opt.shadow,
+    if opt.shadow
         h.shadow = line(robot.shadowopt{:}, ...
             'Erasemode', opt.erasemode);
     end
@@ -389,12 +392,12 @@ function h = create_new_robot(robot, opt)
     % each joint, as well as axis centerline.
     %
     L = robot.links;
-    for i=1:robot.n,
+    for i=1:robot.n
         
         if opt.joints
 
             % cylinder or box to represent the joint
-            if L(i).sigma == 0,
+            if L(i).sigma == 0
                 N = 16;
             else
                 N = 4;
@@ -406,7 +409,7 @@ function h = create_new_robot(robot, opt)
 
             % create vertex color data
             cdata = zeros(size(xc));
-            for j=1:3,
+            for j=1:3
                 cdata(:,:,j) = opt.cylinder(j);
             end
             % render the surface
@@ -463,7 +466,7 @@ function animate(robot, q, opt)
     % for the animation.
     t = robot.base;
     Tn = t;
-    for j=1:n,
+    for j=1:n
         Tn(:,:,j) = t;
 
         t = t * L(j).A(q(j));
@@ -481,7 +484,7 @@ function animate(robot, q, opt)
     % draw the robot stick figure and the shadow
     %
     set(h.robot,'xdata', x, 'ydata', y, 'zdata', z);
-    if isfield(h, 'shadow'),
+    if isfield(h, 'shadow')
         set(h.shadow,'xdata', xs, 'ydata', ys, 'zdata', zs);
     end
     
@@ -489,10 +492,10 @@ function animate(robot, q, opt)
     %
     % display the joints as cylinders with rotation axes
     %
-    if isfield(h, 'joint'),
+    if isfield(h, 'joint')
         xyz_line = [0 0; 0 0; -2*mag 2*mag; 1 1];
 
-        for j=1:n,
+        for j=1:n
             % get coordinate data from the cylinder
             xyz = get(h.joint(j), 'UserData');
             xyz = Tn(:,:,j) * xyz;
@@ -517,7 +520,7 @@ function animate(robot, q, opt)
     %
     % display the wrist axes and labels
     %
-    if isfield(h, 'x'),
+    if isfield(h, 'x')
         %
         % compute the wrist axes, based on final link transformation
         % plus the tool transformation.
