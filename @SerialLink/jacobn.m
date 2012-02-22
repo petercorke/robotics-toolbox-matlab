@@ -52,12 +52,12 @@ function J = jacobn(robot, q, varargin)
 
 	J = [];
 	U = robot.tool;
-	for j=n:-1:1,
-		if robot.mdh == 0,
+	for j=n:-1:1
+		if robot.mdh == 0
 			% standard DH convention
 			U = L(j).A(q(j)) * U;
 		end
-		if L(j).RP == 'R',
+		if L(j).RP == 'R'
 			% revolute axis
 			d = [	-U(1,1)*U(2,4)+U(2,1)*U(1,4)
 				-U(1,2)*U(2,4)+U(2,2)*U(1,4)
@@ -70,7 +70,7 @@ function J = jacobn(robot, q, varargin)
 		end
 		J = [[d; delta] J];
 
-		if robot.mdh ~= 0,
+		if robot.mdh ~= 0
 			% modified DH convention
 			U = L(j).A(q(j)) * U;
 		end

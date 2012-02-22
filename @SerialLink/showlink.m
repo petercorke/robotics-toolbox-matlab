@@ -28,7 +28,7 @@
 
 function showlink(r)
 
-	for i=1:r.n,
+	for i=1:r.n
 		fprintf('Link %d------------------------\n', i);
 		r.links(i).dyn();
 	end

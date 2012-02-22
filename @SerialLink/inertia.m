@@ -48,12 +48,12 @@ function M = inertia(robot, q)
 
 	n = robot.n;
 
-	if numel(q) == robot.n,
+	if numel(q) == robot.n
 		q = q(:)';
 	end
 
 	M = zeros(n,n,0);
-	for Q = q',
+	for Q = q'
 		m = rne(robot, ones(n,1)*Q', zeros(n,n), eye(n), [0;0;0]);
 		M = cat(3, M, m);
 	end

@@ -37,7 +37,7 @@ function  r2 = nofriction(r, varargin)
 
 	r2 = SerialLink(r); % make a copy
 
-	for j=1:r2.n,
+	for j=1:r2.n
 		r2.links(j) = r.links(j).nofriction(varargin{:});
 	end
 

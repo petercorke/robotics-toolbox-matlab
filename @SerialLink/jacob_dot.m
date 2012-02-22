@@ -38,7 +38,7 @@ function Jdot = jacob_dot(robot, q, qd)
     Tj = robot.base;     % this is cumulative transform from base
     w = [0;0;0];
     v = [0;0;0];
-    for j=1:n,
+    for j=1:n
         link = robot.links(j);
         Aj = link.A(q(j));
         Tj = Tj * Aj;
@@ -46,7 +46,7 @@ function Jdot = jacob_dot(robot, q, qd)
         T{j} = t2r(Tj);
         p(:,j) = transl(Tj);    % origin of link j
 
-        if j>1,
+        if j>1
             z(:,j) = T{j-1} * [0 0 1]'; % in world frame
             w = R{j}*( w + z(:,j) * qd(j));
             v = v + cross(R{j}*w, R{j-1}*p(:,j));
@@ -67,15 +67,15 @@ function Jdot = jacob_dot(robot, q, qd)
 
     J = [];
     Jdot = [];
-    for j=1:n,
-        if j>1,
+    for j=1:n
+        if j>1
             t = p(:,n) - p(:,j-1);
             td = vel(:,n) - vel(:,j-1);
         else
             t = p(:,n);
             td = vel(:,n);
         end
-        if L{j}.RP == 'R',
+        if L{j}.RP == 'R'
             J_col = [cross(z(:,j), t); z(:,j)];
             Jdot_col = [cross(cross(omega(:,j), z(:,j)), t) + cross(z(:,j), td) ; cross(omega(:,j),  z(:,j))];
         else

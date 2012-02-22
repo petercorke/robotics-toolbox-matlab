@@ -38,7 +38,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
     n = robot.n;
 
     % check that robot object has dynamic parameters for each link
-	for j=1:n,
+	for j=1:n
         link = robot.links(j);
         if isempty(link.r) || isempty(link.I) || isempty(link.m)
             error('dynamic parameters (m, r, I) not set in link %d', j);
@@ -51,7 +51,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
 	%	2 display print R and p*
 	debug = 0;
 
-	if numcols(a1) == 3*n,
+	if numcols(a1) == 3*n
 		Q = a1(:,1:n);
 		Qd = a1(:,n+1:2*n);
 		Qdd = a1(:,2*n+1:3*n);
@@ -59,7 +59,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
 		if nargin >= 3,	
 			grav = a2(:);
 		end
-		if nargin == 4,
+		if nargin == 4
 			fext = a3;
 		end
 	else
@@ -68,20 +68,20 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
 		Qd = a2;
 		Qdd = a3;
 		if numcols(a1) ~= n | numcols(Qd) ~= n | numcols(Qdd) ~= n | ...
-			numrows(Qd) ~= np | numrows(Qdd) ~= np,
+			numrows(Qd) ~= np | numrows(Qdd) ~= np
 			error('bad data');
 		end
 		if nargin >= 5,	
 			grav = a4(:);
 		end
-		if nargin == 6,
+		if nargin == 6
 			fext = a5;
 		end
 	end
 	
 	tau = zeros(np,n);
 
-	for p=1:np,
+	for p=1:np
 		q = Q(p,:)';
 		qd = Qd(p,:)';
 		qdd = Qdd(p,:)';
@@ -98,23 +98,23 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
 	%
 	% init some variables, compute the link rotation matrices
 	%
-		for j=1:n,
+		for j=1:n
 			link = robot.links(j);
 			Tj = link.A(q(j));
-			if link.RP == 'R',
+			if link.RP == 'R'
 				d = link.d;
 			else
 				d = q(j);
 			end
 			alpha = link.alpha;
 			pstar = [link.a; d*sin(alpha); d*cos(alpha)];
-			if j == 1,
+			if j == 1
 				pstar = t2r(robot.base) * pstar;
 				Tj = robot.base * Tj;
 			end
 			pstarm(:,j) = pstar;
 			Rm{j} = t2r(Tj);
-			if debug>1,
+			if debug>1
 				Rm{j}
 				Pstarm(:,j)'
 			end
@@ -123,7 +123,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
 	%
 	%  the forward recursion
 	%
-		for j=1:n,
+		for j=1:n
 			link = robot.links(j);
 
 			Rt = Rm{j}';	% transpose!!
@@ -133,7 +133,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
 			%
 			% statement order is important here
 			%
-			if link.RP == 'R',
+			if link.RP == 'R'
 				% revolute axis
 				wd = Rt*(wd + z0*qdd(j) + ...
 					cross(w,z0*qd(j)));
@@ -160,7 +160,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
 			Fm = [Fm F];
 			Nm = [Nm N];
 
-			if debug,
+			if debug
 				fprintf('w: '); fprintf('%.3f ', w)
 				fprintf('\nwd: '); fprintf('%.3f ', wd)
 				fprintf('\nvd: '); fprintf('%.3f ', vd)
@@ -177,7 +177,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
 		f = fext(1:3);		% force/moments on end of arm
 		nn = fext(4:6);
 
-		for j=n:-1:1,
+		for j=n:-1:1
 			link = robot.links(j);
 			pstar = pstarm(:,j);
 			
@@ -185,7 +185,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
 			% order of these statements is important, since both
 			% nn and f are functions of previous f.
 			%
-			if j == n,
+			if j == n
 				R = eye(3,3);
 			else
 				R = Rm{j+1};
@@ -195,14 +195,14 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
 				cross(pstar+r',Fm(:,j)) + ...
 				Nm(:,j);
 			f = R*f + Fm(:,j);
-			if debug,
+			if debug
 				fprintf('f: '); fprintf('%.3f ', f)
 				fprintf('\nn: '); fprintf('%.3f ', nn)
 				fprintf('\n');
 			end
 
 			R = Rm{j};
-			if link.RP == 'R',
+			if link.RP == 'R'
 				% revolute
 				tau(p,j) = nn'*(R'*z0) + ...
 					link.G^2 * link.Jm*qdd(j) - ...

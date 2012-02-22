@@ -32,12 +32,12 @@
 
 function  r2 = perturb(r, p)
 
-	if nargin == 1,
+	if nargin == 1
 		p = 0.1;	% 10 percent disturb by default
 	end
 
 
-	for i=1:r.n,
+	for i=1:r.n
 		l2{i} = r.link{i};
 		s = (2*rand-1)*p + 1;
 		l2{i}.m = l2{i}.m * s;

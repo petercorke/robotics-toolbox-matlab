@@ -131,9 +131,9 @@ function retval = plot(robot, tg, varargin)
     % return joint coordinates from a graphical robot of given name
     %
     %TODO should be robot.get_q()
-    if nargin == 1,
+    if nargin == 1
         rh = findobj('Tag', robot.name);
-        if ~isempty(rh),
+        if ~isempty(rh)
             r = get(rh(1), 'UserData');
             retval = r.q;
         end
@@ -155,7 +155,7 @@ function retval = plot(robot, tg, varargin)
     np = numrows(tg);
     n = robot.n;
 
-    if numcols(tg) ~= n,
+    if numcols(tg) ~= n
         error('Insufficient columns in q')
     end
 
@@ -204,7 +204,7 @@ function retval = plot(robot, tg, varargin)
         rh = h.robot;
     end
     
-    if opt.raise,
+    if opt.raise
         figure(gcf);
     end
 

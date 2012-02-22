@@ -40,7 +40,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 	debug = 0;
 
 	n = robot.n;
-	if numcols(a1) == 3*n,
+	if numcols(a1) == 3*n
 		Q = a1(:,1:n);
 		Qd = a1(:,n+1:2*n);
 		Qdd = a1(:,2*n+1:3*n);
@@ -48,7 +48,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 		if nargin >= 3,	
 			grav = a2(:);
 		end
-		if nargin == 4,
+		if nargin == 4
 			fext = a3;
 		end
 	else
@@ -57,20 +57,20 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 		Qd = a2;
 		Qdd = a3;
 		if numcols(a1) ~= n | numcols(Qd) ~= n | numcols(Qdd) ~= n | ...
-			numrows(Qd) ~= np | numrows(Qdd) ~= np,
+			numrows(Qd) ~= np | numrows(Qdd) ~= np
 			error('bad data');
 		end
 		if nargin >= 5,	
 			grav = a4(:);
 		end
-		if nargin == 6,
+		if nargin == 6
 			fext = a5;
 		end
 	end
 	
 	tau = zeros(np,n);
 
-	for p=1:np,
+	for p=1:np
 		q = Q(p,:)';
 		qd = Qd(p,:)';
 		qdd = Qdd(p,:)';
@@ -87,23 +87,23 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 	%
 	% init some variables, compute the link rotation matrices
 	%
-		for j=1:n,
+		for j=1:n
 			link = robot.link{j};
 			Tj = link(q(j));
-			if link.RP == 'R',
+			if link.RP == 'R'
 				D = link.D;
 			else
 				D = q(j);
 			end
 			alpha = link.alpha;
 			pm = [link.A; -D*sin(alpha); D*cos(alpha)];	% (i-1) P i
-			if j == 1,
+			if j == 1
 				pm = t2r(robot.base) * pm;
 				Tj = robot.base * Tj;
 			end
 			Pm(:,j) = pm;
 			Rm{j} = t2r(Tj);
-			if debug>1,
+			if debug>1
 				Rm{j}
 				Pm(:,j)'
 			end
@@ -112,7 +112,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 	%
 	%  the forward recursion
 	%
-		for j=1:n,
+		for j=1:n
 			link = robot.link{j};
 
 			R = Rm{j}';	% transpose!!
@@ -122,7 +122,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 			%
 			% trailing underscore means new value
 			%
-			if link.RP == 'R',
+			if link.RP == 'R'
 				% revolute axis
 				w_ = R*w + z0*qd(j);
 				wd_ = R*wd + cross(R*w,z0*qd(j)) + z0*qdd(j);
@@ -150,7 +150,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 			N = link.I*wd + cross(w,link.I*w);
 			Fm = [Fm F];
 			Nm = [Nm N];
-			if debug,
+			if debug
 				fprintf('w: '); fprintf('%.3f ', w)
 				fprintf('\nwd: '); fprintf('%.3f ', wd)
 				fprintf('\nvd: '); fprintf('%.3f ', vd)
@@ -167,7 +167,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 		f = fext(1:3);		% force/moments on end of arm
 		nn = fext(4:6);
 
-		for j=n:-1:1,
+		for j=n:-1:1
 			
 			%
 			% order of these statements is important, since both
@@ -175,7 +175,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 			%
 			link = robot.link{j};
 			
-			if j == n,
+			if j == n
 				R = eye(3,3);
 				P = [0;0;0];
 			else
@@ -191,12 +191,12 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 			f = f_;
 			nn = nn_;
 
-			if debug,
+			if debug
 				fprintf('f: '); fprintf('%.3f ', f)
 				fprintf('\nn: '); fprintf('%.3f ', nn)
 				fprintf('\n');
 			end
-			if link.RP == 'R',
+			if link.RP == 'R'
 				% revolute
 				tau(p,j) = nn'*z0 + ...
 					link.G^2 * link.Jm*qdd(j) - ...

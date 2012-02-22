@@ -60,7 +60,7 @@
 
 
 function [tau,f] = rne(robot, varargin)
-	if robot.mdh == 0,
+	if robot.mdh == 0
 		[tau,f] = rne_dh(robot, varargin{:});
 	else
 		tau = rne_mdh(robot, varargin{:});

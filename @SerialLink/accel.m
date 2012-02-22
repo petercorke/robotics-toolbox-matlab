@@ -71,7 +71,7 @@ function qdd = accel(robot, Q, qd, torque)
 	else
         % accel(Q, qd, torque)
 		q = Q;
-		if length(q) == robot.n,
+		if length(q) == robot.n
 			q = q(:);
 			qd = qd(:);
 		end

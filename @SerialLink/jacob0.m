@@ -66,14 +66,14 @@ function J0 = jacob0(robot, q, varargin)
     if opt.rpy
         rpy = tr2rpy( fkine(robot, q) );
         B = rpy2jac(rpy);
-        if rcond(B) < eps,
+        if rcond(B) < eps
             error('Representational singularity');
         end
         J0 = blkdiag( eye(3,3), inv(B) ) * J0;
     elseif opt.eul
         eul = tr2eul( fkine(robot, q) );
         B = eul2jac(eul);
-        if rcond(B) < eps,
+        if rcond(B) < eps
             error('Representational singularity');
         end
         J0 = blkdiag( eye(3,3), inv(B) ) * J0;
