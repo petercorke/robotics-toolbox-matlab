@@ -112,7 +112,7 @@ classdef Bug2 < Navigation
             if bug.step == 1
                 % Step 1.  Move along the M-line toward the goal
 
-                if norm2(bug.goal - robot) == 0 % are we there yet?
+                if colnorm(bug.goal - robot) == 0 % are we there yet?
                     return
                 end
 
@@ -137,7 +137,7 @@ classdef Bug2 < Navigation
             if bug.step == 2
                 % Step 2.  Move around the obstacle until we reach a point
                 % on the M-line closer than when we started.
-                if norm2(bug.goal-robot) == 0 % are we there yet?
+                if colnorm(bug.goal-robot) == 0 % are we there yet?
                     return
                 end
 
@@ -154,7 +154,7 @@ classdef Bug2 < Navigation
                 if abs( [robot' 1]*bug.mline') <= 0.5
                     bug.message('(%d,%d) moving along the M-line', n);
                     % are closer than when we encountered the obstacle?
-                    if norm2(robot-bug.goal) < norm2(bug.H(bug.j,:)'-bug.goal)
+                    if colnorm(robot-bug.goal) < colnorm(bug.H(bug.j,:)'-bug.goal)
                         % back to moving along the M-line
                         bug.j = bug.j + 1;
                         bug.step = 1;

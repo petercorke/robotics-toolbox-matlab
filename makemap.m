@@ -96,7 +96,7 @@ function world = makemap(Nw)
                     drawnow
                     hold off
 
-                    r = round(norm2(point1-point2));
+                    r = round(colnorm(point1-point2));
                     c = kcircle(r);
 
                     world_prev = world;

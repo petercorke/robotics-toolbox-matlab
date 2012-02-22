@@ -148,7 +148,7 @@ classdef RandomPath < handle
             steer = d_heading;
 
             % if nearly at goal point, choose the next one
-            d = norm2(driver.veh.x(1:2) - driver.goal);
+            d = colnorm(driver.veh.x(1:2) - driver.goal);
             if d < driver.closeenough
                 driver.setgoal();
             elseif d > driver.d_prev

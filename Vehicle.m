@@ -192,7 +192,7 @@ classdef Vehicle < handle
             veh.x(1) = veh.x(1) + u(1)*veh.T*cos(veh.x(3));
             veh.x(2) = veh.x(2) + u(1)*veh.T*sin(veh.x(3));
             veh.x(3) = veh.x(3) + u(1)*veh.T/veh.L * u(2);
-            odo = [norm2(veh.x(1:2)-xp(1:2)) veh.x(3)-xp(3)];
+            odo = [colnorm(veh.x(1:2)-xp(1:2)) veh.x(3)-xp(3)];
             veh.odometry = odo;
 
             veh.x_hist = [veh.x_hist; veh.x'];   % maintain history
@@ -258,7 +258,7 @@ classdef Vehicle < handle
 
         function odo = gstep(veh, varargin)
             odo = veh.step(varargin{:});
-            veh.showrobot();
+            veh.plot();
             drawnow
         end
 
@@ -313,7 +313,11 @@ classdef Vehicle < handle
             end
             veh.visualize();
             for i=1:nsteps
+                if nargout > 0
                 veh.step();
+                else
+                    veh.gstep();
+                end
             end
             p = veh.x_hist;
         end
@@ -414,5 +418,11 @@ classdef Vehicle < handle
         end
 
     end % method
+
+    methods(Static)
+        function plot_vehicle(x,y,th)
+            disp('static plot method');
+        end
+    end
 
 end % classdef
