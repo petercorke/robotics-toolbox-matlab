@@ -103,9 +103,9 @@ function xd = fdyn2(t, x, robot, torqfun, varargin)
 	if isa(torqfun, 'function_handle')
 		tau = torqfun(robot, t, q, qd, varargin{:});
 	else
-		tau = zeros(n,1);
+		tau = zeros(1,n);
 	end
 	
-	qdd = accel(robot, x(1:n,1), x(n+1:2*n,1), tau);
+	qdd = robot.accel(x(1:n,1)', x(n+1:2*n,1)', tau);
 	xd = [x(n+1:2*n,1); qdd];
 end
