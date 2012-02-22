@@ -3,16 +3,26 @@
 % TRPLOT(T, OPTIONS) draws a 3D coordinate frame represented by the homogeneous 
 % transform T (4x4).
 %
+% H = TRPLOT(T, OPTIONS) as above but returns a handle.
+%
+% TRPLOT(H, T) moves the coordinate frame described by the handle H to
+% the pose T (4x4).
+%
 % TRPLOT(R, OPTIONS) draws a 3D coordinate frame represented by the orthonormal
 % rotation matrix R (3x3).
 %
+% H = TRPLOT(R, OPTIONS) as above but returns a handle.
+%
+% TRPLOT(H, R) moves the coordinate frame described by the handle H to
+% the orientation R.
+%
 % Options::
-% 'color', c         The color to draw the axes, MATLAB colorspec
+% 'color',C          The color to draw the axes, MATLAB colorspec C
 % 'noaxes'           Don't display axes on the plot
-% 'axis',A           Set dimensions of the MATLAB axes to A=[xmin xmax ymin ymax]
+% 'axis',A           Set dimensions of the MATLAB axes to A=[xmin xmax ymin ymax zmin zmax]
 % 'frame',F          The frame is named {F} and the subscript on the axis labels is F.
-% 'text_opts', opt   A cell array of Matlab text properties
-% 'handle', h        Draw in the MATLAB axes specified by h
+% 'text_opts', opt   A cell array of MATLAB text properties
+% 'handle',H         Draw in the MATLAB axes specified by the axis handle H
 % 'view',V           Set plot view parameters V=[az el] angles, or 'auto' 
 %                    for view toward origin of coordinate frame
 % 'arrow'            Use arrows rather than line segments for the axes
@@ -24,8 +34,13 @@
 %       trplot(T, 'frame', 'A', 'color', 'b')
 %       trplot(T1, 'frame', 'A', 'text_opts', {'FontSize', 10, 'FontWeight', 'bold'})
 %
+%       h = trplot(T, 'frame', 'A', 'color', 'b');
+%       trplot(h, T2);
+%
 % Notes::
 % - The arrow option requires the third party package arrow3.
+% - The handle H is an hgtransform object.
+% - When using the form TRPLOT(H, ...) the axes are not rescaled.
 %
 % See also TRPLOT2, TRANIMATE.
 
@@ -53,6 +68,23 @@
 
 function hout = trplot(T, varargin)
 
+    if isscalar(T) && ishandle(T)
+        % trplot(H, T)
+        H = T; T = varargin{1};
+        if isrot(T)
+            T = r2t(T);
+        end
+        set(H, 'Matrix', T);
+        return;
+    end
+
+    if size(T,3) > 1
+        error('trplot cannot operate on a sequence');
+    end
+    if ~ishomog(T) && ~isrot(T)
+        error('trplot operates only on transform (4x4) or rotation matrix (3x3)');
+    end
+    
     opt.color = 'b';
     opt.axes = true;
     opt.axis = [];
@@ -68,12 +100,20 @@ function hout = trplot(T, varargin)
     if isempty(opt.text_opts)
         opt.text_opts = {};
     end
+    
     if isempty(opt.axis)
-        if all(size(T) == [3 3]) || norm(transl(T)) < eps
-            c = transl(T);
-            d = 1.2;
-            opt.axis = [c(1)-d c(1)+d c(2)-d c(2)+d c(3)-d c(3)+d];
+        % determine some default axis dimensions
+        
+        % get the origin of the frame
+        if isrot(T)
+            c = [0 0 0];  % at zero for a rotation matrix
+        else
+            c = transl(T);    
         end
+        
+        d = 1.2;
+        opt.axis = [c(1)-d c(1)+d c(2)-d c(2)+d c(3)-d c(3)+d];
+        
     end
     
     % TODO: should do the 2D case as well
@@ -81,7 +121,6 @@ function hout = trplot(T, varargin)
     if ~isempty(opt.handle)
         hax = opt.handle;
         hold(hax);
-        hax
     else
         ih = ishold;
         if ~ih
@@ -99,10 +138,6 @@ function hout = trplot(T, varargin)
                 rotate3d on
             end
             new_plot = true;
-        else
-            %set(gca, 'XLimMode', 'auto');
-            %set(gca, 'YLimMode', 'auto');
-            %set(gca, 'ZLimMode', 'auto');
         end
         hax = gca;
         hold on
@@ -110,30 +145,23 @@ function hout = trplot(T, varargin)
 
     opt.text_opts = {opt.text_opts{:}, 'Color', opt.color};
 
+    hg = hgtransform('Parent', hax);
 
     % trplot( Q.R, fmt, color);
-    if size(T) == [3 3]
+    if isrot(T)
         T = r2t(T);
     end
 
-
     % create unit vectors
-    o =  homtrans(T, [0 0 0]');
-    x1 = homtrans(T, [1 0 0]');
-    y1 = homtrans(T, [0 1 0]');
-    z1 = homtrans(T, [0 0 1]');
-
+    o =  [0 0 0]';
+    x1 = [1 0 0]';
+    y1 = [0 1 0]';
+    z1 = [0 0 1]';
     
     % draw the axes
     
     mstart = [o o o]';
     mend = [x1 y1 z1]';
-    
-    if isempty(opt.handle)
-        hg = hgtransform;
-    else
-        hg = hax;
-    end
 
     if opt.arrow
         % draw the 3 arrows
@@ -145,19 +173,13 @@ function hout = trplot(T, varargin)
     else
         for i=1:3
             h = plot2([mstart(i,1:3); mend(i,1:3)], 'Color', opt.color, 'Parent', hg);
-
         end
     end
+    
     % label the axes
     if isempty(opt.frame)
         fmt = '%c';
     else
-%             if opt.axlabel(1) == '$'
-%                 fmt = axlabel;
-%                 opt.text_opts = {opt.text_opts{:}, 'Interpreter', 'latex'};
-%             else
-%                 fmt = sprintf('%%c%s', axlabel);
-%             end
         fmt = sprintf('%%c_{%s}', opt.frame);
     end
     
@@ -165,10 +187,8 @@ function hout = trplot(T, varargin)
     h = text(x1(1), x1(2), x1(3), sprintf(fmt, 'X'), 'Parent', hg);
     set(h, opt.text_opts{:});
    
-
     h = text(y1(1), y1(2), y1(3), sprintf(fmt, 'Y'), 'Parent', hg);
     set(h, opt.text_opts{:});
-    
 
     h = text(z1(1), z1(2), z1(3), sprintf(fmt, 'Z'), 'Parent', hg);
     set(h, opt.text_opts{:});
@@ -176,7 +196,7 @@ function hout = trplot(T, varargin)
     % label the frame
     if ~isempty(opt.frame)
         h = text(o(1)-0.04*x1(1), o(2)-0.04*y1(2), o(3)-0.04*z1(3), ...
-            ['\{' opt.frame '\}'], 'Parent', hax);
+            ['\{' opt.frame '\}'], 'Parent', hg);
         set(h, 'VerticalAlignment', 'middle', ...
             'HorizontalAlignment', 'center', opt.text_opts{:});
     end
@@ -195,6 +215,10 @@ function hout = trplot(T, varargin)
         hold off
     end
     
+    % now place the frame in the desired pose
+    set(hg, 'Matrix', T);
+
+    % optionally return the handle, for later modification of pose
     if nargout > 0
         hout = hg;
     end

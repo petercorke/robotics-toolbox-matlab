@@ -1,7 +1,12 @@
 %TRPLOT2 Plot a planar transformation
 %
-% TRPLOT2(T, options) draws a 2D coordinate frame represented by the homogeneous 
-% transform T (3x3).
+% TRPLOT2(T, OPTIONS) draws a 2D coordinate frame represented by the SE(2)
+% homogeneous transform T (3x3).
+%
+% H = TRPLOT2(T, OPTIONS) as above but returns a handle.
+%
+% TRPLOT2(H, T) moves the coordinate frame described by the handle H to
+% the SE(2) pose T (3x3).
 %
 % Options::
 % 'axis',A           Set dimensions of the MATLAB axes to A=[xmin xmax ymin ymax]
@@ -53,6 +58,14 @@
 
 function hout = trplot2(T, varargin)
 
+    if isscalar(T) && ishandle(T)
+        % trplot(H, T)
+        H = T; T = varargin{1};
+        T
+        set(H, 'Matrix', se2t3(T));
+        return;
+    end
+
     opt.color = 'b';
     opt.axes = true;
     opt.axis = [];
@@ -79,7 +92,6 @@ function hout = trplot2(T, varargin)
     if ~isempty(opt.handle)
         hax = opt.handle;
         hold(hax);
-        hax
     else
         ih = ishold;
         if ~ih
@@ -88,32 +100,29 @@ function hout = trplot2(T, varargin)
             if ~isempty(opt.axis)
                 axis(opt.axis);
             end
-            axis equal
+            %axis equal
             
             if opt.axes
                 xlabel( 'X');
                 ylabel( 'Y');
             end
             new_plot = true;
-        else
-            %set(gca, 'XLimMode', 'auto');
-            %set(gca, 'YLimMode', 'auto');
         end
         hax = gca;
         hold on
     end
 
 	% create unit vectors
-	o =  T*[0 0 1]'; o = o(1:2);
-	x1 = T*[1 0 1]'; x1 = x1(1:2);
-	y1 = T*[0 1 1]'; y1 = y1(1:2);
+	o =  [0 0 1]'; o = o(1:2);
+	x1 = [1 0 1]'; x1 = x1(1:2);
+	y1 = [0 1 1]'; y1 = y1(1:2);
     
     % draw the axes
     
     mstart = [o o]';
     mend = [x1 y1]';
     
-    hg = hgtransform;
+    hg = hgtransform('Parent', hax);
     if opt.arrow
         % draw the 2 arrows
         S = [opt.color num2str(opt.width)];
@@ -123,7 +132,7 @@ function hout = trplot2(T, varargin)
         end
     else
         for i=1:2
-            plot2([mstart(i,1:2); mend(i,1:2)], 'Color', opt.color);
+            plot2([mstart(i,1:2); mend(i,1:2)], 'Color', opt.color, 'Parent', hg);
         end
     end
 
@@ -131,17 +140,11 @@ function hout = trplot2(T, varargin)
     if isempty(opt.frame)
         fmt = '%c';
     else
-%             if opt.axlabel(1) == '$'
-%                 fmt = axlabel;
-%                 opt.text_opts = {opt.text_opts{:}, 'Interpreter', 'latex'};
-%             else
-%                 fmt = sprintf('%%c%s', axlabel);
-%             end
         fmt = sprintf('%%c_{%s}', opt.frame);
     end
     
     % add the labels to each axis
-	h = text(x1(1), x1(2), sprintf(fmt, 'X'));
+	h = text(x1(1), x1(2), sprintf(fmt, 'X'), 'Parent', hg);
     if ~isempty(opt.text_opts)
         set(h, opt.text_opts{:});
     end
@@ -149,7 +152,7 @@ function hout = trplot2(T, varargin)
         set(h, 'Parent', hg);
     end
 
-	h = text(y1(1), y1(2), sprintf(fmt, 'Y'));
+	h = text(y1(1), y1(2), sprintf(fmt, 'Y'), 'Parent', hg);
     if ~isempty(opt.text_opts)
         set(h, opt.text_opts{:});
     end
@@ -160,7 +163,7 @@ function hout = trplot2(T, varargin)
     % label the frame
     if ~isempty(opt.frame)
         h = text(o(1)-0.04*x1(1), o(2)-0.04*y1(2), ...
-            ['\{' opt.frame '\}']);
+            ['\{' opt.frame '\}'], 'Parent', hg);
         set(h, 'VerticalAlignment', 'middle', ...
             'HorizontalAlignment', 'center', opt.text_opts{:});
     end
@@ -173,6 +176,14 @@ function hout = trplot2(T, varargin)
 		hold off
     end
     
+    % now place the frame in the desired pose
+    set(hg, 'Matrix', se2t3(T));
+
     if nargout > 0
         hout = hg;
     end
+end
+
+function T3 = se2t3(T2)
+    T3 = [T2(1:2,1:2) zeros(2,1) T2(1:2,3); 0 0 1 0; 0 0 0 1];
+end
