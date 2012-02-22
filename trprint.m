@@ -1,8 +1,10 @@
 %TRPRINT Compact display of homogeneous transformation
 %
-% TRPRINT(T, options) displays the homogoneous transform in a compact 
+% TRPRINT(T, OPTIONS) displays the homogoneous transform in a compact 
 % single-line format.  If T is a homogeneous transform sequence then each 
 % element is printed on a separate line.
+%
+% S = TRPRINT(T, OPTIONS) as above but returns the string.
 %
 % TRPRINT T  is the command line form of above, and displays in RPY format.
 %
