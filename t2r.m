@@ -35,10 +35,10 @@ function R = t2r(T)
     % check dimensions: T is SE(2) or SE(3)
     d = size(T);
     if d(1) ~= d(2)
-        error('matrix must be square');
+        error('RTB:t2r:badarg', 'matrix must be square');
     end
     if ~any(d(1) == [3 4])
-        error('argument is not a homogeneous transform (sequence)');
+        error('RTB:t2r:badarg', 'argument is not a homogeneous transform (sequence)');
     end
     
     n = d(1);     % works for SE(2) or SE(3)

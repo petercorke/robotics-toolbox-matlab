@@ -26,7 +26,7 @@
 function u = unit(v)
     n = norm(v, 'fro');
     if n < eps
-        error('vector has zero norm');
+        error('RTB:unit:zero_norm', 'vector has zero norm');
     end
 
 	u = v / n;
