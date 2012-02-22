@@ -1,5 +1,5 @@
 Library {
-  Name			  "robolocks"
+  Name			  "roblocks"
   Version		  7.6
   MdlSubVersion		  0
   SavedCharacterEncoding  "windows-1252"
@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "n6334687"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Feb 06 15:15:57 2012"
-  RTWModifiedTimeStamp	  250442017
-  ModelVersionFormat	  "1.%<AutoIncrement:28>"
+  LastModifiedDate	  "Wed Feb 22 13:58:31 2012"
+  RTWModifiedTimeStamp	  251819485
+  ModelVersionFormat	  "1.%<AutoIncrement:31>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -821,7 +821,7 @@ Library {
     }
   }
   System {
-    Name		    "robolocks"
+    Name		    "roblocks"
     Location		    [1037, 325, 1323, 747]
     Open		    on
     ModelBrowserVisibility  off
@@ -3066,321 +3066,6 @@ Library {
     }
     Block {
       BlockType		      SubSystem
-      Name		      "Subsystem"
-      SID		      "35"
-      Ports		      []
-      Position		      [15, 199, 115, 241]
-      BackgroundColor	      "darkGreen"
-      ShowName		      off
-      LibraryVersion	      "1.225"
-      MinAlgLoopOccurrences   off
-      PropExecContextOutsideSubsystem off
-      RTWSystemCode	      "Auto"
-      FunctionWithSeparateData off
-      Opaque		      off
-      RequestExecContextInheritance off
-      MaskHideContents	      off
-      MaskDisplay	      "color('darkBlue')\ndisp('Transform')"
-      MaskIconFrame	      on
-      MaskIconOpaque	      on
-      MaskIconRotate	      "none"
-      MaskPortRotate	      "default"
-      MaskIconUnits	      "autoscale"
-      System {
-	Name			"Subsystem"
-	Location		[433, 403, 931, 703]
-	Open			off
-	ModelBrowserVisibility	off
-	ModelBrowserWidth	200
-	ScreenColor		"white"
-	PaperOrientation	"landscape"
-	PaperPositionMode	"auto"
-	PaperType		"A4"
-	PaperUnits		"centimeters"
-	TiledPaperMargins	[1.270000, 1.270000, 1.270000, 1.270000]
-	TiledPageScale		1
-	ShowPageBoundaries	off
-	ZoomFactor		"100"
-	Block {
-	  BlockType		  SubSystem
-	  Name			  "Inverse"
-	  SID			  "67"
-	  Ports			  [1, 1]
-	  Position		  [180, 50, 220, 110]
-	  AncestorBlock		  "roblocks_old/Inverse"
-	  LibraryVersion	  "1.61"
-	  MinAlgLoopOccurrences	  off
-	  PropExecContextOutsideSubsystem off
-	  RTWSystemCode		  "Auto"
-	  FunctionWithSeparateData off
-	  Opaque		  off
-	  RequestExecContextInheritance	off
-	  MaskHideContents	  off
-	  System {
-	    Name		    "Inverse"
-	    Location		    [1250, 564, 1470, 646]
-	    Open		    off
-	    ModelBrowserVisibility  off
-	    ModelBrowserWidth	    200
-	    ScreenColor		    "white"
-	    PaperOrientation	    "landscape"
-	    PaperPositionMode	    "auto"
-	    PaperType		    "A4"
-	    PaperUnits		    "centimeters"
-	    TiledPaperMargins	    [1.270000, 1.270000, 1.270000, 1.270000]
-	    TiledPageScale	    1
-	    ShowPageBoundaries	    off
-	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
-	    SIDPrevWatermark	    "225"
-	    Block {
-	      BlockType		      Inport
-	      Name		      "T"
-	      SID		      "67:219"
-	      Position		      [25, 33, 55, 47]
-	      IconDisplay	      "Port number"
-	    }
-	    Block {
-	      BlockType		      MATLABFcn
-	      Name		      "MATLAB Fcn"
-	      SID		      "67:217"
-	      Ports		      [1, 1]
-	      Position		      [80, 25, 140, 55]
-	      MATLABFcn		      "inv(u)"
-	      OutputDimensions	      "[4,4]"
-	      Output1D		      off
-	    }
-	    Block {
-	      BlockType		      Outport
-	      Name		      "invT"
-	      SID		      "67:220"
-	      Position		      [165, 33, 195, 47]
-	      IconDisplay	      "Port number"
-	    }
-	    Line {
-	      SrcBlock		      "MATLAB Fcn"
-	      SrcPort		      1
-	      DstBlock		      "invT"
-	      DstPort		      1
-	    }
-	    Line {
-	      SrcBlock		      "T"
-	      SrcPort		      1
-	      DstBlock		      "MATLAB Fcn"
-	      DstPort		      1
-	    }
-	  }
-	}
-	Block {
-	  BlockType		  SubSystem
-	  Name			  "Post multiply"
-	  SID			  "68"
-	  Ports			  [1, 1]
-	  Position		  [105, 50, 145, 110]
-	  AncestorBlock		  "roblocks_old/Post multiply"
-	  LibraryVersion	  "1.61"
-	  MinAlgLoopOccurrences	  off
-	  PropExecContextOutsideSubsystem off
-	  RTWSystemCode		  "Auto"
-	  FunctionWithSeparateData off
-	  Opaque		  off
-	  RequestExecContextInheritance	off
-	  MaskHideContents	  off
-	  MaskDescription	  "Premultiply incoming transform by a constant transformation"
-	  MaskPromptString	  "T2"
-	  MaskStyleString	  "edit"
-	  MaskVariables		  "T2=@1;"
-	  MaskTunableValueString  "on"
-	  MaskEnableString	  "on"
-	  MaskVisibilityString	  "on"
-	  MaskToolTipString	  "on"
-	  MaskIconFrame		  on
-	  MaskIconOpaque	  on
-	  MaskIconRotate	  "none"
-	  MaskPortRotate	  "default"
-	  MaskIconUnits		  "autoscale"
-	  MaskValueString	  "0"
-	  System {
-	    Name		    "Post multiply"
-	    Location		    [937, 422, 1233, 572]
-	    Open		    off
-	    ModelBrowserVisibility  off
-	    ModelBrowserWidth	    200
-	    ScreenColor		    "white"
-	    PaperOrientation	    "landscape"
-	    PaperPositionMode	    "auto"
-	    PaperType		    "A4"
-	    PaperUnits		    "centimeters"
-	    TiledPaperMargins	    [1.270000, 1.270000, 1.270000, 1.270000]
-	    TiledPageScale	    1
-	    ShowPageBoundaries	    off
-	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
-	    SIDPrevWatermark	    "225"
-	    Block {
-	      BlockType		      Inport
-	      Name		      "T1"
-	      SID		      "68:215"
-	      Position		      [25, 38, 55, 52]
-	      IconDisplay	      "Port number"
-	    }
-	    Block {
-	      BlockType		      Constant
-	      Name		      "Constant"
-	      SID		      "68:221"
-	      Position		      [25, 85, 55, 115]
-	      Value		      "T2"
-	    }
-	    Block {
-	      BlockType		      Product
-	      Name		      "Product"
-	      SID		      "68:212"
-	      Ports		      [2, 1]
-	      Position		      [85, 29, 115, 96]
-	      Multiplication	      "Matrix(*)"
-	      InputSameDT	      off
-	      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-	      SaturateOnIntegerOverflow	off
-	    }
-	    Block {
-	      BlockType		      Outport
-	      Name		      "T"
-	      SID		      "68:216"
-	      Position		      [160, 58, 190, 72]
-	      IconDisplay	      "Port number"
-	    }
-	    Line {
-	      SrcBlock		      "T1"
-	      SrcPort		      1
-	      DstBlock		      "Product"
-	      DstPort		      1
-	    }
-	    Line {
-	      SrcBlock		      "Constant"
-	      SrcPort		      1
-	      Points		      [0, -20]
-	      DstBlock		      "Product"
-	      DstPort		      2
-	    }
-	    Line {
-	      SrcBlock		      "Product"
-	      SrcPort		      1
-	      DstBlock		      "T"
-	      DstPort		      1
-	    }
-	  }
-	}
-	Block {
-	  BlockType		  SubSystem
-	  Name			  "Pre multiply"
-	  SID			  "69"
-	  Ports			  [1, 1]
-	  Position		  [30, 50, 70, 110]
-	  AncestorBlock		  "roblocks_old/Pre multiply"
-	  LibraryVersion	  "1.61"
-	  MinAlgLoopOccurrences	  off
-	  PropExecContextOutsideSubsystem off
-	  RTWSystemCode		  "Auto"
-	  FunctionWithSeparateData off
-	  Opaque		  off
-	  RequestExecContextInheritance	off
-	  MaskHideContents	  off
-	  MaskDescription	  "Post multiply incoming transform by constant transform."
-	  MaskPromptString	  "T1"
-	  MaskStyleString	  "edit"
-	  MaskVariables		  "T=@1;"
-	  MaskTunableValueString  "on"
-	  MaskEnableString	  "on"
-	  MaskVisibilityString	  "on"
-	  MaskToolTipString	  "on"
-	  MaskIconFrame		  on
-	  MaskIconOpaque	  on
-	  MaskIconRotate	  "none"
-	  MaskPortRotate	  "default"
-	  MaskIconUnits		  "autoscale"
-	  MaskValueString	  "0"
-	  System {
-	    Name		    "Pre multiply"
-	    Location		    [80, 131, 397, 314]
-	    Open		    off
-	    ModelBrowserVisibility  off
-	    ModelBrowserWidth	    200
-	    ScreenColor		    "white"
-	    PaperOrientation	    "landscape"
-	    PaperPositionMode	    "auto"
-	    PaperType		    "A4"
-	    PaperUnits		    "centimeters"
-	    TiledPaperMargins	    [1.270000, 1.270000, 1.270000, 1.270000]
-	    TiledPageScale	    1
-	    ShowPageBoundaries	    off
-	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
-	    SIDPrevWatermark	    "225"
-	    Block {
-	      BlockType		      Inport
-	      Name		      "T2"
-	      SID		      "69:208"
-	      Position		      [25, 83, 55, 97]
-	      IconDisplay	      "Port number"
-	    }
-	    Block {
-	      BlockType		      Constant
-	      Name		      "Constant"
-	      SID		      "69:202"
-	      Position		      [25, 30, 55, 60]
-	      Value		      "T"
-	      VectorParams1D	      off
-	    }
-	    Block {
-	      BlockType		      Product
-	      Name		      "Product"
-	      SID		      "69:203"
-	      Ports		      [2, 1]
-	      Position		      [85, 29, 115, 96]
-	      Multiplication	      "Matrix(*)"
-	      InputSameDT	      off
-	      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-	      SaturateOnIntegerOverflow	off
-	    }
-	    Block {
-	      BlockType		      Outport
-	      Name		      "T"
-	      SID		      "69:207"
-	      Position		      [160, 58, 190, 72]
-	      IconDisplay	      "Port number"
-	    }
-	    Line {
-	      SrcBlock		      "T2"
-	      SrcPort		      1
-	      Points		      [0, -10]
-	      DstBlock		      "Product"
-	      DstPort		      2
-	    }
-	    Line {
-	      SrcBlock		      "Product"
-	      SrcPort		      1
-	      DstBlock		      "T"
-	      DstPort		      1
-	    }
-	    Line {
-	      SrcBlock		      "Constant"
-	      SrcPort		      1
-	      DstBlock		      "Product"
-	      DstPort		      1
-	    }
-	  }
-	}
-	Annotation {
-	  Name			  "Transform"
-	  Position		  [42, 22]
-	  BackgroundColor	  "cyan"
-	  FontSize		  12
-	  FontWeight		  "bold"
-	}
-      }
-    }
-    Block {
-      BlockType		      SubSystem
       Name		      "Trajectory "
       SID		      "17"
       Ports		      []
@@ -4128,6 +3813,321 @@ Library {
 	}
 	Annotation {
 	  Name			  "Trajectory"
+	  Position		  [42, 22]
+	  BackgroundColor	  "cyan"
+	  FontSize		  12
+	  FontWeight		  "bold"
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Transform"
+      SID		      "35"
+      Ports		      []
+      Position		      [15, 199, 115, 241]
+      BackgroundColor	      "darkGreen"
+      ShowName		      off
+      LibraryVersion	      "1.225"
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      MaskDisplay	      "color('darkBlue')\ndisp('Transform')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskPortRotate	      "default"
+      MaskIconUnits	      "autoscale"
+      System {
+	Name			"Transform"
+	Location		[433, 403, 931, 703]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"A4"
+	PaperUnits		"centimeters"
+	TiledPaperMargins	[1.270000, 1.270000, 1.270000, 1.270000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "Inverse"
+	  SID			  "67"
+	  Ports			  [1, 1]
+	  Position		  [180, 50, 220, 110]
+	  AncestorBlock		  "roblocks_old/Inverse"
+	  LibraryVersion	  "1.61"
+	  MinAlgLoopOccurrences	  off
+	  PropExecContextOutsideSubsystem off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  Opaque		  off
+	  RequestExecContextInheritance	off
+	  MaskHideContents	  off
+	  System {
+	    Name		    "Inverse"
+	    Location		    [1250, 564, 1470, 646]
+	    Open		    off
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "A4"
+	    PaperUnits		    "centimeters"
+	    TiledPaperMargins	    [1.270000, 1.270000, 1.270000, 1.270000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    SIDHighWatermark	    "225"
+	    SIDPrevWatermark	    "225"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "T"
+	      SID		      "67:219"
+	      Position		      [25, 33, 55, 47]
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      MATLABFcn
+	      Name		      "MATLAB Fcn"
+	      SID		      "67:217"
+	      Ports		      [1, 1]
+	      Position		      [80, 25, 140, 55]
+	      MATLABFcn		      "inv(u)"
+	      OutputDimensions	      "[4,4]"
+	      Output1D		      off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "invT"
+	      SID		      "67:220"
+	      Position		      [165, 33, 195, 47]
+	      IconDisplay	      "Port number"
+	    }
+	    Line {
+	      SrcBlock		      "MATLAB Fcn"
+	      SrcPort		      1
+	      DstBlock		      "invT"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "T"
+	      SrcPort		      1
+	      DstBlock		      "MATLAB Fcn"
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "Post multiply"
+	  SID			  "68"
+	  Ports			  [1, 1]
+	  Position		  [105, 50, 145, 110]
+	  AncestorBlock		  "roblocks_old/Post multiply"
+	  LibraryVersion	  "1.61"
+	  MinAlgLoopOccurrences	  off
+	  PropExecContextOutsideSubsystem off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  Opaque		  off
+	  RequestExecContextInheritance	off
+	  MaskHideContents	  off
+	  MaskDescription	  "Premultiply incoming transform by a constant transformation"
+	  MaskPromptString	  "T2"
+	  MaskStyleString	  "edit"
+	  MaskVariables		  "T2=@1;"
+	  MaskTunableValueString  "on"
+	  MaskEnableString	  "on"
+	  MaskVisibilityString	  "on"
+	  MaskToolTipString	  "on"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
+	  MaskValueString	  "0"
+	  System {
+	    Name		    "Post multiply"
+	    Location		    [937, 422, 1233, 572]
+	    Open		    off
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "A4"
+	    PaperUnits		    "centimeters"
+	    TiledPaperMargins	    [1.270000, 1.270000, 1.270000, 1.270000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    SIDHighWatermark	    "225"
+	    SIDPrevWatermark	    "225"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "T1"
+	      SID		      "68:215"
+	      Position		      [25, 38, 55, 52]
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Constant
+	      Name		      "Constant"
+	      SID		      "68:221"
+	      Position		      [25, 85, 55, 115]
+	      Value		      "T2"
+	    }
+	    Block {
+	      BlockType		      Product
+	      Name		      "Product"
+	      SID		      "68:212"
+	      Ports		      [2, 1]
+	      Position		      [85, 29, 115, 96]
+	      Multiplication	      "Matrix(*)"
+	      InputSameDT	      off
+	      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+	      SaturateOnIntegerOverflow	off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "T"
+	      SID		      "68:216"
+	      Position		      [160, 58, 190, 72]
+	      IconDisplay	      "Port number"
+	    }
+	    Line {
+	      SrcBlock		      "T1"
+	      SrcPort		      1
+	      DstBlock		      "Product"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "Constant"
+	      SrcPort		      1
+	      Points		      [0, -20]
+	      DstBlock		      "Product"
+	      DstPort		      2
+	    }
+	    Line {
+	      SrcBlock		      "Product"
+	      SrcPort		      1
+	      DstBlock		      "T"
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "Pre multiply"
+	  SID			  "69"
+	  Ports			  [1, 1]
+	  Position		  [30, 50, 70, 110]
+	  AncestorBlock		  "roblocks_old/Pre multiply"
+	  LibraryVersion	  "1.61"
+	  MinAlgLoopOccurrences	  off
+	  PropExecContextOutsideSubsystem off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  Opaque		  off
+	  RequestExecContextInheritance	off
+	  MaskHideContents	  off
+	  MaskDescription	  "Post multiply incoming transform by constant transform."
+	  MaskPromptString	  "T1"
+	  MaskStyleString	  "edit"
+	  MaskVariables		  "T=@1;"
+	  MaskTunableValueString  "on"
+	  MaskEnableString	  "on"
+	  MaskVisibilityString	  "on"
+	  MaskToolTipString	  "on"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
+	  MaskValueString	  "0"
+	  System {
+	    Name		    "Pre multiply"
+	    Location		    [80, 131, 397, 314]
+	    Open		    off
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "A4"
+	    PaperUnits		    "centimeters"
+	    TiledPaperMargins	    [1.270000, 1.270000, 1.270000, 1.270000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    SIDHighWatermark	    "225"
+	    SIDPrevWatermark	    "225"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "T2"
+	      SID		      "69:208"
+	      Position		      [25, 83, 55, 97]
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Constant
+	      Name		      "Constant"
+	      SID		      "69:202"
+	      Position		      [25, 30, 55, 60]
+	      Value		      "T"
+	      VectorParams1D	      off
+	    }
+	    Block {
+	      BlockType		      Product
+	      Name		      "Product"
+	      SID		      "69:203"
+	      Ports		      [2, 1]
+	      Position		      [85, 29, 115, 96]
+	      Multiplication	      "Matrix(*)"
+	      InputSameDT	      off
+	      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+	      SaturateOnIntegerOverflow	off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "T"
+	      SID		      "69:207"
+	      Position		      [160, 58, 190, 72]
+	      IconDisplay	      "Port number"
+	    }
+	    Line {
+	      SrcBlock		      "T2"
+	      SrcPort		      1
+	      Points		      [0, -10]
+	      DstBlock		      "Product"
+	      DstPort		      2
+	    }
+	    Line {
+	      SrcBlock		      "Product"
+	      SrcPort		      1
+	      DstBlock		      "T"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "Constant"
+	      SrcPort		      1
+	      DstBlock		      "Product"
+	      DstPort		      1
+	    }
+	  }
+	}
+	Annotation {
+	  Name			  "Transform"
 	  Position		  [42, 22]
 	  BackgroundColor	  "cyan"
 	  FontSize		  12
