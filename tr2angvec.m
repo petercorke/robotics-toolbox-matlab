@@ -83,7 +83,7 @@ function [theta, v] = tr2angvec(R)
 	end
 	v = unit([kx ky kz]);
     theta = 2*acos(qs);
-    if theta > pi/2
+    if theta > pi
         theta = pi - theta;
         v = -v;
     end
