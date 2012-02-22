@@ -26,14 +26,28 @@
 % from the previous time step.
 %
 % Options::
+% 'pinv'         use pseudo-inverse instead of Jacobian transpose
+% 'ilimit',L     set the maximum iteration count (default 1000)
+% 'tol',T        set the tolerance on error norm (default 1e-6)
+% 'alpha',A      set step size gain (default 1)
+% 'novarstep'    disable variable step size
+% 'verbose'      show number of iterations for each point
+% 'verbose=2'    show state at each iteration
+% 'plot'         plot iteration state versus time
 %
 % Notes::
-% - Solution is computed iteratively using the pseudo-inverse of the
-%   manipulator Jacobian.
+% - Solution is computed iteratively.
+% - Solution is sensitive to choice of initial gain.  The variable
+%   step size logic (enabled by default) does its best to find a balance
+%   between speed of convergence and divergene.
+% - The tolerance is computed on the norm of the error between current
+%   and desired tool pose.  This norm is computed from distances
+%   and angles without any kind of weighting.
 % - The inverse kinematic solution is generally not unique, and 
 %   depends on the initial guess Q0 (defaults to 0).
 % - Such a solution is completely general, though much less efficient 
-%   than specific inverse kinematic solutions derived symbolically.
+%   than specific inverse kinematic solutions derived symbolically, like
+%   ikine6s or ikine3.
 % - This approach allows a solution to obtained at a singularity, but 
 %   the joint angles within the null space are arbitrarily assigned.
 %
@@ -60,13 +74,14 @@
 %
 % http://www.petercorke.com
 
-function qt = ikine(robot, tr, varargin)
+function [qt,histout] = ikine(robot, tr, varargin)
     %  set default parameters for solution
-    opt.ilimit = 100;
+    opt.ilimit = 1000;
     opt.tol = 1e-6;
     opt.alpha = 1;
     opt.plot = false;
     opt.pinv = false;
+    opt.varstep = true;
 
     [opt,args] = tb_optparse(opt, varargin);
 
@@ -106,26 +121,139 @@ function qt = ikine(robot, tr, varargin)
     npoints = size(tr,3);    % number of points
     qt = zeros(npoints, n);  % preallocate space for results
     tcount = 0;              % total iteration count
-    eprev = Inf;
 
-    save.e = Inf;
-    save.q = [];
 
     history = [];
     for i=1:npoints
         T = tr(:,:,i);
         nm = Inf;
+        % initialize state for the ikine loop
+        eprev = Inf;
+        save.e = [Inf Inf Inf Inf Inf Inf];
+        save.q = [];
         count = 0;
+        while true
+            % update the count and test against iteration limit
+            count = count + 1;
+            if count > opt.ilimit
+                warning('ikine: iteration limit %d exceeded (row %d), final err %f', ...
+                    opt.ilimit, i, nm);
+            end
 
-        optim = optimset('Display', 'iter', 'TolX', 0, 'TolFun', opt.tol, 'MaxIter', opt.ilimit);
-        optim
-        q = fminsearch(@(x) ikinefunc(x, T, robot, m), q, optim);
-    
+            % compute the error
+            e = tr2delta(fkine(robot, q'), T);
+
+            % optionally adjust the step size
+            if opt.varstep
+                % test against last best error, only consider the DOF of
+                % interest
+                if norm(e(m)) < norm(save.e(m))
+                    % error reduced,
+                    % let's save current state of solution and rack up the step size
+                    save.q = q;
+                    save.e = e;
+                    opt.alpha = opt.alpha * (2.0^(1.0/8));
+                    if opt.verbose > 1
+                        fprintf('raise alpha to %f\n', opt.alpha);
+                    end
+                else
+                    % rats!  error got worse,
+                    % restore to last good solution and reduce step size
+                    q = save.q;
+                    e = save.e;
+                    opt.alpha = opt.alpha * 0.5;
+                    if opt.verbose > 1
+                        fprintf('drop alpha to %f\n', opt.alpha);
+                    end
+                end
+            end
+
+            % compute the Jacobian
+            J = jacob0(robot, q);
+
+            % compute change in joint angles to reduce the error, 
+            % based on the square sub-Jacobian
+            if opt.pinv
+                dq = opt.alpha * pinv( J(m,:) ) * e(m);
+            else
+                dq = J(m,:)' * e(m);
+                dq = opt.alpha * dq;
+            end
+
+            % diagnostic stuff
+            if opt.verbose > 1
+                fprintf('%d:%d: |e| = %f\n', i, count, nm);
+                fprintf('       e  = '); disp(e');
+                fprintf('       dq = '); disp(dq');
+            end
+            if opt.plot
+                h.q = q';
+                h.dq = dq;
+                h.e = e;
+                h.ne = nm;
+                h.alpha = opt.alpha;
+                history = [history; h];
+            end
+
+            % update the estimated solution
+            q = q + dq';
+            nm = norm(e(m));
+
+            if norm(e) > 1.5*norm(eprev)
+                warning( 'solution diverging, try reducing alpha');
+            end
+            eprev = e;
+
+            if nm <= opt.tol
+                break
+            end
+
+        end  % end ikine solution for tr(:,:,i)
+        qt(i,:) = q';
+        tcount = tcount + count;
+        if opt.verbose
+            fprintf('%d iterations\n', count);
+        end
     end
-    qt = q;
-end
+    
+    if opt.verbose && npoints > 1
+        fprintf('TOTAL %d iterations\n', tcount);
+    end
 
-function E = ikinefunc(q, T, robot, m)
-        e = tr2delta(fkine(robot, q'), T);
-        E = norm(e(m));
+    % plot evolution of variables
+    if opt.plot
+        figure(1);
+        plot([history.q]');
+        xlabel('iteration');
+        ylabel('q');
+        grid
+
+        figure(2);
+        plot([history.dq]');
+        xlabel('iteration');
+        ylabel('dq');
+        grid
+
+        figure(3);
+        plot([history.e]');
+        xlabel('iteration');
+        ylabel('e');
+        grid
+
+        figure(4);
+        semilogy([history.ne]);
+        xlabel('iteration');
+        ylabel('|e|');
+        grid
+
+        figure(5);
+        plot([history.alpha]);
+        xlabel('iteration');
+        ylabel('\alpha');
+        grid
+
+        if nargout > 1
+            histout = history;
+        end
+    end
 end
