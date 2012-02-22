@@ -37,9 +37,10 @@ INSTALLING THE MEX FILE
 rne() or frne() and evaluate the speed improvement.  The results should be exactly
 the same.
 
-2. Move the MEX file frne.xxx to the directory above and rename it rne.xxx.  The MEX
-file will now be used instead of the M-file, and thus anything that calls rne() will
-use the MEX file and be faster.
+2. Move the MEX file frne.xxx to the @SerialLink directory, rename it rne.xxx, and
+type "clear classes".  The MEX file will now be used instead of the M-file, and thus 
+anything that calls rne() will use the MEX file and be faster.  This applies to
+inertia(), coriolis(), gravload(), and fdyn().
 
 You can use the command "make install" to do this.
 
@@ -48,6 +49,11 @@ NOTES ON PERFORMANCE
 The MEX file speedup is greater when invoked on multiple points, not just one.  This
 is because of startup overhead in extracting the kinematic and dynamic parameters 
 from the SerialArm object.
+
+LIMITATIONS
+
+- The MEX file does not support modified DH parameters.
+- The MEX file does not support base or tool transforms.
 
 NOTES ON FILES
 
