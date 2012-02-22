@@ -108,8 +108,15 @@ mexFunction(
     mxArray     *mx_links;
     static int  first_time = 0;
 
+    /*
+    fprintf(stderr, "Fast RNE: (c) Peter Corke 2002-2011\n");
+    */
+
+    if (nrhs < 4)
+        mexErrMsgTxt("frne: must be at least 4 arguments\n");
+
     if (  !mxIsClass(ROBOT_IN, "SerialLink") )
-        mexErrMsgTxt("first argument is not a robot structure\n");
+        mexErrMsgTxt("frne: first argument is not a robot structure\n");
 
     mx_robot = (mxArray *)ROBOT_IN;
     
@@ -125,7 +132,7 @@ mexFunction(
      * TAU = RNE(ROBOT, [Q QD QDD])
      */ 
         if (NUMCOLS(A1_IN) != 3 * njoints)
-            mexErrMsgTxt("RNE too few cols in [Q QD QDD]");
+            mexErrMsgTxt("frne: too few cols in [Q QD QDD]");
         q = POINTER(A1_IN);
         nq = NUMROWS(A1_IN);
         qd = &q[njoints*nq];
@@ -137,14 +144,14 @@ mexFunction(
      * TAU = RNE(ROBOT, [Q QD QDD], GRAV)
      */ 
         if (NUMCOLS(A1_IN) != (3 * njoints))
-            mexErrMsgTxt("RNE too few cols in [Q QD QDD]");
+            mexErrMsgTxt("frne: too few cols in [Q QD QDD]");
         q = POINTER(A1_IN);
         nq = NUMROWS(A1_IN);
         qd = &q[njoints*nq];
         qdd = &q[2*njoints*nq];
 
         if (NUMELS(A2_IN) != 3)
-            mexErrMsgTxt("RNE gravity vector expected");
+            mexErrMsgTxt("frne: gravity vector expected");
         grav = POINTER(A2_IN);
         break;
 
@@ -160,10 +167,10 @@ mexFunction(
             qdd = &q[2*njoints*nq];
 
             if (NUMELS(A2_IN) != 3)
-                mexErrMsgTxt("RNE gravity vector expected");
+                mexErrMsgTxt("frne: gravity vector expected");
             grav = POINTER(A2_IN);
             if (NUMELS(A3_IN) != 6)
-                mexErrMsgTxt("RNE Fext vector expected");
+                mexErrMsgTxt("frne: Fext vector expected");
             fext = POINTER(A3_IN);
         } else {
             int nqd = NUMROWS(A2_IN),
@@ -171,12 +178,12 @@ mexFunction(
 
             nq = NUMROWS(A1_IN);
             if ((nq != nqd) || (nqd != nqdd))
-                mexErrMsgTxt("RNE Q QD QDD must be same length");
+                mexErrMsgTxt("frne: Q QD QDD must be same length");
             if ( (NUMCOLS(A1_IN) != njoints) ||
                  (NUMCOLS(A2_IN) != njoints) ||
                  (NUMCOLS(A3_IN) != njoints)
             ) 
-                mexErrMsgTxt("RNE Q must have Naxis columns");
+                mexErrMsgTxt("frne: Q must have Naxis columns");
             q = POINTER(A1_IN);
             qd = POINTER(A2_IN);
             qdd = POINTER(A3_IN);
@@ -192,17 +199,17 @@ mexFunction(
 
         nq = NUMROWS(A1_IN);
         if ((nq != nqd) || (nqd != nqdd))
-            mexErrMsgTxt("RNE Q QD QDD must be same length");
+            mexErrMsgTxt("frne: Q QD QDD must be same length");
         if ( (NUMCOLS(A1_IN) != njoints) ||
              (NUMCOLS(A2_IN) != njoints) ||
              (NUMCOLS(A3_IN) != njoints)
         ) 
-            mexErrMsgTxt("RNE Q must have Naxis columns");
+            mexErrMsgTxt("frne: Q must have Naxis columns");
         q = POINTER(A1_IN);
         qd = POINTER(A2_IN);
         qdd = POINTER(A3_IN);
         if (NUMELS(A4_IN) != 3)
-            mexErrMsgTxt("RNE gravity vector expected");
+            mexErrMsgTxt("frne: gravity vector expected");
         grav = POINTER(A4_IN);
         break;
     }
@@ -216,33 +223,31 @@ mexFunction(
 
         nq = NUMROWS(A1_IN);
         if ((nq != nqd) || (nqd != nqdd))
-            mexErrMsgTxt("RNE Q QD QDD must be same length");
+            mexErrMsgTxt("frne: Q QD QDD must be same length");
         if ( (NUMCOLS(A1_IN) != njoints) ||
              (NUMCOLS(A2_IN) != njoints) ||
              (NUMCOLS(A3_IN) != njoints)
         ) 
-            mexErrMsgTxt("RNE Q must have Naxis columns");
+            mexErrMsgTxt("frne: Q must have Naxis columns");
         q = POINTER(A1_IN);
         qd = POINTER(A2_IN);
         qdd = POINTER(A3_IN);
         if (NUMELS(A4_IN) != 3)
-            mexErrMsgTxt("RNE gravity vector expected");
+            mexErrMsgTxt("frne: gravity vector expected");
         grav = POINTER(A4_IN);
         if (NUMELS(A5_IN) != 6)
-            mexErrMsgTxt("RNE Fext vector expected");
+            mexErrMsgTxt("frne: Fext vector expected");
         fext = POINTER(A5_IN);
         break;
     }
     default:
-        mexErrMsgTxt("RNE wrong number of arguments.");
+        mexErrMsgTxt("frne: wrong number of arguments.");
     }
 
 
     /*
      * fill out the robot structure
      */
-    printf("njoints %d\n", njoints);
-
     robot.njoints = njoints;
 
     if (grav)
