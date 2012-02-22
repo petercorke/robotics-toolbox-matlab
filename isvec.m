@@ -5,6 +5,10 @@
 % ISVEC(V, L) is true (1) if the argument V is a vector of length L,
 % either a row- or column-vector.  Otherwise false (0).
 %
+% Notes::
+% - differs from MATLAB builtin function ISVECTOR, the latter returns true
+%   for the case of a scalar, ISVEC does not.
+%
 % See also ISHOMOG, ISROT.
 
 
@@ -30,5 +34,5 @@ function h = isvec(v, l)
             l = 3;
     end
     d = size(v);
-    h = length(d) == 2 && min(d) == 1 && numel(v) == l
+    h = logical( length(d) == 2 && min(d) == 1 && numel(v) == l );
 
