@@ -31,9 +31,9 @@
 
 function  tau = friction(robot, qd)
 
-	L = robot.link;
+	L = robot.links;
 
 	for i=1:robot.n
-		tau(i) = friction(L{i}, qd(i));
+		tau(i) = friction(L(i), qd(i));
 	end
 
