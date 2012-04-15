@@ -1,19 +1,20 @@
-%EKF Extended Kalman Filter for vehicle pose and map estimation
+%EKF Extended Kalman Filter for navigation
 %
 % This class can be used for:
 %   - dead reckoning localization
 %   - map-based localization
 %   - map making
-%   - simultaneous localization and mapping
+%   - simultaneous localization and mapping (SLAM)
 %
 % It is used in conjunction with:
 %   - a kinematic vehicle model that provides odometry output, represented 
 %     by a Vehicle object.  
 %   - The vehicle must be driven within the area of the map and this is 
-%     achieved by connecting it to a Driver object.  
-%   - a map containing the position of a number of landmarks, a Map object
+%     achieved by connecting the Vehicle object to a Driver object.  
+%   - a map containing the position of a number of landmark points and is
+%     represented by a Map object.
 %   - a sensor that returns measurements about landmarks relative to the 
-%     vehicle's location.
+%     vehicle's location and is represented by a Sensor object subclass.
 %
 % The EKF object updates its state at each time step, and invokes the 
 % state update methods of the Vehicle.  The complete history of estimated
@@ -21,10 +22,10 @@
 %
 % Methods::
 %   run            run the filter
-%   plot_xy        return/plot the actual path of the vehicle
-%   plot_P         return/plot the estimate covariance 
-%   plot_map       plot feature points and confidence limits
-%   plot_ellipse   plot path with covariance ellipses
+%   plot_xy        plot the actual path of the vehicle
+%   plot_P         plot the estimated covariance norm along the path
+%   plot_map       plot estimated feature points and confidence limits
+%   plot_ellipse   plot estimated path with covariance ellipses
 %   display        print the filter state in human readable form
 %   char           convert the filter state to human readable string
 %
@@ -33,37 +34,58 @@
 %  P          estimated covariance
 %  V_est      estimated odometry covariance
 %  W_est      estimated sensor covariance
-%  features   map book keeping, maps sensor feature id to filter state
-%  robot      reference to the robot object
-%  sensor     reference to the sensor object
-%  history    vector of structs that hold the detailed information from
+%  features   maps sensor feature id to filter state element
+%  robot      reference to the Vehicle object
+%  sensor     reference to the Sensor subclass object
+%  history    vector of structs that hold the detailed filter state from
 %             each time step
+%  verbose    show lots of detail (default false)
+%  joseph     use Joseph form to represent covariance (default true)
 %
-% Vehicle position estimation::
+% Vehicle position estimation (localization)::
 %
 % Create a vehicle with odometry covariance V, add a driver to it,
 % create a Kalman filter with estimated covariance V_est and initial
-% state covariance P0, then run the filter for N time steps.
+% state covariance P0
 %    veh = Vehicle(V);
 %    veh.add_driver( RandomPath(20, 2) );
 %    ekf = EKF(veh, V_est, P0);
-%    ekf.run(N);
+% We run the simulation for 1000 time steps
+%    ekf.run(1000);
+% then plot true vehicle path
+%    veh.plot_xy('b');
+% and overlay the estimated path
+%    ekf.plot_xy('r');
+% and overlay uncertainty ellipses at every 20 time steps
+%    ekf.plot_ellipse(20, 'g');
+% We can plot the covariance against time as
+%    clf
+%    ekf.plot_P();
 %
-%
-% Vehicle map based localization::
+% Map-based vehicle localization::
 %
 % Create a vehicle with odometry covariance V, add a driver to it,
 % create a map with 20 point features, create a sensor that uses the map 
 % and vehicle state to estimate feature range and bearing with covariance
 % W, the Kalman filter with estimated covariances V_est and W_est and initial
-% vehicle state covariance P0, then run the filter for N time steps.
-%
+% vehicle state covariance P0
 %    veh = Vehicle(V);
 %    veh.add_driver( RandomPath(20, 2) );
 %    map = Map(20);
 %    sensor = RangeBearingSensor(veh, map, W);
 %    ekf = EKF(veh, V_est, P0, sensor, W_est, map);
-%    ekf.run(N);
+% We run the simulation for 1000 time steps
+%    ekf.run(1000);
+% then plot the map and the true vehicle path
+%    map.plot();
+%    veh.plot_xy('b');
+% and overlay the estimatd path
+%    ekf.plot_xy('r');
+% and overlay uncertainty ellipses at every 20 time steps
+%    ekf.plot_ellipse([], 'g');
+% We can plot the covariance against time as
+%    clf
+%    ekf.plot_P();
 %
 % Vehicle-based map making::
 %
@@ -77,7 +99,12 @@
 %    veh.add_driver( RandomPath(20, 2) );
 %    sensor = RangeBearingSensor(veh, map, W);
 %    ekf = EKF(veh, [], [], sensor, W_est, []);
-%    ekf.run(N);
+% We run the simulation for 1000 time steps
+%    ekf.run(1000);
+% Then plot the true map
+%    map.plot();
+% and overlay the estimated map with 3 sigma ellipses
+%    ekf.plot_map(3, 'g');
 %
 % Simultaneous localization and mapping (SLAM)::
 %
@@ -85,20 +112,41 @@
 % create a map with 20 point features, create a sensor that uses the map 
 % and vehicle state to estimate feature range and bearing with covariance
 % W, the Kalman filter with estimated covariances V_est and W_est and initial
-% state covariance P0, then run the filter for N time steps to estimate
-% the vehicle state at each time step and the map.%    veh = Vehicle(V);
+% state covariance P0, then run the filter to estimate the vehicle state at 
+% each time step and the map.
 %
+%    veh = Vehicle(V);
 %    veh.add_driver( RandomPath(20, 2) );
 %    map = Map(20);
 %    sensor = RangeBearingSensor(veh, map, W);
 %    ekf = EKF(veh, V_est, P0, sensor, W, []);
-%    ekf.run(N);
+% We run the simulation for 1000 time steps
+%    ekf.run(1000);
+% then plot the map and the true vehicle path
+%    map.plot();
+%    veh.plot_xy('b');
+% and overlay the estimated path
+%    ekf.plot_xy('r');
+% and overlay uncertainty ellipses at every 20 time steps
+%    ekf.plot_ellipse([], 'g');
+% We can plot the covariance against time as
+%    clf
+%    ekf.plot_P();
+% Then plot the true map
+%    map.plot();
+% and overlay the estimated map with 3 sigma ellipses
+%    ekf.plot_map(3, 'g');
 %
 % Reference::
 %
-%   Robotics, Vision & Control,
+%   Robotics, Vision & Control, Chap 6,
 %   Peter Corke,
 %   Springer 2011
+%
+% Acknowledgement::
+% 
+% Inspired by code of Paul Newman, Oxford University, 
+% http://www.robots.ox.ac.uk/~pnewman
 %
 % See also Vehicle, RandomPath, RangeBearingSensor, Map, ParticleFilter.
 
@@ -123,77 +171,102 @@ classdef EKF < handle
     %TODO
     % add a hook for data association
     properties
-        xVehicle        % vehicle state
+        % STATE:
+        % the state vector is [x_vehicle x_map] where
+        % x_vehicle is 1x3 and
+        % x_map is 1x(2N) where N is the number of map features
+        x_est           % estimated state
+        P_est           % estimated covariance
 
-
-        % features keeps track of features we've seen before
-        % each column represents a feature.  This is a fixed size
+        % Features keeps track of features we've seen before.
+        % Each column represents a feature.  This is a fixed size
         % array, indexed by feature id.
         % row 1: the start of this feature's state in the feature
         %        part of the state vector, initially NaN
         % row 2: the number of times we've sighted the feature
         features           % map state
 
-        verbose
         V_est           % estimate of covariance V
         W_est           % estimate of covariance W
 
-        x_est           % estimated state
-        P_est           % estimated covariance
-
         robot           % reference to the robot vehicle
         sensor          % reference to the sensor
-        %map
+
+        % FLAGS:
         %   estVehicle    estMap
         %        0          0     
         %        0          1     make map
         %        1          0     dead reckoning
         %        1          1     SLAM
-
         estVehicle      % flag: estimating vehicle location
         estMap          % flag: estimating map
 
         joseph          % flag: use Joseph form to compute p
+        verbose
+        keepHistory     % keep history
 
-        history         % vector of structs to hold EKF history
+        % HISTORY:
+        % vector of structs to hold EKF history
+        % .x_est estimated state
+        % .odo   vehicle odometry
+        % .P     estimated covariance matrix
+        % .innov innovation
+        % .S     
+        % .K     Kalman gain matrix
+        history         
     end
 
     methods
 
         % constructor
-        function ekf = EKF(robot, V_est, P0, sensor, W_est, map)
+        function ekf = EKF(robot, V_est, P0, varargin)
             %EKF.EKF EKF object constructor
             %
-            % E = EKF(VEHICLE, VEST, P0) is an EKF that estimates the state of
-            % the VEHICLE with estimated odometry covariance VEST (2x2) and
+            % E = EKF(VEHICLE, V_EST, P0, OPTIONS) is an EKF that estimates the state
+            % of the VEHICLE with estimated odometry covariance V_EST (2x2) and
             % initial covariance (3x3).
             %
-            % E = EKF(VEHICLE, VEST, P0, SENSOR, WEST, MAP) as above but
+            % E = EKF(VEHICLE, V_EST, P0, SENSOR, W_EST, MAP, OPTIONS) as above but
             % uses information from a VEHICLE mounted sensor, estimated
-            % sensor covariance WEST and a MAP.
+            % sensor covariance W_EST and a MAP.
             %
-            % If MAP is [] then it will be estimated.
-            %
-            % If VEST and P0 are [] the vehicle is assumed error free and
-            % the filter will estimate the landmark positions (map).
-            %
-            % If VEST and P0 are finite the filter will estimate the
-            % vehicle pose and the landmark positions (map).
+            % Options::
+            % 'verbose'      Be verbose.
+            % 'nohistory'    Don't keep history.
+            % 'joseph'       Use Joseph form for covariance.
             %
             % Notes::
+            % - If MAP is [] then it will be estimated.
+            % - If V_EST and P0 are [] the vehicle is assumed error free and
+            %   the filter will only estimate the landmark positions (map).
+            % - If V_EST and P0 are finite the filter will estimate the
+            %   vehicle pose and the landmark positions (map).
             % - EKF subclasses Handle, so it is a reference object.
             %
             % See also Vehicle, Sensor, RangeBearingSensor, Map.
 
+            opt.history = true;
+            opt.joseph = true;
+
+            [opt,args] = tb_optparse(opt, varargin);
+            if length(args) == 3
+                [sensor, W_est, map] = deal(args{:});
+            else
+                sensor = []; W_est = []; map = [];
+            end
+
+            ekf.verbose = opt.verbose;
+            ekf.keepHistory = opt.history;
+            ekf.joseph = opt.joseph;
             
             ekf.sensor = [];
             ekf.robot = robot;
-            ekf.V_est = V_est
+            ekf.V_est = V_est;
             if nargin > 3
                 ekf.sensor = sensor;
                 ekf.W_est = W_est;
             end
-            joseph = true;
+            ekf.joseph = true;
             if isempty(V_est)
                 % perfect vehicle case
                 ekf.estVehicle = false;
@@ -201,7 +274,7 @@ classdef EKF < handle
                 ekf.P_est = [];
             else
                 % noisy odometry case
-                ekf.x_est = robot.x0;
+                ekf.x_est = robot.x0(:);   % column vector
                 ekf.P_est = P0;
                 ekf.estVehicle = true;
             end
@@ -216,6 +289,9 @@ classdef EKF < handle
         end
 
         function init(ekf)
+        %EKF.init Reset the filter
+        %
+        % E.init() resets the filter state and clears the history.
             ekf.robot.init();
 
             % init the state vector
@@ -229,13 +305,14 @@ classdef EKF < handle
         end
 
         function run(ekf, n)
-            %EKF.run Run the EKF
-            %
-            % E.run(N) run the filter for N time steps.
-            %
-            % Notes::
-            % - all previously estimated states and estimation history is
-            %   cleared.
+        %EKF.run Run the filter
+        %
+        % E.run(N) runs the filter for N time steps and shows an animation
+        % of the vehicle moving.
+        %
+        % Notes::
+        % - All previously estimated states and estimation history are initially
+        %   cleared.
             ekf.robot.init();
 
             for k=1:n
@@ -243,7 +320,178 @@ classdef EKF < handle
             end
         end
 
+        function out = plot_xy(ekf, varargin)
+        %EKF.plot_xy Plot vehicle position
+        %
+        % E.plot_xy() overlay the current plot with the estimated vehicle path in 
+        % the xy-plane.
+        %
+        % E.plot_xy(LS) as above but the optional line style arguments
+        % LS are passed to plot.
+        %
+        % P = E.plot_xy() returns the estimated vehicle pose trajectory
+        % as a matrix (Nx3) where each row is x, y, theta.
+        %
+        % See also EKF.plot_ellipse, EKF.plot_P.
+            if ekf.estVehicle
+                xyt = zeros(length(ekf.history), 3);
+                for i=1:length(ekf.history)
+                    xyt(i,:) = ekf.history(i).x_est(1:3)';
+                end
+                if nargout == 0
+                    plot(xyt(:,1), xyt(:,2), varargin{:});
+                end
+            else
+                xyt = [];
+            end
+            if nargout > 0
+                out = xyt;
+            end
+        end
+        
+        function out = plot_map(ekf, interval, varargin)
+        %EKF.plot_map Plot landmarks
+        %
+        % E.plot_map(I) overlay the current plot with the estimated landmark 
+        % position (a +-marker) and a covariance ellipses for I points along
+        % the path.
+        %
+        % E.plot_map() as above but I=20.
+        %
+        % E.plot_map(I, LS) as above but pass line style arguments
+        % LS to plot_ellipse.
+        %
+        % See also plot_ellipse.
 
+        % TODO:  some option to plot map evolution, layered ellipses
+            if nargin < 2 || isempty(interval)
+                interval = round(length(ekf.history)/20);
+            end
+            for i=1:numcols(ekf.features)
+                n = ekf.features(1,i);
+                if isnan(n)
+                    continue;
+                end
+                % n is an index into the *feature* part of the state
+                % vector, we need to offset it to account for the vehicle
+                % state if we are estimating vehicle as well
+                if ekf.estVehicle
+                    n = n + 3;
+                end
+                xf = ekf.x_est(n:n+1);
+                P = ekf.P_est(n:n+1,n:n+1);
+                % TODO reinstate the interval feature
+                %plot_ellipse(xf, P, interval, 0, [], varargin{:});
+                plot_ellipse(P, xf, varargin{:});
+                plot(xf(1), xf(2), '+')
+            end
+        end
+
+        function out = plot_P(ekf, varargin)
+        %EKF.plot_P Plot covariance magnitude
+        %
+        % E.plot_P() plots the estimated covariance magnitude against
+        % time step.
+        %
+        % E.plot_P(LS) as above but the optional line style arguments
+        % LS are passed to plot.
+        %
+        % M = E.plot_P() returns the estimated covariance magnitude at
+        % all time steps as a vector.
+            p = zeros(length(ekf.history),1);
+            for i=1:length(ekf.history)
+                p(i) = sqrt(det(ekf.history(i).P));
+            end
+             if nargout == 0
+                 plot(p, varargin{:});
+                 xlabel('sample');
+                 ylabel('(det P)^{0.5}')
+             else
+                out = p;
+             end
+        end
+
+        function plot_ellipse(ekf, interval, varargin)
+            %EKF.plot_ellipse Plot vehicle covariance as an ellipse
+            %
+            % E.plot_ellipse() overlay the current plot with the estimated
+            % vehicle position covariance ellipses for 20 points along the
+            % path.
+            %
+            % E.plot_ellipse(I) as above but for I points along the path.
+            %
+            % E.plot_ellipse(I, LS) as above but pass line style arguments
+            % LS to plot_ellipse.  If I is [] then assume 20.
+            %
+            % See also plot_ellipse.
+
+            if nargin < 2 || isempty(interval)
+                interval = round(length(ekf.history)/20);
+            end
+            holdon = ishold;
+            hold on
+            for i=1:interval:length(ekf.history)
+                h = ekf.history(i);
+                %plot_ellipse(h.x_est(1:2), h.P(1:2,1:2), 1, 0, [], varargin{:});
+                plot_ellipse(h.P(1:2,1:2), h.x_est(1:2), varargin{:});
+            end
+            if ~holdon
+                hold off
+            end
+        end
+            
+        function display(ekf)
+            %EKF.display Display status of EKF object
+            %
+            % E.display() displays the state of the EKF object in
+            % human-readable form.
+            %
+            % Notes::
+            % - This method is invoked implicitly at the command line when the result
+            %   of an expression is a EKF object and the command has no trailing
+            %   semicolon.
+            %
+            % See also EKF.char.
+            
+            loose = strcmp( get(0, 'FormatSpacing'), 'loose');
+            if loose
+                disp(' ');
+            end
+            disp([inputname(1), ' = '])
+            disp( char(ekf) );
+        end % display()
+
+        function s = char(ekf)
+            %EKF.char Convert to string
+            %
+            % E.char() is a string representing the state of the EKF
+            % object in human-readable form.
+            %
+            % See also EKF.display.
+            s = sprintf('EKF object: %d states', length(ekf.x_est));
+            e = '';
+            if ekf.estVehicle
+                e = [e 'Vehicle '];
+            end
+            if ekf.estMap
+                e = [e 'Map '];
+            end
+            s = char(s, ['  estimating: ' e]);
+            if ~isempty(ekf.robot)
+                s = char(s, char(ekf.robot));
+            end
+            if ~isempty(ekf.sensor)
+                s = char(s, char(ekf.sensor));
+            end
+        end
+
+
+    end % method
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %    P R I V A T E    M E T H O D S
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    methods (Access=protected)
         function x_est = step(ekf)
 
             %fprintf('-------step\n');
@@ -273,7 +521,7 @@ classdef EKF < handle
             if ekf.estVehicle
                 % evaluate the state update function and the Jacobians
                 % if vehicle has uncertainty, predict its covariance
-                xv_pred = ekf.robot.f(xv_est, odo);
+                xv_pred = ekf.robot.f(xv_est', odo)';
 
                 Fx = ekf.robot.Fx(xv_est, odo);
                 Fv = ekf.robot.Fv(xv_est, odo);
@@ -337,7 +585,7 @@ classdef EKF < handle
                 % here for MBL, MM, SLAM
 
                 % compute the innovation
-                z_pred = ekf.sensor.h(xv_pred, js);
+                z_pred = ekf.sensor.h(xv_pred', js)';
                 innov(1) = z(1) - z_pred(1);
                 innov(2) = angdiff(z(2), z_pred(2));
 
@@ -350,7 +598,7 @@ classdef EKF < handle
                         xf = xm_pred(jx:jx+1);
 
                         % compute Jacobian for this particular feature
-                        Hx_k = ekf.sensor.Hxf(xv_pred, xf);
+                        Hx_k = ekf.sensor.Hxf(xv_pred', xf);
                         % create the Jacobian for all features
                         Hx = zeros(2, length(xm_pred));
                         Hx(:,jx:jx+1) = Hx_k;
@@ -359,7 +607,7 @@ classdef EKF < handle
 
                         if ekf.estVehicle
                             % concatenate Hx for for vehicle and map
-                            Hxv = ekf.sensor.Hx(xv_pred, xf);
+                            Hxv = ekf.sensor.Hx(xv_pred', xf);
                             Hx = [Hxv Hx];
                         end
                         doUpdatePhase = true;
@@ -374,8 +622,8 @@ classdef EKF < handle
                     end
                 else
                     % the map is given, MBL case
-                    Hx = ekf.sensor.Hx(xv_pred, js);
-                    Hw = ekf.sensor.Hw(xv_pred, js);
+                    Hx = ekf.sensor.Hx(xv_pred', js);
+                    Hw = ekf.sensor.Hw(xv_pred', js);
                     doUpdatePhase = true;
                 end
             end
@@ -399,7 +647,7 @@ classdef EKF < handle
                 S = Hx*P_pred*Hx' + Hw*ekf.W_est*Hw';
 
                 % compute the Kalman gain
-                K = P_pred*Hx'*inv(S);
+                K = P_pred*Hx' / S;
 
                 % update the state vector
                 x_est = x_pred + K*innov';
@@ -412,7 +660,7 @@ classdef EKF < handle
                 % update the covariance
                 if ekf.joseph
                     % we use the Joseph form
-                    I = eye(size(P_est));
+                    I = eye(size(P_pred));
                     P_est = (I-K*Hx)*P_pred*(I-K*Hx)' + K*ekf.W_est*K';
                 else
                     P_est = P_pred - K*S*K';
@@ -436,14 +684,16 @@ classdef EKF < handle
             ekf.P_est = P_est;
 
             % record time history
-            hist = [];
-            hist.x_est = x_est;
-            hist.odo = odo;
-            hist.P = P_est;
-            hist.innov = innov;
-            hist.S = S;
-            hist.K = K;
-            ekf.history = [ekf.history hist];
+            if ekf.keepHistory
+                hist = [];
+                hist.x_est = x_est;
+                hist.odo = odo;
+                hist.P = P_est;
+                hist.innov = innov;
+                hist.S = S;
+                hist.K = K;
+                ekf.history = [ekf.history hist];
+            end
         end
 
         function s = seenBefore(ekf, jf)
@@ -472,7 +722,7 @@ classdef EKF < handle
             end
 
             % estimate its position based on observation and vehicle state
-            xf = ekf.sensor.g(xv, z);
+            xf = ekf.sensor.g(xv, z)';
 
             % append this estimate to the state vector
             if ekf.estVehicle
@@ -509,163 +759,7 @@ classdef EKF < handle
 %                plot_ellipse(x_est(jx:jx+1), P_est(jx:jx+1,jx:jx+1), 5);
 
         end
-
-        function verbosity(ekf, v)
-            ekf.verbose = v;
-        end
-            
-        function out = plot_xy(ekf, varargin)
-            %EKF.plot_xy Plot vehicle position
-            %
-            % E.plot_xy() plot the estimated vehicle path in the xy-plane.
-            %
-            % E.plot_xy(LS) as above but the optional line style arguments
-            % LS are passed to plot.
-            if ekf.estVehicle
-                xyt = [];
-                for h=ekf.history
-                    xyt = [xyt; h.x_est(1:3)'];
-                end
-                if nargout == 0
-                    plot(xyt(:,1), xyt(:,2), varargin{:});
-                end
-            else
-                xyt = [];
-            end
-            if nargout > 0
-                out = xyt;
-            end
-        end
-        
-        % TODO:  some option to plot map evolution, layered ellipses
-        function out = plot_map(ekf, interval, varargin)
-            %EKF.plot_map Plot landmarks
-            %
-            % E.plot_map(I) overlay the current plot with the estimated
-            % landmark position (a +-marker) and a covariance ellipses for every I'th time
-            % step.
-            %
-            % E.plot_map() as above but I=20.
-            %
-            % E.plot_map(I, LS) as above but pass line style arguments
-            % LS to plot_ellipse.
-            %
-            % See also plot_ellipse.
-            if nargin < 2 || isempty(interval)
-                interval = round(length(ekf.history)/20);
-            end
-            for i=1:numcols(ekf.features)
-                n = ekf.features(1,i);
-                if isnan(n)
-                    continue;
-                end
-                % n is an index into the *feature* part of the state
-                % vector, we need to offset it to account for the vehicle
-                % state if we are estimating vehicle as well
-                if ekf.estVehicle
-                    n = n + 3;
-                end
-                xf = ekf.x_est(n:n+1);
-                P = ekf.P_est(n:n+1,n:n+1);
-                % TODO reinstate the interval feature
-                %plot_ellipse(xf, P, interval, 0, [], varargin{:});
-                plot_ellipse(P, xf, varargin{:});
-                plot(xf(1), xf(2), '+')
-            end
-        end
-
-        function out = plot_P(ekf, varargin)
-            %EKF.plot_P Plot covariance magnitude
-            %
-            % E.plot_P() plots the estimated covariance magnitude against
-            % time step.
-            %
-            % E.plot_P(LS) as above but the optional line style arguments
-            % LS are passed to plot.
-            %
-            % M = E.plot_P() returns the estimated covariance magnitude at
-            % all time steps as a vector.
-            p = [];
-            for h=ekf.history
-                p = [p; sqrt(det(h.P))];
-            end
-             if nargout == 0
-                 plot(p, varargin{:});
-                 xlabel('sample');
-                 ylabel('(det P)^{0.5}')
-             else
-                out = p;
-             end
-        end
-
-        function plot_ellipse(ekf, interval, varargin)
-            %EKF.plot_ellipse Plot vehicle covariance as an ellipse
-            %
-            % E.plot_ellipse(I) overlay the current plot with the estimated
-            % vehicle position covariance ellipses for every I'th time
-            % step.
-            %
-            % E.plot_ellipse() as above but I=20.
-            %
-            % E.plot_ellipse(I, LS) as above but pass line style arguments
-            % LS to plot_ellipse.
-            %
-            % See also plot_ellipse.
-
-            if nargin < 2 || isempty(interval)
-                interval = round(length(ekf.history)/20);
-            end
-            holdon = ishold;
-            hold on
-            for i=1:interval:length(ekf.history)
-                h = ekf.history(i);
-                %plot_ellipse(h.x_est(1:2), h.P(1:2,1:2), 1, 0, [], varargin{:});
-                plot_ellipse(h.P(1:2,1:2), h.x_est(1:2), varargin{:});
-            end
-            if ~holdon
-                hold off
-            end
-        end
-            
-        function display(ekf)
-            %EKF.display Display status of EKF object
-            %
-            % E.display() display the state of the EKF object in
-            % human-readable form.
-            %
-            % Notes::
-            % - this method is invoked implicitly at the command line when the result
-            %   of an expression is a EKF object and the command has no trailing
-            %   semicolon.
-            %
-            % See also EKF.char.
-            
-            loose = strcmp( get(0, 'FormatSpacing'), 'loose');
-            if loose
-                disp(' ');
-            end
-            disp([inputname(1), ' = '])
-            disp( char(ekf) );
-        end % display()
-
-        function s = char(ekf)
-            %EKF.char Convert EKF object to string
-            %
-            % E.char() is a string representing the state of the EKF
-            % object in human-readable form.
-            s = sprintf('EKF object: %d states', length(ekf.x_est));
-            e = '';
-            if ekf.estVehicle
-                e = [e 'Vehicle '];
-            end
-            if ekf.estMap
-                e = [e 'Map '];
-            end
-            s = strvcat(s, ['  estimating: ' e]);
-        end
-
-
-    end % method
+    end % private methods
 end % classdef
 
 

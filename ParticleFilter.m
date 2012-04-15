@@ -1,8 +1,7 @@
 %ParticleFilter Particle filter class
 %
-% Monte-carlo based localisation for estimating vehicle position based on
+% Monte-carlo based localisation for estimating vehicle pose based on
 % odometry and observations of known landmarks.
-%
 %
 % Methods::
 % run        run the particle filter
@@ -109,26 +108,40 @@ classdef ParticleFilter < handle
         Q           % covariance of noise added to state at each step
         L           % covariance of likelihood model
         history
+        keephistory
         dim         % maximum xy dimension
 
         h           % graphics handle for particles
+        randstream
+        seed0
     end % properties
 
     methods
-        function pf = ParticleFilter(robot, sensor, Q, L, np)
+        function pf = ParticleFilter(robot, sensor, Q, L, np, varargin)
             %ParticleFilter.ParticleFilter Particle filter constructor
             %
-            % PF = ParticleFilter(VEHICLE, SENSOR, Q, L, NP) is a particle
+            % PF = ParticleFilter(VEHICLE, SENSOR, Q, L, NP, OPTIONS) is a particle
             % filter that estimates the state of the VEHICLE with a sensor
             % SENSOR.  Q is covariance of the noise added to the particles
             % at each step (diffusion), L is the covariance used in the
             % sensor likelihood model, and NP is the number of particles.
             %
+            % Options::
+            % 'verbose'     Be verbose.
+            % 'private'     Use private random number stream.
+            % 'reset'       Reset random number stream.
+            % 'seed',S      Set the initial state of the random number stream.  S must
+            %               be a proper random number generator state such as saved in
+            %               the seed0 property of an earlier run.
+            % 'nohistory'   Don't save history.
             %
             % Notes::
             % - ParticleFilter subclasses Handle, so it is a reference object.
-            % - the initial particle distribution is uniform over the map,
-            %   essentially the kidnapped robot problem which is unrealistic
+            % - The initial particle distribution is uniform over the map,
+            %   essentially the kidnapped robot problem which is quite unrealistic.
+            % - The 'private' option creates a private random number stream for the methods 
+            %   rand, randn and randi.  If not given the global stream is used.
+            %
             %
             % See also Vehicle, Sensor, RangeBearingSensor, Map.
 
@@ -138,32 +151,74 @@ classdef ParticleFilter < handle
             pf.L = L;
             pf.nparticles = np;
 
-            % create initial particle distribution as uniformly randomly distributed
-            % over the map area and heading angles
             pf.dim = sensor.map.dim;
             pf.history = [];
             pf.x = [];
             pf.weight = [];
+
+            opt.private = false;
+            opt.reset = false;
+            opt.seed = [];
+            opt.history = true;
+
+            opt = tb_optparse(opt, varargin);
+
+            pf.keephistory = opt.history;
+            % create a private random number stream if required
+            if opt.private
+                pf.randstream = RandStream.create('mt19937ar');
+            else
+                pf.randstream = RandStream.getGlobalStream();
+            end
+
+            % reset the random number stream if required
+            if opt.reset
+                pf.randstream.reset();
+            end
+
+            % return the random number stream to known state if required
+            if ~isempty(opt.seed)
+                set(pf.randstream.set(opt.seed));
+            end
+
+            % save the current state in case it later turns out to give interesting results
+            pf.seed0 = pf.randstream.State;
+
         end
 
 
         function init(pf)
+            %ParticleFilter.init Initialize the particle filter
+            %
+            % PF.init() initializes the particle distribution and clears the
+            % history.
+            %
+            % Notes::
+            % - Invoked by the run() method.
             pf.robot.init();
             pf.history = [];
-            pf.x = (2*rand([pf.nparticles,3]) - 1) * diag([pf.dim, pf.dim, pi]);
+
+            % create initial particle distribution as uniformly randomly distributed
+            % over the map area and heading angles
+            pf.x = (2*pf.rand([pf.nparticles,3]) - 1) * diag([pf.dim, pf.dim, pi]);
             pf.weight = ones(pf.nparticles, 1);
+
             pf.x_est = [];
             pf.std = [];
         end
 
-        function run(pf, niter)
+        function run(pf, niter, varargin)
             %ParticleFilter.run Run the particle filter
             %
-            % PF.run(N) run the filter for N time steps.
+            % PF.run(N) runs the filter for N time steps.
             %
             % Notes::
-            % - all previously estimated states and estimation history is
+            % - All previously estimated states and estimation history is
             %   cleared.
+
+            opt.plot = true;
+            opt = tb_optparse(opt, varargin);
+
             pf.init();
             pf.sensor.map.plot();
             a = axis;
@@ -174,15 +229,15 @@ classdef ParticleFilter < handle
             % display the initial particles
             pf.h = plot3(pf.x(:,1), pf.x(:,2), pf.x(:,3), 'g.');
 
-            h = pf.robot.plot();
+            pf.robot.plot();
 
             % iterate over time
             for i=1:niter
-                pf.step();
+                pf.step(opt);
             end
          end
 
-         function step(pf)
+         function step(pf, opt)
              
             %fprintf('---- step\n');
             odo = pf.robot.step();        % move the robot
@@ -211,77 +266,18 @@ classdef ParticleFilter < handle
             % display the updated particles
             set(pf.h, 'Xdata', pf.x(:,1), 'Ydata', pf.x(:,2), 'Zdata', pf.x(:,3));
 
-            pf.robot.plot();
-            drawnow
+            if opt.plot
+                pf.robot.plot();
+                drawnow
+            end
 
-            hist = [];
-            hist.x_est = pf.x;
-            hist.w = pf.weight;
-            pf.history = [pf.history hist];
-        end
-
-        % step 2
-        % update the particle state based on odometry and a random perturbation
-        function predict(pf, odo)
-            for i=1:pf.nparticles
-                x = pf.robot.f( pf.x(i,:), odo) + sqrt(pf.Q)*randn(3,1);   
-                x(3) = angdiff(x(3));
-                pf.x(i,:) = x';
+            if pf.keephistory
+                hist = [];
+                hist.x_est = pf.x;
+                hist.w = pf.weight;
+                pf.history = [pf.history hist];
             end
         end
-
-        % step 3
-        % predict observation and score the particles
-        function observe(pf, z, jf)
-        
-            for p = 1:pf.nparticles
-                % what do we expect observation to be for this particle?
-                % use the sensor model h(.)
-                z_pred = pf.sensor.h( pf.x(p,:), jf);
-                
-                % how different is it
-                innov = zeros(2,1);
-                innov(1) = z(1) - z_pred(1);
-                innov(2) = angdiff(z(2), z_pred(2));
-                
-                % get likelihood (new importance). Assume Gaussian but any PDF works!
-                % If predicted obs is very different from actual obs this score will be low
-                %  ie. this particle is not very good at predicting the observation.
-                % A lower score means it is less likely to be selected for the next generation...
-                % The weight is never zero.
-                pf.weight(p) = exp(-0.5*innov'*inv(pf.L)*innov) + 0.05;
-            end  
-        end
-
-        % step 4
-        % select particles based on their weights
-        function select(pf, odo)
-            
-            % particles with large weights will occupy a greater percentage of the
-            % y axis in a cummulative plot
-            CDF = cumsum(pf.weight)/sum(pf.weight);
-
-            % so randomly (uniform) choosing y values is more likely to correspond to
-            % better particles...
-            iSelect  = rand(pf.nparticles,1);
-
-            % find the particle that corresponds to each y value (just a look up)
-            iNextGeneration = interp1(CDF, 1:pf.nparticles, iSelect, 'nearest', 'extrap');
-
-            % copy selected particles for next generation..
-            pf.x = pf.x(iNextGeneration,:);
-        end
-
-        function plot_xy(pf, varargin)
-            %ParticleFilter.plot_xy Plot vehicle position
-            %
-            % PF.plot_xy() plot the estimated vehicle path in the xy-plane.
-            %
-            % PF.plot_xy(LS) as above but the optional line style arguments
-            % LS are passed to plot.
-            plot(pf.x_est(:,1), pf.x_est(:,2), varargin{:});
-        end
-
 
         function plot_pdf(pf)
             %ParticleFilter.plot_pdf Plot particles as a PDF
@@ -295,5 +291,99 @@ classdef ParticleFilter < handle
                 plot3([x(1) x(1)], [x(2) x(2)], [0 pf.weight(p)]);
             end
         end
+
+        function plot_xy(pf, varargin)
+            %ParticleFilter.plot_xy Plot vehicle position
+            %
+            % PF.plot_xy() plots the estimated vehicle path in the xy-plane.
+            %
+            % PF.plot_xy(LS) as above but the optional line style arguments
+            % LS are passed to plot.
+            plot(pf.x_est(:,1), pf.x_est(:,2), varargin{:});
+        end
+
+
     end % methods
+
+    methods(Access=protected)
+        % step 2
+        % update the particle state based on odometry and a random perturbation
+        function predict(pf, odo)
+
+            % Straightforward code:
+            %
+            % for i=1:pf.nparticles
+            %    x = pf.robot.f( pf.x(i,:), odo)' + sqrt(pf.Q)*pf.randn(3,1);   
+            %    x(3) = angdiff(x(3));
+            %    pf.x(i,:) = x;
+            %
+            % Vectorized code:
+
+            randvec = pf.randn(pf.nparticles,3);
+            pf.x = pf.robot.f( pf.x, odo) + randvec*sqrt(pf.Q);   
+            pf.x(:,3) = angdiff(pf.x(:,3));
+        end
+
+        % step 3
+        % predict observation and score the particles
+        function observe(pf, z, jf)
+        
+            % Straightforward code:
+            %
+            % for p = 1:pf.nparticles
+            %    % what do we expect observation to be for this particle?
+            %    % use the sensor model h(.)
+            %    z_pred = pf.sensor.h( pf.x(p,:), jf);
+            %    
+            %    % how different is it
+            %    innov(1) = z(1) - z_pred(1);
+            %    innov(2) = angdiff(z(2), z_pred(2));
+            %    
+            %    % get likelihood (new importance). Assume Gaussian but any PDF works!
+            %    % If predicted obs is very different from actual obs this score will be low
+            %    %  ie. this particle is not very good at predicting the observation.
+            %    % A lower score means it is less likely to be selected for the next generation...
+            %    % The weight is never zero.
+            %    pf.weight(p) = exp(-0.5*innov'*inv(pf.L)*innov) + 0.05;
+            % end
+            %
+            % Vectorized code:
+
+            invL = inv(pf.L);
+            z_pred = pf.sensor.h( pf.x, jf);
+            z_pred(:,1) = z(1) - z_pred(:,1);
+            z_pred(:,2) = angdiff(z(2), z_pred(:,2));
+
+            LL = -0.5*[invL(1,1); invL(2,2); 2*invL(1,2)];
+            e = [z_pred(:,1).^2 z_pred(:,2).^2 z_pred(:,1).*z_pred(:,2)]*LL;
+            pf.weight = exp(e) + 0.05;
+        end
+
+        % step 4
+        % select particles based on their weights
+        function select(pf)
+            
+            % particles with large weights will occupy a greater percentage of the
+            % y axis in a cummulative plot
+            CDF = cumsum(pf.weight)/sum(pf.weight);
+
+            % so randomly (uniform) choosing y values is more likely to correspond to
+            % better particles...
+            iSelect  = pf.rand(pf.nparticles,1);
+
+            % find the particle that corresponds to each y value (just a look up)
+            iNextGeneration = interp1(CDF, 1:pf.nparticles, iSelect, 'nearest', 'extrap');
+
+            % copy selected particles for next generation..
+            pf.x = pf.x(iNextGeneration,:);
+        end
+
+        function r = rand(pf, varargin)
+            r = pf.randstream.rand(varargin{:});
+        end
+
+        function r = randn(pf, varargin)
+            r = pf.randstream.randn(varargin{:});
+        end
+    end % private methods
 end

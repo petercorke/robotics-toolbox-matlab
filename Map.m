@@ -1,7 +1,7 @@
 %map Map of planar point features
 %
-% M = Map(N, DIM) returns a Map object that represents N random point features
-% in a planar region bounded by +/-DIM in the x- and y-directions.
+% A Map object represents a square 2D environment with a number of landmark
+% feature points.
 %
 % Methods::
 %   plot      Plot the feature map
@@ -14,9 +14,17 @@
 %   dim         The dimensions of the map region x,y in [-dim,dim]
 %   nfeatures   The number of map features N
 %
+% Examples::
+%
+% To create a map for an area where X and Y are in the range -10 to +10 metres
+% and with 50 random feature points
+%        map = Map(50, 10);
+% which can be displayed by
+%        map.plot();
+%
 % Reference::
 %
-%   Robotics, Vision & Control,
+%   Robotics, Vision & Control, Chap 6,
 %   Peter Corke,
 %   Springer 2011
 %
@@ -41,7 +49,6 @@
 
 classdef Map < handle
 % TODO:
-%   merge show into plot
 
     properties
         map    % map features
@@ -54,34 +61,39 @@ classdef Map < handle
     methods
 
         % constructor
-        function map = Map(nfeatures, dim)
+        function map = Map(nfeatures, varargin)
         %Map.Map Map of point feature landmarks
         %
-        % M = Map(N, DIM) is a Map object that represents N random point features
+        % M = Map(N, DIM, OPTIONS) is a Map object that represents N random point features
         % in a planar region bounded by +/-DIM in the x- and y-directions.
-
+        %
+        % Options::
+        % 'verbose'    Be verbose
             
-            if nargin < 1
-                 nfeatures = 20;
-            end
-            if nargin < 2
+            opt = [];
+            [opt,args] = tb_optparse(opt, varargin);
+            map.verbose = opt.verbose;
+
+            if ~isempty(args) && isnumeric(args{1})
+                dim = args{1};
+            else
                 dim = 10;
             end
             map.dim = dim;
             map.nfeatures = nfeatures;
-            map.map = dim * (2*rand(2, nfeatures)-1)
+            map.map = dim * (2*rand(2, nfeatures)-1);
             map.verbose = false;
         end
 
         function f = feature(map, k)
             %Map.feature Return the specified map feature
             %
-            % F = M.feature(K) is the 2x1 coordinate vector of the K'th feature.
+            % F = M.feature(K) is the coordinate (2x1) of the K'th feature.
             f = map.map(:,k);
         end
 
         function plot(map, varargin)
-            %Map.plot Plot the feature map
+            %Map.plot Plot the map
             %
             % M.plot() plots the feature map in the current figure, as a square
             % region with dimensions given by the M.dim property.  Each feature
@@ -109,13 +121,12 @@ classdef Map < handle
         end
 
         function show(map, varargin)
-            
         %map.SHOW Show the feature map
         %
-        % M.SHOW() plots the feature map in the current figure, as a square
-        % region with dimensions given by the M.DIM property.
-        %
-        % See also map.PLOT.
+        % Notes::
+        % - Deprecated, use plot method.
+            warning('show method is deprecated, use plot() instead');
+            map.plot(varargin{:});
         end
 
         function verbosity(map, v)
@@ -152,8 +163,8 @@ classdef Map < handle
         % s = M.char() is a string showing map parameters in 
         % a compact human readable format. 
             s = 'Map object';
-            s = strvcat(s, sprintf('  %d features', map.nfeatures));
-            s = strvcat(s, sprintf('  dimension %.1f', map.dim));
+            s = char(s, sprintf('  %d features', map.nfeatures));
+            s = char(s, sprintf('  dimension %.1f', map.dim));
         end
 
     end % method

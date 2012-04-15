@@ -1,30 +1,29 @@
 %RangeBearingSensor Range and bearing sensor class
 %
-% A concrete subclass of Sensor that implements a range and bearing angle
-% sensor that provides robot-centric measurements of the world. To enable
-% this it has references to a map of the world (Map object) and a robot
-% moving through the world (Vehicle object).
+% A concrete subclass of the Sensor class that implements a range and bearing
+% angle sensor that provides robot-centric measurements of point features in 
+% the world. To enable this it has references to a map of the world (Map object)
+% and a robot moving through the world (Vehicle object).
 %
 % Methods::
 %
-% reading   return a random range/bearing observation
-% h         return the observation for vehicle state xv and feature xf
-% Hx        return a Jacobian matrix dh/dxv 
-% Hxf       return a Jacobian matrix dh/dxf 
-% Hw        return a Jacobian matrix dh/dw
+% reading   range/bearing observation of random feature
+% h         range/bearing observation of specific feature
+% Hx        Jacobian matrix dh/dxv 
+% Hxf       Jacobian matrix dh/dxf 
+% Hw        Jacobian matrix dh/dw
 %
-% g         return feature positin given vehicle pose and observation
-% Gx        return a Jacobian matrix dg/dxv 
-% Gz        return a Jacobian matrix dg/dz
+% g         feature positin given vehicle pose and observation
+% Gx        Jacobian matrix dg/dxv 
+% Gz        Jacobian matrix dg/dz
 %
 % Properties (read/write)::
-% R            measurement covariance matrix
+% R            measurement covariance matrix (2x2)
 % interval     valid measurements returned every interval'th call to reading()
-%
 %
 % Reference::
 %
-%   Robotics, Vision & Control,
+%   Robotics, Vision & Control, Chap 6,
 %   Peter Corke,
 %   Springer 2011
 %
@@ -55,6 +54,7 @@ classdef RangeBearingSensor < Sensor
         r_range     % range limits
         theta_range % angle limits
 
+        fail
         randstream  % random stream just for Sensors
     end
 
@@ -64,13 +64,13 @@ classdef RangeBearingSensor < Sensor
 
     methods
 
-        function s = RangeBearingSensor(robot, map, R)
+        function s = RangeBearingSensor(robot, map, R, varargin)
             %RangeBearingSensor.RangeBearingSensor Range and bearing sensor constructor
             %
-            % S = RangeBearingSensor(VEHICLE, MAP, R, OPTIONS) is a range
-            % and bearing angle sensor mounted on the Vehicle object
-            % VEHICLE and observing the landmark map MAP.  The sensor
-            % covariance is R (2x2) representing range and bearing
+            % S = RangeBearingSensor(VEHICLE, MAP, R, OPTIONS) is an object representing
+            % a range and bearing angle sensor mounted on the Vehicle object
+            % VEHICLE and observing an environment of known landmarks represented by the
+            % map object MAP.  The sensor covariance is R (2x2) representing range and bearing
             % covariance.
             %
             % Options::
@@ -92,10 +92,30 @@ classdef RangeBearingSensor < Sensor
 
             s.randstream = RandStream.create('mt19937ar');
 
+            opt.range = [];
+            opt.thrange = [];
+            opt.skip = 1;
+            opt.fail = [];
+
+            opt = tb_optparse(opt, varargin);
+
             s.R = R;
-            s.r_range = [];
-            s.theta_range = [];
-            s.interval = 1;
+            if ~isempty(opt.range)
+                if length(opt.range) == 1
+                    s.r_range = [0 opt.r_range];
+                elseif length(opt.thrange) == 2
+                    s.r_range = opt.range;
+                end
+            end
+            if ~isempty(opt.thrange)
+                if length(opt.thrange) == 1
+                    s.theta_range = [-opt.thrange opt.thrange];
+                elseif length(opt.thrange) == 2
+                    s.theta_range = opt.thrange;
+                end
+            end
+            s.fail = opt.fail;
+            s.interval = opt.skip;
             s.count = 0;
         end
 
@@ -103,24 +123,30 @@ classdef RangeBearingSensor < Sensor
             k = s.randstream.randi(s.map.nfeatures);
         end
 
-        % return sensor reading
         function [z,jf] = reading(s)
             %RangeBearingSensor.h Landmark range and bearing
             %
-            % S.reading() is a range/bearing observation [Z,J] where
-            % Z=[R,THETA] is range and bearing with additive Gaussian noise
-            % of covariance R. J is the index of the map feature that was
-            % observed. If no valid measurement, ie. no features within
-            % range, interval subsampling enabled or simulated failure the
-            % return is Z=[] and J=NaN.
+            % [Z,K] = S.reading() is an observation of a random landmark where
+            % Z=[R,THETA] is the range and bearing with additive Gaussian noise
+            % of covariance R (specified to the constructor). K is the index of 
+            % the map feature that was observed. If no valid measurement, ie. no
+            % features within range, interval subsampling enabled or simulated 
+            % failure the return is Z=[] and K=NaN.
             %
             % See also RangeBearingSensor.h.
             
             % model a sensor that emits readings every interval samples
             s.count = s.count + 1;
+
+            % check conditions for NOT returning a value
+            z = [];
+            jf = NaN;
+            % sample interval
             if mod(s.count, s.interval) ~= 0
-                z = [];
-                jf = NaN;
+                return;
+            end
+            % simulated failure
+            if ~isempty(s.fail) && (s.count >= s.fail(1)) && (s.count <= s.fail(2))
                 return;
             end
 
@@ -128,9 +154,7 @@ classdef RangeBearingSensor < Sensor
             jf = s.selectFeature();
 
             % compute the range and bearing from robot to feature
-            %z = s.h(s.robot.x, jf) + sqrt(s.R)*s.randstream.randn(2,1);
-            %z(2) = angdiff(z(2));
-            z = s.h(s.robot.x, jf);
+            z = s.h(s.robot.x', jf);
 
             if s.verbose
                 fprintf('Sensor:: feature %d: %.1f %.1f\n', k, z);
@@ -158,11 +182,13 @@ classdef RangeBearingSensor < Sensor
         function z = h(s, xv, jf)
             %RangeBearingSensor.h Landmark range and bearing
             %
-            % Z = S.h(XV, J) is range and bearing from vehicle at XV to map
-            % feature J.  Z = [R,theta]
+            % Z = S.h(XV, J) is a sensor observation (1x2), range and bearing, from vehicle at 
+            % pose XV (1x3) to the map feature K.
             %
-            % Z = S.h(XV, XF) as above but compute range and bearing to a
-            % feature at coordinate XF.
+            % Z = S.h(XV, XF) as above but compute range and bearing to a feature at coordinate XF.
+            %
+            % Notes::
+            % - Supports vectorized operation where XV (Nx3) and Z (Nx2).
             %
             % See also RangeBearingSensor.Hx, RangeBearingSensor.Hw, RangeBearingSensor.Hxf.
             if length(jf) == 1
@@ -170,18 +196,26 @@ classdef RangeBearingSensor < Sensor
             else
                 xf = jf;
             end
-            dx = xf(1) - xv(1); dy = xf(2) - xv(2);
 
-            z = zeros(2,1);
-            z(1) = sqrt(dx^2 + dy^2);       % range measurement
-            z(2) = atan2(dy, dx) - xv(3);   % bearing measurement
+            % Straightforward code:
+            %
+            % dx = xf(1) - xv(1); dy = xf(2) - xv(2);
+            %
+            % z = zeros(2,1);
+            % z(1) = sqrt(dx^2 + dy^2);       % range measurement
+            % z(2) = atan2(dy, dx) - xv(3);   % bearing measurement
+            %
+            % Vectorized code:
+
+            dx = xf(1) - xv(:,1); dy = xf(2) - xv(:,2);
+            z = [sqrt(dx.^2 + dy.^2) atan2(dy, dx)-xv(:,3) ];   % range & bearing measurement
         end
 
         function J = Hx(s, xv, jf)
             %RangeBearingSensor.Hx Jacobian dh/dxv
             %
-            % J = S.Hx(XV, J) returns the Jacobian dh/dxv at the vehicle
-            % state XV, for map feature J.  J is 2x3.
+            % J = S.Hx(XV, K) returns the Jacobian dh/dxv (2x3) at the vehicle
+            % state XV (3x1) for map feature K.
             %
             % J = S.Hx(XV, XF) as above but for a feature at coordinate XF.
             %
@@ -194,7 +228,7 @@ classdef RangeBearingSensor < Sensor
             if isempty(xv)
                 xv = s.robot.x;
             end
-            Delta = xf - xv(1:2);
+            Delta = xf - xv(1:2)';
             r = norm(Delta);
             J = [
                 -Delta(1)/r,    -Delta(2)/r,        0
@@ -205,10 +239,10 @@ classdef RangeBearingSensor < Sensor
         function J = Hxf(s, xv, jf)
             %RangeBearingSensor.Hxf Jacobian dh/dxf
             %
-            % J = S.Hxf(XV, J) returns the Jacobian dh/dxv at the vehicle
-            % state XV, for map feature J.  J is 2x2.
+            % J = S.Hxf(XV, K) is the Jacobian dh/dxv (2x2) at the vehicle
+            % state XV (3x1) for map feature K.
             %
-            % J = S.Hxf(XV, XF) as above but for a feature at coordinate XF.
+            % J = S.Hxf(XV, XF) as above but for a feature at coordinate XF (1x2).
             %
             % See also RangeBearingSensor.h.
             if length(jf) == 1
@@ -216,7 +250,7 @@ classdef RangeBearingSensor < Sensor
             else
                 xf = jf;
             end
-            Delta = xf - xv(1:2);
+            Delta = xf - xv(1:2)';
             r = norm(Delta);
             J = [
                 Delta(1)/r,         Delta(2)/r
@@ -227,8 +261,8 @@ classdef RangeBearingSensor < Sensor
         function J = Hw(s, xv, jf)
             %RangeBearingSensor.Hx Jacobian dh/dv
             %
-            % J = S.Hw(XV, J) returns the Jacobian dh/dv at the vehicle
-            % state XV, for map feature J.  J is 2x2.
+            % J = S.Hw(XV, K) is the Jacobian dh/dv (2x2) at the vehicle
+            % state XV (3x1) for map feature K.
             %
             % See also RangeBearingSensor.h.
             J = eye(2,2);
@@ -237,21 +271,22 @@ classdef RangeBearingSensor < Sensor
         function xf = g(s, xv, z)
             %RangeBearingSensor.g Compute landmark location
             %
-            % P = S.g(XV, Z) is the world coordinate of feature given
-            % observation Z and vehicle state XV.
+            % P = S.g(XV, Z) is the world coordinate (1x2) of a feature given
+            % the sensor observation Z (1x2) and vehicle state XV (3x1).
             %
             % See also RangeBearingSensor.Gx, RangeBearingSensor.Gz.
-            range = z(1);
-            bearing = z(2) + xv(3);
 
-            xf = xv(1:2) + [range*cos(bearing); range*sin(bearing)];
+            range = z(1);
+            bearing = z(2) + xv(3); % bearing angle in vehicle frame
+
+            xf = [xv(1)+range*cos(bearing) xv(2)+range*sin(bearing)];
         end
 
         function J = Gx(s, xv, z)
             %RangeBearingSensor.Gxv Jacobian dg/dx
             %
-            % J = S.Gx(XV, Z) returns the Jacobian dg/dxv at the vehicle state XV, for
-            % measurement Z.  J is 2x3.
+            % J = S.Gx(XV, Z) is the Jacobian dg/dxv (2x3) at the vehicle state XV (3x1) for
+            % sensor observation Z (2x1).
             %
             % See also RangeBearingSensor.g.
             theta = xv(3);
@@ -267,8 +302,8 @@ classdef RangeBearingSensor < Sensor
         function J = Gz(s, xv, z)
             %RangeBearingSensor.Gz Jacobian dg/dz
             %
-            % J = S.Gz(XV, Z) returns the Jacobian dg/dz at the vehicle state XV, for
-            % measurement Z.  J is 2x2.
+            % J = S.Gz(XV, Z) is the Jacobian dg/dz (2x2) at the vehicle state XV (3x1) for
+            % sensor observation Z (2x1).
             %
             % See also RangeBearingSensor.g.
             theta = xv(3);
