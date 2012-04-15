@@ -1,21 +1,29 @@
 %BUG2 Bug navigation class
 %
-% A concrete subclass of Navigation that implements the bug2 navigation 
-% algorithm.  This is a simple automaton that performs local planning, that
-% is, it can only sense the immediate presence of an obstacle.
+% A concrete subclass of the Navigation class that implements the bug2 
+% navigation algorithm.  This is a simple automaton that performs local 
+% planning, that is, it can only sense the immediate presence of an obstacle.
 %
 % Methods::
 %   path        Compute a path from start to goal
-%   visualize   Display the occupancy grid
-%   display     Display the state/parameters in human readable form
-%   char        Convert  the state/parameters to human readable form
+%   visualize    Display the obstacle map (deprecated)
+%   plot         Display the obstacle map
+%   display     Display state/parameters in human readable form
+%   char        Convert to string
 %
 % Example::
-%    load map1
-%    bug = Bug2(map);
-%    bug.goal = [50; 35];
-%    bug.path([20; 10]);
+%    load map1             % load the map
+%    bug = Bug2(map);      % create navigation object
+%    bug.goal = [50, 35];  % set the goal
+%    bug.path([20, 10]);   % animate path to (20,10)
 %
+% Reference::
+% -  Dynamic path planning for a mobile automaton with limited information on the environment,,
+%    V. Lumelsky and A. Stepanov, 
+%    IEEE Transactions on Automatic Control, vol. 31, pp. 1058-1063, Nov. 1986.
+% -  Robotics, Vision & Control, Sec 5.1.2,
+%    Peter Corke, Springer, 2011.
+%  
 % See also Navigation, DXform, Dstar, PRM.
 
 % Copyright (C) 1993-2011, by Peter I. Corke
@@ -56,7 +64,9 @@ classdef Bug2 < Navigation
             % planar world as a matrix whose elements are 0 (free space) or 1
             % (occupied).
             %
-            % B = Bug2(MAP, GOAL) as above but specify the goal point.
+            % Options::
+            % 'goal',G      Specify the goal point (1x2)
+            % 'inflate',K   Inflate all obstacles by K cells.
             %
             % See also Navigation.Navigation.
 
@@ -66,10 +76,6 @@ classdef Bug2 < Navigation
             bug.H = [];
             bug.j = 1;
             bug.step = 1;
-
-            if nargin > 1
-                bug.goal = goal;
-            end
         end
 
         % null planning for the bug!

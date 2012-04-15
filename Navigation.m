@@ -2,29 +2,38 @@
 %
 % An abstract superclass for implementing navigation classes.  
 %
-% nav = Navigation(occgrid, options) is an instance of the Navigation object.
-%
 % Methods::
-%   visualize   display the occupancy grid
-%   plan        plan a path to goal
-%   path        return/animate a path from start to goal
-%   display     print the parameters in human readable form
-%   char        convert the parameters to a human readable string
+%   plot        Display the occupancy grid
+%   visualize   Display the occupancy grid (deprecated)
+%   plan        Plan a path to goal
+%   path        Return/animate a path from start to goal
+%   display     Display the parameters in human readable form
+%   char        Convert to string
+%
+%   rand        Uniformly distributed random number
+%   randn       Normally distributed random number
+%   randi       Uniformly distributed random integer
 %
 % Properties (read only)::
-%   occgrid   occupancy grid representing the navigation environment
-%   goal      goal coordinate
+%   occgrid   Occupancy grid representing the navigation environment
+%   goal      Goal coordinate
+%   seed0     Random number state
 %
-% Methods to be provided in subclass::
-%   goal_set        set the goal
-%   world_set       set the occupancy grid
-%   navigate_init
-%   plan            generate a plan for motion to goal
-%   next            returns coordinate of next point on path
+% Methods that must be provided in subclass::
+%   plan      Generate a plan for motion to goal
+%   next      Returns coordinate of next point along path
+%
+% Methods that may be overriden in a subclass::
+%   goal_set        The goal has been changed by nav.goal = (a,b)
+%   navigate_init   Start of path planning.
 % 
 % Notes::
-% - subclasses the Matlab handle class which means that pass by reference semantics
+% - Subclasses the MATLAB handle class which means that pass by reference semantics
 %   apply.
+% - A grid world is assumed and vehicle position is quantized to grid cells.
+% - Vehicle orientation is not considered.
+% - The initial random number state is captured as seed0 to allow rerunning an
+%   experiment with an interesting outcome.
 %
 % See also Dstar, Dxform, PRM, RRT.
 
@@ -56,6 +65,10 @@ classdef Navigation < handle
         navhook     % function handle, called on each navigation iteration
         verbose     % verbosity
         seed            % current random seed
+        spincount
+
+        randstream
+        seed0
     end
 
 
@@ -77,63 +90,154 @@ classdef Navigation < handle
         function nav = Navigation(varargin)
         %Navigation.Navigation Create a Navigation object
         %
-        % N = Navigation(OCCGRID, options) is a Navigation object that holds an
+        % N = Navigation(OCCGRID, OPTIONS) is a Navigation object that holds an
         % occupancy grid OCCGRID.  A number of options can be be passed.
         %
         % Options::
-        %  'navhook',F   Specify a function to be called at every step of path
-        %  'seed', s     Specify an initial random number seed
-        %  'goal', g     Specify the goal point
-        %  'verbose'     Display debugging information
-            
+        % 'navhook',F   Specify a function to be called at every step of path
+        % 'goal',G      Specify the goal point (2x1)
+        % 'verbose'     Display debugging information
+        % 'inflate',K   Inflate all obstacles by K cells.
+        % 'private'     Use private random number stream.
+        % 'reset'       Reset random number stream.
+        % 'seed',S      Set the initial state of the random number stream.  S must
+        %               be a proper random number generator state such as saved in
+        %               the seed0 property of an earlier run.
+        %
+        % Notes::
+        % - In the occupancy grid a value of zero means free space and non-zero means
+        %   occupied (not driveable).
+        % - Obstacle inflation is performed with a round structuring element (kcircle).
+        % - The 'private' option creates a private random number stream for the methods 
+        %   rand, randn and randi.  If not given the global stream is used.
+
             if nargin >= 1 && isnumeric(varargin{1})
                 nav.occgrid = varargin{1};
                 varargin = varargin(2:end);
             end
             
             % default values of options
-            opt.verbose = false;
-            opt.navhook = [];
-            opt.seed = [];
             opt.goal = [];
+            opt.inflate = 0;
+            opt.navhook = [];
+            opt.private = false;
+            opt.reset = false;
+            opt.seed = [];
             
-            [opt,args] = tb_optparse(nav, varargin);
-            
-            % save current random seed so we can repeat the expt
-            defaultStream = RandStream.getDefaultStream;
-            if isempty(opt.seed)
-                nav.seed = defaultStream.State;
-            else
-                defaultStream.State = opt.seed;
+            [opt,args] = tb_optparse(opt, varargin);
+
+            % optionally inflate the obstacles
+            if opt.inflate > 0
+                nav.occgrid = idilate(nav.occgrid, kcircle(opt.inflate));
             end
+            
+            % copy other options into the object
             nav.verbose = opt.verbose;
             nav.navhook = opt.navhook;
             if ~isempty(opt.goal)
-                nav.goal = opt.goal
+                nav.goal = opt.goal(:)';
             end
+
+            % create a private random number stream if required
+            if opt.private
+                nav.randstream = RandStream.create('mt19937ar');
+            else
+                nav.randstream = RandStream.getGlobalStream();
+            end
+
+            % reset the random number stream if required
+            if opt.reset
+                nav.randstream.reset();
+            end
+
+            % return the random number stream to known state if required
+            if ~isempty(opt.seed)
+                set(nav.randstream.set(opt.seed));
+            end
+
+            % save the current state in case it later turns out to give interesting results
+            nav.seed0 = nav.randstream.State;
+
+            nav.spincount = 0;
         end
 
-        % set the occupancy grid
-        %  can be overriden in a subclass
-        function occgrid_set(nav, og)
-            nav.occgrid = og;
+        function r = rand(nav, varargin)
+        %Navigation.rand Uniformly distributed random number
+        %
+        % R = N.rand() return a uniformly distributed random number from
+        % a private random number stream.
+        %
+        % R = N.rand(M) as above but return a matrix (MxM) of random numbers.
+        %
+        % R = N.rand(L,M) as above but return a matrix (LxM) of random numbers.
+        %
+        % Notes::
+        % - Accepts the same arguments as rand().
+        % - Seed is provided to Navigation constructor.
+        %
+        % See also rand, RandStream.
+            r = nav.randstream.rand(varargin{:});
         end
 
+        function r = randn(nav, varargin)
+        %Navigation.randn Normally distributed random number
+        %
+        % R = N.randn() return a normally distributed random number from
+        % a private random number stream.
+        %
+        % R = N.randn(M) as above but return a matrix (MxM) of random numbers.
+        %
+        % R = N.randn(L,M) as above but return a matrix (LxM) of random numbers.
+        %
+        %
+        % Notes::
+        % - Accepts the same arguments as randn().
+        % - Seed is provided to Navigation constructor.
+        %
+        % See also randn, RandStream.
+            r = nav.randstream.randn(varargin{:});
+        end
+
+        function r = randi(nav, varargin)
+        %Navigation.randi Integer random number
+        %
+        % I = N.randi(RM) return a uniformly distributed random integer in the 
+        % range 1 to RM from a private random number stream.
+        %
+        % I = N.randi(RM, M) as above but return a matrix (MxM) of random integers.
+        %
+        % I = N.randn(RM, L,M) as above but return a matrix (LxM) of random integers.
+        %
+        %
+        % Notes::
+        % - Accepts the same arguments as randn().
+        % - Seed is provided to Navigation constructor.
+        %
+        % See also randn, RandStream.
+            r = nav.randstream.randi(varargin{:});
+        end
+
+        % invoked whenever the goal is set
         function set.goal(nav, goal)
-            disp('in set.goal');
+
             if ~isempty(nav.occgrid) && nav.occgrid( goal(2), goal(1)) == 1
                 error('Navigation: cant set goal inside obstacle');
-            else
-                nav.goal = goal(:);
             end
             
-            nav.goal_set(goal);
+            goal = goal(:);
+            if ~(all(size(goal) == size(nav.goal)) && all(goal == nav.goal))
+                % goal has changed
+                nav.goal = goal(:);
+                nav.goal_change();
+            end
         end
         
-        % invoked when goal changes
-        %  can be overriden in a subclass
-        function goal_set(nav, goal)
-            disp('in base class goal_set');
+        function goal_change(nav)
+            %Navigation.goal_change Notify change of goal
+            %
+            % Invoked when the goal property of the object is changed.  Typically this
+            % is overriden in a subclass to take particular action such as invalidating
+            % a costmap.
         end
         
 
@@ -141,30 +245,30 @@ classdef Navigation < handle
         function pp = path(nav, start)
             %Navigation.path Follow path from start to goal
             %
-            % N.path(START) animates the robot moving from START to the goal (which is a property of 
+            % N.path(START) animates the robot moving from START (2x1) to the goal (which is a 
+            % property of the object).
+            %
+            % N.path() as above but first displays the occupancy grid, and prompts the user to 
+            % click a start location.
             % the object).
             %
-            % N.path() display the occupancy grid, prompt the user to click a start location,
-            % then compute a path from this point to the goal (which is a property of 
-            % the object).
-            %
-            % X = N.path(START) returns the path from START to the goal (which is a property of 
+            % X = N.path(START) returns the path (2xM) from START to the goal (which is a property of 
             % the object).
             %
             % The method performs the following steps:
             %
-            %  - get start position interactively if not given
-            %  - initialized navigation, invoke method N.navigate_init()
-            %  - visualize the environment, invoke method N.visualize()
-            %  - iterate on the next() method of the subclass
+            %  - Get start position interactively if not given
+            %  - Initialized navigation, invoke method N.navigate_init()
+            %  - Visualize the environment, invoke method N.plot()
+            %  - Iterate on the next() method of the subclass
             %
-            % See also Navigation.visualize, Navigation.goal.
+            % See also Navigation.plot, Navigation.goal.
 
             % if no start point given, display the map, and prompt the user to select
             % a start point
             if nargin < 2
                 % display the world
-                nav.visualize();
+                nav.plot();
 
                 % prompt the user to click a goal point
                 fprintf('** click a starting point ');
@@ -177,7 +281,7 @@ classdef Navigation < handle
             % if no output arguments given, then display the world
             if nargout == 0
                 % render the world
-                nav.visualize();
+                nav.plot();
                 hold on
             end
             
@@ -218,15 +322,17 @@ classdef Navigation < handle
             end
         end
 
-
-
         function visualize(nav, varargin)
-        %Navigation.visualize  Visualize navigation environment
+            warning('visualize method deprecated for Navigation classes, use plot instead');
+            nav.plot(varargin{:});
+        end
+
+        function plot(nav, varargin)
+        %Navigation.plot  Visualize navigation environment
         %
-        % N.visualize() displays the occupancy grid in a new figure.
+        % N.plot() displays the occupancy grid in a new figure.
         %
-        % N.visualize(P) displays the occupancy grid in a new figure, and
-        % shows the path points P which is an Nx2 matrix.
+        % N.plot(P) as above but overlays the points along the path (Mx2) matrix.
         %
         % Options::
         %  'goal'         Superimpose the goal position if set
@@ -276,7 +382,7 @@ classdef Navigation < handle
             grid on
             hold on
             
-            if length(args) > 0
+            if ~isempty(args)
                 p = args{1};
                 if numcols(p) ~= 2
                     error('expecting Nx2 matrix of points');
@@ -290,19 +396,23 @@ classdef Navigation < handle
             hold off
         end
 
-        % initialize navigation for this starting point
         function navigate_init(nav, start)
+            %Navigation.navigate_init Notify start of path
+            %
+            % Invoked when the path() method is invoked. Typically overriden in a subclass 
+            % to take particular action such as computing some path parameters.
+            % start is the initial position for this path, and nav.goal is the final position.
         end
 
 
         function display(nav)
         %Navigation.display Display status of navigation object
         %
-        % N.display() display the state of the navigation object in 
+        % N.display() displays the state of the navigation object in 
         % human-readable form.
         %
         % Notes::
-        % - this method is invoked implicitly at the command line when the result
+        % - This method is invoked implicitly at the command line when the result
         %   of an expression is a Navigation object and the command has no trailing
         %   semicolon.
         %
@@ -316,14 +426,14 @@ classdef Navigation < handle
         end % display()
 
         function s = char(nav)
-        %Navigation.char Convert navigation object to string
+        %Navigation.char Convert to string
         %
         % N.char() is a string representing the state of the navigation 
         % object in human-readable form.
             s = [class(nav) ' navigation class:'];
-            s = strvcat(s, sprintf('  occupancy grid: %dx%d', size(nav.occgrid)));
+            s = char(s, sprintf('  occupancy grid: %dx%d', size(nav.occgrid)));
             if ~isempty(nav.goal)
-                s = strvcat(s, sprintf('   goal=%d,%d\n', nav.goal) );
+                s = char(s, sprintf('  goal: (%d,%d)', nav.goal) );
             end
         end
 
@@ -341,14 +451,29 @@ classdef Navigation < handle
         %
         % can be used for logging data, animation, etc.
         function navhook_set(nav, navhook)
-            nav.navhook = navhook
+            nav.navhook = navhook;
         end
         
-        function message(nav, str, varargin)
+        function message(nav, varargin)
+        %Navigation.message Display debug message
+        %
+        % N.message(S) displays the string S if the verbose property is true.
+        %
+        % N.message(FMT, ARGS) as above but accepts printf() like semantics.
             if nav.verbose
-                fprintf(['Navigation:: ' sprintf(str, varargin{:}) '\n']);
+                fprintf([class(nav) ' debug:: ' sprintf(varargin{:}) '\n']);
             end
         end
+
+        function spinner(nav)
+        %Navigation.spinner Update progress spinner
+        %
+        % N.spinner() displays a simple ASCII progress spinner, a rotating bar.
+            spinchars = '-\|/';
+            nav.spincount = nav.spincount + 1;
+            fprintf('\r%c', spinchars( mod(nav.spincount, length(spinchars))+1 ) );
+        end
+
     end % method
 
 end % classdef
