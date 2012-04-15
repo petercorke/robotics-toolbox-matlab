@@ -127,6 +127,21 @@ function Test_fkine
     T=p560.fkine(q);
     expected_out = [4 4 2];
     assertElementsAlmostEqual(size(T),expected_out,'absolute',1e-4);
+%    plot                       - plot/animate robot
+function Test_SerialLink_plot
+    L(1)=Link([1 1 1 1 1]);
+    L(2)=Link([0 1 0 1 0]);
+    R1 = SerialLink(L,'name','robot1','comment', 'test robot','manufacturer', 'test',...
+    'base', eye(4,4), 'tool', eye(4,4), 'offset', [1 1 0 0 0 0 ] );
+    R1.plot([1 1]);
+%    teach                      - drive a graphical  robot
+function Test_teach
+    L(1)=Link([1 1 1 1 1]);
+    L(2)=Link([0 1 0 1 0]);
+    R1 = SerialLink(L,'name','robot1','comment', 'test robot','manufacturer', 'test',...
+    'base', eye(4,4), 'tool', eye(4,4), 'offset', [1 1 0 0 0 0 ] );
+    R1.teach;
+
 %        ikine                  - inverse kinematics (numeric)
 function Test_ikine
     mdl_puma560;
@@ -194,6 +209,19 @@ function Test_jacobn
                     0.5950   -0.5403   -0.5403   -0.0000   -1.0000         0
                    -0.2298    0.5950    0.5950    0.7071    0.0000    1.0000];
     assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+
+%    maniplty                   - compute manipulability
+function Test_maniplty
+    mdl_puma560;
+    q = [0 pi/4 -pi 1 pi/4 0];
+    assertElementsAlmostEqual(p560.maniplty(q), 0.1112, 'absolute',1e-4);
+    assertElementsAlmostEqual(p560.maniplty(q, 'T'), 0.1112, 'absolute',1e-4);
+    assertElementsAlmostEqual(p560.maniplty(q, 'R'), 2.5936, 'absolute',1e-4);
+    assertElementsAlmostEqual(p560.maniplty(q, 'all'), 0.0786, 'absolute',1e-4);
+    assertElementsAlmostEqual(p560.maniplty(q, 'asada'), 0.2733, 'absolute',1e-4);
+    assertElementsAlmostEqual(p560.maniplty(q, 'asada', 'T'), 0.2733, 'absolute',1e-4);
+    assertElementsAlmostEqual(p560.maniplty(q, 'asada', 'R'), 0.1716, 'absolute',1e-4);
+    assertElementsAlmostEqual(p560.maniplty(q, 'asada', 'all'), 0.0043, 'absolute',1e-4);
 
 %
 %%     Dynamics methods
@@ -278,16 +306,6 @@ function Test_coriolis
     assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
     
     
-%        fdyn                   - forward dynamics
-function Test_fdyn
-    mdl_puma560;
-    qn = [0 pi/4 -pi 1 pi/4 0];
-    qd = 0.5 * [1 1 1 1 1 1];
-    qdo = [0 0 0 0 0 0];
-    T = 0.0001;
-    
-    [TI,Q,QD] = p560.fdyn(T, 0, qn, qdo);
-
 %        gravload               - gravity loading
 function Test_gravload
     mdl_puma560;
@@ -343,9 +361,31 @@ function Test_itorque
 
 %        rne                    - inverse dynamics
 function Test_rne
-mdl_puma560;
+    mdl_puma560;
     qz = [0 1 0 0 2 0];
     qn = [0 pi/4 -pi 1 pi/4 0];
     out = p560.rne(qn,qz,qz);
     expected_out = [-0.9748   49.7218    5.9889   -0.0108    1.0445    0.0001];
     assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+
+    pnf = p560.nofriction('all');
+
+    q = rand(1,6);
+    qd = rand(1,6);
+    qdd = rand(1,6);
+
+    tau1 = pnf.rne(q,qd,qdd);
+    tau2 = pnf.inertia(q)*qdd' +pnf.coriolis(q,qd)*qd' + pnf.gravload(q)';
+    assertElementsAlmostEqual(tau1', tau2, 'absolute', 1e-6);
+
+%        fdyn                   - forward dynamics
+function Test_fdyn
+    mdl_puma560;
+    qn = [0 pi/4 -pi 1 pi/4 0];
+    qd = 0.5 * [1 1 1 1 1 1];
+    qdo = [0 0 0 0 0 0];
+    T = 0.0001;
+    
+    [TI,Q,QD] = p560.fdyn(T, 0, qn, qdo);
+
+

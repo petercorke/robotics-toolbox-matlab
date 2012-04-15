@@ -2,6 +2,142 @@
 function test_suite = TestRobotToolboxTrajectoryGeneration
   initTestSuite;
   %% Trajectory Generation
+%    tpoly                      - 1D polynomial trajectory
+function Test_tpoly
+    % unit testing tpoly 
+    s1 = 1;
+    s2 = 2;
+    T = [0.1 0.2 0.3 0.4 0.5];
+    V = 0.5;
+    %Testing tpoly with N = 5 
+    [Q Qd Qdd] = tpoly(s1,s2,5);
+    assertElementsAlmostEqual(Q,...
+            [1.0000
+             1.1035
+             1.5000
+             1.8965
+             2.0000],'absolute',1e-4);
+    assertElementsAlmostEqual(Qd,...
+            [     0
+             0.2637
+             0.4688
+             0.2637
+                  0],'absolute',1e-4);
+    assertElementsAlmostEqual(Qdd,...
+            [     0
+             0.3516
+            -0.0000
+            -0.3516
+            -0.0000],'absolute',1e-4);
+    %Testing tpoly with T
+    [Q Qd Qdd] = tpoly(s1,s2,T);
+    assertElementsAlmostEqual(Q,...
+            [1.0579
+             1.3174
+             1.6826
+             1.9421
+             2.0000],'absolute',1e-4);
+    assertElementsAlmostEqual(Qd,...
+            [1.5360
+             3.4560
+             3.4560
+             1.5360
+                  0],'absolute',1e-4);
+    assertElementsAlmostEqual(Qdd,...
+            [23.0400
+             11.5200
+            -11.5200
+            -23.0400
+                   0],'absolute',1e-4);
+    %Testing tpoly with N = 5 and a constant velocity of V 
+    [Q Qd Qdd] = tpoly(s1,s2,5,V);
+    assertElementsAlmostEqual(Q,...
+            [1.0000
+             1.4727
+             1.8125
+             1.9727
+             2.0000],'absolute',1e-4);
+    assertElementsAlmostEqual(Qd,...
+            [0.5000
+             0.4219
+             0.2500
+             0.0781
+                  0],'absolute',1e-4);
+    assertElementsAlmostEqual(Qdd,...
+            [     0
+            -0.1406
+            -0.1875
+            -0.1406
+                  0],'absolute',1e-4);
+        
+%    lspb                       - 1D trapezoidal trajectory
+function Test_lspb
+    % unit testing lspb 
+    s1 = 1;
+    s2 = 2;
+    T = [0.1 0.2 0.3 0.4 0.5];
+    V = 0.5;
+    %Testing lspb with N = 5 
+    [Q Qd Qdd] = lspb(s1,s2,5);
+    assertElementsAlmostEqual(Q,...
+            [1.0000
+             1.1406
+             1.5000
+             1.8594
+             2.0000],'absolute',1e-4);
+    assertElementsAlmostEqual(Qd,...
+            [     0
+             0.2813
+             0.3750
+             0.2813
+                  0],'absolute',1e-4);
+    assertElementsAlmostEqual(Qdd,...
+            [0.2813
+             0.2813
+                  0
+            -0.2813
+            -0.2813],'absolute',1e-4);
+    %Testing lspb with T
+    [Q Qd Qdd] = lspb(s1,s2,T);
+    assertElementsAlmostEqual(Q,...
+            [1.0900
+             1.3500
+             1.6500
+             1.9100
+             2.0000],'absolute',1e-4);
+    assertElementsAlmostEqual(Qd,...
+            [1.8000
+             3.0000
+             3.0000
+             1.8000
+                  0],'absolute',1e-4);
+    assertElementsAlmostEqual(Qdd,...
+            [18
+              0
+              0
+            -18
+            -18],'absolute',1e-4);
+    %Testing lspb with N = 5 and a constant velocity of V 
+    [Q Qd Qdd] = lspb(s1,s2,5,V);
+    assertElementsAlmostEqual(Q,...
+            [1.0000
+             1.1250
+             1.5000
+             1.8750
+             2.0000],'absolute',1e-4);
+    assertElementsAlmostEqual(Qd,...
+            [     0
+             0.2500
+             0.5000
+             0.2500
+                  0],'absolute',1e-4);
+    assertElementsAlmostEqual(Qdd,...
+            [0.2500
+             0.2500
+             0.2500
+            -0.2500
+            -0.2500],'absolute',1e-4);
+        
 %    ctraj                      - Cartesian trajectory
 function Test_ctraj
     % unit testing ctraj with T0 and T1 and N
@@ -103,74 +239,6 @@ function Test_jtraj
              0.0000    0.0000         0   -0.0000    0.0000],'absolute',1e-4);
      
          
-%    lspb                       - 1D trapezoidal trajectory
-function Test_lspb
-    % unit testing lspb 
-    s1 = 1;
-    s2 = 2;
-    T = [0.1 0.2 0.3 0.4 0.5];
-    V = 0.5;
-    %Testing lspb with N = 5 
-    [Q Qd Qdd] = lspb(s1,s2,5);
-    assertElementsAlmostEqual(Q,...
-            [1.0000
-             1.1406
-             1.5000
-             1.8594
-             2.0000],'absolute',1e-4);
-    assertElementsAlmostEqual(Qd,...
-            [     0
-             0.2813
-             0.3750
-             0.2813
-                  0],'absolute',1e-4);
-    assertElementsAlmostEqual(Qdd,...
-            [0.2813
-             0.2813
-                  0
-            -0.2813
-            -0.2813],'absolute',1e-4);
-    %Testing lspb with T
-    [Q Qd Qdd] = lspb(s1,s2,T);
-    assertElementsAlmostEqual(Q,...
-            [1.0900
-             1.3500
-             1.6500
-             1.9100
-             2.0000],'absolute',1e-4);
-    assertElementsAlmostEqual(Qd,...
-            [1.8000
-             3.0000
-             3.0000
-             1.8000
-                  0],'absolute',1e-4);
-    assertElementsAlmostEqual(Qdd,...
-            [18
-              0
-              0
-            -18
-            -18],'absolute',1e-4);
-    %Testing lspb with N = 5 and a constant velocity of V 
-    [Q Qd Qdd] = lspb(s1,s2,5,V);
-    assertElementsAlmostEqual(Q,...
-            [1.0000
-             1.1250
-             1.5000
-             1.8750
-             2.0000],'absolute',1e-4);
-    assertElementsAlmostEqual(Qd,...
-            [     0
-             0.2500
-             0.5000
-             0.2500
-                  0],'absolute',1e-4);
-    assertElementsAlmostEqual(Qdd,...
-            [0.2500
-             0.2500
-             0.2500
-            -0.2500
-            -0.2500],'absolute',1e-4);
-        
 %    mtraj                      - multi-axis trajectory for arbitrary function        
 function Test_mtraj
 % unit testing lspb 
@@ -248,6 +316,10 @@ function Test_mstraj
                      2.7500    4.2500
                      2.0000    5.0000];
      assertElementsAlmostEqual(out,expected_out ,'absolute',1e-4);
+
+     % test plotting
+     mstraj(via, [ 2 1 ],[],[4 1],1,1);
+
      %Test with QO 
      out = mstraj(via, [],[2 1 3 4],[4 1],1,1);
      expected_out = [4.0000    1.0000
@@ -270,75 +342,9 @@ function Test_mstraj
                      2.7500    4.2500
                      2.0000    5.0000];
      assertElementsAlmostEqual(out,expected_out ,'absolute',1e-4);
+
+
     
-%    tpoly                      - 1D polynomial trajectory
-function Test_tpoly
-    % unit testing tpoly 
-    s1 = 1;
-    s2 = 2;
-    T = [0.1 0.2 0.3 0.4 0.5];
-    V = 0.5;
-    %Testing lspb with N = 5 
-    [Q Qd Qdd] = tpoly(s1,s2,5);
-    assertElementsAlmostEqual(Q,...
-            [1.0000
-             1.1035
-             1.5000
-             1.8965
-             2.0000],'absolute',1e-4);
-    assertElementsAlmostEqual(Qd,...
-            [     0
-             0.2637
-             0.4688
-             0.2637
-                  0],'absolute',1e-4);
-    assertElementsAlmostEqual(Qdd,...
-            [     0
-             0.3516
-            -0.0000
-            -0.3516
-            -0.0000],'absolute',1e-4);
-    %Testing lspb with T
-    [Q Qd Qdd] = tpoly(s1,s2,T);
-    assertElementsAlmostEqual(Q,...
-            [1.0579
-             1.3174
-             1.6826
-             1.9421
-             2.0000],'absolute',1e-4);
-    assertElementsAlmostEqual(Qd,...
-            [1.5360
-             3.4560
-             3.4560
-             1.5360
-                  0],'absolute',1e-4);
-    assertElementsAlmostEqual(Qdd,...
-            [23.0400
-             11.5200
-            -11.5200
-            -23.0400
-                   0],'absolute',1e-4);
-    %Testing lspb with N = 5 and a constant velocity of V 
-    [Q Qd Qdd] = tpoly(s1,s2,5,V);
-    assertElementsAlmostEqual(Q,...
-            [1.0000
-             1.4727
-             1.8125
-             1.9727
-             2.0000],'absolute',1e-4);
-    assertElementsAlmostEqual(Qd,...
-            [0.5000
-             0.4219
-             0.2500
-             0.0781
-                  0],'absolute',1e-4);
-    assertElementsAlmostEqual(Qdd,...
-            [     0
-            -0.1406
-            -0.1875
-            -0.1406
-                  0],'absolute',1e-4);
-        
 %    trinterp                   - interpolate HT s
 function Test_trinterp
     % Unit testing trinterp with two translation matrices. 

@@ -3,11 +3,6 @@ function test_suite = TestRobotToolboxSerialLinkModels
   initTestSuite;
 %%    SerialLink models
 %        DHFactor               - convert elementary transformations to DH form
-function Test_DHFactor
-    startup_rtb;
-    s = 'Rz(q1).Rx(q2).Ty(L1).Rx(q3).Tz(L2)';
-    out = DHFactor(s);
-    expected_out = [];
 %        mdl_Fanuc10L           - Fanuc 10L (DH, kine)
 function Test_mdl_fanuc10l
     mdl_fanuc10l;
@@ -29,3 +24,15 @@ function Test_mdl_S4ABB2p8
 %        mdl_twolink            - simple 2-link example (DH, kine)
 function Test_mdl_twolink
     mdl_twolink;
+function Test_DHFactor
+    startup_rtb;
+    s = 'Rz(q1).Rx(q2).Ty(L1).Rx(q3).Tz(L2)';
+    dh = DHFactor(s);
+    expected_out = [];
+    % remember strings are java.lang.String class
+    s = dh.tool();
+    assertEqual(char(s), 'trotz(pi/2)*trotx(-pi/2)*trotz(-pi/2)');
+    s = dh.base();
+    assertEqual(char(s), 'eye(4,4)');
+
+    s = dh.command('bob')

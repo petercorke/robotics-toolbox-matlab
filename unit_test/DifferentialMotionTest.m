@@ -110,7 +110,7 @@ function Test_tr2delta
          0
          0],'absolute',1e-4);
     %Testing with a scalar number input 
-    assertExceptionThrown(@()tr2delta(1),'MATLAB:badsubscript');
+    assertExceptionThrown(@()tr2delta(1),'RTB:t2r:badarg');
     
 %    tr2jac                     - HT to Jacobian
 function Test_tr2jac
@@ -131,7 +131,7 @@ function Test_tr2jac
              0     0     0     0     0     0
              0     0     0     0     0     0],'absolute',1e-4);
     % test with scalar value
-    assertExceptionThrown(@()tr2jac(1),'');
+    assertExceptionThrown(@()tr2jac(1),'RTB:t2r:badarg');
      
          
 %    vex                        - skew symmetric matrix to vector

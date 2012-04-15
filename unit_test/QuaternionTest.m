@@ -6,24 +6,24 @@ function test_suite = TestRobotToolboxQuaternion
 %    Quaternion                 - constructor
 function Test_Quaternion
     % Q = Quaternion(Q1) is a copy of the quaternion Q1
-    q = Quaternion().double;
+    q = Quaternion().double();
     assertElementsAlmostEqual(q,[1 0 0 0],'absolute',1e-4);
     %
     % Q = Quaternion([S V1 V2 V3]) specifying directly its 4 elements
-    q = Quaternion([1 2 3 4]).double;
+    q = Quaternion([1 2 3 4]).double();
     assertElementsAlmostEqual(q,[1 2 3 4],'absolute',1e-4);
     %
     % Q = Quaternion(S)  scalar S and zero vector part: S<0,0,0>
-    q = Quaternion(2).double;
+    q = Quaternion(2).double();
     assertElementsAlmostEqual(q,[2 0 0 0],'absolute',1e-4);
     %
     % Q = Quaternion(V) is a pure quaternion with the specified vector part: 0<V>
-    q = Quaternion([1 2 3]).double;
+    q = Quaternion([1 2 3]).double();
     assertElementsAlmostEqual(q,[0 1 2 3],'absolute',1e-4);    
     %
     % Q = Quaternion(V, TH) is a unit quaternion corresponding to rotation of TH about the vector V.
     Th = pi;         
-    q = Quaternion(Th,[1 2 3]).double;
+    q = Quaternion(Th,[1 2 3]).double();
     expected_out=[0.0000 0.2673 0.5345 0.8018];
     assertElementsAlmostEqual(q,expected_out,'absolute',1e-4);
     
@@ -31,8 +31,13 @@ function Test_Quaternion
     R = [1.0000         0         0         
          0    0.5403   -0.8415         
          0    0.8415    0.5403];         
-    q = Quaternion(R).double;
+    q = Quaternion(R).double();
     assertElementsAlmostEqual(q,[0.8776 0.4794 0 0],'absolute',1e-4);
+
+    % constructor with vector argument
+    Rs = cat(3, R, R, R);
+    q = Quaternion(Rs);
+    assertIsSize(q, [1 3]);
     
     % Q = Quaternion(T) is a unit quaternion equivalent to the rotational
     % part of the homogeneous transform T.
@@ -40,13 +45,19 @@ function Test_Quaternion
               0    1.0000         0         0
         -0.8415         0    0.5403         0
               0         0         0    1.0000];         
-    q = Quaternion(TR).double;
+    q = Quaternion(TR).double();
     assertElementsAlmostEqual(q,[0.8776 0 0.4794 0],'absolute',1e-4);
+
+    % constructor with vector argument
+    Ts = cat(3, TR, TR, TR);
+    q = Quaternion(Ts);
+    assertIsSize(q, [1 3]);
+
     %test for input errors!! 
     assertExceptionThrown(@()Quaternion([1 2 3 4 5]),'');
     
 %    /                          - divide quaternion by quaternion or scalar
-function TestQuaternion_Devide
+function TestQuaternion_Divide
     % test run devision tests on quaternions
     q1 = Quaternion();
     q2 = Quaternion();

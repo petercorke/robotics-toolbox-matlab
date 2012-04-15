@@ -1,6 +1,8 @@
 %% This is for testing the Homogeneous Transformation functions in the robotics Toolbox
+
 function test_suite = TestRobotToolboxHomogeneousTransformation
   initTestSuite;
+
 %% Homogeneous transformations
 %    angvec2r                   - angle/vector to RM
 function Test_angvec2r
@@ -125,16 +127,24 @@ function Test_oa2tr
 %    r2t                        - RM to HT
 function Test_r2t
     %Unit test for r2t
-    assertElementsAlmostEqual(r2t(rotz(0.1)),...
-        [0.9950 -0.0998 0 0; 0.0998 0.9950 0 0;0 0 1.0000 0;0 0 0 1.0000],'absolute',1e-4);
-    assertElementsAlmostEqual(r2t(rotz(0)),...
-        [1     0     0     0
-         0     1     0     0
-         0     0     1     0
-         0     0     0     1],'absolute',1e-4);
-    assertElementsAlmostEqual(r2t(1),...
-        [1     0
-         0     1],'absolute',1e-4);
+
+    % SO(3) case
+    R = [1 2 3;4 5 6; 7 8 9];
+    assertElementsAlmostEqual(r2t(R),...
+        [1 2 3 0; 4 5 6 0; 7 8 9 0; 0 0 0 1],'absolute',1e-4);
+
+    % sequence case
+    Rs = cat(3, R, R, R);
+    Ts = r2t(Rs);
+    assertIsSize(Ts, [4 4 3]);
+    assertElementsAlmostEqual(Ts(:,:,2), ...
+        [1 2 3 0; 4 5 6 0; 7 8 9 0; 0 0 0 1],'absolute',1e-4);
+
+    % SO(2) case
+    R = [1 2; 3 4];
+    assertElementsAlmostEqual(r2t(R),...
+        [1 2 0; 3 4 0; 0 0 1],'absolute',1e-4);
+
     
 %    rotx                       - RM for rotation about X-axis
 function Test_rotx
@@ -227,13 +237,23 @@ function Test_rpy2tr
 %    t2r                        - HT to RM
 function Test_t2r
     %Unit test for r2t with variables eul2tr([.1, .2, .3])
-    assertElementsAlmostEqual(t2r(eul2tr( [.1, .2, .3])),...
-        [0.9021   -0.3836    0.1977
-         0.3875    0.9216    0.0198
-        -0.1898    0.0587    0.9801],'absolute',1e-4);
-    %Unit test for r2t with variables (0)
-    assertElementsAlmostEqual(t2r(1),...
-        [],'absolute',1e-4);
+
+    % SO(3) case
+    T = [1 2 3 4; 5 6 7 8; 9 10 11 12; 0 0 0 1];
+    assertElementsAlmostEqual(t2r(T),...
+        [1 2 3; 5 6 7; 9 10 11],'absolute',1e-4);
+
+    % sequence case
+    Ts = cat(3, T, T, T);
+    Rs = t2r(Ts);
+    assertIsSize(Rs, [3 3 3]);
+    assertElementsAlmostEqual(Rs(:,:,2), ...
+        [1 2 3; 5 6 7; 9 10 11],'absolute',1e-4);
+
+    % SO(2) case
+    T = [1 2 3; 4 5 6; 0 0 1];
+    assertElementsAlmostEqual(t2r(T),...
+        [1 2; 4 5],'absolute',1e-4);
     
 %    tr2angvec                  - HT/RM to angle/vector form
 % CHECK OUTPUT OF THIS FUNCTION!!!!!!!!!!!!!!!!!!!!!!
@@ -251,7 +271,7 @@ function Test_tr2angvec
     assertElementsAlmostEqual(v,...
         [-0.0450    0.4486    0.8926],'absolute',1e-4);
     %test for scalar input
-    assertExceptionThrown(@()tr2angvec(1),'MATLAB:badsubscript');
+    assertExceptionThrown(@()tr2angvec(1), 'RTB:t2r:badarg');
     
 %    tr2eul                     - HT/RM to Euler angles
 function Test_tr2eul
