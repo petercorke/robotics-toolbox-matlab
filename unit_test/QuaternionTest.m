@@ -29,15 +29,15 @@ function Test_Quaternion
     
     % Q = Quaternion(R) is a unit quaternion corresponding to the orthonormal rotation matrix R.
     R = [1.0000         0         0         
-         0    0.5403   -0.8415         
-         0    0.8415    0.5403];         
+         0    0.5403   -0.8415
+         0    0.8415    0.5403];
     q = Quaternion(R).double();
-    assertElementsAlmostEqual(q,[0.8776 0.4794 0 0],'absolute',1e-4);
+    assertElementsAlmostEqual(q, [0.8776 0.4794 0 0],'absolute',1e-4);
 
     % constructor with vector argument
     Rs = cat(3, R, R, R);
-    q = Quaternion(Rs);
-    assertIsSize(q, [1 3]);
+    qr = Quaternion(Rs);
+    assertIsSize(qr, [1 3]);
     
     % Q = Quaternion(T) is a unit quaternion equivalent to the rotational
     % part of the homogeneous transform T.
@@ -45,8 +45,8 @@ function Test_Quaternion
               0    1.0000         0         0
         -0.8415         0    0.5403         0
               0         0         0    1.0000];         
-    q = Quaternion(TR).double();
-    assertElementsAlmostEqual(q,[0.8776 0 0.4794 0],'absolute',1e-4);
+    qt = Quaternion(TR).double();
+    assertElementsAlmostEqual(qt, [0.8776 0 0.4794 0],'absolute',1e-4);
 
     % constructor with vector argument
     Ts = cat(3, TR, TR, TR);
@@ -71,6 +71,39 @@ function TestQuaternion_Divide
     assertElementsAlmostEqual(out.double,expected_out,'absolute',1e-4);
     
 %    *                          - multiply quaternion by a quaternion or vector
+function quaternion_compare
+    q1 = Quaternion(rotx(0.1));
+    q2 = Quaternion(roty(0.1));
+
+    assertTrue(q1 == q1);
+    assertFalse(q1 == q2);
+
+    assertTrue(q1 ~= q2);
+    assertFalse(q1 ~= q2);
+
+    R = rotx(0.1);
+    RR = cat(3, R,R,R);
+    qt1 = Quaternion(RR);
+    R = roty(0.1);
+    RR = cat(3, R,R,R);
+    qt2 = Quaternion(RR);
+
+    assertEqual(qt1==q1, [1 1 1]);
+    assertEqual(q1==qt1, [1 1 1]);
+    assertEqual(qt1==qt1, [1 1 1]);
+
+    assertEqual(qt2==q1, [0 0 0]);
+    assertEqual(q1==qt2, [0 0 0]);
+    assertEqual(qt1==qt2, [0 0 0]);
+
+    assertEqual(qt1~=q1, [0 0 0]);
+    assertEqual(q1~=qt1, [0 0 0]);
+    assertEqual(qt1~=qt1, [0 0 0]);
+
+    assertEqual(qt2~=q1, [1 1 1]);
+    assertEqual(q1~=qt2, [1 1 1]);
+    assertEqual(qt1~=qt2, [1 1 1]);
+
 function TestQuaternion_Multiply
     % test run multiplication tests on quaternions
     q1 = Quaternion();
@@ -200,3 +233,10 @@ function TestQuaternion_Dot
     expected_out = [0    0.5000    1.0000    1.5000];
     assertElementsAlmostEqual(out.double,expected_out,'absolute',1e-4);
 
+% Test plot function of Quaternion
+function Quaternion_test
+        R = [1.0000         0         0         
+             0    0.5403   -0.8415         
+             0    0.8415    0.5403];         
+        q = Quaternion(R).double;
+        plot(q);
