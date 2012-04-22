@@ -5,35 +5,38 @@
 % A quaternion has 2 parts, a scalar s, and a vector v and is typically 
 % written: q = s <vx, vy, vz>.  
 %
-% A unit quaternion is one for which s^2+vx^2+vy^2+vz^2 = 1.  It can be 
-% considered as a rotation about a vector in space where 
-% q = cos (theta/2) < v sin(theta/2)> where v is a unit vector.
+% A unit-quaternion is one for which s^2+vx^2+vy^2+vz^2 = 1.  It can be 
+% considered as a rotation by an angle theta about a unit-vector V in space where 
 %
-% Q = Quaternion(X) is a unit quaternion equivalent to X which can be any
+%         q = cos (theta/2) < v sin(theta/2)> 
+%
+% Q = Quaternion(X) is a unit-quaternion equivalent to X which can be any
 % of:
 %   - orthonormal rotation matrix.
 %   - homogeneous transformation matrix (rotation part only).
 %   - rotation angle and vector
 %
 % Methods::
-%  inv       return inverse of quaterion
-%  norm      return norm of quaternion
-%  unit      return unit quaternion
-%  unitize   unitize this quaternion
+%  inv       inverse of quaterion
+%  norm      norm of quaternion
+%  unit      unitized quaternion
 %  plot      same options as trplot()
 %  interp    interpolation (slerp) between q and q2, 0<=s<=1
 %  scale     interpolation (slerp) between identity and q, 0<=s<=1
 %  dot       derivative of quaternion with angular velocity w
-%  R         3x3 rotation matrix
-%  T         4x4 homogeneous transform matrix
+%  R         equivalent 3x3 rotation matrix
+%  T         equivalent 4x4 homogeneous transform matrix
 %
 % Arithmetic operators are overloaded::
-%  q+q2      return elementwise sum of quaternions
-%  q-q2      return elementwise difference of quaternions
-%  q*q2      return quaternion product
+%  q1==q2    test for quaternion equality
+%  q1~=q2    test for quaternion inequality
+%  q+q2      elementwise sum of quaternions
+%  q-q2      elementwise difference of quaternions
+%  q*q2      quaternion product
 %  q*v       rotate vector by quaternion, v is 3x1
-%  q/q2      return q*q2.inv
-%  q^n       return q to power n (integer only)
+%  s*q       elementwise multiplication of quaternion by scalar
+%  q/q2      q*q2.inv
+%  q^n       q to power n (integer only)
 %
 % Properties (read only)::
 %  s         real part
@@ -41,6 +44,16 @@
 %
 % Notes::
 % - Quaternion objects can be used in vectors and arrays
+%
+% References::
+% - Animating rotation with quaternion curves,
+%   K. Shoemake,
+%   in Proceedings of ACM SIGGRAPH, (San Fran cisco), pp. 245-254, 1985.
+% - On homogeneous transforms, quaternions, and computational efficiency, 
+%   J. Funda, R. Taylor, and R. Paul, 
+%   IEEE Transactions on Robotics and Automation, vol. 6, pp. 382-388, June 1990.
+% - Robotics, Vision & Control,
+%   P. Corke, Springer 2011.
 %
 % See also trinterp, trplot.
 
@@ -80,6 +93,8 @@ classdef Quaternion
         function q = Quaternion(a1, a2)
         %Quaternion.Quaternion Constructor for quaternion objects
         % 
+        % Construct a quaternion from various other orientation representations.
+        %
         % Q = Quaternion() is the identitity quaternion 1<0,0,0> representing a null rotation.
         %
         % Q = Quaternion(Q1) is a copy of the quaternion Q1
@@ -90,15 +105,16 @@ classdef Quaternion
         %
         % Q = Quaternion(V) is a pure quaternion with the specified vector part: 0<V>
         %
-        % Q = Quaternion(TH, V) is a unit quaternion corresponding to rotation of TH about the vector V.
+        % Q = Quaternion(TH, V) is a unit-quaternion corresponding to rotation of TH about the 
+        % vector V.
         %
-        % Q = Quaternion(R) is a unit quaternion corresponding to the orthonormal rotation matrix R.  If R (3x3xN) is a sequence then Q (Nx1) is a vector of Quaternions 
+        % Q = Quaternion(R) is a unit-quaternion corresponding to the orthonormal rotation 
+        % matrix R.  If R (3x3xN) is a sequence then Q (Nx1) is a vector of Quaternions 
         % corresponding to the elements of R.
         %
-        % Q = Quaternion(T) is a unit quaternion equivalent to the rotational
-        % part of the homogeneous transform T. If T (4x4xN) is a sequence then Q (Nx1) is a vector of Quaternions 
-        % corresponding to the elements of T.
-        %
+        % Q = Quaternion(T) is a unit-quaternion equivalent to the rotational
+        % part of the homogeneous transform T. If T (4x4xN) is a sequence then Q (Nx1) is a 
+        % vector of Quaternions corresponding to the elements of T.
 
             if nargin == 0
                 q.v = [0,0,0];
@@ -140,20 +156,18 @@ classdef Quaternion
                 end
             
             end
-
         end
 
-
         function s = char(q)
-        %Quaternion.char Create string representation of quaternion object
+        %Quaternion.char Convert to string
         %
         % S = Q.char() is a compact string representation of the quaternion's value
-        % as a 4-tuple.
+        % as a 4-tuple.  If Q is a vector then S has one line per element.
 
             if length(q) > 1
                 s = '';
                 for qq = q;
-                    s = strvcat(s, char(qq));
+                    s = char(s, char(qq));
                 end
                 return
             end
@@ -166,10 +180,10 @@ classdef Quaternion
         %Quaternion.display Display the value of a quaternion object
         %
         % Q.display() displays a compact string representation of the quaternion's value
-        % as a 4-tuple.
+        % as a 4-tuple.  If Q is a vector then S has one line per element.
         %
         % Notes::
-        % - this method is invoked implicitly at the command line when the result
+        % - This method is invoked implicitly at the command line when the result
         %   of an expression is a Quaternion object and the command has no trailing
         %   semicolon.
         %
@@ -192,7 +206,7 @@ classdef Quaternion
 
 
         function v = double(q)
-        %Quaternion.double Convert a quaternion object to a 4-element vector
+        %Quaternion.double Convert a quaternion to a 4-element vector
         %
         % V = Q.double() is a 4-vector comprising the quaternion
         % elements [s vx vy vz].
@@ -211,32 +225,40 @@ classdef Quaternion
         function qu = unit(q)
         %Quaternion.unit Unitize a quaternion
         %
-        % QU = Q.unit() is a quaternion which is a unitized version of  Q
+        % QU = Q.unit() is a unit-quaternion representing the same orientation as Q.
+        %
+        % See also Quaternion.norm.
 
             qu = q / norm(q);
         end
 
         function n = norm(q)
-        %Quaternion.norm Compute the norm of a quaternion
+        %Quaternion.norm Quaternion magnitude
         %
-        % QN = Q.norm(Q) is the scalar norm or magnitude of the quaternion Q.
+        % QN = Q.norm(Q) is the scalar norm or magnitude of the quaternion Q.  
+        %
+        % Notes::
+        % - This is the Euclidean norm of the quaternion written as a 4-vector.
+        % - A unit-quaternion has a norm of one.
+        %
+        % See also Quaternion.unit.
 
             n = norm(double(q));
         end
 
-
         function q = interp(Q1, Q2, r)
-        %Quaternion.interp Interpolate rotations expressed by quaternion objects
+        %Quaternion.interp Interpolate quaternions
         %
-        % QI = Q1.interp(Q2, R) is a unit-quaternion that interpolates between Q1 for R=0 
-        % to Q2 for R=1. This is a spherical linear interpolation (slerp) that can be 
-        % interpretted as interpolation along a great circle arc on a sphere.
+        % QI = Q1.interp(Q2, S) is a unit-quaternion that interpolates a rotation 
+        % between Q1 for S=0 and Q2 for S=1.
         %
-        % If R is a vector QI is a vector of quaternions, each element
-        % corresponding to sequential elements of R.
+        % If S is a vector QI is a vector of quaternions, each element
+        % corresponding to sequential elements of S.
         %
-        % Notes:
-        % - the value of r is clipped to the interval 0 to 1
+        % Notes::
+        % - This is a spherical linear interpolation (slerp) that can be interpretted 
+        %   as interpolation along a great circle arc on a sphere.
+        % - The value of S is clipped to the interval 0 to 1.
         %
         % See also ctraj, Quaternion.scale.
 
@@ -273,12 +295,16 @@ classdef Quaternion
         function q = scale(Q, r)
         %Quaternion.scale Interpolate rotations expressed by quaternion objects
         %
-        % QI = Q.scale(R) is a unit-quaternion that interpolates between identity for R=0
-        % to Q for R=1.  This is a spherical linear interpolation (slerp) that can
+        % QI = Q.scale(S) is a unit-quaternion that interpolates between identity for S=0
+        % to Q for S=1.  This is a spherical linear interpolation (slerp) that can
         % be interpretted as interpolation along a great circle arc on a sphere.
         %
-        % If R is a vector QI is a cell array of quaternions, each element
-        % corresponding to sequential elements of R.
+        % If S is a vector QI is a cell array of quaternions, each element
+        % corresponding to sequential elements of S.
+        %
+        % Notes::
+        % - This is a spherical linear interpolation (slerp) that can be interpretted 
+        %   as interpolation along a great circle arc on a sphere.
         %
         % See also ctraj, Quaternion.interp.
 
@@ -311,25 +337,109 @@ classdef Quaternion
             end
         end
 
+        function e = eq(q1, q2)
+        %EQ Test quaternion equality
+        %
+        % Q1==Q2 is true if the quaternions Q1 and Q2 are equal.
+        %
+        % Notes::
+        % - Overloaded operator '=='.
+        % - If Q1 is a vector of quaternions, each element is compared to 
+        %   Q2 and the result is a logical array of the same length as Q1.
+        % - If Q2 is a vector of quaternions, each element is compared to 
+        %   Q1 and the result is a logical array of the same length as Q2.
+        % - If Q1 and Q2 are vectors of the same length, then the result 
+        %   is a logical array
+        %
+        % See also Quaternion.ne.
+            if (numel(q1) == 1) && (numel(q2) == 1)
+                e = all( eq(q1.double, q2.double) );
+            elseif (numel(q1) >  1) && (numel(q2) == 1)
+                e = zeros(1, numel(q1));
+                for i=1:numel(q1)
+                    e(i) = q1(i) == q2;
+                end
+            elseif (numel(q1) == 1) && (numel(q2) > 1)
+                e = zeros(1, numel(q2));
+                for i=1:numel(q2)
+                    e(i) = q2(i) == q1;
+                end
+            elseif numel(q1) == numel(q2)
+                e = zeros(1, numel(q1));
+                for i=1:numel(q1)
+                    e(i) = q1(i) == q2(i);
+                end
+            else
+                error('RTB:quaternion:badargs');
+            end
+        end
+
+        function e = ne(q1, q2)
+        %NE Test quaternion inequality
+        %
+        % Q1~=Q2 is true if the quaternions Q1 and Q2 are not equal.
+        %
+        % Notes::
+        % - Overloaded operator '~='
+        % - If Q1 is a vector of quaternions, each element is compared to 
+        %   Q2 and the result is a logical array of the same length as Q1.
+        % - If Q2 is a vector of quaternions, each element is compared to 
+        %   Q1 and the result is a logical array of the same length as Q2.
+        % - If Q1 and Q2 are vectors of the same length, then the result 
+        %   is a logical array.
+        %
+        % See also Quaternion.eq.
+            if (numel(q1) == 1) && (numel(q2) == 1)
+                e = all( ne(q1.double, q2.double) );
+            elseif (numel(q1) >  1) && (numel(q2) == 1)
+                e = zeros(1, numel(q1));
+                for i=1:numel(q1)
+                    e(i) = q1(i) ~= q2;
+                end
+            elseif (numel(q1) == 1) && (numel(q2) > 1)
+                e = zeros(1, numel(q2));
+                for i=1:numel(q2)
+                    e(i) = q2(i) ~= q1;
+                end
+            elseif numel(q1) == numel(q2)
+                e = zeros(1, numel(q1));
+                for i=1:numel(q1)
+                    e(i) = q1(i) ~= q2(i);
+                end
+            else
+                error('RTB:quaternion:badargs');
+            end
+        end
 
         function qp = plus(q1, q2)
-        %PLUS Add two quaternion objects
+        %PLUS Add quaternions
         %
         % Q1+Q2 is the element-wise sum of quaternion elements.
+        %
+        % Notes::
+        % - Overloaded operator '+'
+        % - The result is not guaranteed to be a unit-quaternion.
+        %
+        % See also Quaternion.minus, Quaternion.mtimes.
 
-            if isa(q1, 'Quaternion') & isa(q2, 'Quaternion')
-
+            if isa(q1, 'Quaternion') && isa(q2, 'Quaternion')
                 qp = Quaternion(double(q1) + double(q2));
             end
         end
 
 
         function qp = minus(q1, q2)
-        %Quaternion.minus Subtract two quaternion objects
+        %Quaternion.minus Subtract quaternions
         %
         % Q1-Q2 is the element-wise difference of quaternion elements.
+        %
+        % Notes::
+        % - Overloaded operator '-'
+        % - The result is not guaranteed to be a unit-quaternion.
+        %
+        % See also Quaternion.plus, Quaternion.mtimes.
 
-            if isa(q1, 'Quaternion') & isa(q2, 'Quaternion')
+            if isa(q1, 'Quaternion') && isa(q2, 'Quaternion')
 
                 qp = Quaternion(double(q1) - double(q2));
             end
@@ -338,11 +448,16 @@ classdef Quaternion
         function qp = mtimes(q1, q2)
         %Quaternion.mtimes Multiply a quaternion object
         %
-        % Q1*Q2   is a quaternion formed by Hamilton product of two quaternions.
-        % Q*V     is the vector V rotated by the quaternion Q
-        % Q*S     is the element-wise multiplication of quaternion elements by by the scalar S
+        % Q1*Q2   is a quaternion formed by the Hamilton product of two quaternions.
+        % Q*V     is a vector formed by rotating the vector V by the quaternion Q.
+        % Q*S     is the element-wise multiplication of quaternion elements by the scalar S.
+        %
+        % Notes::
+        % - Overloaded operator '*'
+        %
+        % See also Quaternion.mrdivide, Quaternion.mpower, Quaternion.plus, Quaternion.minus.
 
-            if isa(q1, 'Quaternion') & isa(q2, 'Quaternion')
+            if isa(q1, 'Quaternion') && isa(q2, 'Quaternion')
             %QQMUL  Multiply unit-quaternion by unit-quaternion
             %
             %   QQ = qqmul(Q1, Q2)
@@ -359,7 +474,7 @@ classdef Quaternion
                 % form the product
                 qp = Quaternion([s1*s2-v1*v2' s1*v2+s2*v1+cross(v1,v2)]);
 
-            elseif isa(q1, 'Quaternion') & isa(q2, 'double')
+            elseif isa(q1, 'Quaternion') && isa(q2, 'double')
 
             %QVMUL  Multiply vector by unit-quaternion
             %
@@ -378,7 +493,7 @@ classdef Quaternion
                     error('quaternion-vector product: must be a 3-vector or scalar');
                 end
 
-            elseif isa(q2, 'Quaternion') & isa(q1, 'double')
+            elseif isa(q2, 'Quaternion') && isa(q1, 'double')
                 if length(q1) == 3
                     qp = q2 * Quaternion([0 q1(:)']) * inv(q2);
                     qp = qp.v;
@@ -393,7 +508,13 @@ classdef Quaternion
         function qp = mpower(q, p)
         %Quaternion.mpower Raise quaternion to integer power
         %
-        % Q^N is quaternion Q raised to the integer power N, and computed by repeated multiplication.
+        % Q^N is the quaternion Q raised to the integer power N.
+        %
+        % Notes::
+        % - Overloaded operator '^'
+        % - Computed by repeated multiplication.
+        %
+        % See also Quaternion.mrdivide, Quaternion.mpower, Quaternion.plus, Quaternion.minus.
 
             % check that exponent is an integer
             if (p - floor(p)) ~= 0
@@ -414,10 +535,15 @@ classdef Quaternion
         end
 
         function qq = mrdivide(q1, q2)
-        %Quaternion.mrdivide Compute quaternion quotient.
+        %Quaternion.mrdivide Quaternion quotient.
         %
-        % Q1/Q2   is a quaternion formed by Hamilton product of Q1 and inv(Q2)
-        % Q/S     is the element-wise division of quaternion elements by by the scalar S
+        % Q1/Q2   is a quaternion formed by Hamilton product of Q1 and inv(Q2).
+        % Q/S     is the element-wise division of quaternion elements by the scalar S.
+        %
+        % Notes::
+        % - Overloaded operator '/'
+        %
+        % See also Quaternion.mtimes, Quaternion.mpower, Quaternion.plus, Quaternion.minus.
 
             if isa(q2, 'Quaternion')
                 % qq = q1 / q2
@@ -435,43 +561,44 @@ classdef Quaternion
         %
         % Q.plot(options) plots the quaternion as a rotated coordinate frame.
         %
+        % Options::
+        % Options are passed to trplot and include:
+        %
+        % 'color',C          The color to draw the axes, MATLAB colorspec C
+        % 'frame',F          The frame is named {F} and the subscript on the axis labels is F.
+        % 'view',V           Set plot view parameters V=[az el] angles, or 'auto' 
+        %                    for view toward origin of coordinate frame
+        %
         % See also trplot.
 
             %axis([-1 1 -1 1 -1 1])
-
-            if nargin < 2
-                off = [0 0 0];
-            end
-            if nargin < 3
-                fmt = '%c';
-            end
-            if nargin < 4
-                color = 'b';
-            end
 
             trplot( Q.R, varargin{:});
             drawnow
         end
 
         function r = R(q)
-        %Quaternion.R Return equivalent orthonormal rotation matrix
+        %Quaternion.R Convert toorthonormal rotation matrix
         %
-        % R = Q.R is the equivalent 3x3 orthonormal rotation matrix.
+        % R = Q.R() is the equivalent 3x3 orthonormal rotation matrix.
         %
         % Notes:
-        % - for a quaternion sequence returns a rotation matrix sequence.
+        % - For a quaternion sequence returns a rotation matrix sequence.
+            r = zeros(3,3,numel(q));
             for i=1:numel(q)
                 r(:,:,i) = t2r( q2tr(q(i)) );
             end
         end
 
         function t = T(q)
-        %Quaternion.T Return equivalent homogeneous transformationmatrix
+        %Quaternion.T Convert to homogeneous transformation matrix
         %
-        % T = Q.T is the equivalent 4x4 homogeneous transformation matrix.
+        % T = Q.T() is the equivalent 4x4 homogeneous transformation matrix.
         %
         % Notes:
-        % - for a quaternion sequence returns a homogeneous transform matrix sequence
+        % - For a quaternion sequence returns a homogeneous transform matrix sequence
+        % - Has a zero translational component.
+            t = zeros(4,4,numel(q));
             for i=1:numel(q)
                 t(:,:,i) = q2tr(q(i));
             end
@@ -489,18 +616,22 @@ end % classdef
 %
 %   Q = tr2q(T)
 %
-%   Return a unit quaternion corresponding to the rotational part of the
+%   Return a unit-quaternion corresponding to the rotational part of the
 %   homogeneous transform T.
 %
 %   See also: Q2TR
 
 function q = tr2q(t)
+
+    if ishomog(t)
+        t = t2r(t);
+    end
     qs = sqrt(trace(t)+1)/2.0;
     kx = t(3,2) - t(2,3);   % Oz - Ay
     ky = t(1,3) - t(3,1);   % Ax - Nz
     kz = t(2,1) - t(1,2);   % Ny - Ox
 
-    if (t(1,1) >= t(2,2)) & (t(1,1) >= t(3,3)) 
+    if (t(1,1) >= t(2,2)) && (t(1,1) >= t(3,3)) 
         kx1 = t(1,1) - t(2,2) - t(3,3) + 1; % Nx - Oy - Az + 1
         ky1 = t(2,1) + t(1,2);          % Ny + Ox
         kz1 = t(3,1) + t(1,3);          % Nz + Ax
