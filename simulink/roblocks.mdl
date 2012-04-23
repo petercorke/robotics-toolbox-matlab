@@ -1,6 +1,6 @@
 Library {
   Name			  "roblocks"
-  Version		  7.6
+  Version		  7.7
   MdlSubVersion		  0
   SavedCharacterEncoding  "windows-1252"
   LibraryType		  "BlockLibrary"
@@ -13,11 +13,11 @@ Library {
   Creator		  "n6334687"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "n6334687"
+  LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Feb 22 13:58:31 2012"
-  RTWModifiedTimeStamp	  251819485
-  ModelVersionFormat	  "1.%<AutoIncrement:31>"
+  LastModifiedDate	  "Mon Apr 23 17:26:58 2012"
+  RTWModifiedTimeStamp	  257020657
+  ModelVersionFormat	  "1.%<AutoIncrement:39>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -85,13 +85,13 @@ Library {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.10.0"
+      Version		      "1.11.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  StartTime		  "0.0"
 	  StopTime		  "10.0"
 	  AbsTol		  "auto"
@@ -125,7 +125,7 @@ Library {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -137,6 +137,7 @@ Library {
 	  SaveFinalState	  off
 	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Array"
+	  SignalLoggingSaveFormat "ModelDataLogs"
 	  SaveOutput		  on
 	  SaveState		  off
 	  SignalLogging		  on
@@ -156,7 +157,7 @@ Library {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    8
@@ -207,10 +208,11 @@ Library {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
+	  AccelParallelForEachSubsystem	on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -281,6 +283,7 @@ Library {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  SimStateOlderReleaseMsg "error"
 	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "ErrorLevel1"
 	  BusNameAdapt		  "WarnAndRepair"
@@ -295,7 +298,7 @@ Library {
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -332,7 +335,7 @@ Library {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -347,7 +350,7 @@ Library {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -362,7 +365,7 @@ Library {
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    7
@@ -405,6 +408,7 @@ Library {
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
 	  GenerateSLWebview	  off
+	  GenerateCodeMetricsReport off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -413,7 +417,7 @@ Library {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.10.0"
+	      Version		      "1.11.0"
 	      Array {
 		Type			"Cell"
 		Dimension		21
@@ -478,7 +482,7 @@ Library {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.10.0"
+	      Version		      "1.11.0"
 	      Array {
 		Type			"Cell"
 		Dimension		16
@@ -506,6 +510,8 @@ Library {
 	      TargetFunctionLibrary   "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
+	      FunctionExecutionProfile off
+	      CodeExecutionProfiling  off
 	      ERTCodeCoverageTool     "None"
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
@@ -551,6 +557,7 @@ Library {
 	      RTWCAPISignals	      off
 	      RTWCAPIParams	      off
 	      RTWCAPIStates	      off
+	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
 	    }
 	    PropName		    "Components"
@@ -560,7 +567,7 @@ Library {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    " [ 400, 210, 1280, 840 ] "
+      ConfigPrmDlgPosition     [ 400, 210, 1280, 840 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -653,6 +660,7 @@ Library {
     Block {
       BlockType		      Inport
       Port		      "1"
+      OutputFunctionCall      off
       OutMin		      "[]"
       OutMax		      "[]"
       OutDataTypeStr	      "Inherit: auto"
@@ -744,7 +752,7 @@ Library {
       OutputDimensions	      "[1,1]"
     }
     Block {
-      BlockType		      "S-Function"
+      BlockType		      S-Function
       FunctionName	      "system"
       SFunctionModules	      "''"
       PortCounts	      "[]"
@@ -822,7 +830,7 @@ Library {
   }
   System {
     Name		    "roblocks"
-    Location		    [1037, 325, 1323, 747]
+    Location		    [136, 89, 422, 511]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    212
@@ -861,8 +869,8 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Dynamics"
-	Location		[571, 499, 1325, 900]
-	Open			off
+	Location		[576, 50, 1330, 451]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -879,7 +887,7 @@ Library {
 	  Name			  "Bicycle"
 	  SID			  "51"
 	  Ports			  [2, 3]
-	  Position		  [220, 62, 280, 138]
+	  Position		  [240, 62, 300, 138]
 	  DropShadow		  on
 	  AncestorBlock		  "roblocks_old/Bicycle"
 	  LibraryVersion	  "1.61"
@@ -890,6 +898,14 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Kino-dynamic model of bicycle vehicle"
+	  MaskHelp		  "Kino-dynamic model of bicycle vehicle, also known as Ackermann vehicle\nmodel.\n\n<b>Parameters::</b>\n"
+	  " \nAcceleration (1x1)   Vehicle acceleration limit [m/s2]\nVelocity limit (1x1)  Vehicle speed limit [m/s]\nSteerin"
+	  "g limits (1x1) Steering angle limit [rad]\nInitial state (1x3) Initial state (x, y, theta)\nHandbrake (1x1) Vehicle"
+	  " cannot move if non-zero\n \n<b>Inputs::</b>\n \nv (1x1) velocity demand [m/s]\ngamma (1x1) steering angle [rad]\n "
+	  "\n<b>Outputs::</b>\n \nx (1x1) x-coordinate in world frame [m]\ny (1x1) x-coordinate in world frame [m]\ntheta (1x1"
+	  ") heading angle in world frame [rad]\n\n \n<b>Notes::</b>\n \n- Steering limit is symmetric between -limit and +lim"
+	  "it\n- Same dynamic model as the Toolbox class Vehicle.\n\n"
 	  MaskPromptString	  "Acceleration|Velocity limit|Steering limits|Initial state (x, y, theta)|Handbrake"
 	  MaskStyleString	  "edit,edit,edit,edit,edit"
 	  MaskVariables		  "accel=@1;vlim=@2;alim=@3;x0=@4;handbrake=@5;"
@@ -1178,6 +1194,18 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Quadrotor control mixer"
+	  MaskHelp		  "Determine rotor speeds based on desired torques and thrust.\n \n<b>Inputs::</b>\n \ntau pitch (1x1)  d"
+	  "esired pitching torque [Nm]\ntau roll (1x1)   desired rolling torque [Nm]\ntau yaw (1x1)    desired yawing torque ["
+	  "Nm]\nT (1x1)          desired thrust [N]\n \n<b>Outputs::</b>\n \nw1 (1x1) angular velocity of rotor 1 [rad]\nw2 (1"
+	  "x1) angular velocity of rotor 2 [rad]\nw3 (1x1) angular velocity of rotor 3 [rad]\nw4 (1x1) angular velocity of rot"
+	  "or 4 [rad]\n \n<b>Notes::</b>\n \n- Assumes the rotor labelling convention of RVC Fig 4.16.\n- The quadrotor is und"
+	  "eractuated and has only 4 inputs.\n"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
 	  System {
 	    Name		    "Control Mixer"
 	    Location		    [435, 295, 1300, 676]
@@ -1631,12 +1659,12 @@ Library {
 	}
 	Block {
 	  BlockType		  SubSystem
-	  Name			  "Quadcopter"
+	  Name			  "Quadrotor"
 	  SID			  "53"
 	  Ports			  [4, 1]
 	  Position		  [115, 217, 175, 328]
 	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/Quadcopter"
+	  AncestorBlock		  "roblocks_old/Quadrotor"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -1645,7 +1673,25 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
-	  MaskPromptString	  "Quadcopter params"
+	  MaskDescription	  "Quadrotor dynamics"
+	  MaskHelp		  "Integrate spatial velocity to update pose represented as a homogeneous\ntransformation.\n \n<b>Paramet"
+	  "ers::</b>\n \nq (struct)  A structure containing quadrotor dynamics\n\nThe elements of q are:\n\n J         Flyer r"
+	  "otational inertia matrix (3x3)\n h         Height of rotors above CoG (1x1)\n d         Length of flyer arms (1x1)\n"
+	  " nb        Number of blades per rotor (1x1)\n r         Rotor radius (1x1)\n c         Blade chord (1x1)\n e       "
+	  "  Flapping hinge offset (1x1)\n Mb        Rotor blade mass (1x1)\n Mc        Estimated hub clamp mass (1x1)\n ec   "
+	  "     Blade root clamp displacement (1x1)\n Ib        Rotor blade rotational inertia (1x1)\n Ic        Estimated roo"
+	  "t clamp inertia (1x1)\n mb        Static blade moment (1x1)\n Ir        Total rotor inertia (1x1)\n Ct        Non-d"
+	  "im. thrust coefficient (1x1)\n Cq        Non-dim. torque coefficient (1x1)\n sigma     Rotor solidity ratio (1x1)\n"
+	  " thetat    Blade tip angle (1x1)\n theta0    Blade root angle (1x1)\n theta1    Blade twist angle (1x1)\n theta75  "
+	  " 3/4 blade angle (1x1)\n thetai    Blade ideal root approximation (1x1)\n a         Lift slope gradient (1x1)\n A  "
+	  "       Rotor disc area (1x1)\n gamma     Lock number (1x1)\n\n \n<b>Inputs::</b>\n \nw1 (1x1) angular velocity of r"
+	  "otor 1 [rad]\nw2 (1x1) angular velocity of rotor 2 [rad]\nw3 (1x1) angular velocity of rotor 3 [rad]\nw4 (1x1) angu"
+	  "lar velocity of rotor 4 [rad]\n\n<b>Outputs::</b>\n \nX (1x12) state vector (x, y, z, thr, thp, thy, xd, yd, zd, th"
+	  "rd, thpd, thyd)\n\n(x,y,z) is the position in the world frame [m]\n(thr, thp, thy) the roll/pitch/yaw orientation i"
+	  "n the world frame [rad]\n(xd,yd,zd) is the velocity in the body frame [m]\n(thrd,thpd,thyd) is the roll/pitch/yaw r"
+	  "ates in the body frame [rad/s]\n \n<b>Notes::</b>\n \n- See also mdl_quadrotor which defines parameters for the AN"
+	  "U X4 flyer.\n"
+	  MaskPromptString	  "Quadrotor params"
 	  MaskStyleString	  "edit"
 	  MaskVariables		  "quad=@1;"
 	  MaskTunableValueString  "on"
@@ -1659,8 +1705,8 @@ Library {
 	  MaskIconUnits		  "autoscale"
 	  MaskValueString	  "0"
 	  System {
-	    Name		    "Quadcopter"
-	    Location		    [64, 270, 506, 646]
+	    Name		    "Quadrotor"
+	    Location		    [64, 292, 506, 668]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -1799,12 +1845,12 @@ Library {
 	      }
 	    }
 	    Block {
-	      BlockType		      "S-Function"
+	      BlockType		      S-Function
 	      Name		      "Dynamics"
 	      SID		      "53:187"
 	      Ports		      [1, 1]
 	      Position		      [110, 165, 195, 195]
-	      FunctionName	      "quadcopter_dynamics"
+	      FunctionName	      "quadrotor_dynamics"
 	      Parameters	      "quad"
 	      EnableBusSupport	      off
 	    }
@@ -1969,10 +2015,10 @@ Library {
 	  Name			  "RNE"
 	  SID			  "54"
 	  Ports			  [3, 1]
-	  Position		  [125, 61, 185, 139]
+	  Position		  [145, 61, 205, 139]
 	  BackgroundColor	  "red"
 	  AncestorBlock		  "roblocks_old/RNE"
-	  LibraryVersion	  "1.61"
+	  LibraryVersion	  "*1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
 	  RTWSystemCode		  "Auto"
@@ -1981,8 +2027,13 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Rigid-body inverse dynamics."
-	  MaskHelp		  "Given a robot dynamic model and joint angle, rate and acceleration determine the required joint torque"
-	  ".  Useful for computed and inverse torque control schemes."
+	  MaskHelp		  "Given a robot dynamic model and joint angle, rate and acceleration \ndetermine the required joint torq"
+	  "ue.  \n \n<b>Parameters::</b>\n \nrobot (SerialLink) a dynamic model of an N-link serial link manipulator\ngravity "
+	  "(1x3)  IGNORED Gravitational acceleration in world frame [m/s2]\n \n<b>Inputs::</b>\n \nq (1xN) joint coordinates\n"
+	  "qd (1xN) joint coordinate velocity\nqdd (1xN) joint coordinate acceleration\n\n \n<b>Outputs::</b>\n \nQ (1xN) the "
+	  "generalized joint force (torque or force) required to achieve\nthe motion state (q, qd, qdd).\n \n<b>Notes::</b>\n "
+	  "\n- Required for computed and inverse torque control schemes.\n- The gravity parameter is ignored.\n- Implemented u"
+	  "sing the recursive Newton-Euler scheme (RNE).\n- A wrapper for the Toolbox method rne().\n\n"
 	  MaskPromptString	  "Robot object|Gravity"
 	  MaskStyleString	  "edit,edit"
 	  MaskVariables		  "robot=@1;grav=@2;"
@@ -2003,7 +2054,7 @@ Library {
 	  MaskValueString	  "robot|[0 0 9.81]"
 	  System {
 	    Name		    "RNE"
-	    Location		    [240, 509, 732, 660]
+	    Location		    [240, 531, 732, 682]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -2045,7 +2096,7 @@ Library {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
 	      SID		      "54:243"
-	      Ports		      [1, 1]
+	      Ports		      [1]
 	      Position		      [115, 66, 290, 94]
 	      MATLABFcn		      "rne(robot, u(1:n)', u(n+1:2*n)', u(2*n+1:3*n)')"
 	      OutputDimensions	      "n"
@@ -2092,8 +2143,7 @@ Library {
 	      DstPort		      3
 	    }
 	    Line {
-	      SrcBlock		      "MATLAB Fcn"
-	      SrcPort		      1
+	      Points		      [295, 80]
 	      DstBlock		      "Q"
 	      DstPort		      1
 	    }
@@ -2117,7 +2167,14 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Rigid-body dynamic model of robot."
-	  MaskHelp		  "Simulates the forward (direct) rigid-body dynamics of the robot described by the given robot object.\n"
+	  MaskHelp		  "Simulates the forward (direct) rigid-body dynamics of the robot described \nby the given robot object."
+	  "  For given applied joint torque/force it computes\nthe instaneous joint coordinates, velocities and acclerations.\n"
+	  "\n \n<b>Parameters::</b>\n \nrobot (SerialLink) a dynamic model of an N-link serial link manipulator\nq0 (1xN)  Ini"
+	  "tial joint coordinates\n \n<b>Inputs::</b>\n \nQ (1xN) the generalized joint force (torque or force) required to ac"
+	  "hieve\nthe motion state (q, qd, qdd).\n \n<b>Outputs::</b>\n\nq (1xN) joint coordinates\nqd (1xN) joint coordinate "
+	  "velocity\nqdd (1xN) joint coordinate acceleration\n\n \n<b>Notes::</b>\n \n- Required to simulate robot rigid body "
+	  "motion.\n- Implemented using the recursive Newton-Euler scheme (RNE).\n- A wrapper for the Toolbox method accel() w"
+	  "hich in turn depends on the\n  method rne().\n\n"
 	  MaskPromptString	  "Robot object|Initial state"
 	  MaskStyleString	  "edit,edit"
 	  MaskVariables		  "robot=@1;q0=@2;"
@@ -2138,7 +2195,7 @@ Library {
 	  MaskValueString	  "robot|[0 0 0 0 0 0]"
 	  System {
 	    Name		    "Robot"
-	    Location		    [280, 354, 812, 582]
+	    Location		    [280, 376, 812, 604]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -2193,7 +2250,7 @@ Library {
 	      DisplayOption	      "bar"
 	    }
 	    Block {
-	      BlockType		      "S-Function"
+	      BlockType		      S-Function
 	      Name		      "S-Function"
 	      SID		      "55:229"
 	      Ports		      [1, 1]
@@ -2296,11 +2353,6 @@ Library {
 	    }
 	  }
 	}
-	Line {
-	  Points		  [110, 95]
-	  DstBlock		  "RNE"
-	  DstPort		  2
-	}
 	Annotation {
 	  Name			  "Dynamics"
 	  Position		  [37, 17]
@@ -2314,7 +2366,7 @@ Library {
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
-	  Name			  "Quadcopter"
+	  Name			  "Quadrotor"
 	  Position		  [96, 181]
 	  ForegroundColor	  "orange"
 	}
@@ -2350,8 +2402,8 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Kinematics"
-	Location		[1099, 539, 1509, 843]
-	Open			off
+	Location		[776, 212, 1186, 516]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -2888,7 +2940,7 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Robot Graphics"
-	Location		[488, 439, 885, 745]
+	Location		[410, 115, 807, 421]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -2905,7 +2957,7 @@ Library {
 	SIDPrevWatermark	"16"
 	Block {
 	  BlockType		  SubSystem
-	  Name			  "Quadcopter plot"
+	  Name			  "Quadrotor plot"
 	  SID			  "16:18"
 	  Ports			  [1]
 	  Position		  [185, 67, 215, 113]
@@ -2919,9 +2971,27 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Animate quadrotor."
+	  MaskHelp		  "This block graphically displays a quadrotor (flying robot).\n\nA new figure is created and A graphica"
+	  "l model of a quadrotor is animated \nto a pose specified by the state vector input to the block.  \n\nThe state ve"
+	  "ctor is [x y z roll pitch yaw] in world coordinates and the\nangles are in radians.\n\nNotes:\n- The dimensions of "
+	  "the model are currently fixed in the code and cannot\n  be set via a parameter."
+	  MaskPromptString	  "State vector"
+	  MaskStyleString	  "edit"
+	  MaskVariables		  "x=@1;"
+	  MaskTunableValueString  "on"
+	  MaskEnableString	  "on"
+	  MaskVisibilityString	  "on"
+	  MaskToolTipString	  "on"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
+	  MaskValueString	  "0"
 	  System {
-	    Name		    "Quadcopter plot"
-	    Location		    [443, 871, 802, 1136]
+	    Name		    "Quadrotor plot"
+	    Location		    [540, 328, 899, 593]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -2954,12 +3024,12 @@ Library {
 	      OutputAsBus	      on
 	    }
 	    Block {
-	      BlockType		      "S-Function"
+	      BlockType		      S-Function
 	      Name		      "Plotter"
 	      SID		      "16:18:193"
 	      Ports		      [1]
 	      Position		      [155, 105, 215, 135]
-	      FunctionName	      "quadcopter_plot"
+	      FunctionName	      "quadrotor_plot"
 	      Parameters	      "[2,10], 1, 1"
 	      EnableBusSupport	      off
 	    }
@@ -2994,8 +3064,10 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Graphical robot display."
-	  MaskHelp		  "This block graphically displays the named robot"
-	  MaskPromptString	  "Name of robot"
+	  MaskHelp		  "This block graphically displays the passed SerialLink class object.\n\nA new figure is created and the"
+	  " robot is animated (using SerialLink.plot)\nto a pose specified by the joint coordinate vector input to the block w"
+	  "hose\nwidth must match the number of robot joints."
+	  MaskPromptString	  "Robot object"
 	  MaskStyleString	  "edit"
 	  MaskVariables		  "robot=@1;"
 	  MaskTunableValueString  "off"
@@ -3037,7 +3109,7 @@ Library {
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
-	      BlockType		      "S-Function"
+	      BlockType		      S-Function
 	      Name		      "S-Function"
 	      SID		      "16:17:95"
 	      Ports		      [1]
@@ -3066,7 +3138,7 @@ Library {
     }
     Block {
       BlockType		      SubSystem
-      Name		      "Trajectory "
+      Name		      "Trajectory"
       SID		      "17"
       Ports		      []
       Position		      [158, 60, 260, 102]
@@ -3087,8 +3159,8 @@ Library {
       MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
       System {
-	Name			"Trajectory "
-	Location		[433, 415, 931, 703]
+	Name			"Trajectory"
+	Location		[873, 81, 1371, 369]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -3116,6 +3188,11 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Generate circular trajectory"
+	  MaskHelp		  "Generate circular trajectory in the xy-plane and centred at the origin.\n\n<b>Parameters::</b>\n\nradi"
+	  "us   The radius of the circle [m]\nfreq     The frequency of motion [rev/s]\n\n<b>Output::</b>\n\nxy (1x2) a vector"
+	  " of xy-coordinates at the current simulation time step.\n\n<b>Notes::</b>\n- Motion is at constant velocity around "
+	  "the circle, there is an infinite\n  initial acceleration.\n- The motion continues for the whole simulation."
 	  MaskPromptString	  "Radius|Frequency (rev/s)"
 	  MaskStyleString	  "edit,edit"
 	  MaskVariables		  "radius=@1;freq=@2;"
@@ -3285,6 +3362,14 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Difference of angles"
+	  MaskHelp		  "A difference block for angles and the result is guaranteed to be in the\ninterval [-pi +pi).\n\n<b>Not"
+	  "es::</b>\n- Is a wrapper for the Toolbox function angdiff."
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
 	  System {
 	    Name		    "angdiff"
 	    Location		    [95, 232, 445, 427]
@@ -3387,7 +3472,13 @@ Library {
 	  MaskHideContents	  off
 	  MaskDescription	  "Joint interpolated trajectory."
 	  MaskHelp		  "Generate quintic polynomial to move from initial to final joint angles as specified.  Initial and fina"
-	  "l velocity are assumed to be zero.\n\nOutputs joint angles as well as joint angle rates."
+	  "l velocity are assumed to be zero.\n\n<b>Parameters::</b>\n\nq0 (1xN) initial joint coordinates\nqf (1xN) final joi"
+	  "nt coordinates\ntmax (1x1) the time for the trajectory to complete\n\nInitial and final velocity are assumed to be "
+	  "zero.\n\n<b>Outputs::</b>\n\nq (1xN) vector of joint coordinates at current simulation time\nqd (1xN) vector of joi"
+	  "nt coordinate velocity at current simulation time\nqdd (1xN) vector of joint coordinate acceleration at current sim"
+	  "ulation time\n\n<b>Notes::</b>\n\n- If simulation time exceeds tmax then q is clipped to qf.\n- A wrapper on the To"
+	  "olbox function jtraj.\n- The piecewise constant output of jtraj is interpolated to the current\n  simulation time.\n"
+	  "\n"
 	  MaskPromptString	  "q0|qf|tmax"
 	  MaskStyleString	  "edit,edit,edit"
 	  MaskVariables		  "q0=@1;qf=@2;tmax=@3;"
@@ -3407,7 +3498,7 @@ Library {
 	  MaskValueString	  "[0 0 0 0 0 0]|[pi/4 pi/2 -pi/2 0 0 0]|10"
 	  System {
 	    Name		    "jtraj"
-	    Location		    [521, 500, 885, 691]
+	    Location		    [260, 521, 624, 712]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -3537,9 +3628,13 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Scalar trajectory."
-	  MaskHelp		  "Generate linear segment with polynomial blend to move from initial to final joint angles as specified."
-	  "  Initial and final velocity are assumed to be zero.\n\nOutputs joint angles as well as joint angle rates and accel"
-	  "eration."
+	  MaskHelp		  "Generate linear segment with polynomial blend to move from initial to final\n joint angles as specifie"
+	  "d.\n\n<b>Parameters::</b>\n\nq0 (1x1) initial joint coordinate\nqf (1x1) final joint coordinate\ntmax (1x1) the tim"
+	  "e for the trajectory to complete\n\nInitial and final velocity are assumed to be zero.\n\n<b>Outputs::</b>\n\nq (1x"
+	  "1) joint coordinates at current simulation time\nqd (1x1) joint coordinate velocity at current simulation time\nqdd"
+	  " (1xN) joint coordinate acceleration at current simulation time\n\n<b>Notes::</b>\n\n- If simulation time exceeds t"
+	  "max then q is clipped to qf.\n- A wrapper on the Toolbox function lspb.\n- The piecewise constant output of jtraj i"
+	  "s interpolated to the current simulation time."
 	  MaskPromptString	  "q0|qf|tmax"
 	  MaskStyleString	  "edit,edit,edit"
 	  MaskVariables		  "q0=@1;qf=@2;tmax=@3;"
@@ -3688,6 +3783,11 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Integrate spatial velocity"
+	  MaskHelp		  "Integrate spatial velocity to update pose represented as a homogeneous\ntransformation.\n\n<b>Paramete"
+	  "rs::</b>\n\nT0 (4x4)  The initial pose\ndt (1x1)  The sample interval [s]\n\n<b>Inputs::</b>\n\nv (1x6) spatial vel"
+	  "ocity (xd yd zd wx wy wz)\n\n<b>Outputs::</b>\n\nT (4x4) the integrated pose as a homogeneous transformation\n\n<b>"
+	  "Notes::</b>\n\n- Contains a unit delay of dt\n- The transform is kept normalized using trnorm().\n"
 	  MaskPromptString	  "Initial pose (hom transform)|Sample interval (s)"
 	  MaskStyleString	  "edit,edit"
 	  MaskVariables		  "T0=@1;dt=@2;"
@@ -3704,7 +3804,7 @@ Library {
 	  MaskValueString	  "transl(1,1,-3)*trotx(0.2)|0.02"
 	  System {
 	    Name		    "pose integral"
-	    Location		    [745, 641, 1324, 884]
+	    Location		    [362, 525, 941, 768]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -3844,7 +3944,7 @@ Library {
       MaskIconUnits	      "autoscale"
       System {
 	Name			"Transform"
-	Location		[433, 403, 931, 703]
+	Location		[335, 50, 833, 350]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -3872,6 +3972,15 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Inverse of homogeneous transformation"
+	  MaskHelp		  "Inverse of homogeneous transformation\n \n \n<b>Inputs::</b>\n \nT (4x4) Incoming homogeneous transfor"
+	  "m\n \n<b>Outputs::</b>\n \ninvT (4x4) Outgoing homogeneous transformation T^(-1)\n\n<b>Notes::</b>\n- Efficient imp"
+	  "lementation that uses transpose of rotation submatrix.\n"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
 	  System {
 	    Name		    "Inverse"
 	    Location		    [1250, 564, 1470, 646]
@@ -3942,8 +4051,11 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
-	  MaskDescription	  "Premultiply incoming transform by a constant transformation"
-	  MaskPromptString	  "T2"
+	  MaskDescription	  "Post-multiply incoming transform by a constant transformation"
+	  MaskHelp		  "Post-multiply homogeneous transform signal by a constant transform.\n \n<b>Parameters::</b>\n \nTP (4x"
+	  "4)  The transform to post-multiply by\n \n<b>Inputs::</b>\n \nT1 (4x4) Incoming homogeneous transform\n \n<b>Output"
+	  "s::</b>\n \nT (4x4) Outgoing homogeneous transformation is T1*TP\n\n\n"
+	  MaskPromptString	  "TP"
 	  MaskStyleString	  "edit"
 	  MaskVariables		  "T2=@1;"
 	  MaskTunableValueString  "on"
@@ -3958,8 +4070,8 @@ Library {
 	  MaskValueString	  "0"
 	  System {
 	    Name		    "Post multiply"
-	    Location		    [937, 422, 1233, 572]
-	    Open		    off
+	    Location		    [381, 458, 677, 608]
+	    Open		    on
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -4041,7 +4153,10 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
-	  MaskDescription	  "Post multiply incoming transform by constant transform."
+	  MaskDescription	  "Pre-multiply homogeneous transform by constant transform."
+	  MaskHelp		  "Pre-multiply homogeneous transform signal by a constant transform.\n \n<b>Parameters::</b>\n \nTP (4x4"
+	  ")  The transform to pre-multiply by\n \n<b>Inputs::</b>\n \nT2 (4x4) Incoming homogeneous transform\n \n<b>Outputs:"
+	  ":</b>\n \nT (4x4) Outgoing homogeneous transformation is TP*T2\n\n\n"
 	  MaskPromptString	  "T1"
 	  MaskStyleString	  "edit"
 	  MaskVariables		  "T=@1;"
@@ -4159,7 +4274,7 @@ Library {
       MaskIconUnits	      "autoscale"
       System {
 	Name			"Transform Conversion"
-	Location		[542, 590, 954, 895]
+	Location		[726, 80, 1138, 385]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -4189,6 +4304,10 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Convert transform to Euler angles."
+	  MaskHelp		  "Convert homogeneous transformation to Euler angles.\n \n \n<b>Inputs::</b>\n \nT (4x4) the attitude as"
+	  " a homogeneous transformation\n\n<b>Outputs::</b>\n\nphi (1x1) first Euler angle [rad]\ntheta (1x1) second Euler an"
+	  "gle [rad]\npsi (1x1) third Euler angle [rad]\n \n<b>Notes::</b>\n \n- Axis rotation order is z-y-z (aerospace conve"
+	  "ntion).\n- Wrapper for the Toolbox function tr2eul().\n\n"
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
@@ -4309,6 +4428,10 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Convert transform to roll/pitch/yaw angles."
+	  MaskHelp		  "Convert homogeneous transformation to roll/pitch/yaw angles.\n \n \n<b>Inputs::</b>\n\nT (4x4) the att"
+	  "itude as a homogeneous transformation\n\n<b>Outputs::</b>\n \nroll (1x1) roll angle [rad]\npitch (1x1) pitch angle "
+	  "[rad]\nyaw (1x1) yaw angle [rad]\n \n<b>Notes::</b>\n \n- Axis rotation order is x-y-z (aerospace convention).\n- W"
+	  "rapper for the Toolbox function tr2rpy().\n\n"
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
@@ -4429,6 +4552,9 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Convert transform to xyz scalars"
+	  MaskHelp		  "Convert homogeneous transformation to position scalars.\n\n\n<b>Inputs::</b>\n\nT (4x4) a translation "
+	  "represented as a homogeneous transformation\n\n<b>Outputs::</b>\n\nx (1x1) x-coordinate\ny (1x1) y-coordinate\nz (1"
+	  "x1) z-coordinate\n\n<b>Notes::</b>\n\n- A wrapper for the Toolbox function transl().\n"
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
@@ -4549,6 +4675,10 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Convert Euler angles to transform."
+	  MaskHelp		  "Convert Euler angles to homogeneous transformation.\n \n \n<b>Inputs::</b>\n \nphi (1x1) first Euler a"
+	  "ngle [rad]\ntheta (1x1) second Euler angle [rad]\npsi (1x1) third Euler angle [rad]\n\n\n<b>Outputs::</b>\n \nT (4x"
+	  "4) the attitude as a homogeneous transformation\n \n<b>Notes::</b>\n \n- Axis rotation order is z-y-z (aerospace co"
+	  "nvention).\n- Wrapper for the Toolbox function eul2tr().\n\n"
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
@@ -4670,6 +4800,10 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Convert roll/pitch/yaw angles to transform."
+	  MaskHelp		  "Convert roll/pitch/yaw angles to homogeneous transformation.\n \n \n<b>Inputs::</b>\n \nroll (1x1) rol"
+	  "l angle [rad]\npitch (1x1) pitch angle [rad]\nyaw (1x1) yaw angle [rad]\n\n\n<b>Outputs::</b>\n \nT (4x4) the attit"
+	  "ude as a homogeneous transformation\n \n<b>Notes::</b>\n \n- Axis rotation order is x-y-z (aerospace convention).\n"
+	  "- Wrapper for the Toolbox function rpy2tr().\n\n"
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
@@ -4791,6 +4925,10 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Convert xyz scalars to transform."
+	  MaskHelp		  "Convert position scalars to a homogeneous transformation.\n\n\n<b>Inputs::</b>\n\nx (1x1) x-coordinate"
+	  "\ny (1x1) y-coordinate\nz (1x1) z-coordinate\n\n\n<b>Outputs::</b>\n\nT (4x4) a translation represented as a homoge"
+	  "neous transformation\n\n<b>Notes::</b>\n\n- A wrapper for the Toolbox function transl().\n"
+	  MaskSelfModifiable	  on
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"

@@ -1,5 +1,5 @@
 Model {
-  Name			  "sl_quadcopter_vs"
+  Name			  "sl_quadrotor_vs"
   Version		  7.6
   MdlSubVersion		  0
   GraphicalInterface {
@@ -23,7 +23,7 @@ Model {
   InitFcn		  "fprintf('----- creating workspace variables: camera, quad, P, pstar\\n');\n% create a spherical camera\n"
   "camera = SphericalCamera('name', 'quad-vs');\n\n% create a grid of points on the ground\nP = mkgrid(2, 4);\n\n% set "
   "the desired view of these points, defines the final pose\n% of the quad\npstar = camera.project(P, 'Tcam', transl(0,"
-  " 0, -5)*trotz(pi/2));\n\n% load a dynamic model of the quadcopter\nmdl_quadcopter"
+  " 0, -5)*trotz(pi/2));\n\n% load a dynamic model of the quadrotor\nmdl_quadrotor"
   Created		  "Thu Nov  4 20:52:52 2010"
   Creator		  "corkep"
   UpdateHistory		  "UpdateHistoryNever"
@@ -726,7 +726,7 @@ Model {
     }
   }
   System {
-    Name		    "sl_quadcopter_vs"
+    Name		    "sl_quadrotor_vs"
     Location		    [518, 101, 1548, 951]
     Open		    on
     ModelBrowserVisibility  off
@@ -1149,13 +1149,13 @@ Model {
     }
     Block {
       BlockType		      Reference
-      Name		      "Quadcopter"
+      Name		      "Quadrotor"
       SID		      "323"
       Ports		      [4, 1]
       Position		      [840, 13, 905, 297]
       DropShadow	      on
       LibraryVersion	      "1.28"
-      SourceBlock	      "roblocks/Dynamics/Quadcopter"
+      SourceBlock	      "roblocks/Dynamics/Quadrotor"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1170,13 +1170,13 @@ Model {
     }
     Block {
       BlockType		      Reference
-      Name		      "Quadcopter plot"
+      Name		      "Quadrotor plot"
       SID		      "326"
       Ports		      [1]
       Position		      [645, 402, 675, 448]
       DropShadow	      on
       LibraryVersion	      "1.28"
-      SourceBlock	      "roblocks/Robot Graphics/Quadcopter plot"
+      SourceBlock	      "roblocks/Robot Graphics/Quadrotor plot"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1603,19 +1603,19 @@ Model {
     Line {
       SrcBlock		      "Control Mixer"
       SrcPort		      1
-      DstBlock		      "Quadcopter"
+      DstBlock		      "Quadrotor"
       DstPort		      1
     }
     Line {
       SrcBlock		      "Control Mixer"
       SrcPort		      3
-      DstBlock		      "Quadcopter"
+      DstBlock		      "Quadrotor"
       DstPort		      3
     }
     Line {
       SrcBlock		      "Control Mixer"
       SrcPort		      4
-      DstBlock		      "Quadcopter"
+      DstBlock		      "Quadrotor"
       DstPort		      4
     }
     Line {
@@ -1638,7 +1638,7 @@ Model {
       DstPort		      2
     }
     Line {
-      SrcBlock		      "Quadcopter"
+      SrcBlock		      "Quadrotor"
       SrcPort		      1
       Points		      [30, 0; 0, 350; -220, 0; 0, -45]
       Branch {
@@ -1700,7 +1700,7 @@ Model {
 	}
 	Branch {
 	  Points		  [0, -80]
-	  DstBlock		  "Quadcopter plot"
+	  DstBlock		  "Quadrotor plot"
 	  DstPort		  1
 	}
       }
@@ -1859,7 +1859,7 @@ Model {
     Line {
       SrcBlock		      "Control Mixer"
       SrcPort		      2
-      DstBlock		      "Quadcopter"
+      DstBlock		      "Quadrotor"
       DstPort		      2
     }
     Line {

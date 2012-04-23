@@ -1,5 +1,5 @@
 Model {
-  Name			  "sl_quadcopter"
+  Name			  "sl_quadrotor"
   Version		  7.6
   MdlSubVersion		  0
   GraphicalInterface {
@@ -20,7 +20,7 @@ Model {
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
   MaxMDLFileLineLength	  120
-  InitFcn		  "% load parameters of the default quadcopter\ndisp('Quadcopter parameters loaded by InitFcn')\nmdl_quadco"
+  InitFcn		  "% load parameters of the default quadrotor\ndisp('Quadrotor parameters loaded by InitFcn')\nmdl_quadco"
   "pter"
   Created		  "Sat Mar 20 12:13:00 2010"
   Creator		  "corkep"
@@ -745,7 +745,7 @@ Model {
     }
   }
   System {
-    Name		    "sl_quadcopter"
+    Name		    "sl_quadrotor"
     Location		    [1826, 218, 2887, 880]
     Open		    on
     ModelBrowserVisibility  off
@@ -1049,13 +1049,13 @@ Model {
     }
     Block {
       BlockType		      Reference
-      Name		      "Quadcopter"
+      Name		      "Quadrotor"
       SID		      "85"
       Ports		      [4, 1]
       Position		      [810, 18, 875, 302]
       DropShadow	      on
       LibraryVersion	      "1.28"
-      SourceBlock	      "roblocks/Dynamics/Quadcopter"
+      SourceBlock	      "roblocks/Dynamics/Quadrotor"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1070,13 +1070,13 @@ Model {
     }
     Block {
       BlockType		      Reference
-      Name		      "Quadcopter plot"
+      Name		      "Quadrotor plot"
       SID		      "91"
       Ports		      [1]
       Position		      [650, 422, 680, 468]
       DropShadow	      on
       LibraryVersion	      "1.28"
-      SourceBlock	      "roblocks/Robot Graphics/Quadcopter plot"
+      SourceBlock	      "roblocks/Robot Graphics/Quadrotor plot"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1342,14 +1342,14 @@ Model {
       SrcBlock		      "Control Mixer"
       SrcPort		      1
       Points		      [0, -25]
-      DstBlock		      "Quadcopter"
+      DstBlock		      "Quadrotor"
       DstPort		      1
     }
     Line {
       SrcBlock		      "Control Mixer"
       SrcPort		      4
       Points		      [10, 0; 0, 5]
-      DstBlock		      "Quadcopter"
+      DstBlock		      "Quadrotor"
       DstPort		      4
     }
     Line {
@@ -1372,7 +1372,7 @@ Model {
       DstPort		      2
     }
     Line {
-      SrcBlock		      "Quadcopter"
+      SrcBlock		      "Quadrotor"
       SrcPort		      1
       Points		      [50, 0; 0, 375; -130, 0]
       Branch {
@@ -1419,7 +1419,7 @@ Model {
 	}
 	Branch {
 	  Points		  [0, -90]
-	  DstBlock		  "Quadcopter plot"
+	  DstBlock		  "Quadrotor plot"
 	  DstPort		  1
 	}
       }
@@ -1707,14 +1707,14 @@ Model {
       SrcBlock		      "Control Mixer"
       SrcPort		      3
       Points		      [15, 0; 0, -5]
-      DstBlock		      "Quadcopter"
+      DstBlock		      "Quadrotor"
       DstPort		      3
     }
     Line {
       SrcBlock		      "Control Mixer"
       SrcPort		      2
       Points		      [15, 0; 0, -15]
-      DstBlock		      "Quadcopter"
+      DstBlock		      "Quadrotor"
       DstPort		      2
     }
     Annotation {

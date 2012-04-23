@@ -845,7 +845,7 @@ Model {
       Ports		      [2, 1]
       Position		      [210, 152, 230, 203]
       LibraryVersion	      "1.31"
-      SourceBlock	      "roblocks/Trajectory /angdiff"
+      SourceBlock	      "roblocks/Trajectory/angdiff"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"

@@ -776,7 +776,7 @@ Model {
       Position		      [45, 144, 80, 216]
       BackgroundColor	      "red"
       LibraryVersion	      "1.28"
-      SourceBlock	      "roblocks/Trajectory /jtraj"
+      SourceBlock	      "roblocks/Trajectory/jtraj"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"

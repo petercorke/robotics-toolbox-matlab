@@ -758,7 +758,7 @@ Model {
       Ports		      [0, 1]
       Position		      [40, 60, 80, 120]
       LibraryVersion	      "1.28"
-      SourceBlock	      "roblocks/Trajectory /Circle"
+      SourceBlock	      "roblocks/Trajectory/Circle"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -858,7 +858,7 @@ Model {
       Ports		      [2, 1]
       Position		      [370, 162, 390, 213]
       LibraryVersion	      "1.28"
-      SourceBlock	      "roblocks/Trajectory /angdiff"
+      SourceBlock	      "roblocks/Trajectory/angdiff"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
