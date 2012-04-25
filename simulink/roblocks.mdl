@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Apr 23 17:26:58 2012"
-  RTWModifiedTimeStamp	  257020657
-  ModelVersionFormat	  "1.%<AutoIncrement:39>"
+  LastModifiedDate	  "Wed Apr 25 12:04:35 2012"
+  RTWModifiedTimeStamp	  257252011
+  ModelVersionFormat	  "1.%<AutoIncrement:44>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -830,7 +830,7 @@ Library {
   }
   System {
     Name		    "roblocks"
-    Location		    [136, 89, 422, 511]
+    Location		    [697, 73, 1006, 496]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    212
@@ -844,13 +844,13 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "76"
+    SIDHighWatermark	    "79"
     Block {
       BlockType		      SubSystem
       Name		      "Dynamics"
       SID		      "5"
       Ports		      []
-      Position		      [157, 199, 261, 241]
+      Position		      [152, 199, 260, 241]
       BackgroundColor	      "darkGreen"
       ShowName		      off
       LibraryVersion	      "1.225"
@@ -869,8 +869,8 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Dynamics"
-	Location		[576, 50, 1330, 451]
-	Open			on
+	Location		[1865, 757, 2244, 1307]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -887,9 +887,8 @@ Library {
 	  Name			  "Bicycle"
 	  SID			  "51"
 	  Ports			  [2, 3]
-	  Position		  [240, 62, 300, 138]
+	  Position		  [115, 207, 175, 283]
 	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/Bicycle"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -1183,9 +1182,8 @@ Library {
 	  Name			  "Control Mixer"
 	  SID			  "52"
 	  Ports			  [4, 5]
-	  Position		  [30, 215, 90, 355]
+	  Position		  [115, 330, 175, 470]
 	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/Control Mixer"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -1662,9 +1660,8 @@ Library {
 	  Name			  "Quadrotor"
 	  SID			  "53"
 	  Ports			  [4, 1]
-	  Position		  [115, 217, 175, 328]
+	  Position		  [230, 332, 290, 443]
 	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/Quadrotor"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -1689,8 +1686,8 @@ Library {
 	  "lar velocity of rotor 4 [rad]\n\n<b>Outputs::</b>\n \nX (1x12) state vector (x, y, z, thr, thp, thy, xd, yd, zd, th"
 	  "rd, thpd, thyd)\n\n(x,y,z) is the position in the world frame [m]\n(thr, thp, thy) the roll/pitch/yaw orientation i"
 	  "n the world frame [rad]\n(xd,yd,zd) is the velocity in the body frame [m]\n(thrd,thpd,thyd) is the roll/pitch/yaw r"
-	  "ates in the body frame [rad/s]\n \n<b>Notes::</b>\n \n- See also mdl_quadrotor which defines parameters for the AN"
-	  "U X4 flyer.\n"
+	  "ates in the body frame [rad/s]\n \n<b>Notes::</b>\n \n- See also mdl_quadrotor which defines parameters for the ANU"
+	  " X4 flyer.\n"
 	  MaskPromptString	  "Quadrotor params"
 	  MaskStyleString	  "edit"
 	  MaskVariables		  "quad=@1;"
@@ -2015,9 +2012,8 @@ Library {
 	  Name			  "RNE"
 	  SID			  "54"
 	  Ports			  [3, 1]
-	  Position		  [145, 61, 205, 139]
+	  Position		  [230, 91, 290, 169]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/RNE"
 	  LibraryVersion	  "*1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -2154,10 +2150,9 @@ Library {
 	  Name			  "Robot"
 	  SID			  "55"
 	  Ports			  [1, 3]
-	  Position		  [20, 62, 95, 138]
+	  Position		  [105, 92, 180, 168]
 	  BackgroundColor	  "red"
 	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/Robot"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -2354,26 +2349,32 @@ Library {
 	  }
 	}
 	Annotation {
-	  Name			  "Dynamics"
-	  Position		  [37, 17]
+	  Name			  "\nDynamics  \n "
+	  Position		  [47, 27]
 	  BackgroundColor	  "cyan"
-	  FontSize		  12
-	  FontWeight		  "bold"
+	  FontSize		  18
 	}
 	Annotation {
 	  Name			  "Arm-type robot"
-	  Position		  [105, 40]
+	  Position		  [55, 100]
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
 	  Name			  "Quadrotor"
-	  Position		  [96, 181]
+	  Position		  [41, 336]
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
 	  Name			  "Mobile robot"
-	  Position		  [254, 39]
+	  Position		  [49, 214]
 	  ForegroundColor	  "orange"
+	}
+	Annotation {
+	  Name			  "Robotics Toolbox for MATLAB"
+	  Position		  [116, 17]
+	  HorizontalAlignment	  "left"
+	  FontSize		  12
+	  FontWeight		  "bold"
 	}
       }
     }
@@ -2382,10 +2383,9 @@ Library {
       Name		      "Kinematics"
       SID		      "15"
       Ports		      []
-      Position		      [159, 129, 260, 170]
+      Position		      [154, 128, 260, 170]
       BackgroundColor	      "darkGreen"
       ShowName		      off
-      AncestorBlock	      "test/Dynamics"
       LibraryVersion	      "*1.3"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -2402,7 +2402,7 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Kinematics"
-	Location		[776, 212, 1186, 516]
+	Location		[1866, 595, 2243, 1025]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -2415,17 +2415,16 @@ Library {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
-	SIDHighWatermark	"26"
+	SIDHighWatermark	"64"
 	SIDPrevWatermark	"14"
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "fkine"
 	  SID			  "15:22"
 	  Ports			  [1, 1]
-	  Position		  [15, 42, 65, 98]
+	  Position		  [80, 84, 145, 146]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/fkine"
-	  LibraryVersion	  "1.61"
+	  LibraryVersion	  "*1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
 	  RTWSystemCode		  "Auto"
@@ -2434,7 +2433,10 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Robot forward kinematics."
-	  MaskHelp		  "Compute homogeneous transform for robot end-effector given joint angles."
+	  MaskHelp		  "Compute homogeneous transform for robot end-effector given joint angles.\n\n\n<b>Parameters::</b>\n \n"
+	  "Robot (SerialLink class)  The N-axis robot object for computing forward kinematics.\n \n<b>Inputs::</b>\n \nq (1xN)"
+	  " joint coordinates\n \n<b>Outputs::</b>\n \nT (4x4) the pose of the end effector as a homogeneous transformation\n "
+	  "\n<b>Notes::</b>\n \n- A wrapper for the Toolbox method fkine().\n"
 	  MaskPromptString	  "Robot object"
 	  MaskStyleString	  "edit"
 	  MaskVariables		  "robot=@1;"
@@ -2442,8 +2444,8 @@ Library {
 	  MaskEnableString	  "on"
 	  MaskVisibilityString	  "on"
 	  MaskToolTipString	  "on"
-	  MaskDisplay		  "port_label('input', 1, 'q')\nport_label('output', 1, 'T')\ntext(0.9, 0.9, robot.name,  'horizontalA"
-	  "lignment', 'right')\n"
+	  MaskDisplay		  "port_label('input', 1, 'q')\nport_label('output', 1, 'T')\nif ~isempty(robot)\n    text(0.5, 0.2, r"
+	  "obot.name,  'horizontalAlignment', 'center')\nend\n"
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
@@ -2452,7 +2454,7 @@ Library {
 	  MaskValueString	  "robot"
 	  System {
 	    Name		    "fkine"
-	    Location		    [167, 513, 531, 662]
+	    Location		    [533, 523, 897, 672]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -2510,9 +2512,8 @@ Library {
 	  Name			  "ijacob"
 	  SID			  "15:23"
 	  Ports			  [1, 1]
-	  Position		  [350, 35, 395, 105]
+	  Position		  [285, 185, 340, 255]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/ijacob"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -2521,11 +2522,13 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
-	  MaskDescription	  "Robot inverse Jacobian for world coordinates.\n\nOnly valid for square jacobians (ie/ 6DOF robot"
-	  "s)"
-	  MaskDisplay		  "text(0.4, 0.7, 'J', 'verticalAlignment', 'top', 'horizontalAlignment', 'left')\ntext(0.65, 0.65, '-"
-	  "1', 'verticalAlignment', 'bottom', 'horizontalAlignment', 'right')\nport_label('input', 1, 'J');\nport_label('outpu"
-	  "t', 1, 'Ji')\n"
+	  MaskDescription	  "Inverse Jacobian\n"
+	  MaskHelp		  "Inverse of Jacobian matrix which maps spatial velocity to joint coordinate\nrates.\n\n\n<b>Inputs::</b"
+	  ">\n \nJ (6x6) the Jacobian matrix\n \n<b>Outputs::</b>\n \nJi (6x6) the inverse Jacobian matrix\n \n<b>Notes::</b>\n"
+	  " \n- A wrapper for the MATLAB function inv().\n- Only valid for square Jacobians (6-axis robots)\n"
+	  MaskDisplay		  "text(0.4, 0.7, '\\bf\\fontsize{16}J', 'texmode', 'on', 'verticalAlignment', 'top', 'horizontalAlign"
+	  "ment', 'left')\ntext(0.6, 0.65, '\\fontsize{10}-1', 'texmode', 'on','verticalAlignment', 'bottom', 'horizontalAlign"
+	  "ment', 'left')\nport_label('input', 1, 'J');\nport_label('output', 1, 'Ji')\n"
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
@@ -2590,9 +2593,8 @@ Library {
 	  Name			  "jacob0\n"
 	  SID			  "15:24"
 	  Ports			  [1, 1]
-	  Position		  [180, 36, 230, 104]
+	  Position		  [80, 186, 140, 254]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/jacob0\n"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -2601,7 +2603,11 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
-	  MaskDescription	  "Robot Jacobian for end-effector coordinates"
+	  MaskDescription	  "Robot Jacobian in world coordinates"
+	  MaskHelp		  "Jacobian matrix relating joint coordinate rates to end-effector spatial\nvelocity expressed in the wor"
+	  "ld frame.\n\n<b>Parameters::</b>\n \nRobot (SerialLink class)  The N-axis robot object for which the Jacobian is\n "
+	  "                         computed.\n \n<b>Inputs::</b>\n \nq (1xN) joint coordinates\n \n<b>Outputs::</b>\n \nJ (6x"
+	  "N) the Jacobian matrix\n \n<b>Notes::</b>\n \n- A wrapper for the Toolbox method jacob0().\n"
 	  MaskPromptString	  "Robot object"
 	  MaskStyleString	  "edit"
 	  MaskVariables		  "robot=@1;"
@@ -2610,9 +2616,10 @@ Library {
 	  MaskVisibilityString	  "on"
 	  MaskToolTipString	  "on"
 	  MaskInitialization	  "n=robot.n;\n"
-	  MaskDisplay		  "text(0.4, 0.7, 'J', 'verticalAlignment', 'top', 'horizontalAlignment', 'left')\ntext(0.4, 0.7, '0',"
-	  " 'verticalAlignment', 'bottom', 'horizontalAlignment', 'right')\ntext(0.5, 0.2, robot.name,  'horizontalAlignment',"
-	  " 'center')\nport_label('input', 1, 'q')\nport_label('output', 1, 'J')"
+	  MaskDisplay		  "text(0.4, 0.7, '\\bf\\fontsize{16}J', 'texmode', 'on', 'verticalAlignment', 'top', 'horizontalAlign"
+	  "ment', 'left')\ntext(0.45, 0.65, '\\fontsize{10}0', 'texmode', 'on','verticalAlignment', 'bottom', 'horizontalAlign"
+	  "ment', 'right')\nif ~isempty(robot)\n    text(0.5, 0.2, robot.name,  'horizontalAlignment', 'center')\nend\nport_la"
+	  "bel('input', 1, 'q')\nport_label('output', 1, 'J')"
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
@@ -2679,9 +2686,8 @@ Library {
 	  Name			  "jacobn"
 	  SID			  "15:25"
 	  Ports			  [1, 1]
-	  Position		  [265, 37, 310, 103]
+	  Position		  [180, 186, 235, 254]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/jacobn"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -2690,7 +2696,11 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
-	  MaskDescription	  "Robot Jacobian for end-effector coordinates"
+	  MaskDescription	  "Robot Jacobian in end-effector coordinates"
+	  MaskHelp		  "Jacobian matrix relating joint coordinate rates to end-effector spatial\nvelocity expressed in the end"
+	  "-effector frame.\n\n<b>Parameters::</b>\n \nRobot (SerialLink class)  The N-axis robot object for which the Jacobia"
+	  "n is\n                          computed.\n \n<b>Inputs::</b>\n \nq (1xN) joint coordinates\n \n<b>Outputs::</b>\n "
+	  "\nJ (6xN) the Jacobian matrix\n \n<b>Notes::</b>\n \n- A wrapper for the Toolbox method jacobn().\n"
 	  MaskPromptString	  "Robot object"
 	  MaskStyleString	  "edit"
 	  MaskVariables		  "robot=@1;"
@@ -2699,9 +2709,10 @@ Library {
 	  MaskVisibilityString	  "on"
 	  MaskToolTipString	  "on"
 	  MaskInitialization	  "n=robot.n;"
-	  MaskDisplay		  "text(0.5, 0.4, 'J', 'verticalAlignment', 'top', 'horizontalAlignment', 'left')\ntext(0.5, 0.4, 'n',"
-	  " 'verticalAlignment', 'bottom', 'horizontalAlignment', 'right')\ntext(0.9, 0.9, robot.name,  'horizontalAlignment',"
-	  " 'right')\nport_label('input', 1, 'q')\nport_label('output', 1, 'J')"
+	  MaskDisplay		  "text(0.4, 0.7, '\\bf\\fontsize{16}J', 'texmode', 'on', 'verticalAlignment', 'top', 'horizontalAlign"
+	  "ment', 'left')\ntext(0.45, 0.65, '\\fontsize{10}N', 'texmode', 'on','verticalAlignment', 'bottom', 'horizontalAlign"
+	  "ment', 'right')\nif ~isempty(robot)\n    text(0.5, 0.2, robot.name,  'horizontalAlignment', 'center')\nend\nport_la"
+	  "bel('input', 1, 'q')\nport_label('output', 1, 'J')"
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
@@ -2765,12 +2776,12 @@ Library {
 	}
 	Block {
 	  BlockType		  SubSystem
-	  Name			  "tr2diff"
-	  SID			  "15:26"
-	  Ports			  [2, 1]
-	  Position		  [100, 40, 145, 95]
+	  Name			  "pose integral"
+	  SID			  "15:58"
+	  Ports			  [1, 1]
+	  Position		  [180, 293, 250, 347]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/tr2diff"
+	  DropShadow		  on
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -2779,8 +2790,153 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
-	  MaskDescription	  "Robot forward kinematics."
-	  MaskHelp		  "Compute homogeneous transform for robot end-effector given joint angles."
+	  MaskDescription	  "Integrate spatial velocity"
+	  MaskHelp		  "Integrate spatial velocity to update pose represented as a homogeneous\ntransformation.\n\n<b>Paramete"
+	  "rs::</b>\n\nT0 (4x4)  The initial pose\ndt (1x1)  The sample interval [s]\n\n<b>Inputs::</b>\n\nv (1x6) spatial vel"
+	  "ocity (xd yd zd wx wy wz)\n\n<b>Outputs::</b>\n\nT (4x4) the integrated pose as a homogeneous transformation\n\n<b>"
+	  "Notes::</b>\n\n- Contains a unit delay of dt\n- The transform is kept normalized using trnorm().\n"
+	  MaskPromptString	  "Initial pose (hom transform)|Sample interval (s)"
+	  MaskStyleString	  "edit,edit"
+	  MaskVariables		  "T0=@1;dt=@2;"
+	  MaskTunableValueString  "on,on"
+	  MaskCallbackString	  "|"
+	  MaskEnableString	  "on,on"
+	  MaskVisibilityString	  "on,on"
+	  MaskToolTipString	  "on,on"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
+	  MaskValueString	  "transl(1,1,-3)*trotx(0.2)|0.02"
+	  System {
+	    Name		    "pose integral"
+	    Location		    [362, 525, 941, 768]
+	    Open		    off
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "A4"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "v"
+	      SID		      "15:59"
+	      Position		      [25, 33, 55, 47]
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      MATLABFcn
+	      Name		      "MATLAB Fcn3"
+	      SID		      "15:60"
+	      Ports		      [1, 1]
+	      Position		      [80, 25, 140, 55]
+	      MATLABFcn		      "delta2tr(u)"
+	      Output1D		      off
+	    }
+	    Block {
+	      BlockType		      Product
+	      Name		      "Product"
+	      SID		      "15:61"
+	      Ports		      [2, 1]
+	      Position		      [195, 29, 225, 76]
+	      Multiplication	      "Matrix(*)"
+	      InputSameDT	      off
+	      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+	      SaturateOnIntegerOverflow	off
+	    }
+	    Block {
+	      BlockType		      UnitDelay
+	      Name		      "Unit Delay"
+	      SID		      "15:62"
+	      Position		      [345, 33, 380, 67]
+	      X0		      "T0"
+	      SampleTime	      "dt"
+	    }
+	    Block {
+	      BlockType		      MATLABFcn
+	      Name		      "trnorm"
+	      SID		      "15:63"
+	      Ports		      [1, 1]
+	      Position		      [250, 35, 310, 65]
+	      MATLABFcn		      "trnorm(u)"
+	      Output1D		      off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "T"
+	      SID		      "15:64"
+	      Position		      [435, 43, 465, 57]
+	      IconDisplay	      "Port number"
+	    }
+	    Line {
+	      SrcBlock		      "v"
+	      SrcPort		      1
+	      DstBlock		      "MATLAB Fcn3"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "trnorm"
+	      SrcPort		      1
+	      DstBlock		      "Unit Delay"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "MATLAB Fcn3"
+	      SrcPort		      1
+	      DstBlock		      "Product"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "Unit Delay"
+	      SrcPort		      1
+	      Points		      [30, 0]
+	      Branch {
+		DstBlock		"T"
+		DstPort			1
+	      }
+	      Branch {
+		Points			[0, 50; -245, 0; 0, -35]
+		DstBlock		"Product"
+		DstPort			2
+	      }
+	    }
+	    Line {
+	      SrcBlock		      "Product"
+	      SrcPort		      1
+	      Points		      [0, -5]
+	      DstBlock		      "trnorm"
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "tr2diff"
+	  SID			  "15:26"
+	  Ports			  [2, 1]
+	  Position		  [80, 290, 125, 345]
+	  BackgroundColor	  "red"
+	  LibraryVersion	  "1.61"
+	  MinAlgLoopOccurrences	  off
+	  PropExecContextOutsideSubsystem off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  Opaque		  off
+	  RequestExecContextInheritance	off
+	  MaskHideContents	  off
+	  MaskDescription	  "Compute differential motion "
+	  MaskHelp		  "Compute the differential motion (as a 6-vector) between two poses given as\nhomogeneous transformation"
+	  "s.\n \n<b>Inputs::</b>\n \nT1 (4x4) initial pose as a homogeneous transformation \nT2 (4x4) final pose as a homogen"
+	  "eous transformation \n \n<b>Outputs::</b>\n \ndx (1x6) the differential motion (dx dy dz dwx dwy dwz)\n \n<b>Notes:"
+	  ":</b>\n\n- Only valid for infinitessimal displacements.\n- dx is the integral of a spatial velocity over time.\n- A"
+	  " wrapper for the Toolbox function tr2delta()."
 	  MaskPromptString	  "Robot object"
 	  MaskStyleString	  "edit"
 	  MaskVariables		  "robot=@1;"
@@ -2907,11 +3063,34 @@ Library {
 	  }
 	}
 	Annotation {
-	  Name			  "Kinematics"
-	  Position		  [47, 17]
+	  Name			  "\nKinematics  \n "
+	  Position		  [52, 22]
 	  BackgroundColor	  "cyan"
+	  FontSize		  18
+	}
+	Annotation {
+	  Name			  "Robotics Toolbox for MATLAB"
+	  Position		  [116, 17]
+	  HorizontalAlignment	  "left"
 	  FontSize		  12
 	  FontWeight		  "bold"
+	}
+	Annotation {
+	  Name			  "Forward\nkinematics"
+	  Position		  [8, 96]
+	  HorizontalAlignment	  "left"
+	  ForegroundColor	  "orange"
+	}
+	Annotation {
+	  Name			  "Jacobian"
+	  Position		  [31, 191]
+	  ForegroundColor	  "orange"
+	}
+	Annotation {
+	  Name			  "Spatial\nvelocity"
+	  Position		  [14, 306]
+	  HorizontalAlignment	  "left"
+	  ForegroundColor	  "orange"
 	}
       }
     }
@@ -2920,10 +3099,9 @@ Library {
       Name		      "Robot Graphics"
       SID		      "16"
       Ports		      []
-      Position		      [15, 60, 115, 102]
+      Position		      [15, 60, 122, 103]
       BackgroundColor	      "darkGreen"
       ShowName		      off
-      AncestorBlock	      "test/Plot"
       LibraryVersion	      "*1.3"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -2940,7 +3118,7 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Robot Graphics"
-	Location		[410, 115, 807, 421]
+	Location		[1866, 293, 2242, 527]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -2960,9 +3138,7 @@ Library {
 	  Name			  "Quadrotor plot"
 	  SID			  "16:18"
 	  Ports			  [1]
-	  Position		  [185, 67, 215, 113]
-	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/Quadcopter plot"
+	  Position		  [195, 102, 225, 148]
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -2972,10 +3148,10 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Animate quadrotor."
-	  MaskHelp		  "This block graphically displays a quadrotor (flying robot).\n\nA new figure is created and A graphica"
-	  "l model of a quadrotor is animated \nto a pose specified by the state vector input to the block.  \n\nThe state ve"
-	  "ctor is [x y z roll pitch yaw] in world coordinates and the\nangles are in radians.\n\nNotes:\n- The dimensions of "
-	  "the model are currently fixed in the code and cannot\n  be set via a parameter."
+	  MaskHelp		  "This block graphically displays a quadrotor (flying robot).\n\nA new figure is created and A graphical"
+	  " model of a quadrotor is animated \nto a pose specified by the state vector input to the block.  \n\nThe state vect"
+	  "or is [x y z roll pitch yaw] in world coordinates and the\nangles are in radians.\n\nNotes:\n- The dimensions of th"
+	  "e model are currently fixed in the code and cannot\n  be set via a parameter."
 	  MaskPromptString	  "State vector"
 	  MaskStyleString	  "edit"
 	  MaskVariables		  "x=@1;"
@@ -3052,9 +3228,8 @@ Library {
 	  Name			  "plot"
 	  SID			  "16:17"
 	  Ports			  [1]
-	  Position		  [50, 62, 130, 118]
+	  Position		  [55, 97, 135, 153]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/plot"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -3127,10 +3302,16 @@ Library {
 	  }
 	}
 	Annotation {
-	  Name			  "Robot\nGraphics"
-	  Position		  [11, 27]
+	  Name			  "\nRobot\nGraphics  \n "
+	  Position		  [1, 32]
 	  HorizontalAlignment	  "left"
 	  BackgroundColor	  "cyan"
+	  FontSize		  18
+	}
+	Annotation {
+	  Name			  "Robotics Toolbox for MATLAB"
+	  Position		  [96, 17]
+	  HorizontalAlignment	  "left"
 	  FontSize		  12
 	  FontWeight		  "bold"
 	}
@@ -3141,7 +3322,7 @@ Library {
       Name		      "Trajectory"
       SID		      "17"
       Ports		      []
-      Position		      [158, 60, 260, 102]
+      Position		      [153, 60, 260, 102]
       BackgroundColor	      "darkGreen"
       ShowName		      off
       LibraryVersion	      "1.225"
@@ -3160,7 +3341,7 @@ Library {
       MaskIconUnits	      "autoscale"
       System {
 	Name			"Trajectory"
-	Location		[873, 81, 1371, 369]
+	Location		[1108, 93, 1485, 393]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -3178,8 +3359,7 @@ Library {
 	  Name			  "Circle"
 	  SID			  "56"
 	  Ports			  [0, 1]
-	  Position		  [165, 55, 205, 115]
-	  AncestorBlock		  "roblocks_old/Circle"
+	  Position		  [220, 85, 260, 145]
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -3352,8 +3532,7 @@ Library {
 	  Name			  "angdiff"
 	  SID			  "57"
 	  Ports			  [2, 1]
-	  Position		  [235, 57, 255, 108]
-	  AncestorBlock		  "roblocks_old/angdiff"
+	  Position		  [55, 222, 75, 273]
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -3459,9 +3638,8 @@ Library {
 	  Name			  "jtraj"
 	  SID			  "58"
 	  Ports			  [0, 3]
-	  Position		  [25, 49, 60, 121]
+	  Position		  [45, 84, 80, 156]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/jtraj"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -3616,9 +3794,8 @@ Library {
 	  Name			  "lspb"
 	  SID			  "59"
 	  Ports			  [0, 3]
-	  Position		  [90, 49, 125, 121]
+	  Position		  [130, 84, 165, 156]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/lspb"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -3766,155 +3943,16 @@ Library {
 	    }
 	  }
 	}
-	Block {
-	  BlockType		  SubSystem
-	  Name			  "pose integral"
-	  SID			  "60"
-	  Ports			  [1, 1]
-	  Position		  [290, 58, 360, 112]
-	  BackgroundColor	  "red"
-	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/pose integral"
-	  LibraryVersion	  "1.61"
-	  MinAlgLoopOccurrences	  off
-	  PropExecContextOutsideSubsystem off
-	  RTWSystemCode		  "Auto"
-	  FunctionWithSeparateData off
-	  Opaque		  off
-	  RequestExecContextInheritance	off
-	  MaskHideContents	  off
-	  MaskDescription	  "Integrate spatial velocity"
-	  MaskHelp		  "Integrate spatial velocity to update pose represented as a homogeneous\ntransformation.\n\n<b>Paramete"
-	  "rs::</b>\n\nT0 (4x4)  The initial pose\ndt (1x1)  The sample interval [s]\n\n<b>Inputs::</b>\n\nv (1x6) spatial vel"
-	  "ocity (xd yd zd wx wy wz)\n\n<b>Outputs::</b>\n\nT (4x4) the integrated pose as a homogeneous transformation\n\n<b>"
-	  "Notes::</b>\n\n- Contains a unit delay of dt\n- The transform is kept normalized using trnorm().\n"
-	  MaskPromptString	  "Initial pose (hom transform)|Sample interval (s)"
-	  MaskStyleString	  "edit,edit"
-	  MaskVariables		  "T0=@1;dt=@2;"
-	  MaskTunableValueString  "on,on"
-	  MaskCallbackString	  "|"
-	  MaskEnableString	  "on,on"
-	  MaskVisibilityString	  "on,on"
-	  MaskToolTipString	  "on,on"
-	  MaskIconFrame		  on
-	  MaskIconOpaque	  on
-	  MaskIconRotate	  "none"
-	  MaskPortRotate	  "default"
-	  MaskIconUnits		  "autoscale"
-	  MaskValueString	  "transl(1,1,-3)*trotx(0.2)|0.02"
-	  System {
-	    Name		    "pose integral"
-	    Location		    [362, 525, 941, 768]
-	    Open		    off
-	    ModelBrowserVisibility  off
-	    ModelBrowserWidth	    200
-	    ScreenColor		    "white"
-	    PaperOrientation	    "landscape"
-	    PaperPositionMode	    "auto"
-	    PaperType		    "A4"
-	    PaperUnits		    "centimeters"
-	    TiledPaperMargins	    [1.270000, 1.270000, 1.270000, 1.270000]
-	    TiledPageScale	    1
-	    ShowPageBoundaries	    off
-	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
-	    SIDPrevWatermark	    "225"
-	    Block {
-	      BlockType		      Inport
-	      Name		      "v"
-	      SID		      "60:126"
-	      Position		      [25, 33, 55, 47]
-	      IconDisplay	      "Port number"
-	    }
-	    Block {
-	      BlockType		      MATLABFcn
-	      Name		      "MATLAB Fcn3"
-	      SID		      "60:127"
-	      Ports		      [1, 1]
-	      Position		      [80, 25, 140, 55]
-	      MATLABFcn		      "delta2tr(u)"
-	      Output1D		      off
-	    }
-	    Block {
-	      BlockType		      Product
-	      Name		      "Product"
-	      SID		      "60:128"
-	      Ports		      [2, 1]
-	      Position		      [195, 29, 225, 76]
-	      Multiplication	      "Matrix(*)"
-	      InputSameDT	      off
-	      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-	      SaturateOnIntegerOverflow	off
-	    }
-	    Block {
-	      BlockType		      UnitDelay
-	      Name		      "Unit Delay"
-	      SID		      "60:129"
-	      Position		      [345, 33, 380, 67]
-	      X0		      "T0"
-	      SampleTime	      "dt"
-	    }
-	    Block {
-	      BlockType		      MATLABFcn
-	      Name		      "trnorm"
-	      SID		      "60:130"
-	      Ports		      [1, 1]
-	      Position		      [250, 35, 310, 65]
-	      MATLABFcn		      "trnorm(u)"
-	      Output1D		      off
-	    }
-	    Block {
-	      BlockType		      Outport
-	      Name		      "T"
-	      SID		      "60:131"
-	      Position		      [435, 43, 465, 57]
-	      IconDisplay	      "Port number"
-	    }
-	    Line {
-	      SrcBlock		      "v"
-	      SrcPort		      1
-	      DstBlock		      "MATLAB Fcn3"
-	      DstPort		      1
-	    }
-	    Line {
-	      SrcBlock		      "trnorm"
-	      SrcPort		      1
-	      DstBlock		      "Unit Delay"
-	      DstPort		      1
-	    }
-	    Line {
-	      SrcBlock		      "MATLAB Fcn3"
-	      SrcPort		      1
-	      DstBlock		      "Product"
-	      DstPort		      1
-	    }
-	    Line {
-	      SrcBlock		      "Unit Delay"
-	      SrcPort		      1
-	      Points		      [30, 0]
-	      Branch {
-		DstBlock		"T"
-		DstPort			1
-	      }
-	      Branch {
-		Points			[0, 50; -245, 0; 0, -35]
-		DstBlock		"Product"
-		DstPort			2
-	      }
-	    }
-	    Line {
-	      SrcBlock		      "Product"
-	      SrcPort		      1
-	      Points		      [0, -5]
-	      DstBlock		      "trnorm"
-	      DstPort		      1
-	    }
-	  }
+	Annotation {
+	  Name			  "\nTrajectory   \n "
+	  Position		  [52, 22]
+	  BackgroundColor	  "cyan"
+	  FontSize		  18
 	}
 	Annotation {
-	  Name			  "Trajectory"
-	  Position		  [42, 22]
-	  BackgroundColor	  "cyan"
+	  Name			  "Robotics Toolbox for MATLAB"
+	  Position		  [111, 12]
+	  HorizontalAlignment	  "left"
 	  FontSize		  12
 	  FontWeight		  "bold"
 	}
@@ -3925,7 +3963,7 @@ Library {
       Name		      "Transform"
       SID		      "35"
       Ports		      []
-      Position		      [15, 199, 115, 241]
+      Position		      [15, 199, 123, 242]
       BackgroundColor	      "darkGreen"
       ShowName		      off
       LibraryVersion	      "1.225"
@@ -3944,7 +3982,7 @@ Library {
       MaskIconUnits	      "autoscale"
       System {
 	Name			"Transform"
-	Location		[335, 50, 833, 350]
+	Location		[1866, 1029, 2244, 1305]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -3962,8 +4000,7 @@ Library {
 	  Name			  "Inverse"
 	  SID			  "67"
 	  Ports			  [1, 1]
-	  Position		  [180, 50, 220, 110]
-	  AncestorBlock		  "roblocks_old/Inverse"
+	  Position		  [230, 90, 270, 150]
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -4041,8 +4078,7 @@ Library {
 	  Name			  "Post multiply"
 	  SID			  "68"
 	  Ports			  [1, 1]
-	  Position		  [105, 50, 145, 110]
-	  AncestorBlock		  "roblocks_old/Post multiply"
+	  Position		  [130, 90, 170, 150]
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -4070,8 +4106,8 @@ Library {
 	  MaskValueString	  "0"
 	  System {
 	    Name		    "Post multiply"
-	    Location		    [381, 458, 677, 608]
-	    Open		    on
+	    Location		    [862, 540, 1158, 690]
+	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -4143,8 +4179,7 @@ Library {
 	  Name			  "Pre multiply"
 	  SID			  "69"
 	  Ports			  [1, 1]
-	  Position		  [30, 50, 70, 110]
-	  AncestorBlock		  "roblocks_old/Pre multiply"
+	  Position		  [30, 90, 70, 150]
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -4242,9 +4277,15 @@ Library {
 	  }
 	}
 	Annotation {
-	  Name			  "Transform"
-	  Position		  [42, 22]
+	  Name			  "\nTransform  \n "
+	  Position		  [52, 32]
 	  BackgroundColor	  "cyan"
+	  FontSize		  18
+	}
+	Annotation {
+	  Name			  "Robotics Toolbox for MATLAB"
+	  Position		  [121, 17]
+	  HorizontalAlignment	  "left"
 	  FontSize		  12
 	  FontWeight		  "bold"
 	}
@@ -4255,7 +4296,7 @@ Library {
       Name		      "Transform Conversion"
       SID		      "26"
       Ports		      []
-      Position		      [15, 129, 115, 171]
+      Position		      [15, 129, 123, 172]
       BackgroundColor	      "darkGreen"
       ShowName		      off
       LibraryVersion	      "1.225"
@@ -4274,7 +4315,7 @@ Library {
       MaskIconUnits	      "autoscale"
       System {
 	Name			"Transform Conversion"
-	Location		[726, 80, 1138, 385]
+	Location		[1865, 605, 2244, 977]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -4292,9 +4333,8 @@ Library {
 	  Name			  "T2eul"
 	  SID			  "61"
 	  Ports			  [1, 3]
-	  Position		  [350, 52, 385, 108]
+	  Position		  [265, 242, 300, 298]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/T2eul"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -4416,9 +4456,8 @@ Library {
 	  Name			  "T2rpy"
 	  SID			  "62"
 	  Ports			  [1, 3]
-	  Position		  [280, 53, 320, 107]
+	  Position		  [155, 243, 195, 297]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/T2rpy"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -4540,9 +4579,8 @@ Library {
 	  Name			  "T2xyz"
 	  SID			  "63"
 	  Ports			  [1, 3]
-	  Position		  [215, 52, 250, 108]
+	  Position		  [55, 242, 90, 298]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/T2xyz"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -4663,9 +4701,8 @@ Library {
 	  Name			  "eul2T"
 	  SID			  "64"
 	  Ports			  [3, 1]
-	  Position		  [150, 52, 185, 108]
+	  Position		  [265, 122, 300, 178]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/eul2T"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -4788,9 +4825,8 @@ Library {
 	  Name			  "rpy2T"
 	  SID			  "65"
 	  Ports			  [3, 1]
-	  Position		  [80, 52, 120, 108]
+	  Position		  [155, 122, 195, 178]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/rpy2T"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -4913,9 +4949,8 @@ Library {
 	  Name			  "xyz2T"
 	  SID			  "66"
 	  Ports			  [3, 1]
-	  Position		  [15, 51, 50, 109]
+	  Position		  [55, 121, 90, 179]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/xyz2T"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -5034,11 +5069,33 @@ Library {
 	  }
 	}
 	Annotation {
-	  Name			  "Transform\nconversion"
-	  Position		  [42, 22]
+	  Name			  "\nTransform\nconversion  \n "
+	  Position		  [2, 32]
+	  HorizontalAlignment	  "left"
 	  BackgroundColor	  "cyan"
+	  FontSize		  18
+	}
+	Annotation {
+	  Name			  "Robotics Toolbox for MATLAB"
+	  Position		  [121, 17]
+	  HorizontalAlignment	  "left"
 	  FontSize		  12
 	  FontWeight		  "bold"
+	}
+	Annotation {
+	  Name			  "Translation"
+	  Position		  [76, 91]
+	  ForegroundColor	  "orange"
+	}
+	Annotation {
+	  Name			  "roll/pitch/yaw\nangles"
+	  Position		  [181, 96]
+	  ForegroundColor	  "orange"
+	}
+	Annotation {
+	  Name			  "Euler angles"
+	  Position		  [286, 91]
+	  ForegroundColor	  "orange"
 	}
       }
     }
@@ -5047,7 +5104,7 @@ Library {
       Name		      "Vision"
       SID		      "41"
       Ports		      []
-      Position		      [15, 319, 115, 361]
+      Position		      [15, 318, 122, 361]
       BackgroundColor	      "lightBlue"
       ShowName		      off
       LibraryVersion	      "1.225"
@@ -5066,8 +5123,8 @@ Library {
       MaskIconUnits	      "autoscale"
       System {
 	Name			"Vision"
-	Location		[348, 400, 829, 683]
-	Open			off
+	Location		[1543, 227, 1922, 818]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -5084,9 +5141,8 @@ Library {
 	  Name			  "Pose estimation"
 	  SID			  "70"
 	  Ports			  [1, 1]
-	  Position		  [260, 152, 330, 208]
+	  Position		  [90, 462, 160, 518]
 	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/Pose estimation"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -5095,6 +5151,13 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Pose estimation"
+	  MaskHelp		  "Estimate pose of an object based on known 3D points with respect to object\ncoordinate frame, a camera"
+	  " model, and observed object point projections.\n\n<b>Parameters::</b>\n \nCamera (Camera)  The camera object, subcl"
+	  "ass of Camera class\nPoints (3xN)     The 3D world points in object coordinate frame, one per column\n \n<b>Inputs:"
+	  ":</b>\n \nPoints (2xN)  The 2D image-plane points, one per column, corresponding\n              to the columns of P"
+	  "oints.\n \n<b>Outputs::</b>\n \nT (4x4) the estimated object pose as a homogeneous transformation\n \n<b>Notes::</b"
+	  ">\n \n- A wrapper for the Toolbox method estpose()."
 	  MaskPromptString	  "Camera|Points (3xN)"
 	  MaskStyleString	  "edit,edit"
 	  MaskVariables		  "cam=@1;P=@2;"
@@ -5169,10 +5232,9 @@ Library {
 	  Name			  "camera"
 	  SID			  "71"
 	  Ports			  [1, 1]
-	  Position		  [25, 41, 105, 119]
+	  Position		  [95, 106, 175, 184]
 	  BackgroundColor	  "lightBlue"
 	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/camera"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -5181,6 +5243,12 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Camera model"
+	  MaskHelp		  "A generalized camera model that projects a set of world points to the image\nplane.\n\n\n<b>Parameters"
+	  "::</b>\n \nCamera (Camera)  The camera object, subclass of Camera class\nPoints (3xN)     The 3D world points, one "
+	  "per column\n \n<b>Inputs::</b>\n \nT (4x4) the camera pose as a homogeneous transformation\n\n \n<b>Outputs::</b>\n"
+	  " \np (2xN) projection of world points, one per column, corresponding to columns\n        of the parameter Points.\n"
+	  " \n<b>Notes::</b>\n \n- Accepts any camera object derived from the abstract Camera superclass."
 	  MaskPromptString	  "Camera|Points (3xN)"
 	  MaskStyleString	  "edit,edit"
 	  MaskVariables		  "cam=@1;points=@2;"
@@ -5256,10 +5324,9 @@ Library {
 	  Name			  "camera2"
 	  SID			  "72"
 	  Ports			  [2, 1]
-	  Position		  [25, 160, 110, 240]
+	  Position		  [245, 105, 330, 185]
 	  BackgroundColor	  "lightBlue"
 	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/camera2"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -5268,6 +5335,28 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Camera model for moving object"
+	  MaskHelp		  "A generalized camera model that projects a set of world points to the image\nplane.\n\n\n<b>Parameters"
+	  "::</b>\n \nCamera (Camera)  The camera object, subclass of Camera class\nPoints (3xN)     The 3D world points, one "
+	  "per column, with respect to the\n                 object coordinate frame.\n \n<b>Inputs::</b>\n \nT (4x4)    the c"
+	  "amera pose as a homogeneous transformation\nTobj (4x4) the pose of the object coordinate frame\n \n<b>Outputs::</b>"
+	  "\n \np (2xN) projection of world points, one per column, corresponding to columns\n        of the parameter Points."
+	  "\n \n<b>Notes::</b>\n\n- This block allows for the object to move, as well as the camera.\n- Accepts any camera obj"
+	  "ect derived from the abstract Camera superclass."
+	  MaskPromptString	  "Camera|Points (3xN)"
+	  MaskStyleString	  "edit,edit"
+	  MaskVariables		  "cam=@1;points=@2;"
+	  MaskTunableValueString  "on,on"
+	  MaskCallbackString	  "|"
+	  MaskEnableString	  "on,on"
+	  MaskVisibilityString	  "on,on"
+	  MaskToolTipString	  "on,on"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
+	  MaskValueString	  "0|0"
 	  System {
 	    Name		    "camera2"
 	    Location		    [519, 769, 909, 968]
@@ -5359,10 +5448,9 @@ Library {
 	  Name			  "image\nJacobian"
 	  SID			  "73"
 	  Ports			  [1, 1]
-	  Position		  [150, 54, 220, 106]
+	  Position		  [95, 249, 165, 301]
 	  BackgroundColor	  "lightBlue"
 	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/image\nJacobian"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -5371,6 +5459,13 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Image Jacobian"
+	  MaskHelp		  "Jacobian matrix relating image plane point velocity to camera spatial\nvelocity expressed in the world"
+	  " frame.\n\n<b>Parameters::</b>\n \nCamera (Camera)  The camera object, subclass of Camera class\nz (1x1)          P"
+	  "oint depth, assumed same for all points\nz (1xN)          Point depth, unique for each point\n\n<b>Inputs::</b>\n\n"
+	  "Points (2xN)     The 2D image-plane points, one per column\n\n \n<b>Outputs::</b>\n \nJ (2Nx6) the image Jacobian m"
+	  "atrix\n \n<b>Notes::</b>\n\n- For multiple points the Jacobian is the \"stack\" of the 2x6 point feature\n  Jacobia"
+	  "ns.\n- A wrapper for the Toolbox method visjac_p().\n"
 	  MaskPromptString	  "Camera|Assumed depth (m)"
 	  MaskStyleString	  "edit,edit"
 	  MaskVariables		  "cam=@1;z=@2;"
@@ -5387,7 +5482,7 @@ Library {
 	  MaskValueString	  "|"
 	  System {
 	    Name		    "image\nJacobian"
-	    Location		    [135, 215, 444, 341]
+	    Location		    [135, 237, 444, 363]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -5444,10 +5539,9 @@ Library {
 	  Name			  "image\nJacobian\nsphere"
 	  SID			  "74"
 	  Ports			  [1, 1]
-	  Position		  [265, 52, 325, 108]
+	  Position		  [225, 246, 300, 304]
 	  BackgroundColor	  "lightBlue"
 	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/image\nJacobian\nsphere"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -5456,9 +5550,21 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Image Jacobian for spherical camera"
+	  MaskHelp		  "Jacobian matrix relating image plane point velocity to camera spatial\nvelocity expressed in the world"
+	  " frame.\n\n<b>Parameters::</b>\n \nCamera (Camera)  The camera object, subclass of Camera class\nz (1x1)          P"
+	  "oint depth, assumed same for all points\nz (1xN)          Point depth, unique for each point\n\n<b>Inputs::</b>\n\n"
+	  "Points (2xN)     The 2D image-plane points, one per column\n\n \n<b>Outputs::</b>\n \nJ (2Nx6) the image Jacobian m"
+	  "atrix\n \n<b>Notes::</b>\n\n- For multiple points the Jacobian is the \"stack\" of the 2x6 point feature\n  Jacobia"
+	  "ns.\n- A wrapper for the Toolbox method visjac_p().\n"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
 	  System {
 	    Name		    "image\nJacobian\nsphere"
-	    Location		    [240, 85, 505, 167]
+	    Location		    [240, 107, 706, 215]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -5515,9 +5621,8 @@ Library {
 	  Name			  "invJac"
 	  SID			  "75"
 	  Ports			  [2, 2]
-	  Position		  [365, 150, 405, 210]
+	  Position		  [95, 360, 135, 420]
 	  BackgroundColor	  "red"
-	  AncestorBlock		  "roblocks_old/invJac"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -5526,9 +5631,19 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Inverse image Jacobian"
+	  MaskHelp		  "Computes camera velocity based on the inverse image Jacobian and image \nplane error.\n\n\n<b>Inputs::"
+	  "</b>\n \nJ (6x6) the image Jacobian matrix\ne (6x1) the image plane error (du1, dv1, du2, dv2, ...)\n \n<b>Outputs:"
+	  ":</b>\n \nvdot (1x6) the required camera spatial velocity\ncond (1x1) the condition of the image Jacobian\n \n<b>No"
+	  "tes::</b>\n \n- A wrapper for the MATLAB function inv().\n- Only valid for square Jacobians (3 image points)\n"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
 	  System {
 	    Name		    "invJac"
-	    Location		    [1253, 679, 1797, 940]
+	    Location		    [1253, 701, 1797, 962]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -5649,10 +5764,9 @@ Library {
 	  Name			  "pinvJac"
 	  SID			  "76"
 	  Ports			  [2, 2]
-	  Position		  [365, 50, 405, 110]
+	  Position		  [175, 360, 215, 420]
 	  BackgroundColor	  "red"
 	  DropShadow		  on
-	  AncestorBlock		  "roblocks_old/pinvJac"
 	  LibraryVersion	  "1.61"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
@@ -5661,6 +5775,17 @@ Library {
 	  Opaque		  off
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
+	  MaskDescription	  "Inverse image Jacobian"
+	  MaskHelp		  "Computes camera velocity based on the pseudo-inverse of the image Jacobian \nand image plane error for"
+	  " more than 3 points.\n\n\n<b>Inputs::</b>\n \nJ (2Nx6) the image Jacobian matrix\ne (2Nx1) the image plane error (d"
+	  "u1, dv1, du2, dv2, ...)\n \n<b>Outputs::</b>\n \nvdot (1x6) the required camera spatial velocity\ncond (1x1) the co"
+	  "ndition of the image Jacobian\n \n<b>Notes::</b>\n \n- A wrapper for the MATLAB function pinv().\n- Valid for non-s"
+	  "quare Jacobians (>=3 image points)\n"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
 	  System {
 	    Name		    "pinvJac"
 	    Location		    [429, 373, 846, 565]
@@ -5780,20 +5905,40 @@ Library {
 	  }
 	}
 	Annotation {
-	  Name			  "Machine Vision"
-	  Position		  [47, 17]
+	  Name			  "\nMachine Vision  \n "
+	  Position		  [72, 32]
 	  BackgroundColor	  "cyan"
-	  FontSize		  12
-	  FontWeight		  "bold"
+	  FontSize		  18
 	}
 	Annotation {
-	  Name			  "Copyright (c) 2002-2011 Peter Corke"
-	  Position		  [430, 295]
+	  Name			  "Cameras"
+	  Position		  [17, 111]
+	  HorizontalAlignment	  "left"
+	  ForegroundColor	  "orange"
+	}
+	Annotation {
+	  Name			  "Image\nJacobian"
+	  Position		  [12, 266]
+	  HorizontalAlignment	  "left"
+	  ForegroundColor	  "orange"
+	}
+	Annotation {
+	  Name			  "Pose\nestimation"
+	  Position		  [12, 476]
+	  HorizontalAlignment	  "left"
+	  ForegroundColor	  "orange"
+	}
+	Annotation {
+	  Name			  "Machine Vision Toolbox for MATLAB"
+	  Position		  [151, 17]
+	  HorizontalAlignment	  "left"
+	  FontSize		  12
+	  FontWeight		  "bold"
 	}
       }
     }
     Annotation {
-      Name		      "Robotics Toolbox for Matlab\n(release 9)"
+      Name		      "Robotics Toolbox for MATLAB\n(release 9)"
       Position		      [21, 22]
       HorizontalAlignment     "left"
       FontSize		      12
