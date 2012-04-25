@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Apr 25 12:04:35 2012"
-  RTWModifiedTimeStamp	  257252011
-  ModelVersionFormat	  "1.%<AutoIncrement:44>"
+  LastModifiedDate	  "Wed Apr 25 21:18:44 2012"
+  RTWModifiedTimeStamp	  257287576
+  ModelVersionFormat	  "1.%<AutoIncrement:47>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -830,7 +830,7 @@ Library {
   }
   System {
     Name		    "roblocks"
-    Location		    [697, 73, 1006, 496]
+    Location		    [1531, 51, 1840, 474]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    212
@@ -844,7 +844,7 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "79"
+    SIDHighWatermark	    "99"
     Block {
       BlockType		      SubSystem
       Name		      "Dynamics"
@@ -869,7 +869,7 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Dynamics"
-	Location		[1865, 757, 2244, 1307]
+	Location		[1109, 108, 1488, 658]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -2050,7 +2050,7 @@ Library {
 	  MaskValueString	  "robot|[0 0 9.81]"
 	  System {
 	    Name		    "RNE"
-	    Location		    [240, 531, 732, 682]
+	    Location		    [1314, 296, 1806, 447]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -2092,10 +2092,10 @@ Library {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
 	      SID		      "54:243"
-	      Ports		      [1]
-	      Position		      [115, 66, 290, 94]
+	      Ports		      [1, 1]
+	      Position		      [120, 66, 295, 94]
 	      MATLABFcn		      "rne(robot, u(1:n)', u(n+1:2*n)', u(2*n+1:3*n)')"
-	      OutputDimensions	      "n"
+	      OutputDimensions	      "robot.n"
 	    }
 	    Block {
 	      BlockType		      Mux
@@ -2139,7 +2139,8 @@ Library {
 	      DstPort		      3
 	    }
 	    Line {
-	      Points		      [295, 80]
+	      SrcBlock		      "MATLAB Fcn"
+	      SrcPort		      1
 	      DstBlock		      "Q"
 	      DstPort		      1
 	    }
@@ -2178,8 +2179,8 @@ Library {
 	  MaskEnableString	  "on,on"
 	  MaskVisibilityString	  "on,on"
 	  MaskToolTipString	  "on,on"
-	  MaskInitialization	  "if isa(robot, 'SerialLink')\n    rname = robot.name;\n    fprintf('**robot name is %s\\n', rn"
-	  "ame);\nelse\n    rname = '';\n    n = 0\nend\n"
+	  MaskInitialization	  "if isa(robot, 'SerialLink')\n    rname = robot.name;\n    %fprintf('**robot name is %s\\n', r"
+	  "name);\nelse\n    rname = '';\n    n = 0\nend\n"
 	  MaskDisplay		  "port_label('input', 1, 'Q')\nport_label('output', 1, 'q')\nport_label('output', 2, 'qd')\nport_labe"
 	  "l('output', 3, 'qdd')\ntext(0.1, 0.9,  rname, 'horizontalAlignment', 'left')\n"
 	  MaskIconFrame		  on
@@ -2190,7 +2191,7 @@ Library {
 	  MaskValueString	  "robot|[0 0 0 0 0 0]"
 	  System {
 	    Name		    "Robot"
-	    Location		    [280, 376, 812, 604]
+	    Location		    [280, 398, 812, 626]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -2402,8 +2403,8 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Kinematics"
-	Location		[1866, 595, 2243, 1025]
-	Open			on
+	Location		[1866, 639, 2243, 1069]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -3118,7 +3119,7 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Robot Graphics"
-	Location		[1866, 293, 2242, 527]
+	Location		[1866, 337, 2242, 571]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -3250,8 +3251,8 @@ Library {
 	  MaskEnableString	  "on"
 	  MaskVisibilityString	  "on"
 	  MaskToolTipString	  "on"
-	  MaskInitialization	  "if isa(robot, 'SerialLink')\n    plot(robot,zeros(1,robot.n));\nrname = robot.name;\nfprintf("
-	  "'**robot name is %s\\n', rname);\nelse\n    rname = '';\nend"
+	  MaskInitialization	  "if isa(robot, 'SerialLink')\n    plot(robot,zeros(1,robot.n));\nrname = robot.name;\n%fprintf"
+	  "('**robot name is %s\\n', rname);\nelse\n    rname = '';\nend"
 	  MaskDisplay		  "text(0.5, 0.9,  rname, 'horizontalAlignment', 'center')\nport_label('input', 1, 'q')"
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
@@ -5123,8 +5124,8 @@ Library {
       MaskIconUnits	      "autoscale"
       System {
 	Name			"Vision"
-	Location		[1543, 227, 1922, 818]
-	Open			on
+	Location		[1774, 288, 2153, 879]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -5265,7 +5266,7 @@ Library {
 	  MaskValueString	  "|"
 	  System {
 	    Name		    "camera"
-	    Location		    [414, 850, 721, 956]
+	    Location		    [1833, 1259, 2140, 1365]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -5293,8 +5294,7 @@ Library {
 	      SID		      "71:134"
 	      Ports		      [1, 1]
 	      Position		      [110, 25, 170, 55]
-	      MATLABFcn		      "cam.plot(points, 'Tcam', u, 'drawnow')"
-	      OutputDimensions	      "[2,numcols(points)]"
+	      MATLABFcn		      "cam.plot(points, 'Tcam', u)"
 	      OutputSignalType	      "real"
 	      Output1D		      off
 	    }
@@ -5517,88 +5517,6 @@ Library {
 	      BlockType		      Outport
 	      Name		      "J"
 	      SID		      "73:139"
-	      Position		      [210, 33, 240, 47]
-	      IconDisplay	      "Port number"
-	    }
-	    Line {
-	      SrcBlock		      "p"
-	      SrcPort		      1
-	      DstBlock		      "MATLAB Fcn"
-	      DstPort		      1
-	    }
-	    Line {
-	      SrcBlock		      "MATLAB Fcn"
-	      SrcPort		      1
-	      DstBlock		      "J"
-	      DstPort		      1
-	    }
-	  }
-	}
-	Block {
-	  BlockType		  SubSystem
-	  Name			  "image\nJacobian\nsphere"
-	  SID			  "74"
-	  Ports			  [1, 1]
-	  Position		  [225, 246, 300, 304]
-	  BackgroundColor	  "lightBlue"
-	  DropShadow		  on
-	  LibraryVersion	  "1.61"
-	  MinAlgLoopOccurrences	  off
-	  PropExecContextOutsideSubsystem off
-	  RTWSystemCode		  "Auto"
-	  FunctionWithSeparateData off
-	  Opaque		  off
-	  RequestExecContextInheritance	off
-	  MaskHideContents	  off
-	  MaskDescription	  "Image Jacobian for spherical camera"
-	  MaskHelp		  "Jacobian matrix relating image plane point velocity to camera spatial\nvelocity expressed in the world"
-	  " frame.\n\n<b>Parameters::</b>\n \nCamera (Camera)  The camera object, subclass of Camera class\nz (1x1)          P"
-	  "oint depth, assumed same for all points\nz (1xN)          Point depth, unique for each point\n\n<b>Inputs::</b>\n\n"
-	  "Points (2xN)     The 2D image-plane points, one per column\n\n \n<b>Outputs::</b>\n \nJ (2Nx6) the image Jacobian m"
-	  "atrix\n \n<b>Notes::</b>\n\n- For multiple points the Jacobian is the \"stack\" of the 2x6 point feature\n  Jacobia"
-	  "ns.\n- A wrapper for the Toolbox method visjac_p().\n"
-	  MaskIconFrame		  on
-	  MaskIconOpaque	  on
-	  MaskIconRotate	  "none"
-	  MaskPortRotate	  "default"
-	  MaskIconUnits		  "autoscale"
-	  System {
-	    Name		    "image\nJacobian\nsphere"
-	    Location		    [240, 107, 706, 215]
-	    Open		    off
-	    ModelBrowserVisibility  off
-	    ModelBrowserWidth	    200
-	    ScreenColor		    "white"
-	    PaperOrientation	    "landscape"
-	    PaperPositionMode	    "auto"
-	    PaperType		    "A4"
-	    PaperUnits		    "centimeters"
-	    TiledPaperMargins	    [1.270000, 1.270000, 1.270000, 1.270000]
-	    TiledPageScale	    1
-	    ShowPageBoundaries	    off
-	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
-	    SIDPrevWatermark	    "225"
-	    Block {
-	      BlockType		      Inport
-	      Name		      "p"
-	      SID		      "74:153"
-	      Position		      [25, 33, 55, 47]
-	      IconDisplay	      "Port number"
-	    }
-	    Block {
-	      BlockType		      MATLABFcn
-	      Name		      "MATLAB Fcn"
-	      SID		      "74:150"
-	      Ports		      [1, 1]
-	      Position		      [105, 25, 165, 55]
-	      MATLABFcn		      "cam.visjac_p(u, z)"
-	      Output1D		      off
-	    }
-	    Block {
-	      BlockType		      Outport
-	      Name		      "J"
-	      SID		      "74:154"
 	      Position		      [210, 33, 240, 47]
 	      IconDisplay	      "Port number"
 	    }
