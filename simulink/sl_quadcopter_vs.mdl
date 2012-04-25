@@ -1,12 +1,12 @@
 Model {
-  Name			  "sl_quadrotor_vs"
-  Version		  7.6
+  Name			  "sl_quadcopter_vs"
+  Version		  7.7
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.12"
+    ComputedModelVersion    "1.13"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -23,16 +23,16 @@ Model {
   InitFcn		  "fprintf('----- creating workspace variables: camera, quad, P, pstar\\n');\n% create a spherical camera\n"
   "camera = SphericalCamera('name', 'quad-vs');\n\n% create a grid of points on the ground\nP = mkgrid(2, 4);\n\n% set "
   "the desired view of these points, defines the final pose\n% of the quad\npstar = camera.project(P, 'Tcam', transl(0,"
-  " 0, -5)*trotz(pi/2));\n\n% load a dynamic model of the quadrotor\nmdl_quadrotor"
+  " 0, -5)*trotz(pi/2));\n\n% load a dynamic model of the quadrotor\nmdl_quadcopter"
   Created		  "Thu Nov  4 20:52:52 2010"
   Creator		  "corkep"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "n6334687"
+  LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Feb 06 16:45:43 2012"
-  RTWModifiedTimeStamp	  250447539
-  ModelVersionFormat	  "1.%<AutoIncrement:12>"
+  LastModifiedDate	  "Wed Apr 25 21:17:41 2012"
+  RTWModifiedTimeStamp	  257288787
+  ModelVersionFormat	  "1.%<AutoIncrement:13>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -107,13 +107,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.10.0"
+      Version		      "1.11.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  StartTime		  "0.0"
 	  StopTime		  "10.0"
 	  AbsTol		  "auto"
@@ -147,7 +147,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -159,6 +159,7 @@ Model {
 	  SaveFinalState	  off
 	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Array"
+	  SignalLoggingSaveFormat "ModelDataLogs"
 	  SaveOutput		  on
 	  SaveState		  off
 	  SignalLogging		  on
@@ -178,7 +179,7 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    7
@@ -228,10 +229,11 @@ Model {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
+	  AccelParallelForEachSubsystem	on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -302,6 +304,7 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  SimStateOlderReleaseMsg "error"
 	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "ErrorLevel1"
 	  BusNameAdapt		  "WarnAndRepair"
@@ -316,7 +319,7 @@ Model {
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -353,7 +356,7 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -368,7 +371,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -383,7 +386,7 @@ Model {
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -425,6 +428,7 @@ Model {
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
 	  GenerateSLWebview	  off
+	  GenerateCodeMetricsReport off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -433,7 +437,7 @@ Model {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.10.0"
+	      Version		      "1.11.0"
 	      Array {
 		Type			"Cell"
 		Dimension		19
@@ -496,7 +500,7 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.10.0"
+	      Version		      "1.11.0"
 	      Array {
 		Type			"Cell"
 		Dimension		16
@@ -524,6 +528,8 @@ Model {
 	      TargetFunctionLibrary   "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
+	      FunctionExecutionProfile off
+	      CodeExecutionProfiling  off
 	      ERTCodeCoverageTool     "None"
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
@@ -569,6 +575,7 @@ Model {
 	      RTWCAPISignals	      off
 	      RTWCAPIParams	      off
 	      RTWCAPIStates	      off
+	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
 	    }
 	    PropName		    "Components"
@@ -578,7 +585,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    " [ 920, 197, 1800, 827 ] "
+      ConfigPrmDlgPosition     [ 920, 197, 1800, 827 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -723,11 +730,12 @@ Model {
       Decimation	      "1"
       SampleTime	      "0"
       FixptAsFi		      off
+      NumInputs		      "1"
     }
   }
   System {
-    Name		    "sl_quadrotor_vs"
-    Location		    [518, 101, 1548, 951]
+    Name		    "sl_quadcopter_vs"
+    Location		    [685, 189, 1715, 1039]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -741,7 +749,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "326"
+    SIDHighWatermark	    "328"
     Block {
       BlockType		      MATLABFcn
       Name		      "-> SE3"
@@ -931,9 +939,9 @@ Model {
       Ports		      [4, 5]
       Position		      [680, 18, 755, 362]
       DropShadow	      on
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.46"
       SourceBlock	      "roblocks/Dynamics/Control Mixer"
-      SourceType	      "SubSystem"
+      SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off
@@ -1154,7 +1162,7 @@ Model {
       Ports		      [4, 1]
       Position		      [840, 13, 905, 297]
       DropShadow	      on
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.46"
       SourceBlock	      "roblocks/Dynamics/Quadrotor"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1175,9 +1183,9 @@ Model {
       Ports		      [1]
       Position		      [645, 402, 675, 448]
       DropShadow	      on
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.46"
       SourceBlock	      "roblocks/Robot Graphics/Quadrotor plot"
-      SourceType	      "SubSystem"
+      SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off
@@ -1187,6 +1195,7 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       GeneratePreprocessorConditionals off
+      x			      "0"
     }
     Block {
       BlockType		      Sum
@@ -1339,7 +1348,7 @@ Model {
       Position		      [385, 521, 465, 599]
       BackgroundColor	      "lightBlue"
       DropShadow	      on
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.46"
       SourceBlock	      "roblocks/Vision/camera"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1407,15 +1416,15 @@ Model {
     }
     Block {
       BlockType		      Reference
-      Name		      "image\nJacobian\nsphere"
-      SID		      "322"
+      Name		      "image\nJacobian"
+      SID		      "327"
       Ports		      [1, 1]
-      Position		      [545, 532, 605, 588]
+      Position		      [535, 534, 605, 586]
       BackgroundColor	      "lightBlue"
       DropShadow	      on
-      LibraryVersion	      "1.28"
-      SourceBlock	      "roblocks/Vision/image\nJacobian\nsphere"
-      SourceType	      "SubSystem"
+      LibraryVersion	      "1.46"
+      SourceBlock	      "roblocks/Vision/image\nJacobian"
+      SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off
@@ -1425,19 +1434,20 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       GeneratePreprocessorConditionals off
+      cam		      "camera"
+      z			      "1"
     }
     Block {
       BlockType		      Reference
-      Name		      "invJac"
-      SID		      "156"
+      Name		      "pinvJac"
+      SID		      "328"
       Ports		      [2, 2]
       Position		      [740, 545, 780, 605]
-      ForegroundColor	      "red"
-      BackgroundColor	      "yellow"
+      BackgroundColor	      "red"
       DropShadow	      on
-      LibraryVersion	      "1.28"
-      SourceBlock	      "roblocks/Vision/invJac"
-      SourceType	      "SubSystem"
+      LibraryVersion	      "1.46"
+      SourceBlock	      "roblocks/Vision/pinvJac"
+      SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off
@@ -1453,7 +1463,7 @@ Model {
       Name		      "visjac\ncondition"
       SID		      "157"
       Ports		      [1]
-      Position		      [870, 545, 930, 575]
+      Position		      [875, 575, 935, 605]
       Decimation	      "1"
       Lockdown		      off
     }
@@ -1476,7 +1486,7 @@ Model {
 	DstPort			1
       }
       Branch {
-	DstBlock		"image\nJacobian\nsphere"
+	DstBlock		"image\nJacobian"
 	DstPort			1
       }
     }
@@ -1520,13 +1530,13 @@ Model {
       Branch {
 	Labels			[1, 1]
 	Points			[0, -70]
-	DstBlock		"invJac"
+	DstBlock		"pinvJac"
 	DstPort			2
       }
     }
     Line {
       Labels		      [0, 0]
-      SrcBlock		      "image\nJacobian\nsphere"
+      SrcBlock		      "image\nJacobian"
       SrcPort		      1
       DstBlock		      "Jxyz"
       DstPort		      1
@@ -1535,7 +1545,7 @@ Model {
       Labels		      [0, 0]
       SrcBlock		      "Jxyz"
       SrcPort		      1
-      DstBlock		      "invJac"
+      DstBlock		      "pinvJac"
       DstPort		      1
     }
     Line {
@@ -1913,15 +1923,15 @@ Model {
       DstPort		      1
     }
     Line {
-      SrcBlock		      "invJac"
-      SrcPort		      2
+      SrcBlock		      "pinvJac"
+      SrcPort		      1
       Points		      [45, 0]
       DstBlock		      "Gain"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "invJac"
-      SrcPort		      1
+      SrcBlock		      "pinvJac"
+      SrcPort		      2
       DstBlock		      "visjac\ncondition"
       DstPort		      1
     }
