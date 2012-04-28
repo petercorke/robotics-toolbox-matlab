@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Apr 25 21:18:44 2012"
-  RTWModifiedTimeStamp	  257287576
-  ModelVersionFormat	  "1.%<AutoIncrement:47>"
+  LastModifiedDate	  "Sat Apr 28 16:29:30 2012"
+  RTWModifiedTimeStamp	  257531360
+  ModelVersionFormat	  "1.%<AutoIncrement:52>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -830,7 +830,7 @@ Library {
   }
   System {
     Name		    "roblocks"
-    Location		    [1531, 51, 1840, 474]
+    Location		    [688, 149, 997, 572]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    212
@@ -844,7 +844,7 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "99"
+    SIDHighWatermark	    "129"
     Block {
       BlockType		      SubSystem
       Name		      "Dynamics"
@@ -2403,8 +2403,8 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Kinematics"
-	Location		[1866, 639, 2243, 1069]
-	Open			off
+	Location		[1014, 131, 1391, 561]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -2416,7 +2416,7 @@ Library {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
-	SIDHighWatermark	"64"
+	SIDHighWatermark	"73"
 	SIDPrevWatermark	"14"
 	Block {
 	  BlockType		  SubSystem
@@ -2434,10 +2434,10 @@ Library {
 	  RequestExecContextInheritance	off
 	  MaskHideContents	  off
 	  MaskDescription	  "Robot forward kinematics."
-	  MaskHelp		  "Compute homogeneous transform for robot end-effector given joint angles.\n\n\n<b>Parameters::</b>\n \n"
-	  "Robot (SerialLink class)  The N-axis robot object for computing forward kinematics.\n \n<b>Inputs::</b>\n \nq (1xN)"
-	  " joint coordinates\n \n<b>Outputs::</b>\n \nT (4x4) the pose of the end effector as a homogeneous transformation\n "
-	  "\n<b>Notes::</b>\n \n- A wrapper for the Toolbox method fkine().\n"
+	  MaskHelp		  "Compute homogeneous transform for robot end-effector given joint coordinates\n\n\n<b>Parameters::</b>\n"
+	  " \nRobot (SerialLink class)  The N-axis robot object for computing forward kinematics.\n \n<b>Inputs::</b>\n \nq (1"
+	  "xN) joint coordinates\n \n<b>Outputs::</b>\n \nT (4x4) the pose of the end effector as a homogeneous transformation"
+	  "\n \n<b>Notes::</b>\n \n- A wrapper for the Toolbox method fkine().\n"
 	  MaskPromptString	  "Robot object"
 	  MaskStyleString	  "edit"
 	  MaskVariables		  "robot=@1;"
@@ -2585,6 +2585,177 @@ Library {
 	      SrcBlock		      "inverse\njacobian"
 	      SrcPort		      1
 	      DstBlock		      "Ji"
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "ikine"
+	  SID			  "15:71"
+	  Ports			  [1, 1]
+	  Position		  [290, 83, 340, 147]
+	  BackgroundColor	  "red"
+	  MinAlgLoopOccurrences	  off
+	  PropExecContextOutsideSubsystem off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  Opaque		  off
+	  RequestExecContextInheritance	off
+	  MaskHideContents	  off
+	  MaskDescription	  "Generalized numerical inverse kinematics"
+	  MaskHelp		  "Compute joint coordinates for robot given end-effector pose.\n\n\n<b>Parameters::</b>\n \nRobot (Seria"
+	  "lLink class)  The N-axis robot object for computing forward kinematics.\nInitial q  (1xN)          Initial joint co"
+	  "ordinates for solution\nMask vector (1x6)         Mask vector for underactuated manipulators.\n\n<b>Inputs::</b>\n "
+	  "\nT (4x4) the pose of the end effector as a homogeneous transformation\n\n \n<b>Outputs::</b>\n\nq (1xN) joint coor"
+	  "dinates\n \n<b>Notes::</b>\n \n- A wrapper for the Toolbox method ikine().\n"
+	  MaskPromptString	  "Robot object|Initial q|Mask vector"
+	  MaskStyleString	  "edit,edit,edit"
+	  MaskVariables		  "robot=@1;q0=@2;M=@3;"
+	  MaskTunableValueString  "on,on,on"
+	  MaskCallbackString	  "||"
+	  MaskEnableString	  "on,on,on"
+	  MaskVisibilityString	  "on,on,on"
+	  MaskToolTipString	  "on,on,on"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
+	  MaskValueString	  "0|0|[1 1 1 1 1 1]"
+	  System {
+	    Name		    "ikine"
+	    Location		    [1561, 603, 1791, 685]
+	    Open		    off
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "A4"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "T"
+	      SID		      "15:72"
+	      Position		      [25, 33, 55, 47]
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      MATLABFcn
+	      Name		      "ikine"
+	      SID		      "15:70"
+	      Ports		      [1, 1]
+	      Position		      [80, 25, 150, 55]
+	      MATLABFcn		      "robot.ikine(u, q0, m)"
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "q"
+	      SID		      "15:73"
+	      Position		      [175, 33, 205, 47]
+	      IconDisplay	      "Port number"
+	    }
+	    Line {
+	      SrcBlock		      "T"
+	      SrcPort		      1
+	      DstBlock		      "ikine"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "ikine"
+	      SrcPort		      1
+	      DstBlock		      "q"
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "ikine6s"
+	  SID			  "15:66"
+	  Ports			  [1, 1]
+	  Position		  [190, 84, 240, 146]
+	  BackgroundColor	  "red"
+	  LibraryVersion	  "1.51"
+	  MinAlgLoopOccurrences	  off
+	  PropExecContextOutsideSubsystem off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  Opaque		  off
+	  RequestExecContextInheritance	off
+	  MaskHideContents	  off
+	  MaskDescription	  "Inverse kinematics for 6-axis spherical robot"
+	  MaskHelp		  "Compute joint coordinates for robot given end-effector pose.\n\n\n<b>Parameters::</b>\n \nRobot (Seria"
+	  "lLink class)  The N-axis robot object for computing forward kinematics.\nConfiguration             Configuration st"
+	  "ring comprised of 'lrudnf'\n \n<b>Inputs::</b>\n \nT (4x4) the pose of the end effector as a homogeneous transforma"
+	  "tion\n\n \n<b>Outputs::</b>\n\nq (1xN) joint coordinates\n \n<b>Notes::</b>\n \n- A wrapper for the Toolbox method "
+	  "ikine6s().\n"
+	  MaskPromptString	  "Robot object|Configuration string"
+	  MaskStyleString	  "edit,edit"
+	  MaskVariables		  "robot=@1;conf=@2;"
+	  MaskTunableValueString  "on,on"
+	  MaskCallbackString	  "|"
+	  MaskEnableString	  "on,on"
+	  MaskVisibilityString	  "on,on"
+	  MaskToolTipString	  "on,on"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
+	  MaskValueString	  "p560|'luf'"
+	  System {
+	    Name		    "ikine6s"
+	    Location		    [1467, 816, 1697, 898]
+	    Open		    on
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "A4"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "T"
+	      SID		      "15:67"
+	      Position		      [25, 33, 55, 47]
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      MATLABFcn
+	      Name		      "ikine6s"
+	      SID		      "15:65"
+	      Ports		      [1, 1]
+	      Position		      [80, 25, 150, 55]
+	      MATLABFcn		      "robot.ikine6s(u,conf)"
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "q"
+	      SID		      "15:68"
+	      Position		      [175, 33, 205, 47]
+	      IconDisplay	      "Port number"
+	    }
+	    Line {
+	      SrcBlock		      "T"
+	      SrcPort		      1
+	      DstBlock		      "ikine6s"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "ikine6s"
+	      SrcPort		      1
+	      DstBlock		      "q"
 	      DstPort		      1
 	    }
 	  }
@@ -3119,7 +3290,7 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Robot Graphics"
-	Location		[1866, 337, 2242, 571]
+	Location		[420, 68, 796, 302]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -3243,26 +3414,26 @@ Library {
 	  MaskHelp		  "This block graphically displays the passed SerialLink class object.\n\nA new figure is created and the"
 	  " robot is animated (using SerialLink.plot)\nto a pose specified by the joint coordinate vector input to the block w"
 	  "hose\nwidth must match the number of robot joints."
-	  MaskPromptString	  "Robot object"
-	  MaskStyleString	  "edit"
-	  MaskVariables		  "robot=@1;"
-	  MaskTunableValueString  "off"
-	  MaskCallbackString	  "\n"
-	  MaskEnableString	  "on"
-	  MaskVisibilityString	  "on"
-	  MaskToolTipString	  "on"
-	  MaskInitialization	  "if isa(robot, 'SerialLink')\n    plot(robot,zeros(1,robot.n));\nrname = robot.name;\n%fprintf"
-	  "('**robot name is %s\\n', rname);\nelse\n    rname = '';\nend"
-	  MaskDisplay		  "text(0.5, 0.9,  rname, 'horizontalAlignment', 'center')\nport_label('input', 1, 'q')"
+	  MaskPromptString	  "Robot object|Update rate (fps)"
+	  MaskStyleString	  "edit,edit"
+	  MaskVariables		  "robot=@1;fps=@2;"
+	  MaskTunableValueString  "off,on"
+	  MaskCallbackString	  "\n|"
+	  MaskEnableString	  "on,on"
+	  MaskVisibilityString	  "on,on"
+	  MaskToolTipString	  "on,on"
+	  MaskSelfModifiable	  on
+	  MaskDisplay		  "port_label('input', 1, 'q')\nif ~isempty(robot)\n    text(0.5, 0.2, robot.name,  'horizontalAlignme"
+	  "nt', 'center')\nend\n"
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
 	  MaskPortRotate	  "default"
 	  MaskIconUnits		  "normalized"
-	  MaskValueString	  "robot"
+	  MaskValueString	  "robot|25"
 	  System {
 	    Name		    "plot"
-	    Location		    [114, 396, 379, 478]
+	    Location		    [565, 519, 830, 601]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -3291,7 +3462,7 @@ Library {
 	      Ports		      [1]
 	      Position		      [120, 25, 180, 55]
 	      FunctionName	      "slplotbot"
-	      Parameters	      "robot"
+	      Parameters	      "robot,fps"
 	      EnableBusSupport	      off
 	    }
 	    Line {
@@ -3342,7 +3513,7 @@ Library {
       MaskIconUnits	      "autoscale"
       System {
 	Name			"Trajectory"
-	Location		[1108, 93, 1485, 393]
+	Location		[1108, 115, 1485, 415]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -3658,14 +3829,14 @@ Library {
 	  "ulation time\n\n<b>Notes::</b>\n\n- If simulation time exceeds tmax then q is clipped to qf.\n- A wrapper on the To"
 	  "olbox function jtraj.\n- The piecewise constant output of jtraj is interpolated to the current\n  simulation time.\n"
 	  "\n"
-	  MaskPromptString	  "q0|qf|tmax"
-	  MaskStyleString	  "edit,edit,edit"
-	  MaskVariables		  "q0=@1;qf=@2;tmax=@3;"
-	  MaskTunableValueString  "on,on,on"
-	  MaskCallbackString	  "||"
-	  MaskEnableString	  "on,on,on"
-	  MaskVisibilityString	  "on,on,on"
-	  MaskToolTipString	  "on,on,on"
+	  MaskPromptString	  "q0|qf|tmax (s)|ts (s)"
+	  MaskStyleString	  "edit,edit,edit,edit"
+	  MaskVariables		  "q0=@1;qf=@2;tmax=@3;ts=@4;"
+	  MaskTunableValueString  "on,on,on,on"
+	  MaskCallbackString	  "|||"
+	  MaskEnableString	  "on,on,on,on"
+	  MaskVisibilityString	  "on,on,on,on"
+	  MaskToolTipString	  "on,on,on,on"
 	  MaskInitialization	  "n = length(q0);\nif length(q0) ~= length(qf) ,\n error('q0 and qf must be same length')\nend\n"
 	  "t=[0:100]'/100*tmax;\n[q,qd,qdd] = jtraj(q0, qf, t);"
 	  MaskDisplay		  "port_label('output', 1, 'q')\nport_label('output', 2, 'qd')\nport_label('output', 3, 'qdd')"
@@ -3674,10 +3845,10 @@ Library {
 	  MaskIconRotate	  "none"
 	  MaskPortRotate	  "default"
 	  MaskIconUnits		  "normalized"
-	  MaskValueString	  "[0 0 0 0 0 0]|[pi/4 pi/2 -pi/2 0 0 0]|10"
+	  MaskValueString	  "[0 0 0 0 0 0]|[pi/4 pi/2 -pi/2 0 0 0]|10|0.02"
 	  System {
 	    Name		    "jtraj"
-	    Location		    [260, 521, 624, 712]
+	    Location		    [817, 490, 1181, 681]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -3707,6 +3878,7 @@ Library {
 	      Position		      [105, 25, 165, 55]
 	      MATLABFcn		      "interp1(t,q,u)"
 	      OutputDimensions	      "n"
+	      SampleTime	      "ts"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
@@ -3716,6 +3888,7 @@ Library {
 	      Position		      [110, 75, 170, 105]
 	      MATLABFcn		      "interp1(t,qd,u)"
 	      OutputDimensions	      "n"
+	      SampleTime	      "ts"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
@@ -3725,6 +3898,7 @@ Library {
 	      Position		      [110, 125, 170, 155]
 	      MATLABFcn		      "interp1(t,qdd,u)"
 	      OutputDimensions	      "n"
+	      SampleTime	      "ts"
 	    }
 	    Block {
 	      BlockType		      Outport
