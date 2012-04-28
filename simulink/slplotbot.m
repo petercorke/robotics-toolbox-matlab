@@ -6,22 +6,25 @@
 % Implemented as an S-function so as to update display at the end of
 % each Simulink major integration step.
 
-function [sys,x0,str,ts] = splotbot(t,x,u,flag, robot)
+function [sys,x0,str,ts] = splotbot(t,x,u,flag, robot, fps)
 	switch flag,
 
 	case 0
 		% initialize the robot graphics
-		[sys,x0,str,ts] = mdlInitializeSizes;	% Init
-		plot(robot, zeros(1, robot.n))
+		[sys,x0,str,ts] = mdlInitializeSizes(fps);	% Init
+        if ~isempty(robot)
+            robot.plot(zeros(1, robot.n), 'delay', 0, 'noraise')
+        end
 
-	case 2
+	case 3
 		% come here on update
-		if ~isempty(u),
-			plot(robot, u');
-			drawnow
+		if ~isempty(u)
+            %fprintf('--slplotbot: t=%f\n', t);
+			robot.animate(u');
+            drawnow
 		end
 		ret = [];
-	case {1, 4, 9}
+	case {1, 2, 4, 9}
 		ret = [];
 	end
 %
@@ -30,7 +33,7 @@ function [sys,x0,str,ts] = splotbot(t,x,u,flag, robot)
 % Return the sizes, initial conditions, and sample times for the S-function.
 %=============================================================================
 %
-function [sys,x0,str,ts]=mdlInitializeSizes
+function [sys,x0,str,ts]=mdlInitializeSizes(fps)
  
 %
 % call simsizes for a sizes structure, fill it in and convert it to a
@@ -64,6 +67,6 @@ str = [];
 %
 % initialize the array of sample times
 %
-ts  = [0 0];
+ts  = [-1 0]; %[1.0/fps];
  
 % end mdlInitializeSizes

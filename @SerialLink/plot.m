@@ -50,10 +50,12 @@
 % Options::
 %  'workspace', W          size of robot 3D workspace, W = [xmn, xmx ymn ymx zmn zmx]
 %  'delay', d              delay betwen frames for animation (s)
+%  'fps',fps               set number of frames per second for display
 %  'cylinder', C           color for joint cylinders, C=[r g b]
 %  'mag', scale            annotation scale factor
 %  'perspective'|'ortho'   type of camera view
-%  'raise'|'noraise'       controls autoraise of current figure on plot
+%  'raise'|'noraise'       controls autoraise of current figure on plot, is
+%                          incredibly slow.
 %  'render'|'norender'     controls shaded rendering after drawing
 %  'loop'|'noloop'         controls endless loop mode
 %  'base'|'nobase'         controls display of base 'pedestal'
@@ -132,10 +134,10 @@ function retval = plot(robot, tg, varargin)
     %
     %TODO should be robot.get_q()
     if nargin == 1
-        rh = findobj('Tag', robot.name);
-        if ~isempty(rh)
-            r = get(rh(1), 'UserData');
-            retval = r.q;
+        handles = findobj('Tag', robot.name);
+        if ~isempty(handles)
+            h = get(handles(1), 'UserData');
+            retval = h.q;
         end
         return
     end
@@ -173,48 +175,46 @@ function retval = plot(robot, tg, varargin)
 %       return;
 %    end
 
-    % get handle of any existing robot of same name
-    rh = findobj('Tag', robot.name);
+    % get handle of any existing graphical robot of same name
+    handles = findobj('Tag', robot.name);
 
-    if isempty(rh) || isempty( get(gcf, 'Children'))
+    if isempty(handles) || isempty( get(gcf, 'Children'))
         % no robot of this name exists
 
         % create one
-        ax = newplot();
-        h = create_new_robot(robot, opt);
+        newplot();
+        handle = create_new_robot(robot, opt);
 
-        % save the handles in the passed robot object, and
-        % attach it to the robot as user data.
-        robot.handle = h;
-        set(h.robot, 'Tag', robot.name);
-        set(h.robot, 'UserData', robot);
+        % tag one of the graphical handles with the robot name and hang
+        % the handle structure off it
+        set(handle.links, 'Tag', robot.name);
+        set(handle.links, 'UserData', handle);
 
-        rh = h.robot;
+        handles = handle.links;
     end
 
     if ishold && isempty( findobj(gca, 'Tag', robot.name))
         % if hold is on and no robot of this name in current axes
         h = create_new_robot(robot, opt);
-        % save the handles in the passed robot object, and
-        % attach it to the robot as user data.
-        robot.handle = h;
-        set(h.robot, 'Tag', robot.name);
-        set(h.robot, 'UserData', robot);
 
-        rh = h.robot;
+        % tag one of the graphical handles with the robot name and hang
+        % the handle structure off it
+        set(handle.links, 'Tag', robot.name);
+        set(handle.links, 'UserData', handle);
+
+        handles = handle.links;
     end
     
     if opt.raise
+        % note this is a very time consuming operation
         figure(gcf);
     end
 
     while true
-        for p=1:np
-            for r=rh'
-                animate( get(r, 'UserData'), tg(p,:), opt);
-                if opt.delay > 0
-                    pause(opt.delay);
-                end
+        for p=1:np      % for each point on path
+            robot.animate(tg(p,:), handles);
+            if opt.delay > 0
+                pause(opt.delay);
             end
         end
         if ~opt.loop
@@ -223,16 +223,12 @@ function retval = plot(robot, tg, varargin)
     end
 
     % save the last joint angles away in the graphical robot
-    for r=rh'
-        rr = get(r, 'UserData');
-        rr.q = tg(end,:);
-        set(r, 'UserData', rr);
+    for handle=handles'
+        h = get(handle, 'UserData');
+        h.q = tg(end,:);
+        set(handle, 'UserData', h);
     end
 
-    if nargout > 0
-        retval = robot;
-    end
-    
 
 %PLOT_OPTIONS
 %
@@ -273,7 +269,7 @@ function o = plot_options(robot, optin)
 
     % parse the options
     [o,args] = tb_optparse(o, options);
-    if length(args) > 0
+    if ~isempty(args)
         error(['unknown option: ' args{1}]);
     end
 
@@ -309,7 +305,7 @@ function o = plot_options(robot, optin)
 
 % h.mag
 % h.zmin
-% h.robot   the line segment that is the robot
+% h.links   the line segment that is the robot
 % h.shadow  the robot's shadow
 % h.x       the line segment that is T6 x-axis
 % h.y       the line segment that is T6 x-axis
@@ -322,8 +318,10 @@ function o = plot_options(robot, optin)
 % h.jointlabel(i)   text for joint i label
 
 function h = create_new_robot(robot, opt)
-    h.mag = opt.mag;
+    h.opt = opt;            % the options
+    h.robot = robot;        % pointer to robot
 
+    h.mag = opt.mag;
     %
     % setup an axis in which to animate the robot
     %
@@ -337,9 +335,8 @@ function h = create_new_robot(robot, opt)
     xlabel('X')
     ylabel('Y')
     zlabel('Z')
-    set(gca, 'drawmode', 'fast');
+    %set(gca, 'drawmode', 'fast');
     grid on
-
 
     zlim = get(gca, 'ZLim');
     h.zmin = zlim(1);
@@ -361,7 +358,7 @@ function h = create_new_robot(robot, opt)
     % subsequently modify.  Set erase mode to xor for fast
     % update
     %
-    h.robot = line(robot.lineopt{:});
+    h.links = line(robot.lineopt{:});
     
     if opt.shadow
         h.shadow = line(robot.shadowopt{:}, ...
@@ -436,109 +433,4 @@ function h = create_new_robot(robot, opt)
                 'linestyle', ':');
             h.jointlabel(i) = text(0, 0, 0, num2str(i), 'HorizontalAlignment', 'Center');
         end
-    end
-
-%ANIMATE   move an existing graphical robot
-%
-%   animate(robot, q)
-%
-% Move the graphical robot to the pose specified by the joint coordinates q.
-% Graphics are defined by the handle structure robot.handle.
-
-function animate(robot, q, opt)
-
-    n = robot.n;
-    h = robot.handle;
-    L = robot.links;
-
-    mag = h.mag;
-
-    b = transl(robot.base);
-    x = b(1);
-    y = b(2);
-    z = b(3);
-
-    xs = b(1);
-    ys = b(2);
-    zs = h.zmin;
-
-    % compute the link transforms, and record the origin of each frame
-    % for the animation.
-    t = robot.base;
-    Tn = t;
-    for j=1:n
-        Tn(:,:,j) = t;
-
-        t = t * L(j).A(q(j));
-
-        x = [x; t(1,4)];
-        y = [y; t(2,4)];
-        z = [z; t(3,4)];
-        xs = [xs; t(1,4)];
-        ys = [ys; t(2,4)];
-        zs = [zs; h.zmin];
-    end
-    t = t *robot.tool;
-
-    %
-    % draw the robot stick figure and the shadow
-    %
-    set(h.robot,'xdata', x, 'ydata', y, 'zdata', z);
-    if isfield(h, 'shadow')
-        set(h.shadow,'xdata', xs, 'ydata', ys, 'zdata', zs);
-    end
-    
-
-    %
-    % display the joints as cylinders with rotation axes
-    %
-    if isfield(h, 'joint')
-        xyz_line = [0 0; 0 0; -2*mag 2*mag; 1 1];
-
-        for j=1:n
-            % get coordinate data from the cylinder
-            xyz = get(h.joint(j), 'UserData');
-            xyz = Tn(:,:,j) * xyz;
-            ncols = numcols(xyz)/2;
-            xc = reshape(xyz(1,:), 2, ncols);
-            yc = reshape(xyz(2,:), 2, ncols);
-            zc = reshape(xyz(3,:), 2, ncols);
-
-            set(h.joint(j), 'Xdata', xc, 'Ydata', yc, ...
-                'Zdata', zc);
-
-            xyzl = Tn(:,:,j) * xyz_line;
-            if isfield(h, 'jointaxis')
-                set(h.jointaxis(j), 'Xdata', xyzl(1,:), ...
-                    'Ydata', xyzl(2,:), ...
-                    'Zdata', xyzl(3,:));
-                set(h.jointlabel(j), 'Position', xyzl(1:3,1));
-            end
-        end
-    end
-
-    %
-    % display the wrist axes and labels
-    %
-    if isfield(h, 'x')
-        %
-        % compute the wrist axes, based on final link transformation
-        % plus the tool transformation.
-        %
-        xv = t*[mag;0;0;1];
-        yv = t*[0;mag;0;1];
-        zv = t*[0;0;mag;1];
-
-        %
-        % update the line segments, wrist axis and links
-        %
-        set(h.x,'xdata',[t(1,4) xv(1)], 'ydata', [t(2,4) xv(2)], ...
-            'zdata', [t(3,4) xv(3)]);
-        set(h.y,'xdata',[t(1,4) yv(1)], 'ydata', [t(2,4) yv(2)], ...
-             'zdata', [t(3,4) yv(3)]);
-        set(h.z,'xdata',[t(1,4) zv(1)], 'ydata', [t(2,4) zv(2)], ...
-             'zdata', [t(3,4) zv(3)]);
-        set(h.xt, 'Position', xv(1:3));
-        set(h.yt, 'Position', yv(1:3));
-        set(h.zt, 'Position', zv(1:3));
     end
