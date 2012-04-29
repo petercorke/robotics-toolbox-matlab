@@ -37,36 +37,6 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
 function T = eul2tr(phi, varargin)
-    opt.deg = false;
-    [opt,args] = tb_optparse(opt, varargin);
 
-    % unpack the arguments
-    if numcols(phi) == 3
-		theta = phi(:,2);
-		psi = phi(:,3);
-		phi = phi(:,1);
-	elseif nargin >= 3
-        theta = args{1};
-        psi = args{2};
-    else
-        error('bad arguments')
-    end
-
-    % optionally convert from degrees
-    if opt.deg
-        d2r = pi/180.0;
-        phi = phi * d2r;
-        theta = theta * d2r;
-        psi = psi * d2r;
-    end
-
-    if numrows(phi) == 1
-        r = rotz(phi) * roty(theta) * rotz(psi);
-        T = r2t(r);
-    else
-        T = [];
-        for i=1:numrows(phi)
-            r = rotz(phi(i)) * roty(theta(i)) * rotz(psi(i));
-            T(:,:,i) = r2t(r);
-        end
-    end
+    R = eul2r(phi, varargin{:});
+    T = r2t(R);

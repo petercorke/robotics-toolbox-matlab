@@ -40,48 +40,6 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
 function T = rpy2tr(roll, varargin)
-    opt.zyx = false;
-    opt.deg = false;
-    [opt,args] = tb_optparse(opt, varargin);
 
-    % unpack the arguments
-    if numcols(roll) == 3
-		pitch = roll(:,2);
-		yaw = roll(:,3);
-		roll = roll(:,1);
-	elseif nargin >= 3
-        pitch = args{1};
-        yaw = args{2};
-    else
-        error('bad arguments');
-    end
-
-    % optionally convert from degrees
-    if opt.deg
-        d2r = pi/180.0;
-        roll = roll * d2r;
-        pitch = pitch * d2r;
-        yaw = yaw * d2r;
-    end
-
-    if ~opt.zyx
-        % XYZ order
-        if numrows(roll) == 1
-            r = rotx(roll) * roty(pitch) * rotz(yaw);
-            T = r2t(r);
-        else
-            for i=1:numrows(roll)
-                R(:,:,i) = rotx(roll(i)) * roty(pitch(i)) * rotz(yaw(i));
-            end
-        end
-    else
-        % old ZYX order (as per Paul book)
-        if numrows(roll) == 1
-            R = rotz(roll) * roty(pitch) * rotx(yaw);
-        else
-            for i=1:numrows(roll)
-                r = rotz(roll(i)) * roty(pitch(i)) * rotx(yaw(i));
-                T(:,:,i) = r2t(r);
-            end
-        end
-    end
+    R = rpy2r(roll, varargin{:});
+    T = r2t(R);
