@@ -40,6 +40,8 @@ function [R,t] = tr2rt(T)
     n = numcols(T);
 
     if size(T,3) > 1
+        R = zeros(3,3,size(T,3));
+        t = zeros(size(T,3), 3);
         for i=1:size(T,3)
             R(:,:,i) = T(1:n-1,1:n-1,i);
             t(i,:) = T(1:n-1,n,i)';

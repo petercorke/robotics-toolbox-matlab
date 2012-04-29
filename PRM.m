@@ -16,10 +16,10 @@
 %
 % Example::
 %
-%    load map1              % load map
-%    prm = PRM(map);        % create navigation object
-%    prm.plan()             % create roadmaps
-%    prm.path(start, goal)  % animate path from this start location
+%        load map1              % load map
+%        prm = PRM(map);        % create navigation object
+%        prm.plan()             % create roadmaps
+%        prm.path(start, goal)  % animate path from this start location
 %
 % References::
 %

@@ -14,10 +14,10 @@
 %   qn         arm is at a nominal non-singular configuration
 %
 % Reference::
-% -  "A search for consensus among model parameters reported for the PUMA 560 robot",
-%     P. Corke and B. Armstrong-Helouvry, 
-%     Proc. IEEE Int. Conf. Robotics and Automation, (San Diego), 
-%     pp. 1608-1613, May 1994.
+% - "A search for consensus among model parameters reported for the PUMA 560 robot",
+%   P. Corke and B. Armstrong-Helouvry, 
+%   Proc. IEEE Int. Conf. Robotics and Automation, (San Diego), 
+%   pp. 1608-1613, May 1994.
 %
 % See also SerialLink, mdl_puma560akb, mdl_stanford, mdl_twolink.
 
@@ -136,6 +136,4 @@ qs = [0 0 -pi/2 0 0 0];
 qn=[0 pi/4 pi 0 pi/4  0];
 
 
-p560_f = SerialLink(L, 'name', 'Puma 560', ...
-    'manufacturer', 'Unimation', 'comment', 'nonlin friction; params of 8/95');
 clear L

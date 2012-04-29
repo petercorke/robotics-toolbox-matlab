@@ -1,8 +1,9 @@
 %SerialLink.JACOB0 Jacobian in world coordinates
 %
-% J0 = R.jacob0(Q, OPTIONS) is a 6xN Jacobian matrix for the robot in pose Q.
-% The manipulator Jacobian matrix maps joint velocity to end-effector spatial
-% velocity V = J0*QD expressed in the world-coordinate frame.
+% J0 = R.jacob0(Q, OPTIONS) is the Jacobian matrix (6xN) for the robot in 
+% pose Q (1xN).  The manipulator Jacobian matrix maps joint velocity to 
+% end-effector spatial velocity V = J0*QD expressed in the world-coordinate 
+% frame.
 %
 % Options::
 % 'rpy'     Compute analytical Jacobian with rotation rate in terms of 
@@ -13,15 +14,12 @@
 % 'rot'     Return rotational submatrix of Jacobian 
 %
 % Note::
-% - the Jacobian is computed in the world frame and transformed to the 
+% - The Jacobian is computed in the world frame and transformed to the 
 %   end-effector frame.
-% - the default Jacobian returned is often referred to as the geometric 
+% - The default Jacobian returned is often referred to as the geometric 
 %   Jacobian, as opposed to the analytical Jacobian.
 %
-% See also SerialLink.jacobn, deltatr, tr2delta.
-
-
-
+% See also SerialLink.jacobn, jsingu, deltatr, tr2delta, jsingu.
 
 % Copyright (C) 1993-2011, by Peter I. Corke
 %

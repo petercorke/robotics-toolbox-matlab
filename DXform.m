@@ -20,10 +20,10 @@
 %
 % Example::
 %
-%    load map1           % load map
-%    dx = DXform(map);   % create navigation object
-%    dx.plan(goal)       % create plan for specified goal
-%    dx.path(start)      % animate path from this start location
+%        load map1           % load map
+%        dx = DXform(map);   % create navigation object
+%        dx.plan(goal)       % create plan for specified goal
+%        dx.path(start)      % animate path from this start location
 %
 % Notes::
 % - Obstacles are represented by NaN in the distancemap.

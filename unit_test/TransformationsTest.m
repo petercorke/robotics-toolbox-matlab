@@ -5,7 +5,7 @@ function test_suite = TestRobotToolboxHomogeneousTransformation
 
 %% Homogeneous transformations
 %    angvec2r                   - angle/vector to RM
-function Test_angvec2r
+function angvec2r_test
     %Unit test for angvec2r with variables 0.1, [1,2,3]) 
     assertElementsAlmostEqual(angvec2r( 0.1, [1,2,3]),...
     [1.0000   -0.2895    0.2147
@@ -23,7 +23,7 @@ function Test_angvec2r
 
 
 %    angvec2tr                  - angle/vector to HT
-function Test_angvec2tr
+function angvec2tr_test
     %Unit test for angvec2r with variables 0.1, [1,2,3]) 
     assertElementsAlmostEqual(angvec2tr( 0.1, [1,2,3]),...
     [1.0000   -0.2895    0.2147         0
@@ -42,69 +42,102 @@ function Test_angvec2tr
     assertExceptionThrown(@()angvec2tr(1),'MATLAB:inputArgUndefined');
      
 %    eul2r                      - Euler angles to RM
-function Test_eul2r
-    %Unit test for eul2r with variables (0.1, 0.2, 0.3)
-    assertElementsAlmostEqual(eul2r(.1, .2, .3),...
-        [0.9021   -0.3836    0.1977
-         0.3875    0.9216    0.0198
-        -0.1898    0.0587    0.9801],'absolute',1e-4);
-    %Unit test for eul2r with variables ([.1, .2, .3])
-    assertElementsAlmostEqual(eul2r([.1, .2, .3]),...
-        [0.9021   -0.3836    0.1977
-         0.3875    0.9216    0.0198
-        -0.1898    0.0587    0.9801],'absolute',1e-4);
-    %Unit test for eul2r with variables ([.1, .2, .3; .4, .5, .6])
-    expected_out(:,:,1)= [0.9021   -0.3836    0.1977
-                          0.3875    0.9216    0.0198
-                         -0.1898    0.0587    0.9801];
-    expected_out(:,:,2)= [0.4472   -0.7778    0.4416
-                          0.8021    0.5672    0.1867
-                         -0.3957    0.2707    0.8776];
-    assertElementsAlmostEqual(eul2r([.1, .2, .3; .4, .5, .6]),...
-        expected_out,'absolute',1e-4);
-    %Unit test for eul2r with variables (0, 0, 0)
+function eul2r_test
     assertElementsAlmostEqual(eul2r(0, 0, 0),...
         [1     0     0
          0     1     0
-         0     0     1],'absolute',1e-4);
+         0     0     1], ...
+    'absolute',1e-4);
+
+    assertElementsAlmostEqual(eul2r(.1, .2, .3),...
+        [0.9021   -0.3836    0.1977
+         0.3875    0.9216    0.0198
+        -0.1898    0.0587    0.9801], ...
+        'absolute',1e-4);
+
+    assertElementsAlmostEqual(eul2r(.1, .2, .3, 'deg'),...
+        [1.0000   -0.0070    0.0035
+        0.0070    1.0000    0.0000
+       -0.0035    0.0000    1.0000], ...
+        'absolute',1e-4);
+
+    assertElementsAlmostEqual(eul2r([.1, .2, .3]),...
+        [0.9021   -0.3836    0.1977
+         0.3875    0.9216    0.0198
+        -0.1898    0.0587    0.9801], ...
+        'absolute',1e-4);
+
+    assertElementsAlmostEqual(eul2r([.1, .2, .3], 'deg'),...
+        [1.0000   -0.0070    0.0035
+        0.0070    1.0000    0.0000
+       -0.0035    0.0000    1.0000], ...
+        'absolute',1e-4);
+
+    % trajectory case
+    R = eul2r( [.1, .2, .3; .1 .2 .3; .1 .2 .3]);
+    assertIsSize(R, [3 3 3]);
+
+    assertElementsAlmostEqual(R(:,:,2), ...
+        [0.9021   -0.3836    0.1977
+         0.3875    0.9216    0.0198
+        -0.1898    0.0587    0.9801], ...
+         'absolute',1e-4);
+
     %test for scalar input
     assertExceptionThrown(@()eul2r(1),'');
     
 %    eul2tr                     - Euler angles to HT
-function Test_eul2tr
-    %Unit test for eul2tr with variables (.1, .2, .3)
-    assertElementsAlmostEqual(eul2tr(.1, .2, .3),...
-        [0.9021   -0.3836    0.1977         0
-         0.3875    0.9216    0.0198         0
-        -0.1898    0.0587    0.9801         0
-              0         0         0    1.0000],'absolute',1e-4);
-    %Unit test for eul2r with variables ([.1, .2, .3])
-    assertElementsAlmostEqual(eul2tr([.1, .2, .3]),...
-        [0.9021   -0.3836    0.1977         0
-         0.3875    0.9216    0.0198         0
-        -0.1898    0.0587    0.9801         0
-              0         0         0    1.0000],'absolute',1e-4);   
-    %Unit test for eul2tr with variables ([.1, .2, .3; .4, .5, .6])
-    expected_out(:,:,1)= [0.9021   -0.3836    0.1977         0
-                          0.3875    0.9216    0.0198         0
-                         -0.1898    0.0587    0.9801         0
-                               0         0         0    1.0000];
-    expected_out(:,:,2)= [0.4472   -0.7778    0.4416         0
-                          0.8021    0.5672    0.1867         0
-                         -0.3957    0.2707    0.8776         0
-                               0         0         0    1.0000];
-    assertElementsAlmostEqual(eul2tr([.1, .2, .3; .4, .5, .6]),...
-        expected_out,'absolute',1e-4) 
+function eul2tr_test
     %Unit test for eul2tr with variables (0, 0, 0)
     assertElementsAlmostEqual(eul2tr(0, 0, 0),...
         [1     0     0     0
          0     1     0     0
          0     0     1     0
          0     0     0     1],'absolute',1e-4);
+
+    assertElementsAlmostEqual(eul2tr(.1, .2, .3),...
+        [0.9021   -0.3836    0.1977         0
+        0.3875    0.9216    0.0198         0
+       -0.1898    0.0587    0.9801         0
+         0         0         0    1.0000], ...
+     'absolute', 1e-4);
+
+    assertElementsAlmostEqual( eul2tr(.1, .2, .3, 'deg'), ...
+        [1.0000   -0.0070    0.0035         0
+        0.0070    1.0000    0.0000         0
+       -0.0035    0.0000    1.0000         0
+             0         0         0    1.0000], ...
+     'absolute', 1e-4);
+
+    assertElementsAlmostEqual(eul2tr([.1, .2, .3]),...
+        [0.9021   -0.3836    0.1977         0
+        0.3875    0.9216    0.0198         0
+       -0.1898    0.0587    0.9801         0
+         0         0         0    1.0000], ...
+     'absolute', 1e-4);
+
+    assertElementsAlmostEqual(eul2tr([.1, .2, .3], 'deg'),...
+        [1.0000   -0.0070    0.0035         0
+        0.0070    1.0000    0.0000         0
+       -0.0035    0.0000    1.0000         0
+             0         0         0    1.0000], ...
+     'absolute', 1e-4);
+
+    % trajectory case
+    T = eul2tr( [.1, .2, .3; .1 .2 .3; .1 .2 .3]);
+    assertIsSize(T, [4 4 3]);
+
+    assertElementsAlmostEqual(T(:,:,2), ...
+        [0.9021   -0.3836    0.1977         0
+        0.3875    0.9216    0.0198         0
+       -0.1898    0.0587    0.9801         0
+         0         0         0    1.0000], ...
+     'absolute', 1e-4);
+
     %test for scalar input
     assertExceptionThrown(@()eul2tr(1),'');
 %    oa2r                       - orientation and approach vector to RM
-function Test_oa2r
+function oa2r_test
     %Unit test for oa2r with variables ([0 1 0] & [0 0 1]) 
     assertElementsAlmostEqual(oa2r([0 1 0], [0 0 1]),...
         [1     0     0
@@ -114,7 +147,7 @@ function Test_oa2r
     assertExceptionThrown(@()oa2r(1),'MATLAB:inputArgUndefined');
 
 %    oa2tr                      - orientation and approach vector to HT
-function Test_oa2tr
+function oa2tr_test
     %Unit test for oa2tr with variables ([0 1 0] & [0 0 1]) 
     assertElementsAlmostEqual(oa2tr([0 1 0], [0 0 1]),...
         [1     0     0     0
@@ -125,7 +158,7 @@ function Test_oa2tr
     assertExceptionThrown(@()oa2tr(1),'MATLAB:inputArgUndefined');
     
 %    r2t                        - RM to HT
-function Test_r2t
+function r2t_test
     %Unit test for r2t
 
     % SO(3) case
@@ -147,7 +180,7 @@ function Test_r2t
 
     
 %    rotx                       - RM for rotation about X-axis
-function Test_rotx
+function rotx_test
     %Unit test for rotz
     assertElementsAlmostEqual(rotx(0.1),...
         [1.0000 0 0 ; 0 0.9950 -0.0998 ; 0 0.0998 0.9950 ],'absolute',1e-4);
@@ -159,7 +192,7 @@ function Test_rotx
     assertExceptionThrown(@()rotx([1 2 3]),'MATLAB:catenate:dimensionMismatch');
     
 %    roty                       - RM for rotation about Y-axis
-function Test_roty
+function roty_test
     %Unit test for roty
     assertElementsAlmostEqual(roty(0.1),...
         [0.9950 0 0.0998 ;0 1.0000 0 ;-0.0998 0 0.9950 ],'absolute',1e-4);
@@ -171,7 +204,7 @@ function Test_roty
     assertExceptionThrown(@()roty([1 2 3]),'MATLAB:catenate:dimensionMismatch');
     
 %    rotz                       - RM for rotation about Z-axis
-function Test_rotz
+function rotz_test
     %Unit test for rotz
     assertElementsAlmostEqual(rotz(0.1),...
         [0.9950 -0.0998 0 ; 0.0998 0.9950 0 ;0 0 1.0000],'absolute',1e-4);
@@ -183,48 +216,111 @@ function Test_rotz
     assertExceptionThrown(@()rotz([1 2 3]),'MATLAB:catenate:dimensionMismatch');
     
 %    rpy2r                      - roll/pitch/yaw angles to RM
-function Test_rpy2r
+function rpy2r_test
     %Unit test for rpy2r with variables (0.1, 0.2, 0.3)
     assertElementsAlmostEqual(rpy2r(.1, .2, .3),...
         [0.9363   -0.2896    0.1987
          0.3130    0.9447   -0.0978
-        -0.1593    0.1538    0.9752],'absolute',1e-4);
-    %Unit test for rpy2r with variables ([.1, .2, .3] )
+        -0.1593    0.1538    0.9752], ...
+        'absolute',1e-4);
+    assertElementsAlmostEqual(rpy2r(.1, .2, .3, 'deg'),...
+        [1.0000   -0.0052    0.0035
+        0.0052    1.0000   -0.0017
+       -0.0035    0.0018    1.0000], ...
+        'absolute',1e-4);
+    assertElementsAlmostEqual(rpy2r(.1, .2, .3, 'zyx'),...
+        [0.9752   -0.0370    0.2184
+        0.0978    0.9564   -0.2751
+       -0.1987    0.2896    0.9363], ...
+        'absolute',1e-4);
+
     assertElementsAlmostEqual(rpy2r([.1, .2, .3]),...
         [0.9363   -0.2896    0.1987
          0.3130    0.9447   -0.0978
-        -0.1593    0.1538    0.9752],'absolute',1e-4);
-    %Unit test for rpy2r with variables ([0 0 0])
+        -0.1593    0.1538    0.9752], ...
+        'absolute',1e-4);
+
+    assertElementsAlmostEqual(rpy2r([.1, .2, .3], 'deg'),...
+        [1.0000   -0.0052    0.0035
+        0.0052    1.0000   -0.0017
+       -0.0035    0.0018    1.0000], ...
+        'absolute',1e-4);
+
+    assertElementsAlmostEqual(rpy2r([.1, .2, .3], 'zyx'),...
+        [0.9752   -0.0370    0.2184
+        0.0978    0.9564   -0.2751
+       -0.1987    0.2896    0.9363], ...
+        'absolute',1e-4);
+
     assertElementsAlmostEqual(rpy2r([0 0 0]),...
         [1     0     0
          0     1     0
          0     0     1],'absolute',1e-4);
-    %Unit test for rpy2r with variables ([.1, .2, .3; .4, .5, .6])
-    expected_out(:,:,1) = [0.9363   -0.2896    0.1987
-                    0.3130    0.9447   -0.0978
-                   -0.1593    0.1538    0.9752];
-    expected_out(:,:,2) = [0.7243   -0.4955    0.4794
-                           0.6742    0.6548   -0.3417
-                          -0.1446    0.5707    0.8083];
-    assertElementsAlmostEqual(rpy2r([.1, .2, .3; .4, .5, .6]),...
-        expected_out,'absolute',1e-4);
-    
-    
+
+    % trajectory case
+    R = rpy2r( [.1, .2, .3; .1 .2 .3; .1 .2 .3]);
+    assertIsSize(R, [3 3 3]);
+
+    assertElementsAlmostEqual(R(:,:,2), ...
+        [0.9363   -0.2896    0.1987
+         0.3130    0.9447   -0.0978
+        -0.1593    0.1538    0.9752], ...
+         'absolute',1e-4);
+
         
 %    rpy2tr                     - roll/pitch/yaw angles to HT
-function Test_rpy2tr
+function rpy2tr_test
     %Unit test for rpy2tr with variables (0.1, 0.2, 0.3)
     assertElementsAlmostEqual(rpy2tr(.1, .2, .3),...
         [0.9363   -0.2896    0.1987         0
          0.3130    0.9447   -0.0978         0
         -0.1593    0.1538    0.9752         0
               0         0         0    1.0000],'absolute',1e-4);
-    %Unit test for rpy2tr with variables ([.1, .2, .3] )
+
+    assertElementsAlmostEqual( rpy2tr(.1, .2, .3, 'deg'), ...
+        [1.0000   -0.0052    0.0035         0
+        0.0052    1.0000   -0.0017         0
+       -0.0035    0.0018    1.0000         0
+             0         0         0    1.0000], ...
+     'absolute', 1e-4);
+
+    assertElementsAlmostEqual( rpy2tr(.1, .2, .3, 'xyz'), ...
+        [0.9363   -0.2896    0.1987         0
+        0.3130    0.9447   -0.0978         0
+       -0.1593    0.1538    0.9752         0
+             0         0         0    1.0000], ...
+     'absolute', 1e-4);
+
     assertElementsAlmostEqual(rpy2tr([.1, .2, .3]),...
         [0.9363   -0.2896    0.1987         0
          0.3130    0.9447   -0.0978         0
         -0.1593    0.1538    0.9752         0
               0         0         0    1.0000],'absolute',1e-4);
+
+    assertElementsAlmostEqual(rpy2tr([.1, .2, .3], 'deg'),...
+        [1.0000   -0.0052    0.0035         0
+        0.0052    1.0000   -0.0017         0
+       -0.0035    0.0018    1.0000         0
+             0         0         0    1.0000], ...
+     'absolute', 1e-4);
+
+    assertElementsAlmostEqual(rpy2tr([.1, .2, .3], 'xyz'),...
+        [0.9363   -0.2896    0.1987         0
+        0.3130    0.9447   -0.0978         0
+       -0.1593    0.1538    0.9752         0
+             0         0         0    1.0000], ...
+     'absolute', 1e-4);
+
+    % trajectory case
+    T = rpy2tr( [.1, .2, .3; .1 .2 .3; .1 .2 .3]);
+    assertIsSize(T, [4 4 3]);
+
+    assertElementsAlmostEqual(T(:,:,2), ...
+        [0.9363   -0.2896    0.1987         0
+         0.3130    0.9447   -0.0978         0
+        -0.1593    0.1538    0.9752         0
+              0         0         0    1.0000],'absolute',1e-4);
+
     %Unit test for rpy2tr with variables ([0 0 0])
     assertElementsAlmostEqual(rpy2tr( [0 0 0]),...
         [1     0     0     0
@@ -235,7 +331,7 @@ function Test_rpy2tr
     assertExceptionThrown(@()rpy2tr(1),'');
         
 %    t2r                        - HT to RM
-function Test_t2r
+function t2r_test
     %Unit test for r2t with variables eul2tr([.1, .2, .3])
 
     % SO(3) case
@@ -257,7 +353,7 @@ function Test_t2r
     
 %    tr2angvec                  - HT/RM to angle/vector form
 % CHECK OUTPUT OF THIS FUNCTION!!!!!!!!!!!!!!!!!!!!!!
-function Test_tr2angvec
+function tr2angvec_test
     % unit test for tr2angvec using a tr matrix 
     [theta, v] = tr2angvec(eul2tr([.1, .2, .3]));
     assertElementsAlmostEqual(theta,...
@@ -274,7 +370,7 @@ function Test_tr2angvec
     assertExceptionThrown(@()tr2angvec(1), 'RTB:t2r:badarg');
     
 %    tr2eul                     - HT/RM to Euler angles
-function Test_tr2eul
+function tr2eul_test
     %Unit test for tr2eul with variables eul2tr( [.1, .2, .3] )
     assertElementsAlmostEqual(tr2eul(eul2tr([.1, .2, .3])),...
         [0.1000    0.2000    0.3000],'absolute',1e-4);
@@ -285,7 +381,7 @@ function Test_tr2eul
     assertExceptionThrown(@()tr2eul(1),'MATLAB:badsubscript');
     
 %    tr2rpy                     - HT/RM to roll/pitch/yaw angles
-function Test_tr2rpy
+function tr2rpy_test
     %Unit test for rpy2r with variables [.1, .2, .3]
      assertElementsAlmostEqual(tr2rpy(rpy2tr( [.1, .2, .3])),...
         [0.1000    0.2000    0.3000],'absolute',1e-4);
@@ -296,7 +392,7 @@ function Test_tr2rpy
     assertExceptionThrown(@()tr2rpy(1),'MATLAB:badsubscript');
     
 %    transl                     - set or extract the translational component of HT
-function Test_transl
+function transl_test
     %Unit test for transl with variables (0.1, 0.2, 0.3)
     assertElementsAlmostEqual(transl(0.1, 0.2, 0.3),...
         [1.0000         0         0    0.1000
@@ -324,7 +420,7 @@ function Test_transl
     
      
 %    trnorm                     - normalize HT
-function Test_trnorm
+function trnorm_test
     %Unit test for oa2r with variables tr matrix generated with oa2tr
     assertElementsAlmostEqual(trnorm(rpy2tr( [.1, .2, .3])),...
         [0.9363   -0.2896    0.1987         0
@@ -336,7 +432,7 @@ function Test_trnorm
           
      
 %    trotx                      - HT for rotation about X-axis
-function Test_trotx
+function trotx_test
     %Unit test for trotz
     assertElementsAlmostEqual(trotx(0.1),...
         [1.0000 0 0 0
@@ -353,7 +449,7 @@ function Test_trotx
      
     
 %    troty                      - HT for rotation about Y-axis
-function Test_troty
+function troty_test
     %Unit test for troty
     assertElementsAlmostEqual(troty(0.1),...
         [0.9950 0 0.0998 0
@@ -369,7 +465,7 @@ function Test_troty
     assertExceptionThrown(@()troty([1 2 3]),'MATLAB:catenate:dimensionMismatch');
     
 %    trotz                      - HT for rotation about Z-axis
-function Test_trotz
+function trotz_test
     %Unit test for trotz
     assertElementsAlmostEqual(trotz(0.1),...
         [0.9950 -0.0998 0 0

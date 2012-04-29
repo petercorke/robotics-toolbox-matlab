@@ -41,10 +41,10 @@ function r = trnorm(t)
     end
 
     if all(size(t) == [4 4])
-	n = cross(t(1:3,2), t(1:3,3));	% N = O x A
-    o = cross(t(1:3,3), n);         % O = A x N
-	r = [unit(n) unit(t(1:3,2)) unit(t(1:3,3)) t(1:3,4); 0 0 0 1];
+        n = cross(t(1:3,2), t(1:3,3));  % N = O x A
+        o = cross(t(1:3,3), n);         % O = A x N
+        r = [unit(n) unit(t(1:3,2)) unit(t(1:3,3)) t(1:3,4); 0 0 0 1];
     elseif all(size(t) == [3 3])
             r = t;
-        end
+    end
 

@@ -45,9 +45,9 @@ function euler = tr2eul(m, varargin)
 
 	s = size(m);
 	if length(s) > 2
-		euler = [];
+        euler = zeros(s(3), 3);
 		for i=1:s(3)
-			euler = [euler; tr2eul(m(:,:,i))];
+			euler(i,:) = tr2eul(m(:,:,i));
 		end
 
         if opt.deg
@@ -61,7 +61,7 @@ function euler = tr2eul(m, varargin)
 	% Method as per Paul, p 69.
 	% phi = atan2(ay, ax)
 	% Only positive phi is returned.
-	if abs(m(1,3)) < eps & abs(m(2,3)) < eps
+	if abs(m(1,3)) < eps && abs(m(2,3)) < eps
 		% singularity
 		euler(1) = 0;
 		sp = 0;

@@ -36,7 +36,7 @@
 
 function d = distancexform(world, goal, metric, show)
     
-    if ~exist('imorph')
+    if exist('imorph', 'file') ~= 3
         error('Machine Vision Toolbox is required by this function');
     end
 
@@ -84,8 +84,7 @@ function d = distancexform(world, goal, metric, show)
         world = imorph(world, m, 'plusmin');
         count = count+1;
         if show
-            cmap = gray(256);
-            cmap = [1 0 0; cmap];
+            cmap = [1 0 0; gray(256)];
             colormap(cmap)
             image(world+1, 'CDataMapping', 'direct');
             set(gca, 'Ydir', 'normal');
@@ -94,7 +93,8 @@ function d = distancexform(world, goal, metric, show)
             pause(show);
         end
 
-        if length(find(world(:)==Inf)) == 0
+        if ~any(isinf(world(:)))
+            % stop if no Inf's left in the map
             break;
         end
     end

@@ -43,7 +43,7 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
 % if demos are not already in the path, add them to the path
-if exist('rttrdemo') == 0
+if exist('rttrdemo', 'file') == 2
     tbpath = fileparts(which('tr2eul'));
     demopath = fullfile(tbpath, 'demos');
     addpath( demopath );

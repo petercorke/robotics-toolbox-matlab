@@ -50,6 +50,7 @@ function T = r2t(R)
         T = [R Z; B];
     else
         %  matrix sequence case
+        T = zeros(4,4,d(3));
         for i=1:d(3)
             T(:,:,i) = [R(:,:,i) Z; B];
         end

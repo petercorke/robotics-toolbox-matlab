@@ -62,6 +62,7 @@ function R = eul2r(phi, varargin)
     if numrows(phi) == 1
         R = rotz(phi) * roty(theta) * rotz(psi);
     else
+        R = zeros(3,3,numrows(phi));
         for i=1:numrows(phi)
             R(:,:,i) = rotz(phi(i)) * roty(theta(i)) * rotz(psi(i));
         end

@@ -41,5 +41,4 @@ mdl_puma560;
 p560.links(1).d = 30 * 0.0254;
 
 % compose the two robots
-p8 = SerialLink( [platform, p560], 'name', 'P8')
-
+p8 = SerialLink( [platform, p560], 'name', 'P8');

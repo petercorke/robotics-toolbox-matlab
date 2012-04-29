@@ -42,22 +42,22 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
 
     t0 = t;
     if isscalar(t)
-		t = [0:t-1]';
+        t = (0:t-1)';
     else
         t = t(:);
     end
 
-	tf = max(t(:));
+    tf = max(t(:));
 
-	if nargin < 4
+    if nargin < 4
         % if velocity not specified, compute it
-		V = (q1-q0)/tf * 1.5;
-	else
-		if V < (q1-q0)/tf
-			error('V too small');
-		elseif V > 2*(q1-q0)/tf
-			error('V too big');
-		end
+        V = (q1-q0)/tf * 1.5;
+    else
+        if V < (q1-q0)/tf
+            error('V too small');
+        elseif V > 2*(q1-q0)/tf
+            error('V too big');
+        end
     end
 
     if q0 == q1
@@ -67,33 +67,33 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
         return
     end
 
-	tb = (q0 - q1 + V*tf)./V;
-	a = V./tb;
+    tb = (q0 - q1 + V*tf)/V;
+    a = V/tb;
 
     p = zeros(length(t), 1);
     pd = p;
     pdd = p;
     
-	for i = 1:length(t)
-		tt = t(i);
+    for i = 1:length(t)
+        tt = t(i);
 
-		if tt <= tb
+        if tt <= tb
             % initial blend
-			p(i) = q0 + a/2*tt^2;
+            p(i) = q0 + a/2*tt^2;
             pd(i) = a*tt;
             pdd(i) = a;
-		elseif tt <= (tf-tb)
+        elseif tt <= (tf-tb)
             % linear motion
-			p(i) = (q1+q0-V*tf)/2 + V*tt;
+            p(i) = (q1+q0-V*tf)/2 + V*tt;
             pd(i) = V;
             pdd(i) = 0;
         else
             % final blend
-			p(i) = q1 - a/2*tf^2 + a*tf*tt - a/2*tt^2;
+            p(i) = q1 - a/2*tf^2 + a*tf*tt - a/2*tt^2;
             pd(i) = a*tf - a*tt;
             pdd(i) = -a;
-		end
-	end
+        end
+    end
 
     switch nargout
         case 0
@@ -115,7 +115,7 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
             k = (t>=tb) & (t<= (tf-tb));
             plot(xt(k), p(k), 'b-o');
             k = t>= (tf-tb);
-            h = plot(xt(k), p(k), 'g-o');
+            plot(xt(k), p(k), 'g-o');
             grid; ylabel('s');
             hold off
 

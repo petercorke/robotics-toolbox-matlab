@@ -1,12 +1,12 @@
 %SerialLink.itorque Inertia torque
 %
-% TAUI = R.itorque(Q, QDD) is the inertia force/torque N-vector at the specified
-% joint configuration Q and acceleration QDD, that is, TAUI = INERTIA(Q)*QDD.
+% TAUI = R.itorque(Q, QDD) is the inertia force/torque vector (1xN) at the 
+% specified joint configuration Q (1xN) and acceleration QDD (1xN), that is,
+% TAUI = INERTIA(Q)*QDD.
 %
-% If Q and QDD are row vectors, the result is a row vector of joint torques.
-% If Q and QDD are matrices, each row is interpretted as a joint state 
-% vector, and the result is a matrix each row being the corresponding joint 
-% torques.
+% If Q and QDD are matrices (KxN), each row is interpretted as a joint state 
+% vector, and the result is a matrix (KxN) where each row is the corresponding
+% joint torques.
 % 
 % Note::
 % - If the robot model contains non-zero motor inertia then this will 

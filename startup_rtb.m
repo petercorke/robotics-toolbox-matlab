@@ -8,3 +8,13 @@ tbpath = fileparts(which('Link'));
 addpath( fullfile(tbpath, 'demos') );
 addpath( fullfile(tbpath, 'examples') );
 javaaddpath( fullfile(tbpath, 'DH.jar') );
+%currentversion = urlread('http://www.petercorke.com/RTB/currentversion.php');
+currentversion = '0';
+currentversion = str2double(currentversion);
+%{
+if release ~= currentversion
+    fprintf('** Release %.1f now available\n\n', ...
+        currentversion);
+end
+%}
+clear release currentversion

@@ -17,6 +17,7 @@ t2r         : HT to RM
 tr2angvec   : HT/RM to angle/vector form
 tr2eul      : HT/RM to Euler angles 
 tr2rpy      : HT/RM to roll/pitch/yaw angles
+tr2rt      : HT to (R,t)
 tranimate  : animate a coordinate frame
 transl      : set or extract the translational component of HT
 trnorm      : normalize HT 
@@ -85,6 +86,7 @@ mdl_robot       : construct a robot object
 mdl_stanford    : Stanford arm data (DH, kine, dyn)
 mdl_S4ABB2p8    : ABB S4 2.8 (DH, kine)
 mdl_twolink     : simple 2-link example (DH, kine)
+mdl_quadcopter : simple quadcopter model
 
 h2.Kinematic : Serial-link manipulator kinematic functions
 DHFactor        : transform sequence to DH description
@@ -93,14 +95,14 @@ SerialLink.ikine       : inverse kinematics (numeric)
 SerialLink.ikine6s    : inverse kinematics for 6-axis arm with sph.wrist
 SerialLink.jacob0      : Jacobian in base coordinate frame
 SerialLink.jacobn      : Jacobian in end-effector coordinate frame
-SerialLinkmaniplty    : compute manipulability 
+SerialLink.maniplty    : compute manipulability 
 
 h2.Dynamics : Serial-link manipulator dynamic functions
 SerialLink.accel       : forward dynamics
 SerialLink.cinertia    : Cartesian manipulator inertia matrix 
 SerialLink.coriolis    : centripetal/coriolis torque 
 SerialLink.fdyn        : forward dynamics
-ftrans      : transform a force/moment 
+wtrans      : transform a force/moment 
 SerialLink.gravload    : gravity loading 
 SerialLink.inertia     : manipulator inertia matrix 
 SerialLink.itorque     : inertia torque 
@@ -114,6 +116,7 @@ Vehicle : construct a mobile robot object
 sl_bicycle : Simulink "bicycle model" of non-holonomic wheeled vehicle
 Navigation : Navigation superclass
 Sensor : robot sensor superclass
+plot_vehicle    : plot vehicle
 
 h2.Localization : Mobile robot localization algorithms
 EKF : extended Kalman filter object
@@ -154,12 +157,13 @@ isrot       : true if argument is a 3x3 matrix
 isvec       : true if argument is a 3-vector
 numcols     : number of columns in matrix
 numrows     : number of rows in matrix
-Pgraph : general purpose graph class
+PGraph : general purpose graph class
 Polygon : general purpose polygon class
 randinit    : initialize random number generator
 ramp        : create linear ramp
 unit        : unitize a vector
 tb_optparse : toolbox argument parser
+distancexform: compute distance transform
 
 h1.Demonstrations
 rtdemo      : Serial-link manipulator demonstration

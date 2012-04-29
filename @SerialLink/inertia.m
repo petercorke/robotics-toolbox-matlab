@@ -1,17 +1,20 @@
 %SerialLink.INERTIA Manipulator inertia matrix
 %
-% I = R.inertia(Q) is the NxN symmetric joint inertia matrix which relates 
+% I = R.inertia(Q) is the symmetric joint inertia matrix (NxN) which relates 
 % joint torque to joint acceleration for the robot at joint configuration Q.
-% The diagonal elements I(j,j) are the inertia seen by joint actuator j.
-% The off-diagonal elements are coupling inertias that relate acceleration
-% on joint i to force/torque on joint j.
 %
-% If Q is a matrix (DxN), each row is interpretted as a joint state 
-% vector, and the result (NxNxD) is a 3d-matrix where each plane corresponds
+% If Q is a matrix (KxN), each row is interpretted as a joint state 
+% vector, and the result is a 3d-matrix (NxNxK) where each plane corresponds
 % to the inertia for the corresponding row of Q.
 %
+% Notes::
+% - The diagonal elements I(J,J) are the inertia seen by joint actuator J.
+% - The off-diagonal elements I(J,K) are coupling inertias that relate 
+%   acceleration on joint J to force/torque on joint K.
+% - The diagonal terms include the motor inertia reflected through the gear
+%   ratio.
+%
 % See also SerialLink.RNE, SerialLink.CINERTIA, SerialLink.ITORQUE.
-
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke

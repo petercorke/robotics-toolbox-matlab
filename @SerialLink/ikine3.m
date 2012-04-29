@@ -5,7 +5,7 @@
 % is a analytic solution for a 3-axis robot (such as the first three joints
 % of a robot like the Puma 560).
 %
-% Q = R.IKINE3(T, CONFIG) as above but specifies the configuration of the arm in
+% Q = R.ikine3(T, CONFIG) as above but specifies the configuration of the arm in
 % the form of a string containing one or more of the configuration codes:
 %
 % 'l'   arm to the left (default)
@@ -17,6 +17,8 @@
 % - The same as IKINE6S without the wrist.
 % - The inverse kinematic solution is generally not unique, and 
 %   depends on the configuration string.
+% - Joint offsets, if defined, are added to the inverse kinematics to 
+%   generate Q.
 %
 % Reference::
 %
@@ -33,9 +35,9 @@
 %
 % See also SerialLink.FKINE, SerialLink.IKINE.
 
-function theta = ikine6s(robot, T, varargin)
+function theta = ikine3(robot, T, varargin)
 
-    if ~strncmp(robot.config, "RRR", 3)
+    if ~strncmp(robot.config, 'RRR', 3)
         error('Solution only applicable for 6DOF all-revolute manipulator');
     end
 
@@ -44,21 +46,16 @@ function theta = ikine6s(robot, T, varargin)
     end
 
     if ndims(T) == 3
-        theta = [];
+        theta = zeros(size(T,3),robot.n);
         for k=1:size(T,3)
-            th = ikine6s(robot, T(:,:,k), varargin{:});
-            theta = [theta; th];
+            theta(k,:) = ikine3(robot, T(:,:,k), varargin{:});
         end
-
         return;
     end
     L = robot.links;
-    a1 = L(1).a;
     a2 = L(2).a;
     a3 = L(3).a;
 
-    d1 = L(1).d;
-    d2 = L(2).d;
     d3 = L(3).d;
 
     if ~ishomog(T)
@@ -66,7 +63,7 @@ function theta = ikine6s(robot, T, varargin)
     end
 
     % undo base transformation
-    T = inv(robot.base) * T;
+    T = robot.base \ T;
 
     % The following parameters are extracted from the Homogeneous 
     % Transformation as defined in equation 1, p. 34
@@ -88,20 +85,20 @@ function theta = ikine6s(robot, T, varargin)
 
     n1 = -1;    % L
     n2 = -1;    % U
-    if ~isempty(findstr(configuration, 'l'))
+    if ~isempty(strfind(configuration, 'l'))
         n1 = -1;
     end
-    if ~isempty(findstr(configuration, 'r'))
+    if ~isempty(strfind(configuration, 'r'))
         n1 = 1;
     end
-    if ~isempty(findstr(configuration, 'u'))
+    if ~isempty(strfind(configuration, 'u'))
         if n1 == 1
             n2 = 1;
         else
             n2 = -1;
         end
     end
-    if ~isempty(findstr(configuration, 'd'))
+    if ~isempty(strfind(configuration, 'd'))
         if n1 == 1
             n2 = -1;
         else
@@ -138,7 +135,7 @@ function theta = ikine6s(robot, T, varargin)
     r=sqrt(V114^2 + Pz^2);
     Psi = acos((a2^2-d4^2-a3^2+V114^2+Pz^2)/(2.0*a2*r));
     if ~isreal(Psi)
-        warning('point not reachable');
+        warning('RTB:ikine3:notreachable', 'point not reachable');
         theta = [NaN NaN NaN NaN NaN NaN];
         return
     end
@@ -155,6 +152,6 @@ function theta = ikine6s(robot, T, varargin)
     theta(3) = atan2(a3,d4) - atan2(num, den);
 
     % remove the link offset angles
-    for i=1:6
+    for i=1:robot.n   %#ok<*AGROW>
         theta(i) = theta(i) - L(i).offset;
     end

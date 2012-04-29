@@ -37,4 +37,4 @@ function S = skew(v)
         S = [0 -v; v 0];
     else
         error('argument must be a 1- or 3-vector');
-	end
+    end

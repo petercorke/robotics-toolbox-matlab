@@ -46,6 +46,7 @@ function T = rt2tr(R, t)
     if size(R,3) > 1
         Z = zeros(numcols(R),1);
         B = [Z' 1];
+        T = zeros(4,4,size(R,3));
         for i=1:size(R,3)
             T(:,:,i) = [R(:,:,i) t(:,i); B];
         end

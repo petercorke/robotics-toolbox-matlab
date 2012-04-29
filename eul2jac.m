@@ -29,9 +29,10 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function J = euljac(phi, theta, psi)
+function J = eul2jac(phi, theta, psi)
 
     if length(phi) == 3
+        % eul2jac([phi theta psi])
         theta = phi(2);
         psi = phi(3);
         phi = phi(1);

@@ -44,7 +44,7 @@
 
 function out = trprint(T, varargin)
     
-    if isstr(T)
+    if ischar(T)
         % command form: trprint T
         trprint( evalin('base', T) );
         return;
@@ -71,7 +71,7 @@ function out = trprint(T, varargin)
         
         for i=1:size(T,3)
             % for each 4x4 transform in a possible 3D matrix
-            s = strvcat(s, tr2s(T(:,:,i), opt) );
+            s = char(s, tr2s(T(:,:,i), opt) );
         end
     end
 

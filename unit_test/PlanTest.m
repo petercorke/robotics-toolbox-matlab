@@ -1,7 +1,7 @@
-function test_suite = TestPlanningClasses
+function suite = TestPlanningClasses_test
   initTestSuite;
 
-function test_bug2
+function bug2_test
 
     goal = [50,30];
     start = [20, 10];
@@ -15,7 +15,7 @@ function test_bug2
     p = b.path(start);
     b.plot(p);
 
-function test_dstar
+function dstar_test
 
     % load the world
     load map1
@@ -49,7 +49,7 @@ function test_dstar
     p = ds.path(start);
     ds.plot(p);
 
-function test_dxform
+function dxform_test
     goal = [50,30];
     start = [20, 10];
     load map1
@@ -71,7 +71,7 @@ function test_dxform
     dx.plot3d();
     dx.plot3d(p);
 
-function test_prm
+function prm_test
     load map1
     randinit
     prm = PRM(map);
@@ -86,7 +86,7 @@ function test_prm
     p = prm.path(start, goal);
     prm.plot(p);
 
-function test_rrt
+function rrt_test
 
     map = zeros(100,100);
     goal = [0,0]; 

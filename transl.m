@@ -38,8 +38,8 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
 function T = transl(x, y, z)
-	if nargin == 1
-		if ishomog(x)
+    if nargin == 1
+        if ishomog(x)
             if ndims(x) == 3
                 % transl(T)  -> P, trajectory case
                 T = squeeze(x(1:3,4,:))';
@@ -51,26 +51,26 @@ function T = transl(x, y, z)
             T = x(1:2,3);
         elseif length(x) == 2
             % transl(P) -> T
-			t = x(:);
-			T =    [eye(2)			t(:);
-				0	0	1];
+            t = x(:);
+            T =    [eye(2)          t(:);
+                0   0   1];
         elseif length(x) == 3
             % transl(P) -> T
-			t = x(:);
-			T =    [eye(3)			t(:);
-				0	0	0	1];
+            t = x(:);
+            T =    [eye(3)          t(:);
+                0   0   0   1];
         else
             % transl(P) -> T, trajectory case
             n = numrows(x);
             T = repmat(eye(4,4), [1 1 n]);
             T(1:3,4,:) = x';
         end    
-	elseif nargin == 2
+    elseif nargin == 2
         % transl(x,y) -> T
-		t = [x; y];
-		T =    rt2tr( eye(2), t);        
-	elseif nargin == 3
+        t = [x; y];
+        T =    rt2tr( eye(2), t);        
+    elseif nargin == 3
         % transl(x,y,z) -> T
-		t = [x; y; z];
-		T =    rt2tr( eye(3), t);
-	end
+        t = [x; y; z];
+        T =    rt2tr( eye(3), t);
+    end

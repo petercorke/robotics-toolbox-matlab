@@ -9,8 +9,6 @@
 % schemes. For example to vary parameters in the range +/- 10 percent is:
 %    r2 = p560.perturb(0.1);
 
-
-
 % Copyright (C) 1993-2011, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
@@ -36,14 +34,15 @@ function  r2 = perturb(r, p)
 		p = 0.1;	% 10 percent disturb by default
 	end
 
+    r2 = SerialLink(r);
 
+    links = r2.links;
 	for i=1:r.n
-		l2{i} = r.link{i};
 		s = (2*rand-1)*p + 1;
-		l2{i}.m = l2{i}.m * s;
+		links(i).m = links(i).m * s;
+
 		s = (2*rand-1)*p + 1;
-		l2{i}.I = l2{i}.I * s;
+		links(i).I = links(i).I * s;
 	end
 
-	r2 = robot(r, l2);		% clone the robot
 	r2.name = ['P/' r.name];

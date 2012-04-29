@@ -344,6 +344,9 @@ classdef Quaternion
         %
         % Notes::
         % - Overloaded operator '=='.
+        % - Note that for unit Quaternions Q and -Q are the equivalent
+        %   rotation, so non-equality does not mean rotations are not
+        %   equivalent.
         % - If Q1 is a vector of quaternions, each element is compared to 
         %   Q2 and the result is a logical array of the same length as Q1.
         % - If Q2 is a vector of quaternions, each element is compared to 
@@ -381,6 +384,9 @@ classdef Quaternion
         %
         % Notes::
         % - Overloaded operator '~='
+        % - Note that for unit Quaternions Q and -Q are the equivalent
+        %   rotation, so non-equality does not mean rotations are not
+        %   equivalent.
         % - If Q1 is a vector of quaternions, each element is compared to 
         %   Q2 and the result is a logical array of the same length as Q1.
         % - If Q2 is a vector of quaternions, each element is compared to 

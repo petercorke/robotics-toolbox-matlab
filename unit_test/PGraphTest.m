@@ -1,7 +1,7 @@
-function test_suite = TestRobotToolboxQuaternion
+function test_suite = RobotToolboxQuaternion_test
   initTestSuite;
 
-function TestPGraph2
+function PGraph2_test
  
     randinit
     g = PGraph(2);
@@ -71,7 +71,7 @@ function TestPGraph2
     g.setcost(1, 99);
     assertEqual( g.cost(1), 99);
 
-function TestPGraph3
+function PGraph3_test
  
     randinit
     g = PGraph(3);

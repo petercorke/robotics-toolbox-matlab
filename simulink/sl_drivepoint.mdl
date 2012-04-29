@@ -17,7 +17,7 @@ Model {
       Name		      "theta "
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.16"
+    ComputedModelVersion    "1.17"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -37,9 +37,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Feb 22 20:06:29 2012"
-  RTWModifiedTimeStamp	  251841984
-  ModelVersionFormat	  "1.%<AutoIncrement:16>"
+  LastModifiedDate	  "Mon Apr 23 21:03:57 2012"
+  RTWModifiedTimeStamp	  257115832
+  ModelVersionFormat	  "1.%<AutoIncrement:17>"
   ConfigurationManager	  "customverctrl"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -264,7 +264,7 @@ Model {
 	  MaxConsecutiveZCsMsg	  "error"
 	  MaskedZcDiagnostic	  "warning"
 	  IgnoredZcDiagnostic	  "warning"
-	  SolverPrmCheckMsg	  "warning"
+	  SolverPrmCheckMsg	  "none"
 	  InheritedTsInSrcMsg	  "warning"
 	  DiscreteInheritContinuousMsg "warning"
 	  MultiTaskDSMMsg	  "error"
@@ -587,8 +587,8 @@ Model {
 	PropName		"Components"
       }
       Name		      "Configuration"
-      CurrentDlgPage	      "Data Import//Export"
-      ConfigPrmDlgPosition     [ 280, 126, 1160, 756 ] 
+      CurrentDlgPage	      "Diagnostics"
+      ConfigPrmDlgPosition     [ 234, 146, 1114, 776 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -722,7 +722,7 @@ Model {
   }
   System {
     Name		    "sl_drivepoint"
-    Location		    [1640, 232, 2469, 534]
+    Location		    [1678, 608, 2507, 910]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -744,7 +744,7 @@ Model {
       Ports		      [2, 3]
       Position		      [545, 133, 605, 207]
       DropShadow	      on
-      LibraryVersion	      "1.31"
+      LibraryVersion	      "1.39"
       SourceBlock	      "roblocks/Dynamics/Bicycle"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -848,9 +848,9 @@ Model {
       SID		      "22"
       Ports		      [2, 1]
       Position		      [370, 162, 390, 213]
-      LibraryVersion	      "1.31"
+      LibraryVersion	      "1.39"
       SourceBlock	      "roblocks/Trajectory/angdiff"
-      SourceType	      "SubSystem"
+      SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off

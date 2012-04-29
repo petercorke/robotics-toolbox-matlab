@@ -1,3 +1,15 @@
+%SerialLink.animate   Update a robot animation
+%
+% R.animate(q) updates an existing animation for the robot R.  This will have
+% been created using R.plot().
+%
+% Updates graphical instances of this robot in all figures.
+%
+% Notes::
+% - Not a general purpose method, used for Simulink robot animation.
+%
+% See also SerialLink.plot.
+
 function animate(robot, q, handles)
 
     if nargin < 3
@@ -9,13 +21,6 @@ function animate(robot, q, handles)
         animate2( h, q);
     end
 
-
-%ANIMATE   move an existing graphical robot
-%
-%   animate(robot, q)
-%
-% Move the graphical robot to the pose specified by the joint coordinates q.
-% Graphics are defined by the handle structure robot.handle.
 
 function animate2(h, q)
 

@@ -1,76 +1,80 @@
 ROOT = ~/lib/matlab/rvctools
 
-release:  install doco zipit
+release:  build doco zipit
 
-install: 
+build: 
 	# clean up
-	-\rm -rf simulink common tmpdoc robot robot.zip robot.tgz
+	-\rm -rf rvctools tmpdoc robot.zip robot.tgz
 
 	# make a temp directory to hold the files
-	mkdir robot simulink common
+	mkdir -p rvctools/robot rvctools/simulink rvctools/common
 
 	# create the Manifest
-	buildcontent $<
+	buildcontent -r `cat ../RELEASE` --rtb $<
 
 	# copy all m-files and classes listed in the Manifest
-	mancp Manifest .. robot
-	mancp Manifest $(ROOT)/common common
+	mancp --verbose Manifest .. rvctools/robot
+	mancp --verbose Manifest $(ROOT)/common rvctools/common
 
 	# copy Java source code and jar file
-	cp -r ../*.java robot
+	cp -r ../*.java rvctools/robot
 	(cd ..; make)
-	cp ../*.jar robot
+	cp ../*.jar rvctools/robot
 
 	# copy simulink models
-	cp -r ~/lib/matlab/rvctools/simulink robot
-	cp -r ../examples robot
-	cp -r ../mex robot
-	cp -r ../demos robot
+	cp -r ../simulink/*.{mdl,m} rvctools/simulink
+	cp -r ../examples rvctools/robot
+	cp -r ../demos rvctools/robot
+	cp -r ../mex rvctools/robot
+	cp -r ../Octave rvctools/robot
 
 	# copy misc documentation files
-	cp ../README robot
-	cp ../RELEASE robot
-	cp ../CONTRIB robot
-	cp ../CITATION robot
-	cp ../LGPL-LICENCE.txt robot
-	cp ../startup.m robot
+	cp ../RELEASE rvctools/robot
+	cp ../CHANGES rvctools/robot
+	cp ../README rvctools/robot
+	cp ../CONTRIB rvctools/robot
+	cp ../CITATION rvctools/robot
+	cp ../LGPL-LICENCE.txt rvctools/robot
+	cp ../startup_rtb.m rvctools/robot
 
-	cp -r $(ROOT)/simulink .
-	cp $(ROOT)/common/*.m common
+	cp $(ROOT)/common/*.m rvctools/common
+	cp $(ROOT)/startup_rvc.m rvctools
 
 
 	# remove all SVN files
 	\rm -rf `find . -name .svn`
 
 doco:
-	-\rm -rf info tmpdoc
+	-\rm -rf tmpdoc
 	-mkdir tmpdoc
-	-mkdir -p robot/info/html
-	-cp -r robot/* tmpdoc
-	-cp common/* tmpdoc
+	-mkdir -p rvctools/robot/info/html
+	-cp -r rvctools/robot/* tmpdoc
+	-cp rvctools/common/* tmpdoc
+
+	-rm tmpdoc/HiddenFigure.m
 
 	# build the PDF manual
 	(cd tmpdoc; help3.py -l --include @* *.m; mv all.tex ../../doc)
 	(cd ../doc; make)
-	mv ../doc/robot.pdf robot
+	mv ../doc/robot.pdf rvctools/robot
 
 	# build the XML/info stuff for matlab help browser system
-	-mkdir -p robot/info/html
-	cp -r ../info/robot_product_page.html robot/info
-	(cd tmpdoc; help3.py --rtb -m @* *.m; mv *.html ../robot/info/html)
-	cp contents.html robot/info
-	cp contents_alpha.html robot/info
-	cp contents_toc.html robot/info
+	-mkdir -p rvctools/robot/info/html
+	cp -r ../info/robot_product_page.html rvctools/robot/info
+	(cd tmpdoc; help3.py --rtb -m @* *.m; mv *.html ../rvctools/robot/info/html)
+	cp contents.html rvctools/robot/info
+	cp contents_alpha.html rvctools/robot/info
+	cp contents_toc.html rvctools/robot/info
 
-	cp ../info.xml robot
-	cp ../info/helptoc.xml robot/info
-	cp ../info/*.html robot/info
-	cp -r ../info/icons robot/info
-	cp -r ../doc/rtb-montage-notext.png robot/info
+	cp ../info.xml rvctools/robot
+	cp ../info/helptoc.xml rvctools/robot/info
+	cp ../info/*.html rvctools/robot/info
+	cp -r ../info/icons rvctools/robot/info
+	cp -r ../doc/rtb-montage-notext.png rvctools/robot/info
 
 	# copy over the autogen files
-	cp helpfuncbycat.xml robot/info
-	cp contents_toc.html robot/info
+	cp helpfuncbycat.xml rvctools/robot/info
+	cp contents_toc.html rvctools/robot/info
 
 	# build the web/HTML doco
 	-mkdir html
@@ -79,23 +83,30 @@ doco:
 	cp index_alpha.html html
 
 	# classical matlab toolbox index
-	cp Contents.m robot
+	cp Contents.m rvctools/robot
 
 
 zipit:
 	# build the distrib archives
-	zip -rq robot.zip ./{robot,simulink,common}
-	tar zcf robot.tgz ./{robot,simulink,common}
+	zip -rq robot-`cat ../RELEASE`.zip ./rvctools
+	#tar zcf robot.tgz ./rvctools
+
+test: zipit
+	(cd $(ROOT); unzip $(ROOT)/robot/distrib/robot.zip)
 
 dropbox:
 	cp -r ./{robot,simulink,common} $(HOME)/Dropbox
 
-web:
-	cp -r html $(HOME)/doc/book/website/toolboxes/html/rtb
+install:
+	scp -C robot-*.zip geek:www/RTB/r9
+	#scp -C robot.zip robot.tgz geek:www/RTB/r9
+	scp -Cr html geek:www/RTB/r9
+	scp -C rvctools/robot/robot.pdf geek:www/RTB/r9
+	ssh geek chmod -R a+rX www/RTB/r9
 
-	
 clean:
 	@-\rm -rf robot.zip robot.tgz
 	@-\rm -rf simulink common tmpdoc robot robot.zip robot.tgz
 	@-\rm -rf info tmpdoc html
 	@-\rm *.m *.xml *.html *.png Manifest
+	-\rm -rf rvctools tmpdoc robot.zip robot.tgz

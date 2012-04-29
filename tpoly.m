@@ -43,7 +43,7 @@ function [s,sd,sdd] = tpoly(q0, qf, t, qd0, qdf)
 
     t0 = t;
     if isscalar(t)
-		t = [0:t-1]';
+		t = (0:t-1)';
     else
         t = t(:);
     end
@@ -68,8 +68,8 @@ function [s,sd,sdd] = tpoly(q0, qf, t, qd0, qdf)
     coeffs = (X \ [q0 qf qd0 qdf 0 0]')';
 
     % coefficients of derivatives 
-    coeffs_d = [coeffs(1:5)] .* [5:-1:1];
-    coeffs_dd = [coeffs_d(1:4)] .* [4:-1:1];
+    coeffs_d = coeffs(1:5) .* (5:-1:1);
+    coeffs_dd = coeffs_d(1:4) .* (4:-1:1);
 
     % evaluate the polynomials
     p = polyval(coeffs, t);

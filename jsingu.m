@@ -27,7 +27,7 @@ function jsingu(J)
     % convert to row-echelon form
     [R, jb] = rref(J);
 
-    depcols = setdiff( [1:numcols(J)], jb);
+    depcols = setdiff( 1:numcols(J), jb);
 
     fprintf('%d linearly dependent joints:\n', length(depcols));
     for d=depcols

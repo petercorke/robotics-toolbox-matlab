@@ -1,10 +1,10 @@
 Model {
-  Name			  "ploop_test"
-  Version		  7.9
+  Name			  "sl_ctorque2"
+  Version		  7.7
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
-    NumRootOutports	    3
+    NumRootOutports	    2
     Outport {
       BusObject		      ""
       BusOutputAsStruct	      "off"
@@ -13,22 +13,15 @@ Model {
     Outport {
       BusObject		      ""
       BusOutputAsStruct	      "off"
-      Name		      "q_err"
-    }
-    Outport {
-      BusObject		      ""
-      BusOutputAsStruct	      "off"
-      Name		      "q*"
+      Name		      "err"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.10"
-    NumModelReferences	    1
-    ModelReference {
-      ModelRefBlockPath	      "ploop_test/ploop/vloop|vloop"
-    }
+    ComputedModelVersion    "1.37"
+    NumModelReferences	    0
     NumTestPointedSignals   0
   }
   SavedCharacterEncoding  "ISO-8859-1"
+  PreLoadFcn		  "puma560\np560 = nofriction(p560);"
   SaveDefaultBlockParams  on
   ScopeRefreshTime	  0.035000
   OverrideScopeRefreshTime on
@@ -37,25 +30,23 @@ Model {
   DataTypeOverrideAppliesTo "AllNumericTypes"
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
-  FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
-  Created		  "Tue Jul  7 09:08:01 2009"
+  Created		  "Tue Jan  8 12:29:23 2002"
   Creator		  "pic"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun Apr 29 16:03:26 2012"
-  RTWModifiedTimeStamp	  257616203
-  ModelVersionFormat	  "1.%<AutoIncrement:10>"
-  ConfigurationManager	  "customverctrl"
+  LastModifiedDate	  "Sat Apr 28 13:32:14 2012"
+  RTWModifiedTimeStamp	  257519084
+  ModelVersionFormat	  "1.%<AutoIncrement:37>"
+  ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
-  LibraryLinkDisplay	  "all"
+  LibraryLinkDisplay	  "user"
   WideLines		  on
-  ShowLineDimensions	  off
+  ShowLineDimensions	  on
   ShowPortDataTypes	  off
-  ShowDesignRanges	  off
   ShowLoopsOnError	  on
   IgnoreBidirectionalLines off
   ShowStorageClass	  off
@@ -66,7 +57,7 @@ Model {
   ExecutionContextIcon	  off
   ShowLinearizationAnnotations on
   BlockNameDataTip	  off
-  BlockParametersDataTip  off
+  BlockParametersDataTip  on
   BlockDescriptionStringDataTip	off
   ToolBar		  on
   StatusBar		  on
@@ -97,7 +88,7 @@ Model {
   ExtModeBatchMode	  off
   ExtModeEnableFloating	  on
   ExtModeTrigType	  "manual"
-  ExtModeTrigMode	  "normal"
+  ExtModeTrigMode	  "oneshot"
   ExtModeTrigPort	  "1"
   ExtModeTrigElement	  "any"
   ExtModeTrigDuration	  1000
@@ -111,7 +102,7 @@ Model {
   ExtModeIncDirWhenArm	  off
   ExtModeAddSuffixToVar	  off
   ExtModeWriteAllDataToWs off
-  ExtModeArmWhenConnect	  on
+  ExtModeArmWhenConnect	  off
   ExtModeSkipDownloadWhenConnect off
   ExtModeLogAll		  on
   ExtModeAutoUpdateStatusClock on
@@ -123,17 +114,17 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.12.0"
+      Version		      "1.11.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.12.0"
+	  Version		  "1.11.0"
 	  StartTime		  "0.0"
-	  StopTime		  "1"
+	  StopTime		  "10.0"
 	  AbsTol		  "auto"
-	  FixedStep		  "auto"
+	  FixedStep		  "0.01"
 	  InitialStep		  "auto"
 	  MaxNumMinSteps	  "-1"
 	  MaxOrder		  5
@@ -147,10 +138,9 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
-	  EnableConcurrentExecution off
 	  ConcurrentTasks	  off
-	  Solver		  "ode15s"
-	  SolverName		  "ode15s"
+	  Solver		  "ode45"
+	  SolverName		  "ode45"
 	  SolverJacobianMethodControl "auto"
 	  ShapePreserveControl	  "DisableAll"
 	  ZeroCrossControl	  "UseLocalSettings"
@@ -164,7 +154,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.12.0"
+	  Version		  "1.11.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -183,37 +173,25 @@ Model {
 	  DSMLogging		  on
 	  InspectSignalLogs	  off
 	  SaveTime		  on
-	  ReturnWorkspaceOutputs  off
+	  ReturnWorkspaceOutputs  on
 	  StateSaveName		  "xout"
 	  TimeSaveName		  "tout"
 	  OutputSaveName	  "yout"
 	  SignalLoggingName	  "logsout"
 	  DSMLoggingName	  "dsmout"
-	  OutputOption		  "SpecifiedOutputTimes"
-	  OutputTimes		  "[0:0.001:1]'"
+	  OutputOption		  "RefineOutputTimes"
+	  OutputTimes		  "[]"
 	  ReturnWorkspaceOutputsName "out"
 	  Refine		  "1"
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.12.0"
-	  Array {
-	    Type		    "Cell"
-	    Dimension		    6
-	    Cell		    "PassReuseOutputArgsAs"
-	    Cell		    "PassReuseOutputArgsThreshold"
-	    Cell		    "ZeroExternalMemoryAtStartup"
-	    Cell		    "ZeroInternalMemoryAtStartup"
-	    Cell		    "OptimizeModelRefInitCode"
-	    Cell		    "NoFixptDivByZeroProtection"
-	    PropName		    "DisabledProps"
-	  }
-	  BlockReduction	  on
-	  BooleanDataType	  on
+	  Version		  "1.11.0"
+	  BlockReduction	  off
+	  BooleanDataType	  off
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
 	  UseIntDivNetSlope	  off
-	  UseFloatMulNetSlope	  off
 	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
@@ -236,7 +214,7 @@ Model {
 	  UseTempVars		  off
 	  ZeroExternalMemoryAtStartup on
 	  ZeroInternalMemoryAtStartup on
-	  InitFltsAndDblsToZero	  off
+	  InitFltsAndDblsToZero	  on
 	  NoFixptDivByZeroProtection off
 	  EfficientFloat2IntCast  off
 	  EfficientMapNaN2IntZero on
@@ -246,11 +224,11 @@ Model {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
-	  ParallelExecutionInRapidAccelerator on
+	  AccelParallelForEachSubsystem	on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.12.0"
+	  Version		  "1.11.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -262,24 +240,24 @@ Model {
 	  AlgebraicLoopMsg	  "warning"
 	  ArtificialAlgebraicLoopMsg "warning"
 	  SaveWithDisabledLinksMsg "warning"
-	  SaveWithParameterizedLinksMsg	"warning"
+	  SaveWithParameterizedLinksMsg	"none"
 	  CheckSSInitialOutputMsg on
 	  UnderspecifiedInitializationDetection	"Classic"
 	  MergeDetectMultiDrivingBlocksExec "none"
 	  CheckExecutionContextPreStartOutputMsg off
 	  CheckExecutionContextRuntimeOutputMsg	off
-	  SignalResolutionControl "UseLocalSettings"
+	  SignalResolutionControl "TryResolveAllWithWarning"
 	  BlockPriorityViolationMsg "warning"
 	  MinStepSizeMsg	  "warning"
 	  TimeAdjustmentMsg	  "none"
 	  MaxConsecutiveZCsMsg	  "error"
 	  MaskedZcDiagnostic	  "warning"
 	  IgnoredZcDiagnostic	  "warning"
-	  SolverPrmCheckMsg	  "warning"
+	  SolverPrmCheckMsg	  "none"
 	  InheritedTsInSrcMsg	  "warning"
 	  DiscreteInheritContinuousMsg "warning"
-	  MultiTaskDSMMsg	  "error"
-	  MultiTaskCondExecSysMsg "error"
+	  MultiTaskDSMMsg	  "warning"
+	  MultiTaskCondExecSysMsg "none"
 	  MultiTaskRateTransMsg	  "error"
 	  SingleTaskRateTransMsg  "none"
 	  TasksWithSamePriorityMsg "warning"
@@ -305,7 +283,6 @@ Model {
 	  UnconnectedOutputMsg	  "warning"
 	  UnconnectedLineMsg	  "warning"
 	  SFcnCompatibilityMsg	  "none"
-	  FrameProcessingCompatibilityMsg "warning"
 	  UniqueDataStoreMsg	  "none"
 	  BusObjectLabelMismatch  "warning"
 	  RootOutportRequireBusObject "warning"
@@ -324,7 +301,7 @@ Model {
 	  SimStateInterfaceChecksumMismatchMsg "warning"
 	  SimStateOlderReleaseMsg "error"
 	  InitInArrayFormatMsg	  "warning"
-	  StrictBusMsg		  "Warning"
+	  StrictBusMsg		  "None"
 	  BusNameAdapt		  "WarnAndRepair"
 	  NonBusSignalsTreatedAsBus "none"
 	  LoggingUnavailableSignals "error"
@@ -334,11 +311,10 @@ Model {
 	  SFInvalidInputDataAccessInChartInitDiag "warning"
 	  SFNoUnconditionalDefaultTransitionDiag "warning"
 	  SFTransitionOutsideNaturalParentDiag "warning"
-	  SFUnconditionalTransitionShadowingDiag "warning"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.12.0"
+	  Version		  "1.11.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -370,12 +346,12 @@ Model {
 	  TargetPreprocMaxBitsSint 32
 	  TargetPreprocMaxBitsUint 32
 	  TargetHWDeviceType	  "Specified"
-	  TargetUnknown		  off
+	  TargetUnknown		  on
 	  ProdEqTarget		  on
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.12.0"
+	  Version		  "1.11.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -390,7 +366,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.12.0"
+	  Version		  "1.11.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -405,18 +381,7 @@ Model {
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.12.0"
-	  Array {
-	    Type		    "Cell"
-	    Dimension		    6
-	    Cell		    "IncludeHyperlinkInReport"
-	    Cell		    "GenerateTraceInfo"
-	    Cell		    "GenerateTraceReport"
-	    Cell		    "GenerateTraceReportSl"
-	    Cell		    "GenerateTraceReportSf"
-	    Cell		    "GenerateTraceReportEml"
-	    PropName		    "DisabledProps"
-	  }
+	  Version		  "1.11.0"
 	  SystemTargetFile	  "grt.tlc"
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
@@ -439,16 +404,15 @@ Model {
 	  LaunchReport		  off
 	  TargetLang		  "C"
 	  IncludeBusHierarchyInRTWFileBlockHierarchyMap	off
-	  IncludeERTFirstTime	  off
+	  IncludeERTFirstTime	  on
 	  GenerateTraceInfo	  off
 	  GenerateTraceReport	  off
 	  GenerateTraceReportSl	  off
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
-	  GenerateWebview	  off
+	  GenerateSLWebview	  off
 	  GenerateCodeMetricsReport off
-	  GenerateCodeReplacementReport	off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -457,29 +421,7 @@ Model {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.12.0"
-	      Array {
-		Type			"Cell"
-		Dimension		17
-		Cell			"IgnoreCustomStorageClasses"
-		Cell			"IgnoreTestpoints"
-		Cell			"InsertBlockDesc"
-		Cell			"SFDataObjDesc"
-		Cell			"SimulinkDataObjDesc"
-		Cell			"DefineNamingRule"
-		Cell			"SignalNamingRule"
-		Cell			"ParamNamingRule"
-		Cell			"InlinedPrmAccess"
-		Cell			"CustomSymbolStr"
-		Cell			"CustomSymbolStrGlobalVar"
-		Cell			"CustomSymbolStrType"
-		Cell			"CustomSymbolStrField"
-		Cell			"CustomSymbolStrFcn"
-		Cell			"CustomSymbolStrBlkIO"
-		Cell			"CustomSymbolStrTmpVar"
-		Cell			"CustomSymbolStrMacro"
-		PropName		"DisabledProps"
-	      }
+	      Version		      "1.11.0"
 	      ForceParamTrailComments off
 	      GenerateComments	      on
 	      IgnoreCustomStorageClasses on
@@ -518,44 +460,25 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.12.0"
-	      Array {
-		Type			"Cell"
-		Dimension		15
-		Cell			"IncludeMdlTerminateFcn"
-		Cell			"CombineOutputUpdateFcns"
-		Cell			"SuppressErrorStatus"
-		Cell			"ERTCustomFileBanners"
-		Cell			"GenerateSampleERTMain"
-		Cell			"GenerateTestInterfaces"
-		Cell			"ModelStepFunctionPrototypeControlCompliant"
-		Cell			"CPPClassGenCompliant"
-		Cell			"MultiInstanceERTCode"
-		Cell			"PurelyIntegerCode"
-		Cell			"PortableWordSizes"
-		Cell			"SupportComplex"
-		Cell			"SupportAbsoluteTime"
-		Cell			"SupportContinuousTime"
-		Cell			"SupportNonInlinedSFcns"
-		PropName		"DisabledProps"
-	      }
+	      Version		      "1.11.0"
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
-	      CodeReplacementLibrary  "ANSI_C"
+	      TargetFunctionLibrary   "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
+	      FunctionExecutionProfile off
 	      CodeExecutionProfiling  off
+	      ERTCodeCoverageTool     "None"
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
 	      GenerateFullHeader      on
 	      GenerateSampleERTMain   off
 	      GenerateTestInterfaces  off
 	      IsPILTarget	      off
-	      ModelReferenceCompliant on
+	      ModelReferenceCompliant off
 	      ParMdlRefBuildCompliant on
-	      CompOptLevelCompliant   on
-	      ConcurrentExecutionCompliant on
+	      CompOptLevelCompliant   off
 	      IncludeMdlTerminateFcn  on
 	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
@@ -566,7 +489,7 @@ Model {
 	      ERTCustomFileBanners    off
 	      SupportAbsoluteTime     on
 	      LogVarNameModifier      "rt_"
-	      MatFileLogging	      on
+	      MatFileLogging	      off
 	      MultiInstanceERTCode    off
 	      SupportNonFinite	      on
 	      SupportComplex	      on
@@ -580,7 +503,6 @@ Model {
 	      ModelStepFunctionPrototypeControlCompliant off
 	      CPPClassGenCompliant    off
 	      AutosarCompliant	      off
-	      GRTInterface	      on
 	      UseMalloc		      off
 	      ExtMode		      off
 	      ExtModeStaticAlloc      off
@@ -601,8 +523,8 @@ Model {
 	PropName		"Components"
       }
       Name		      "Configuration"
-      CurrentDlgPage	      "Data Import//Export"
-      ConfigPrmDlgPosition     [ 280, 124, 1160, 754 ] 
+      CurrentDlgPage	      "Solver"
+      ConfigPrmDlgPosition     [ 786, 727, 1777, 1357 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -610,7 +532,6 @@ Model {
     $PropName		    "ActiveConfigurationSet"
     $ObjectID		    1
   }
-  ExplicitPartitioning	  off
   BlockDefaults {
     ForegroundColor	    "black"
     BackgroundColor	    "white"
@@ -644,17 +565,8 @@ Model {
   }
   BlockParameterDefaults {
     Block {
-      BlockType		      Constant
-      Value		      "1"
-      VectorParams1D	      on
-      SamplingMode	      "Sample based"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
-      LockScale		      off
-      SampleTime	      "inf"
-      FramePeriod	      "inf"
-      PreserveConstantTs      off
+      BlockType		      Clock
+      DisplayTime	      off
     }
     Block {
       BlockType		      Gain
@@ -690,26 +602,20 @@ Model {
       Interpolate	      on
     }
     Block {
-      BlockType		      Integrator
-      ExternalReset	      "none"
-      InitialConditionSource  "internal"
-      InitialCondition	      "0"
-      LimitOutput	      off
-      UpperSaturationLimit    "inf"
-      LowerSaturationLimit    "-inf"
-      ShowSaturationPort      off
-      ShowStatePort	      off
-      AbsoluteTolerance	      "auto"
-      IgnoreLimit	      off
-      ZeroCross		      on
-      ContinuousStateAttributes	"''"
+      BlockType		      MATLABFcn
+      MATLABFcn		      "sin"
+      OutputDimensions	      "-1"
+      OutputSignalType	      "auto"
+      Output1D		      on
+      SampleTime	      "-1"
     }
     Block {
-      BlockType		      ModelReference
-      SimulationMode	      "Accelerator"
-      Variant		      off
-      GeneratePreprocessorConditionals off
-      CopyOfModelProtected    off
+      BlockType		      Mux
+      Inputs		      "4"
+      DisplayOption	      "none"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      NonVirtualBus	      off
     }
     Block {
       BlockType		      Outport
@@ -729,21 +635,18 @@ Model {
       InitialOutput	      "[]"
     }
     Block {
-      BlockType		      Scope
-      ModelBased	      off
-      TickLabels	      "OneTimeTick"
-      ZoomMode		      "on"
-      Grid		      "on"
-      TimeRange		      "auto"
-      YMin		      "-5"
-      YMax		      "5"
-      SaveToWorkspace	      off
-      SaveName		      "ScopeData"
-      DataFormat	      "Array"
-      LimitDataPoints	      on
-      MaxDataPoints	      "5000"
-      Decimation	      "1"
-      SampleInput	      off
+      BlockType		      Product
+      Inputs		      "2"
+      Multiplication	      "Element-wise(.*)"
+      CollapseMode	      "All dimensions"
+      CollapseDim	      "1"
+      InputSameDT	      on
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Zero"
+      SaturateOnIntegerOverflow	on
       SampleTime	      "-1"
     }
     Block {
@@ -765,7 +668,6 @@ Model {
       DataTypeOverride	      "UseLocalSettings"
       DataTypeOverrideAppliesTo	"AllNumericTypes"
       MinMaxOverflowLogging   "UseLocalSettings"
-      SFBlockType	      "NONE"
       Variant		      off
       GeneratePreprocessorConditionals off
     }
@@ -788,94 +690,57 @@ Model {
     Block {
       BlockType		      Terminator
     }
+    Block {
+      BlockType		      ZeroOrderHold
+      SampleTime	      "1"
+    }
   }
   System {
-    Name		    "ploop_test"
-    Location		    [1148, 819, 1883, 1187]
+    Name		    "sl_ctorque2"
+    Location		    [1260, 51, 2097, 347]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
     ScreenColor		    "white"
     PaperOrientation	    "portrait"
     PaperPositionMode	    "auto"
-    PaperType		    "A4"
-    PaperUnits		    "centimeters"
-    TiledPaperMargins	    [1.270000, 1.270000, 1.270000, 1.270000]
+    PaperType		    "usletter"
+    PaperUnits		    "inches"
+    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "61"
+    SIDHighWatermark	    "57"
+    Block {
+      BlockType		      Clock
+      Name		      "Clock"
+      SID		      "30"
+      Position		      [35, 20, 85, 40]
+      DisplayTime	      on
+      Decimation	      "10"
+    }
     Block {
       BlockType		      Gain
-      Name		      "Gain"
-      SID		      "1"
-      Position		      [155, 240, 195, 270]
-      ShowName		      off
-      Gain		      "1/G"
-      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-      SaturateOnIntegerOverflow	off
-    }
-    Block {
-      BlockType		      Scope
-      Name		      "Scope"
+      Name		      "Kd"
       SID		      "2"
-      Ports		      [1]
-      Position		      [440, 49, 470, 81]
-      Floating		      off
-      Location		      [89, 161, 413, 400]
-      Open		      on
-      NumInputPorts	      "1"
-      List {
-	ListType		AxesTitles
-	axes1			"%<SignalLabel>"
-      }
-      List {
-	ListType		ScopeGraphics
-	FigureColor		"[0.5 0.5 0.5]"
-	AxesColor		"[0 0 0]"
-	AxesTickColor		"[1 1 1]"
-	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
-	LineStyles		"-|-|-|-|-|-"
-	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
-	MarkerStyles		"none|none|none|none|none|none"
-      }
-      ShowLegends	      off
-      YMin		      "0"
-      YMax		      "55"
-      SaveName		      "ScopeData1"
-      DataFormat	      "StructureWithTime"
-      SampleTime	      "0"
+      Position		      [600, 90, 630, 120]
+      ForegroundColor	      "gray"
     }
     Block {
-      BlockType		      Terminator
-      Name		      "Terminator"
-      SID		      "38"
-      Position		      [165, 155, 185, 175]
-      ShowName		      off
-    }
-    Block {
-      BlockType		      Reference
-      Name		      "lspb"
-      SID		      "41"
-      Ports		      [0, 3]
-      Position		      [95, 91, 135, 179]
-      BackgroundColor	      "red"
-      LibraryVersion	      "1.52"
-      SourceBlock	      "roblocks/Trajectory/lspb"
-      SourceType	      ""
-      q0		      "0"
-      qf		      "0.5*G"
-      tmax		      "1"
+      BlockType		      Gain
+      Name		      "Kp"
+      SID		      "3"
+      Position		      [570, 45, 600, 75]
+      ForegroundColor	      "gray"
+      Gain		      "100"
     }
     Block {
       BlockType		      SubSystem
-      Name		      "ploop"
-      SID		      "3"
-      Ports		      [3, 2]
-      Position		      [250, 87, 315, 183]
-      DropShadow	      on
+      Name		      "RNE approx"
+      SID		      "53"
+      Ports		      [3, 1]
+      Position		      [195, 146, 245, 224]
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
       RTWSystemCode	      "Auto"
@@ -883,387 +748,538 @@ Model {
       Opaque		      off
       RequestExecContextInheritance off
       MaskHideContents	      off
+      MaskPromptString	      "Robot|Sample interval (s)"
+      MaskStyleString	      "edit,edit"
+      MaskVariables	      "robot=@1;ts=@2;"
+      MaskTunableValueString  "on,on"
+      MaskCallbackString      "|"
+      MaskEnableString	      "on,on"
+      MaskVisibilityString    "on,on"
+      MaskToolTipString	      "on,on"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskPortRotate	      "default"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "p560|0.05"
       System {
-	Name			"ploop"
-	Location		[572, 274, 1212, 489]
+	Name			"RNE approx"
+	Location		[1613, 413, 2387, 710]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
-	PaperOrientation	"portrait"
+	PaperOrientation	"landscape"
 	PaperPositionMode	"auto"
 	PaperType		"A4"
-	PaperUnits		"centimeters"
-	TiledPaperMargins	[1.270000, 1.270000, 1.270000, 1.270000]
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
 	Block {
 	  BlockType		  Inport
-	  Name			  "q*"
-	  SID			  "4"
-	  Position		  [25, 78, 55, 92]
+	  Name			  "q"
+	  SID			  "54"
+	  Position		  [25, 83, 55, 97]
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  Inport
-	  Name			  "qd*"
-	  SID			  "35"
-	  Position		  [25, 123, 55, 137]
-	  ForegroundColor	  "red"
+	  Name			  "qd"
+	  SID			  "56"
+	  Position		  [25, 173, 55, 187]
 	  Port			  "2"
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  Inport
-	  Name			  "tau_d"
-	  SID			  "5"
-	  Position		  [25, 163, 55, 177]
+	  Name			  "qdd"
+	  SID			  "57"
+	  Position		  [25, 248, 55, 262]
 	  Port			  "3"
 	  IconDisplay		  "Port number"
 	}
 	Block {
-	  BlockType		  Integrator
-	  Name			  "Integrator"
-	  SID			  "6"
+	  BlockType		  MATLABFcn
+	  Name			  "Coriolis"
+	  SID			  "51"
 	  Ports			  [1, 1]
-	  Position		  [415, 60, 445, 90]
-	  ShowName		  off
+	  Position		  [270, 156, 410, 184]
+	  MATLABFcn		  "robot.coriolis(u')"
+	  OutputDimensions	  "[robot.n robot.n]"
+	  Output1D		  off
 	}
 	Block {
-	  BlockType		  Gain
-	  Name			  "Kff"
-	  SID			  "39"
-	  Position		  [145, 115, 175, 145]
-	  ForegroundColor	  "red"
-	  Gain			  "0"
-	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
-	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
-	  SaturateOnIntegerOverflow off
-	}
-	Block {
-	  BlockType		  Gain
-	  Name			  "Kp"
-	  SID			  "7"
-	  Position		  [165, 70, 195, 100]
-	  Gain			  "40"
-	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
-	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
-	  SaturateOnIntegerOverflow off
-	}
-	Block {
-	  BlockType		  Sum
-	  Name			  "Sum"
-	  SID			  "8"
+	  BlockType		  Mux
+	  Name			  "Mux"
+	  SID			  "41"
 	  Ports			  [2, 1]
-	  Position		  [100, 75, 120, 95]
+	  Position		  [200, 151, 205, 189]
 	  ShowName		  off
-	  IconShape		  "round"
-	  Inputs		  "|+-"
+	  Inputs		  "2"
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Product
+	  Name			  "Product"
+	  SID			  "42"
+	  Ports			  [2, 1]
+	  Position		  [545, 32, 590, 63]
+	  ShowName		  off
+	  Multiplication	  "Matrix(*)"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Product
+	  Name			  "Product1"
+	  SID			  "43"
+	  Ports			  [2, 1]
+	  Position		  [460, 162, 500, 193]
+	  ShowName		  off
+	  Multiplication	  "Matrix(*)"
 	  InputSameDT		  off
 	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
 	  SaturateOnIntegerOverflow off
 	}
 	Block {
 	  BlockType		  Sum
-	  Name			  "Sum1"
-	  SID			  "36"
-	  Ports			  [2, 1]
-	  Position		  [230, 75, 250, 95]
+	  Name			  "Sum3"
+	  SID			  "47"
+	  Ports			  [3, 1]
+	  Position		  [635, 80, 655, 100]
 	  ShowName		  off
 	  IconShape		  "round"
-	  Inputs		  "|++"
+	  Inputs		  "+++"
 	  InputSameDT		  off
 	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
 	  SaturateOnIntegerOverflow off
 	}
 	Block {
-	  BlockType		  Terminator
-	  Name			  "Terminator"
-	  SID			  "9"
-	  Position		  [365, 100, 385, 120]
-	  ShowName		  off
+	  BlockType		  ZeroOrderHold
+	  Name			  "Zero-Order\nHold"
+	  SID			  "49"
+	  Position		  [100, 75, 135, 105]
+	  SampleTime		  "ts"
 	}
 	Block {
-	  BlockType		  Terminator
-	  Name			  "Terminator1"
-	  SID			  "10"
-	  Position		  [365, 135, 385, 155]
-	  ShowName		  off
+	  BlockType		  ZeroOrderHold
+	  Name			  "Zero-Order\nHold1"
+	  SID			  "50"
+	  Position		  [100, 165, 135, 195]
+	  SampleTime		  "ts"
 	}
 	Block {
-	  BlockType		  ModelReference
-	  Name			  "vloop"
+	  BlockType		  MATLABFcn
+	  Name			  "gravity"
 	  SID			  "40"
-	  Ports			  [2, 3]
-	  Position		  [275, 56, 330, 164]
-	  ModelNameDialog	  "vloop"
-	  ModelReferenceVersion	  "1.8"
-	  List {
-	    ListType		    InputPortNames
-	    port0		    "qd*"
-	    port1		    "tau_d"
-	  }
-	  List {
-	    ListType		    OutputPortNames
-	    port0		    "qd"
-	    port1		    "qd error"
-	    port2		    "tau"
-	  }
-	  List {
-	    ListType		    OutputPortOutputBusAsStructs
-	    port0		    "off"
-	    port1		    "off"
-	    port2		    "off"
-	  }
-	  List {
-	    ListType		    OutputPortSignalNames
-	    port0		    "qd"
-	    port1		    ""
-	    port2		    ""
-	  }
-	  List {
-	    ListType		    InputPortLatchByCopyingInsideSignal
-	    port0		    "off"
-	    port1		    "off"
-	  }
-	  CopyOfModelName	  "vloop"
-	  DefaultDataLogging	  off
-	  List {
-	    ListType		    InputPortLatchByDelayingOutsideSignal
-	    port0		    "off"
-	    port1		    "off"
-	  }
+	  Ports			  [1, 1]
+	  Position		  [270, 76, 410, 104]
+	  MATLABFcn		  "robot.gravload(u')'"
+	  Output1D		  off
+	}
+	Block {
+	  BlockType		  MATLABFcn
+	  Name			  "inertia"
+	  SID			  "52"
+	  Ports			  [1, 1]
+	  Position		  [270, 26, 410, 54]
+	  MATLABFcn		  "robot.inertia(u')"
+	  OutputDimensions	  "[robot.n robot.n]"
+	  Output1D		  off
 	}
 	Block {
 	  BlockType		  Outport
-	  Name			  "q"
-	  SID			  "27"
-	  Position		  [500, 68, 530, 82]
-	  IconDisplay		  "Port number"
-	}
-	Block {
-	  BlockType		  Outport
-	  Name			  "q err"
-	  SID			  "28"
-	  Position		  [165, 28, 195, 42]
-	  Port			  "2"
+	  Name			  "Q"
+	  SID			  "55"
+	  Position		  [710, 83, 740, 97]
 	  IconDisplay		  "Port number"
 	}
 	Line {
-	  Labels		  [3, 0]
-	  SrcBlock		  "tau_d"
+	  SrcBlock		  "q"
 	  SrcPort		  1
-	  Points		  [190, 0; 0, -30]
-	  DstBlock		  "vloop"
-	  DstPort		  2
+	  DstBlock		  "Zero-Order\nHold"
+	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "Sum"
+	  SrcBlock		  "qd"
 	  SrcPort		  1
-	  Points		  [15, 0]
+	  DstBlock		  "Zero-Order\nHold1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Zero-Order\nHold"
+	  SrcPort		  1
+	  Points		  [35, 0]
 	  Branch {
-	    DstBlock		    "Kp"
+	    DstBlock		    "gravity"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, 70]
+	    DstBlock		    "Mux"
 	    DstPort		    1
 	  }
 	  Branch {
 	    Points		    [0, -50]
-	    DstBlock		    "q err"
+	    DstBlock		    "inertia"
 	    DstPort		    1
 	  }
 	}
 	Line {
-	  SrcBlock		  "vloop"
+	  SrcBlock		  "Zero-Order\nHold1"
 	  SrcPort		  1
-	  DstBlock		  "Integrator"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "Integrator"
-	  SrcPort		  1
-	  Points		  [20, 0]
+	  Points		  [30, 0]
 	  Branch {
-	    DstBlock		    "q"
-	    DstPort		    1
+	    DstBlock		    "Mux"
+	    DstPort		    2
 	  }
 	  Branch {
-	    Points		    [0, 115; -360, 0]
-	    DstBlock		    "Sum"
+	    Points		    [0, 40; 275, 0]
+	    DstBlock		    "Product1"
 	    DstPort		    2
 	  }
 	}
 	Line {
-	  SrcBlock		  "q*"
+	  SrcBlock		  "inertia"
 	  SrcPort		  1
-	  DstBlock		  "Sum"
+	  DstBlock		  "Product"
 	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "vloop"
-	  SrcPort		  2
-	  DstBlock		  "Terminator"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "vloop"
-	  SrcPort		  3
-	  DstBlock		  "Terminator1"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "Kp"
+	  SrcBlock		  "Mux"
 	  SrcPort		  1
-	  DstBlock		  "Sum1"
+	  DstBlock		  "Coriolis"
 	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "Sum1"
+	  SrcBlock		  "Coriolis"
 	  SrcPort		  1
-	  DstBlock		  "vloop"
+	  DstBlock		  "Product1"
 	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "qd*"
+	  SrcBlock		  "Product1"
 	  SrcPort		  1
-	  DstBlock		  "Kff"
+	  Points		  [140, 0]
+	  DstBlock		  "Sum3"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "Product"
+	  SrcPort		  1
+	  Points		  [50, 0]
+	  DstBlock		  "Sum3"
 	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "Kff"
+	  SrcBlock		  "gravity"
 	  SrcPort		  1
-	  Points		  [60, 0]
-	  DstBlock		  "Sum1"
+	  DstBlock		  "Sum3"
 	  DstPort		  2
 	}
+	Line {
+	  SrcBlock		  "qdd"
+	  SrcPort		  1
+	  Points		  [470, 0]
+	  DstBlock		  "Product"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Sum3"
+	  SrcPort		  1
+	  DstBlock		  "Q"
+	  DstPort		  1
+	}
       }
     }
     Block {
-      BlockType		      Scope
-      Name		      "q err"
-      SID		      "30"
+      BlockType		      Reference
+      Name		      "Robot"
+      SID		      "35"
+      Ports		      [1, 3]
+      Position		      [395, 147, 470, 223]
+      BackgroundColor	      "red"
+      DropShadow	      on
+      LibraryVersion	      "1.51"
+      SourceBlock	      "roblocks/Dynamics/Robot"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      robot		      "p560.nofriction()"
+      q0		      "[0 0 0 0 0 0]"
+    }
+    Block {
+      BlockType		      Sum
+      Name		      "Sum"
+      SID		      "7"
+      Ports		      [2, 1]
+      Position		      [510, 50, 530, 70]
+      ForegroundColor	      "gray"
+      ShowName		      off
+      IconShape		      "round"
+      Inputs		      "|+-"
+    }
+    Block {
+      BlockType		      Sum
+      Name		      "Sum1"
+      SID		      "8"
+      Ports		      [2, 1]
+      Position		      [540, 95, 560, 115]
+      ForegroundColor	      "gray"
+      ShowName		      off
+      IconShape		      "round"
+      Inputs		      "|+-"
+    }
+    Block {
+      BlockType		      Sum
+      Name		      "Sum2"
+      SID		      "9"
+      Ports		      [2, 1]
+      Position		      [635, 50, 655, 70]
+      ForegroundColor	      "gray"
+      ShowName		      off
+      IconShape		      "round"
+      Inputs		      "|++"
+    }
+    Block {
+      BlockType		      Terminator
+      Name		      "Terminator"
+      SID		      "10"
+      Position		      [105, 200, 125, 220]
+      ShowName		      off
+    }
+    Block {
+      BlockType		      Terminator
+      Name		      "Terminator1"
+      SID		      "11"
+      Position		      [495, 200, 515, 220]
+      ShowName		      off
+    }
+    Block {
+      BlockType		      Terminator
+      Name		      "Terminator2"
+      SID		      "36"
+      Position		      [105, 20, 125, 40]
+      ShowName		      off
+    }
+    Block {
+      BlockType		      ZeroOrderHold
+      Name		      "Tfb"
+      SID		      "27"
+      Position		      [295, 170, 330, 200]
+      SampleTime	      "0.01"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "jtraj"
+      SID		      "38"
+      Ports		      [0, 3]
+      Position		      [45, 149, 80, 221]
+      BackgroundColor	      "red"
+      LibraryVersion	      "1.51"
+      SourceBlock	      "roblocks/Trajectory/jtraj"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      q0		      "[0 0 0 0 0 0]"
+      qf		      "[pi/4 pi/2 -pi/2 0 0 0]"
+      tmax		      "10"
+      ts		      "0.02"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "plot"
+      SID		      "39"
       Ports		      [1]
-      Position		      [455, 194, 485, 226]
-      Floating		      off
-      Location		      [529, 161, 853, 400]
-      Open		      on
-      NumInputPorts	      "1"
-      List {
-	ListType		AxesTitles
-	axes1			"%<SignalLabel>"
-      }
-      List {
-	ListType		ScopeGraphics
-	FigureColor		"[0.5 0.5 0.5]"
-	AxesColor		"[0 0 0]"
-	AxesTickColor		"[1 1 1]"
-	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
-	LineStyles		"-|-|-|-|-|-"
-	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
-	MarkerStyles		"none|none|none|none|none|none"
-      }
-      ShowLegends	      off
-      TimeRange		      "1"
-      YMin		      "-0.5"
-      YMax		      "8"
-      DataFormat	      "StructureWithTime"
-      SampleTime	      "0"
-    }
-    Block {
-      BlockType		      Constant
-      Name		      "tau_d"
-      SID		      "31"
-      Position		      [90, 240, 120, 270]
-      Value		      "20"
+      Position		      [700, 132, 780, 188]
+      BackgroundColor	      "red"
+      LibraryVersion	      "1.51"
+      SourceBlock	      "roblocks/Robot Graphics/plot"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      robot		      "p560"
+      fps		      "25"
     }
     Block {
       BlockType		      Outport
       Name		      "q"
-      SID		      "32"
-      Position		      [505, 103, 535, 117]
+      SID		      "28"
+      Position		      [625, 173, 655, 187]
       IconDisplay	      "Port number"
     }
     Block {
       BlockType		      Outport
-      Name		      "q_err"
-      SID		      "33"
-      Position		      [505, 153, 535, 167]
+      Name		      "err"
+      SID		      "31"
+      Position		      [570, 18, 600, 32]
       Port		      "2"
       IconDisplay	      "Port number"
     }
-    Block {
-      BlockType		      Outport
-      Name		      "q*"
-      SID		      "37"
-      Position		      [270, 53, 300, 67]
-      Port		      "3"
-      IconDisplay	      "Port number"
-    }
     Line {
-      SrcBlock		      "ploop"
+      SrcBlock		      "Sum"
       SrcPort		      1
-      Points		      [85, 0]
+      Points		      [15, 0]
       Branch {
-	DstBlock		"q"
+	DstBlock		"Kp"
 	DstPort			1
       }
       Branch {
-	Points			[0, -45]
-	DstBlock		"Scope"
-	DstPort			1
-      }
-    }
-    Line {
-      SrcBlock		      "ploop"
-      SrcPort		      2
-      Points		      [95, 0]
-      Branch {
-	DstBlock		"q_err"
-	DstPort			1
-      }
-      Branch {
-	Points			[0, 50]
-	DstBlock		"q err"
+	Points			[0, -35]
+	DstBlock		"err"
 	DstPort			1
       }
     }
     Line {
-      SrcBlock		      "tau_d"
+      SrcBlock		      "Kp"
       SrcPort		      1
-      DstBlock		      "Gain"
+      DstBlock		      "Sum2"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "lspb"
+      SrcBlock		      "Robot"
       SrcPort		      1
-      Points		      [55, 0]
+      Points		      [45, 0]
       Branch {
-	Points			[0, -45]
-	DstBlock		"q*"
-	DstPort			1
+	DstBlock		"Sum"
+	DstPort			2
       }
       Branch {
-	DstBlock		"ploop"
-	DstPort			1
+	Points			[85, 0]
+	Branch {
+	  Points		  [0, 20]
+	  DstBlock		  "q"
+	  DstPort		  1
+	}
+	Branch {
+	  DstBlock		  "plot"
+	  DstPort		  1
+	}
       }
     }
     Line {
-      SrcBlock		      "Gain"
+      SrcBlock		      "Robot"
+      SrcPort		      2
+      Points		      [75, 0]
+      DstBlock		      "Sum1"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Sum2"
       SrcPort		      1
-      Points		      [15, 0; 0, -90]
-      DstBlock		      "ploop"
+      Points		      [10, 0; 0, 190; -510, 0; 0, -40]
+      DstBlock		      "RNE approx"
       DstPort		      3
     }
     Line {
-      SrcBlock		      "lspb"
+      SrcBlock		      "RNE approx"
+      SrcPort		      1
+      DstBlock		      "Tfb"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "jtraj"
+      SrcPort		      1
+      Points		      [20, 0]
+      Branch {
+	Points			[0, -100]
+	DstBlock		"Sum"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"RNE approx"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "jtraj"
+      SrcPort		      2
+      Points		      [35, 0]
+      Branch {
+	Points			[0, -80]
+	DstBlock		"Sum1"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"RNE approx"
+	DstPort			2
+      }
+    }
+    Line {
+      SrcBlock		      "Sum1"
+      SrcPort		      1
+      DstBlock		      "Kd"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Kd"
+      SrcPort		      1
+      Points		      [10, 0]
+      DstBlock		      "Sum2"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "jtraj"
       SrcPort		      3
       DstBlock		      "Terminator"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "lspb"
-      SrcPort		      2
-      DstBlock		      "ploop"
-      DstPort		      2
+      SrcBlock		      "Robot"
+      SrcPort		      3
+      DstBlock		      "Terminator1"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Tfb"
+      SrcPort		      1
+      DstBlock		      "Robot"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Clock"
+      SrcPort		      1
+      DstBlock		      "Terminator2"
+      DstPort		      1
+    }
+    Annotation {
+      Name		      "trajectory\n(demand)"
+      Position		      [57, 245]
+      ForegroundColor	      "blue"
+    }
+    Annotation {
+      Name		      "robot state\n(actual)"
+      Position		      [574, 204]
+      ForegroundColor	      "orange"
+    }
+    Annotation {
+      Name		      "desired acceleration"
+      Position		      [625, 256]
+      ForegroundColor	      "gray"
     }
   }
 }

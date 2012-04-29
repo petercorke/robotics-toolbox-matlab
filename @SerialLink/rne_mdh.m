@@ -56,8 +56,8 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 		Q = a1;
 		Qd = a2;
 		Qdd = a3;
-		if numcols(a1) ~= n | numcols(Qd) ~= n | numcols(Qdd) ~= n | ...
-			numrows(Qd) ~= np | numrows(Qdd) ~= np
+		if numcols(a1) ~= n || numcols(Qd) ~= n || numcols(Qdd) ~= n || ...
+			numrows(Qd) ~= np || numrows(Qdd) ~= np
 			error('bad data');
 		end
 		if nargin >= 5,	
@@ -81,7 +81,6 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 		Rm = [];
 		w = zeros(3,1);
 		wd = zeros(3,1);
-		v = zeros(3,1);
 		vd = grav(:);
 
 	%

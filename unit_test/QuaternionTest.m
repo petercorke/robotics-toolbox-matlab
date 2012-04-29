@@ -1,10 +1,11 @@
 
 %% This is for testing the Quaternion functions in the robotics Toolbox
-function test_suite = TestRobotToolboxQuaternion
+function test_suite = RobotToolboxQuaternion_test
   initTestSuite;
+
 % Quaternion
 %    Quaternion                 - constructor
-function Test_Quaternion
+function Quaternion_test
     % Q = Quaternion(Q1) is a copy of the quaternion Q1
     q = Quaternion().double();
     assertElementsAlmostEqual(q,[1 0 0 0],'absolute',1e-4);
@@ -57,7 +58,7 @@ function Test_Quaternion
     assertExceptionThrown(@()Quaternion([1 2 3 4 5]),'');
     
 %    /                          - divide quaternion by quaternion or scalar
-function TestQuaternion_Divide
+function Quaternion_Divide_test
     % test run devision tests on quaternions
     q1 = Quaternion();
     q2 = Quaternion();
@@ -104,7 +105,7 @@ function quaternion_compare
     assertEqual(q1~=qt2, [1 1 1]);
     assertEqual(qt1~=qt2, [1 1 1]);
 
-function TestQuaternion_Multiply
+function Quaternion_Multiply_test
     % test run multiplication tests on quaternions
     q1 = Quaternion();
     q2 = Quaternion();
@@ -123,7 +124,7 @@ function TestQuaternion_Multiply
     assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
     
 %  q+q2      return elementwise sum of quaternions
-function TestQuaternion_Addition
+function Quaternion_Addition_test
     % test run multiplication tests on quaternions
     q1 = Quaternion();
     q2 = Quaternion();
@@ -137,7 +138,7 @@ function TestQuaternion_Addition
     assertElementsAlmostEqual(out.double,expected_out,'absolute',1e-4);
 
 %  q-q2      return elementwise difference of quaternions
-function TestQuaternion_Subtraction
+function Quaternion_Subtraction_test
     % test run multiplication tests on quaternions
     q1 = Quaternion();
     q2 = Quaternion();
@@ -151,7 +152,7 @@ function TestQuaternion_Subtraction
     assertElementsAlmostEqual(out.double,expected_out,'absolute',1e-4);
 
 %  q^n       return q to power n (integer only)
-function TestQuaternion_Power
+function Quaternion_Power_test
     % test run multiplication tests on quaternions
     q1 = Quaternion();
     out = (q1^2);
@@ -163,7 +164,7 @@ function TestQuaternion_Power
     assertElementsAlmostEqual(out.double,expected_out,'absolute',1e-4);
     
 %    inv                        - invert a quaternion
-function TestQuaternion_Invert
+function Quaternion_Invert_test
     % test run inversion tests on quaternions
     q1 = Quaternion();
     out = q1.inv;
@@ -174,7 +175,7 @@ function TestQuaternion_Invert
     expected_out = [0 -1 -2 -3];
     assertElementsAlmostEqual(out.double,expected_out,'absolute',1e-4);
 %    norm                       - norm of a quaternion
-function TestQuaternion_Normal
+function Quaternion_Normal_test
     % test run Normal tests on quaternions
     q1 = Quaternion();
     out = q1.norm;
@@ -186,7 +187,7 @@ function TestQuaternion_Normal
     assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
 
 %    unit                       - unitize a quaternion
-function TestQuaternion_Unit
+function Quaternion_Unit_test
     % test run Normal tests on quaternions
     q1 = Quaternion();
     out = q1.unit;
@@ -198,7 +199,7 @@ function TestQuaternion_Unit
     assertElementsAlmostEqual(out.double,expected_out,'absolute',1e-4);
 
 %  interp    interpolation (slerp) between q and q2, 0<=s<=1
-function TestQuaternion_Interpolation
+function Quaternion_Interpolation_test
     % test run Interpolation tests on quaternions
     q1 = Quaternion();
     q2 = Quaternion();
@@ -213,7 +214,7 @@ function TestQuaternion_Interpolation
 
 
 %  scale     interpolation (slerp) between identity and q, 0<=s<=1
-function TestQuaternion_Scale
+function Quaternion_Scale_test
     % test run Interpolation tests on quaternions
     q1 = Quaternion();
     out = q1.scale(0.5);
@@ -225,7 +226,7 @@ function TestQuaternion_Scale
     assertElementsAlmostEqual(out.double,expected_out,'absolute',1e-4);
 
     %  dot       derivative of quaternion with angular velocity w
-function TestQuaternion_Dot
+function Quaternion_Dot_test
     % test run dot tests on quaternions
     q1 = Quaternion();
     omega = [1 2 3];
@@ -233,8 +234,8 @@ function TestQuaternion_Dot
     expected_out = [0    0.5000    1.0000    1.5000];
     assertElementsAlmostEqual(out.double,expected_out,'absolute',1e-4);
 
-% Test plot function of Quaternion
-function Quaternion_test
+%  plot function of Quaternion_test
+function plot_test
         R = [1.0000         0         0         
              0    0.5403   -0.8415         
              0    0.8415    0.5403];         

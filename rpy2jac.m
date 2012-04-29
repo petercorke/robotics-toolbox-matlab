@@ -32,6 +32,7 @@
 function J = rpy2jac(r, p, y)
 
     if length(r) == 3
+        % rpy2jac([r,p,y])
         p = r(2);
         y = r(3);
         r = r(1);

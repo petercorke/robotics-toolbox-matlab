@@ -1,18 +1,18 @@
 %SerialLink.fkine  Forward kinematics
 %
-% T = R.fkine(Q) is the pose of the robot end-effector as a homogeneous
-% transformation for the joint configuration Q.  For an N-axis manipulator 
-% Q is an N-vector.
+% T = R.fkine(Q) is the pose (4x4) of the robot end-effector as a homogeneous
+% transformation for the joint configuration Q (1xN).
 % 
-% If Q is a matrix, the M rows are interpretted as the generalized 
+% If Q is a matrix (KxN) the rows are interpretted as the generalized 
 % joint coordinates for a sequence of points along a trajectory.  Q(i,j) is
 % the j'th joint parameter for the i'th trajectory point.  In this case
-% it returns a 4x4xM matrix where the last subscript is the index
-% along the path.
+% T is a 3d matrix (4x4xK) where the last subscript is the index along the path.
 %
 % Note::
 % - The robot's base or tool transform, if present, are incorporated into the
 %   result.
+% - Joint offsets, if defined, are added to Q before the forward kinematics are
+%   computed.
 %
 % See also SerialLink.ikine, SerialLink.ikine6s.
 

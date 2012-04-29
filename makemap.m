@@ -122,7 +122,6 @@ function world = makemap(Nw)
         else
             % button pressed
             point1 = get(gca,'CurrentPoint');    % button down detected
-            finalRect = rbbox;                   % return figure units
             point2 = get(gca,'CurrentPoint');    % button up detected
 
             point1 = round(point1(1,1:2));       % extract x and y

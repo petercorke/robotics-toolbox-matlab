@@ -43,7 +43,7 @@ function [qt,qdt,qddt] = jtraj(q0, q1, tv, qd0, qd1)
         t = tv(:)/tscal;
     else
         tscal = 1;
-        t = [0:(tv-1)]'/(tv-1); % normalized time from 0 -> 1
+        t = (0:(tv-1))'/(tv-1); % normalized time from 0 -> 1
     end
 
     q0 = q0(:);

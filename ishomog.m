@@ -38,4 +38,3 @@ function h = ishomog(tr, rtest)
     else
         h = false;
     end
-

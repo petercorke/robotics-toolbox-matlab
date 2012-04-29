@@ -61,7 +61,6 @@ function hout = trplot2(T, varargin)
     if isscalar(T) && ishandle(T)
         % trplot(H, T)
         H = T; T = varargin{1};
-        T
         set(H, 'Matrix', se2t3(T));
         return;
     end
@@ -106,16 +105,15 @@ function hout = trplot2(T, varargin)
                 xlabel( 'X');
                 ylabel( 'Y');
             end
-            new_plot = true;
         end
         hax = gca;
         hold on
     end
 
-	% create unit vectors
-	o =  [0 0 1]'; o = o(1:2);
-	x1 = [1 0 1]'; x1 = x1(1:2);
-	y1 = [0 1 1]'; y1 = y1(1:2);
+    % create unit vectors
+    o =  [0 0 1]'; o = o(1:2);
+    x1 = [1 0 1]'; x1 = x1(1:2);
+    y1 = [0 1 1]'; y1 = y1(1:2);
     
     % draw the axes
     
@@ -144,7 +142,7 @@ function hout = trplot2(T, varargin)
     end
     
     % add the labels to each axis
-	h = text(x1(1), x1(2), sprintf(fmt, 'X'), 'Parent', hg);
+    h = text(x1(1), x1(2), sprintf(fmt, 'X'), 'Parent', hg);
     if ~isempty(opt.text_opts)
         set(h, opt.text_opts{:});
     end
@@ -152,7 +150,7 @@ function hout = trplot2(T, varargin)
         set(h, 'Parent', hg);
     end
 
-	h = text(y1(1), y1(2), sprintf(fmt, 'Y'), 'Parent', hg);
+    h = text(y1(1), y1(2), sprintf(fmt, 'Y'), 'Parent', hg);
     if ~isempty(opt.text_opts)
         set(h, opt.text_opts{:});
     end
@@ -171,9 +169,9 @@ function hout = trplot2(T, varargin)
     if ~opt.axes
         set(gca, 'visible', 'off');
     end
-	grid on
-	if ~ih
-		hold off
+    grid on
+    if ~ih
+        hold off
     end
     
     % now place the frame in the desired pose

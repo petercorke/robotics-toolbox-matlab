@@ -34,6 +34,6 @@
 
 function Mx = cinertia(robot, q)
 	J = jacob0(robot, q);
-	Ji = inv(J);
+	Ji = inv(J);                %#ok<*MINV>
 	M = inertia(robot, q);
 	Mx = Ji' * M * Ji;

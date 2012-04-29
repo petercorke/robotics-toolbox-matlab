@@ -39,7 +39,10 @@
 % - Solution is computed iteratively.
 % - Solution is sensitive to choice of initial gain.  The variable
 %   step size logic (enabled by default) does its best to find a balance
-%   between speed of convergence and divergene.
+%   between speed of convergence and divergence.
+% - Some experimentation might be required to find the right values of 
+%   tol, ilimit and alpha.
+% - The pinv option sometimes leads to much faster convergence.
 % - The tolerance is computed on the norm of the error between current
 %   and desired tool pose.  This norm is computed from distances
 %   and angles without any kind of weighting.
@@ -50,10 +53,11 @@
 %   ikine6s or ikine3.
 % - This approach allows a solution to obtained at a singularity, but 
 %   the joint angles within the null space are arbitrarily assigned.
+% - Joint offsets, if defined, are added to the inverse kinematics to 
+%   generate Q.
 %
 % See also SerialLink.fkine, tr2delta, SerialLink.jacob0, SerialLink.ikine6s.
  
-
 
 % Copyright (C) 1993-2011, by Peter I. Corke
 %
@@ -88,7 +92,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
     n = robot.n;
 
     % robot.ikine(tr, q)
-    if length(args) > 0
+    if ~isempty(args)
         q = args{1};
         if isempty(q)
             q = zeros(1, n);
@@ -124,6 +128,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
 
 
     history = [];
+    failed = false;
     for i=1:npoints
         T = tr(:,:,i);
         nm = Inf;
@@ -138,6 +143,9 @@ function [qt,histout] = ikine(robot, tr, varargin)
             if count > opt.ilimit
                 warning('ikine: iteration limit %d exceeded (row %d), final err %f', ...
                     opt.ilimit, i, nm);
+                failed = true;
+                q = NaN*ones(1,n);
+                break
             end
 
             % compute the error
@@ -192,7 +200,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
                 h.e = e;
                 h.ne = nm;
                 h.alpha = opt.alpha;
-                history = [history; h];
+                history = [history; h]; %#ok<*AGROW>
             end
 
             % update the estimated solution
@@ -200,7 +208,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
             nm = norm(e(m));
 
             if norm(e) > 1.5*norm(eprev)
-                warning( 'solution diverging, try reducing alpha');
+                warning('RTB:ikine:diverged', 'solution diverging, try reducing alpha');
             end
             eprev = e;
 

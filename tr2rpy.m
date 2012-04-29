@@ -49,9 +49,9 @@ function rpy = tr2rpy(m, varargin)
 
 	s = size(m);
 	if length(s) > 2
-		rpy = [];
+		rpy = zeros(s(3), 3);
 		for i=1:s(3)
-			rpy = [rpy; tr2rpy(m(:,:,i), varargin{:})];
+			rpy(i,:) = tr2rpy(m(:,:,i), varargin{:});
 		end
 		return
 	end

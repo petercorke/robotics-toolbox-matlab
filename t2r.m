@@ -48,6 +48,7 @@ function R = t2r(T)
         R = T(1:n-1,1:n-1);
     else
         %  matrix sequence case
+        R = zeros(3,3,d(3));
         for i=1:d(3)
             R(:,:,i) = T(1:n-1,1:n-1,i);
         end

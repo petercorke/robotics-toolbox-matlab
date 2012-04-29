@@ -12,6 +12,8 @@
 %
 % Notes::
 % - If no output arguments are specified the result is displayed.
+% - This algorithm is from Paul 1981, other solutions are possible using
+%   eigenvectors or Rodriguez formula.
 %
 % See also ANGVEC2R, ANGVEC2TR.
 
@@ -40,6 +42,8 @@ function [theta, v] = tr2angvec(R)
     end
 
     if size(R,3) > 1
+        theta = zeros(size(R,3),1);
+        v = zeros(size(R,3),3);
         for i=1:size(R,3)
             [t,a] = tr2angvec(R(:,:,i));
             theta(i) = t;

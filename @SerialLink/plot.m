@@ -1,38 +1,38 @@
-%SerialLink.ploT Graphical display and animation
+%SerialLink.plot Graphical display and animation
 %
 % R.plot(Q, options) displays a graphical animation of a robot based on 
 % the kinematic model.  A stick figure polyline joins the origins of
-% the link coordinate frames. The robot is displayed at the joint angle Q, or 
-% if a matrix it is animated as the robot moves along the trajectory.
+% the link coordinate frames. The robot is displayed at the joint angle Q (1xN), or 
+% if a matrix (MxN) it is animated as the robot moves along the M-point trajectory.
 %
-% The graphical robot object holds a copy of the robot object and
-% the graphical element is tagged with the robot's name (.name property).
-% This state also holds the last joint configuration which can be retrieved,
-% see PLOT(robot) below.
+% Options::
+%  'workspace', W   size of robot 3D workspace, W = [xmn, xmx ymn ymx zmn zmx]
+%  'delay', d       delay betwen frames for animation (s)
+%  'fps',fps        set number of frames per second for display
+%  '[no]loop'       loop over the trajectory forever
+%  'mag', scale     annotation scale factor
+%  'cylinder', C    color for joint cylinders, C=[r g b]
+%  'ortho'          orthogonal camera view (default)
+%  'perspective'    perspective camera view
+%  'xyz'            wrist axis label is XYZ
+%  'noa'            wrist axis label is NOA
+%  '[no]raise'      autoraise the figure (very slow).
+%  '[no]render'     controls shaded rendering after drawing
+%  '[no]base'       controls display of base 'pedestal'
+%  '[no]wrist'      controls display of wrist
+%  '[no]shadow'     controls display of shadow
+%  '[no]name'       display the robot's name 
+%  '[no]jaxes'      control display of joint axes
+%  '[no]joints'     controls display of joints
 %
-% Figure behaviour::
-% If no robot of this name is currently displayed then a robot will
-% be drawn in the current figure.  If hold is enabled (hold on) then the
-% robot will be added to the current figure.
+% The options come from 3 sources and are processed in order:
+% - Cell array of options returned by the function PLOTBOTOPT (if it exists)
+% - Cell array of options given by the 'plotopt' option when creating the
+%   SerialLink object.
+% - List of arguments in the command line.
 %
-% If the robot already exists then that graphical model will be found 
-% and moved.
-%
-% Multiple views of the same robot::
-%
-% If one or more plots of this robot already exist then these will all
-% be moved according to the argument Q.  All robots in all windows with 
-% the same name will be moved.
-%
-% Multiple robots in the same figure::
-%
-% Multiple robots can be displayed in the same plot, by using "hold on"
-% before calls to plot(robot).  
-%
-% Graphical robot state::
-%
-% The configuration of the robot as displayed is stored in the SerialLink object
-% and can be accessed by the read only object property R.q.
+% Many boolean options can be enabled or disabled with the 'no' prefix.  The
+% various option sources can toggle an option, the last value is taken.
 %
 % Graphical annotations and options::
 %
@@ -47,40 +47,70 @@
 % the workspace dimensions.  This dimension can be changed by setting the 
 % multiplicative scale factor using the 'mag' option.
 %
-% Options::
-%  'workspace', W          size of robot 3D workspace, W = [xmn, xmx ymn ymx zmn zmx]
-%  'delay', d              delay betwen frames for animation (s)
-%  'fps',fps               set number of frames per second for display
-%  'cylinder', C           color for joint cylinders, C=[r g b]
-%  'mag', scale            annotation scale factor
-%  'perspective'|'ortho'   type of camera view
-%  'raise'|'noraise'       controls autoraise of current figure on plot, is
-%                          incredibly slow.
-%  'render'|'norender'     controls shaded rendering after drawing
-%  'loop'|'noloop'         controls endless loop mode
-%  'base'|'nobase'         controls display of base 'pedestal'
-%  'wrist'|'nowrist'       controls display of wrist
-%  'shadow'|'noshadow'     controls display of shadow
-%  'name'|'noname'         display the robot's name 
-%  'xyz'|'noa'             wrist axis label
-%  'jaxes'|'nojaxes'       control display of joint axes
-%  'joints'|'nojoints'     controls display of joints
+% Figure behaviour::
 %
-% The options come from 3 sources and are processed in order:
-% - Cell array of options returned by the function PLOTBOTOPT.
-% - Cell array of options given by the 'plotopt' option when creating the
-%   SerialLink object.
-% - List of arguments in the command line.
+% - If no figure exists one will be created and teh robot drawn in it.
+% - If no robot of this name is currently displayed then a robot will
+%   be drawn in the current figure.  If hold is enabled (hold on) then the
+%   robot will be added to the current figure.
+% - If the robot already exists then that graphical model will be found 
+%   and moved.
 %
-% See also plotbotopt, SerialLink.fkine.
+% Multiple views of the same robot::
+%
+% If one or more plots of this robot already exist then these will all
+% be moved according to the argument Q.  All robots in all windows with 
+% the same name will be moved.
+%
+%  Create a robot in figure 1
+%         figure(1)
+%         p560.plot(qz);
+%  Create a robot in figure 2
+%         figure(2)
+%         p560.plot(qz);
+%  Now move both robots
+%         p560.plot(qn)
+%
+% Multiple robots in the same figure::
+%
+% Multiple robots can be displayed in the same plot, by using "hold on"
+% before calls to robot.plot().  
+%
+%  Create a robot in figure 1
+%         figure(1)
+%         p560.plot(qz);
+%  Make a clone of the robot named bob
+%         bob = SerialLink(p560, 'name', 'bob');
+%  Draw bob in this figure
+%         hold on
+%         bob.plot(qn)
+%
+%  To animate both robots so they move together:
+%         qtg = jtraj(qr, qz, 100);
+%         for q=qtg'
+%           p560.plot(q');
+%           bob.plot(q');
+%         end
+%
+% Notes::
+% - Delay betwen frames can be eliminated by setting option 'delay', 0 or
+%   'fps', Inf.
+% - By default a quite detailed plot is generated, but turning off labels,
+%   axes, shadows etc. will speed things up.
+% - Each graphical robot object is tagged by the robot's name and has UserData
+%   that holds graphical handles and the handle of the robot object.
+% - The graphical state holds the last joint configuration which can be retrieved
+%   using q = robot.plot().
+%
+% See also plotbotopt, SerialLink.animate, SerialLink.fkine.
 
 
 % HANDLES:
 %
-%  A robot comprises a bunch of individual graphical elements and these are 
-% kept in a structure which can be stored within the .handle element of a
-% robot object:
-%   h.robot     the robot stick figure
+% A robot comprises a bunch of individual graphical elements and these are 
+% kept in a structure:
+%
+%   h.link     the robot stick figure
 %   h.shadow    the robot's shadow
 %   h.x     wrist vectors
 %   h.y
@@ -89,15 +119,17 @@
 %   h.yt
 %   h.zt
 %
-%  The plot function returns a new robot object with the handle element set.
+%   h.q   the last set of joint coordinates
+%   h.robot pointer to the robot object
+%   h.opt   the final options structure
 %
-% For the h.robot object we additionally: 
-%   - save this new robot object as its UserData
-%   - tag it with the name field from the robot object
+% The h.link graphical element is tagged with the robot's name and has this
+% struct as its UserData.
+%
+%  h.links -> h -> robot
 %
 %  This enables us to find all robots with a given name, in all figures,
 % and update them.
-
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke

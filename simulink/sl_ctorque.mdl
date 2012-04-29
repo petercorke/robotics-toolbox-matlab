@@ -1,6 +1,6 @@
 Model {
   Name			  "sl_ctorque"
-  Version		  7.6
+  Version		  7.7
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
@@ -21,7 +21,7 @@ Model {
       Name		      "tau"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.32"
+    ComputedModelVersion    "1.35"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -40,11 +40,11 @@ Model {
   Creator		  "pic"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "n6334687"
+  LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Feb 06 16:30:47 2012"
-  RTWModifiedTimeStamp	  250446645
-  ModelVersionFormat	  "1.%<AutoIncrement:32>"
+  LastModifiedDate	  "Fri Apr 27 20:37:03 2012"
+  RTWModifiedTimeStamp	  257410999
+  ModelVersionFormat	  "1.%<AutoIncrement:35>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -119,13 +119,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.10.0"
+      Version		      "1.11.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  StartTime		  "0.0"
 	  StopTime		  "10.0"
 	  AbsTol		  "auto"
@@ -159,7 +159,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -171,6 +171,7 @@ Model {
 	  SaveFinalState	  off
 	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Array"
+	  SignalLoggingSaveFormat "ModelDataLogs"
 	  SaveOutput		  on
 	  SaveState		  off
 	  SignalLogging		  on
@@ -190,7 +191,7 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  BlockReduction	  off
 	  BooleanDataType	  off
 	  ConditionallyExecuteInputs on
@@ -228,10 +229,11 @@ Model {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
+	  AccelParallelForEachSubsystem	on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -302,6 +304,7 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  SimStateOlderReleaseMsg "error"
 	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "None"
 	  BusNameAdapt		  "WarnAndRepair"
@@ -316,7 +319,7 @@ Model {
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -353,7 +356,7 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -368,7 +371,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -383,7 +386,7 @@ Model {
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  SystemTargetFile	  "grt.tlc"
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
@@ -414,6 +417,7 @@ Model {
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
 	  GenerateSLWebview	  off
+	  GenerateCodeMetricsReport off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -422,7 +426,7 @@ Model {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.10.0"
+	      Version		      "1.11.0"
 	      ForceParamTrailComments off
 	      GenerateComments	      on
 	      IgnoreCustomStorageClasses on
@@ -461,13 +465,15 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.10.0"
+	      Version		      "1.11.0"
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
 	      TargetFunctionLibrary   "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
+	      FunctionExecutionProfile off
+	      CodeExecutionProfiling  off
 	      ERTCodeCoverageTool     "None"
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
@@ -513,6 +519,7 @@ Model {
 	      RTWCAPISignals	      off
 	      RTWCAPIParams	      off
 	      RTWCAPIStates	      off
+	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
 	    }
 	    PropName		    "Components"
@@ -522,7 +529,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    " [ 786, 727, 1777, 1357 ] "
+      ConfigPrmDlgPosition     [ 786, 727, 1777, 1357 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -624,7 +631,7 @@ Model {
   }
   System {
     Name		    "sl_ctorque"
-    Location		    [1914, 296, 2753, 578]
+    Location		    [60, 63, 899, 345]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -638,7 +645,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "38"
+    SIDHighWatermark	    "39"
     Block {
       BlockType		      Clock
       Name		      "Clock"
@@ -667,9 +674,9 @@ Model {
       Name		      "RNE"
       SID		      "34"
       Ports		      [3, 1]
-      Position		      [175, 146, 250, 214]
+      Position		      [175, 147, 250, 223]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.50"
       SourceBlock	      "roblocks/Dynamics/RNE"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -689,10 +696,10 @@ Model {
       Name		      "Robot"
       SID		      "35"
       Ports		      [1, 3]
-      Position		      [395, 142, 470, 218]
+      Position		      [395, 147, 470, 223]
       BackgroundColor	      "red"
       DropShadow	      on
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.50"
       SourceBlock	      "roblocks/Dynamics/Robot"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -704,7 +711,7 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       GeneratePreprocessorConditionals off
-      robot		      "p560"
+      robot		      "p560.nofriction()"
       q0		      "[0 0 0 0 0 0]"
     }
     Block {
@@ -744,14 +751,14 @@ Model {
       BlockType		      Terminator
       Name		      "Terminator"
       SID		      "10"
-      Position		      [105, 190, 125, 210]
+      Position		      [105, 200, 125, 220]
       ShowName		      off
     }
     Block {
       BlockType		      Terminator
       Name		      "Terminator1"
       SID		      "11"
-      Position		      [495, 195, 515, 215]
+      Position		      [495, 200, 515, 220]
       ShowName		      off
     }
     Block {
@@ -765,7 +772,7 @@ Model {
       BlockType		      ZeroOrderHold
       Name		      "Tfb"
       SID		      "27"
-      Position		      [300, 165, 335, 195]
+      Position		      [295, 170, 330, 200]
       SampleTime	      "0.01"
     }
     Block {
@@ -773,9 +780,9 @@ Model {
       Name		      "jtraj"
       SID		      "38"
       Ports		      [0, 3]
-      Position		      [45, 144, 80, 216]
+      Position		      [45, 149, 80, 221]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.50"
       SourceBlock	      "roblocks/Trajectory/jtraj"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -790,15 +797,16 @@ Model {
       q0		      "[0 0 0 0 0 0]"
       qf		      "[pi/4 pi/2 -pi/2 0 0 0]"
       tmax		      "10"
+      ts		      "0.02"
     }
     Block {
       BlockType		      Reference
       Name		      "plot"
-      SID		      "14"
+      SID		      "39"
       Ports		      [1]
-      Position		      [700, 127, 780, 183]
+      Position		      [700, 132, 780, 188]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.50"
       SourceBlock	      "roblocks/Robot Graphics/plot"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -811,6 +819,7 @@ Model {
       RTWMemSecDataParameters "Inherit from model"
       GeneratePreprocessorConditionals off
       robot		      "p560"
+      fps		      "25"
     }
     Block {
       BlockType		      Outport
@@ -866,12 +875,12 @@ Model {
       Branch {
 	Points			[85, 0]
 	Branch {
-	  DstBlock		  "plot"
+	  Points		  [0, 20]
+	  DstBlock		  "q"
 	  DstPort		  1
 	}
 	Branch {
-	  Points		  [0, 25]
-	  DstBlock		  "q"
+	  DstBlock		  "plot"
 	  DstPort		  1
 	}
       }
@@ -899,7 +908,7 @@ Model {
 	DstPort			1
       }
       Branch {
-	Points			[0, 45]
+	Points			[0, 40]
 	DstBlock		"tau"
 	DstPort			1
       }
@@ -907,7 +916,7 @@ Model {
     Line {
       SrcBlock		      "jtraj"
       SrcPort		      1
-      Points		      [0, 5; 20, 0]
+      Points		      [20, 0]
       Branch {
 	Points			[0, -100]
 	DstBlock		"Sum"
@@ -923,7 +932,7 @@ Model {
       SrcPort		      2
       Points		      [35, 0]
       Branch {
-	Points			[0, -75]
+	Points			[0, -80]
 	DstBlock		"Sum1"
 	DstPort			1
       }
@@ -948,7 +957,6 @@ Model {
     Line {
       SrcBlock		      "jtraj"
       SrcPort		      3
-      Points		      [5, 0]
       DstBlock		      "Terminator"
       DstPort		      1
     }

@@ -102,7 +102,7 @@ classdef RangeBearingSensor < Sensor
             s.R = R;
             if ~isempty(opt.range)
                 if length(opt.range) == 1
-                    s.r_range = [0 opt.r_range];
+                    s.r_range = [0 opt.range];
                 elseif length(opt.thrange) == 2
                     s.r_range = opt.range;
                 end

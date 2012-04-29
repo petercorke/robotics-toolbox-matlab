@@ -3,22 +3,22 @@ function test_suite = TestRobotToolboxUtility
   initTestSuite;
 %% Utility
 %    about                      - summary of object size and type
-function Test_about
+function ab_testout
     a = [1 2 3; 4 5 6];
     about(a);
     about a;
 
 %    angdiff                    - subtract 2 angles modulo 2pi
-function Test_angdiff
+function an_testgdiff
     assertElementsAlmostEqual(angdiff(pi/2,pi), -1.5708, 'absolute',1e-4);
 %    circle                     - compute/draw points on a circle
-function Test_circle
+function ci_testrcle
     x= circle([1 2],5,'n', 5 );
     assertElementsAlmostEqual(x, [6.0000    2.5451   -3.0451   -3.0451    2.5451
                                   2.0000    6.7553    4.9389   -0.9389   -2.7553],...
                                   'absolute',1e-4);
 %    colnorm                    - columnwise norm of matrix
-function Test_colnorm
+function co_testlnorm
     x= [6.0000    2.5451   -3.0451   -3.0451    2.5451
         2.0000    6.7553    4.9389   -0.9389   -2.7553];
     cn = colnorm(x);
@@ -26,7 +26,7 @@ function Test_colnorm
                                   'absolute',1e-4);
     
 %    ishomog                    - true if argument is a 4x4 matrix
-function Test_ishomog
+function is_testhomog
     tr = [0.9363   -0.2896    0.1987         0
          0.3130    0.9447   -0.0978         0
         -0.1593    0.1538    0.9752         0
@@ -42,7 +42,7 @@ function Test_ishomog
     assertFalse(ishomog(ones(4,4),'valid'));
    
 %    isrot                      - true if argument is a 3x3 matrix
- function Test_isrot
+ function is_testrot
     tr = [0.9363   -0.2896    0.1987         0
          0.3130    0.9447   -0.0978         0
         -0.1593    0.1538    0.9752         0
@@ -58,7 +58,7 @@ function Test_ishomog
     assertFalse(isrot(ones(3,3),'valid'));
               
 %    isvec                      - true if argument is a 3-vector
-function Test_isvec
+function is_testvec
     vh = [1 2 3];
     vv = [1;2;3];
     s = 45;
@@ -69,24 +69,24 @@ function Test_isvec
     assertFalse(isvec(ones(2,2,2)));
     
 %    numcols                    - number of columns in matrix
-function Test_numcols
+function nu_testmcols
     a = ones(2,3,4);
     b = 2;
     assertEqual(numcols(a),3);
     assertEqual(numcols(b),1);
 %    numrows                    - number of rows in matrix
-function Test_numrows
+function nu_testmrows
     a = ones(2,3,4);
     b = 3;
     assertEqual(numrows(a),2);
     assertEqual(numrows(b),1);
 
 %    Polygon                    - general purpose polygon class
-function Test_Polygon
+function Po_testlygon
     v = [1 2 1 2;1 1 2 2];
     p = Polygon(v);
 %    unit                       - unitize a vector
-function Test_unit
+function un_testit
     vh = [1 2 3];
     vv = [1;2;3];
     vo = [0 0 0];
@@ -98,7 +98,7 @@ function Test_unit
     assertExceptionThrown( @() unit(vo), 'RTB:unit:zero_norm');
 
 %    tb_optparse                - toolbox argument parser
-function Test_tb_optparse
+function tb_test_optparse
 
     opt.one = [];
     opt.two = 2;
@@ -215,5 +215,8 @@ function Test_tb_optparse
     assertEqual(opt2.color, 'green');
     assertEqual(opt2.select, 1);
 
-    [opt2,args] = tb_optparse(opt, {1, 2, 'spam'});
-    assertEqual(args, {1, 2, 'spam'});
+    [opt2,args] = tb_optparse(opt, {1, 'three', 4, 'spam', 2, 'red',  'spam'});
+    assertEqual(args, {1, 'spam', 2, 'spam'});
+
+    assertExceptionThrown( @() tb_optparse(opt, {'two'}), 'RTB:tboptparse:badargs');
+    assertExceptionThrown( @() tb_optparse(opt, 'bob'), 'RTB:tboptparse:badargs');

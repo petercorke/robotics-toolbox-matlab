@@ -30,7 +30,7 @@
 function qplot(t, q)
     if nargin < 2
         q = t;
-        t = [1:numrows(q)]';
+        t = (1:numrows(q))';
     end
     clf
     hold on

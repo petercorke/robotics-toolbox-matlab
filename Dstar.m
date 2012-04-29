@@ -21,10 +21,10 @@
 % costmap    Distance from each point to the goal.
 %
 % Example::
-%    load map1           % load map
-%    ds = Dstar(map);    % create navigation object
-%    ds.plan(goal)       % create plan for specified goal
-%    ds.path(start)      % animate path from this start location
+%        load map1           % load map
+%        ds = Dstar(map);    % create navigation object
+%        ds.plan(goal)       % create plan for specified goal
+%        ds.path(start)      % animate path from this start location
 %
 % Notes::
 % - Obstacles are represented by Inf in the costmap.

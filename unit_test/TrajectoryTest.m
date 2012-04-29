@@ -3,7 +3,7 @@ function test_suite = TestRobotToolboxTrajectoryGeneration
   initTestSuite;
   %% Trajectory Generation
 %    tpoly                      - 1D polynomial trajectory
-function Test_tpoly
+function tpoly_test
     % unit testing tpoly 
     s1 = 1;
     s2 = 2;
@@ -71,7 +71,7 @@ function Test_tpoly
                   0],'absolute',1e-4);
         
 %    lspb                       - 1D trapezoidal trajectory
-function Test_lspb
+function lspb_test
     % unit testing lspb 
     s1 = 1;
     s2 = 2;
@@ -139,7 +139,7 @@ function Test_lspb
             -0.2500],'absolute',1e-4);
         
 %    ctraj                      - Cartesian trajectory
-function Test_ctraj
+function ctraj_test
     % unit testing ctraj with T0 and T1 and N
     expected_out(:,:,1) = [1     0     0     1
                            0     1     0     1
@@ -172,7 +172,7 @@ function Test_ctraj
             expected_out,'absolute',1e-4);
             
 %    jtraj                      - joint space trajectory
-function Test_jtraj
+function jtraj_test
     % unit testing jtraj with 
     q1 = [0.1 0.2 0.3 0.4 0.5];
     q2 = [0.5 0.4 0.3 0.2 0.1];
@@ -240,7 +240,7 @@ function Test_jtraj
      
          
 %    mtraj                      - multi-axis trajectory for arbitrary function        
-function Test_mtraj
+function mtraj_test
 % unit testing lspb 
     q1 = [0.1 0.2 0.3 0.4 0.5];
     q2 = [0.5 0.4 0.3 0.2 0.1];
@@ -301,7 +301,7 @@ function Test_mtraj
              0.0000    0.0000         0   -0.0000   -0.0000],'absolute',1e-4);
 
 %    mstraj                     - multi-axis multi-segment trajectory
-function Test_mstraj
+function mstraj_test
      via = [4 1; 4 4; 5 2; 2 5];
      %Test with QDMAX 
      out = mstraj(via, [ 2 1 ],[],[4 1],1,1);
@@ -346,7 +346,7 @@ function Test_mstraj
 
     
 %    trinterp                   - interpolate HT s
-function Test_trinterp
+function trinterp_test
     % Unit testing trinterp with two translation matrices. 
     T1 = [1.0000         0         0    0.4000
                0   -1.0000   -0.0000    0.2000

@@ -70,6 +70,7 @@ function R = rpy2r(roll, varargin)
         if numrows(roll) == 1
             R = rotx(roll) * roty(pitch) * rotz(yaw);
         else
+            R = zeros(3,3,numrows(roll));
             for i=1:numrows(roll)
                 R(:,:,i) = rotx(roll(i)) * roty(pitch(i)) * rotz(yaw(i));
             end
@@ -79,6 +80,7 @@ function R = rpy2r(roll, varargin)
         if numrows(roll) == 1
             R = rotz(roll) * roty(pitch) * rotx(yaw);
         else
+            R = zeros(3,3,numrows(roll));
             for i=1:numrows(roll)
                 R(:,:,i) = rotz(roll(i)) * roty(pitch(i)) * rotx(yaw(i));
             end

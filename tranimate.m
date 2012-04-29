@@ -54,7 +54,7 @@ function tranimate(P2, varargin)
     if isa(P2, 'Quaternion')
         T2 = P2.T;   % convert quaternion to transform
         if ~isempty(args) && isa(args{1},'Quaternion')
-            P1 = T2;
+            T1 = T2;
             Q2 = args{1};
             T2 = Q2.T;
             args = args(2:end);
@@ -64,7 +64,7 @@ function tranimate(P2, varargin)
     elseif isrot(P2)
         T2 = r2t(P2);
         if ~isempty(args) && isrot(args{1})
-            P1 = T2;
+            T1 = T2;
             T2 = r2t(args{1});
             args = args(2:end);
         else
@@ -73,7 +73,7 @@ function tranimate(P2, varargin)
     elseif ishomog(P2)
         T2 = P2;
         if ~isempty(args) && ishomog(args{1})
-            P1 = T2;
+            T1 = T2;
             T2 = args{1};
             args = args(2:end);
         else
@@ -115,6 +115,6 @@ function tranimate(P2, varargin)
     % animate it for all poses in the sequence
     for i=1:size(Ttraj,3)
         T = Ttraj(:,:,i);
-        set(hg, 'Matrix', T);
+        trplot(hg, T);
         pause(1/opt.fps);
     end

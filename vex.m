@@ -37,4 +37,4 @@ function v = vex(S)
         v = 0.5*[S(3,2)-S(2,3); S(1,3)-S(3,1); S(2,1)-S(1,2)];
     else
         error('argument must be a 3x3 matrix');
-	end
+    end

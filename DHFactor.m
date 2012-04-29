@@ -14,11 +14,12 @@
 %
 % Methods::
 %
-% display   shows the simplified version in terms of Denavit-Hartenberg parameters
-% base      shows the base transform
-% tool      shows the tool transform
-% command   returns a string that could be passed to the SerialLink() object constructor
-%           to generate a robot with these kinematics.
+% base      the base transform as a Java string
+% tool      the tool transform as a Java string
+% command   a command string that will create a SerialLink() object 
+%           representing the specified kinematics
+% char      convert to string representation
+% display   display in human readable form
 %
 % Example::
 %
@@ -26,12 +27,22 @@
 %    >> dh = DHFactor(s);
 %    >> dh
 %    DH(q1+90, 0, 0, +90).DH(q2, L1, 0, 0).DH(q3-90, L2, 0, 0).Rz(+90).Rx(-90).Rz(-90)
-%    >> r = eval( dh.command() );
+%    >> r = eval( dh.command('myrobot') );
 %
 % Notes::
 % - Variables starting with q are assumed to be joint coordinates
 % - Variables starting with L are length constants.
-% - implemented in Java
+% - Length constants must be defined in the workspace before executing the 
+%   last line above.
+% - Implemented in Java
+% - Not all sequences can be converted to DH format, if conversion cannot be 
+%   achieved an error is generated.
+%
+% Reference::
+% - A simple and systematic approach to assigning Denavit-Hartenberg parameters,
+%   P.Corke, IEEE Transaction on Robotics, vol. 23, pp. 590-594, June 2007.
+% - Robotics, Vision & Control, Sec 7.5.2, 7.7.1,
+%   Peter Corke, Springer 2011.
 %
 % See also SerialLink.
 

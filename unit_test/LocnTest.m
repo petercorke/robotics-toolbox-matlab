@@ -1,7 +1,7 @@
 function test_suite = TestLocalizationClasses
   initTestSuite;
 
-function VehicleTest
+function Vehicle_test
     randinit
     V = diag([0.005, 0.5*pi/180].^2);
 
@@ -15,7 +15,7 @@ function VehicleTest
     J = v.Fx(v.x, [.1 .2]);
     J = v.Fv(v.x, [.1 .2]);
 
-function DeadReckoningTest
+function DeadReckoning_test
     randinit
     V = diag([0.005, 0.5*pi/180].^2);
     P0 = diag([0.005, 0.005, 0.001].^2);
@@ -37,7 +37,7 @@ function DeadReckoningTest
     ekf.plot_ellipse([], 'g')
     ekf.plot_P()
 
-function MapLocalizationTest
+function MapLocalization_test
     randinit
     W = diag([0.1, 1*pi/180].^2);
     P0 = diag([0.005, 0.005, 0.001].^2);
@@ -68,7 +68,7 @@ function MapLocalizationTest
     clf
     ekf.plot_P()
 
-function MappingTest
+function Mapping_test
     randinit
     W = diag([0.1, 1*pi/180].^2);
     V = diag([0.005, 0.5*pi/180].^2);
@@ -91,7 +91,7 @@ function MappingTest
     grid on
     xyzlabel
 
-function SLAMTest
+function SLAM_test
     randinit
     W = diag([0.1, 1*pi/180].^2);
     P0 = diag([0.005, 0.005, 0.001].^2);
@@ -124,7 +124,7 @@ function SLAMTest
     map.plot();
     ekf.plot_map(5,'g');
 
-function ParticleFilterTest
+function ParticleFilter_test
 
     randinit
     map = Map(20);
@@ -151,7 +151,7 @@ function ParticleFilterTest
     clf
     pf.plot_xy();
 
-function RRTTest
+function RRT_test
 
     randinit
     veh = Vehicle([], 'stlim', 1.2);

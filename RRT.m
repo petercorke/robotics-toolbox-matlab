@@ -14,9 +14,9 @@
 %
 % Example::
 %
-%    rrt = RRT();           % create navigation object
-%    rrt.plan()             % create navigation tree
-%    rrt.path(start, goal)  % animate path from this start location
+%        rrt = RRT();           % create navigation object
+%        rrt.plan()             % create navigation tree
+%        rrt.path(start, goal)  % animate path from this start location
 %
 % References::
 % - Randomized kinodynamic planning,
@@ -327,7 +327,7 @@ classdef RRT < Navigation
         % object in human-readable form.
         %
             % invoke the superclass char() method
-            s = char@Navigation(prm);
+            s = char@Navigation(rrt);
 
             % add RRT specific stuff information
             s = char(s, sprintf('  region: X %f : %f; Y %f : %f', rrt.xrange, rrt.yrange));

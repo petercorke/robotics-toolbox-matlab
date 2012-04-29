@@ -4,7 +4,7 @@ function test_suite = TestRobotToolboxDifferentialMotion
   
 %% Differential motion
 %    delta2tr                   - differential motion vector to HT
-function Test_delta2tr
+function delta2tr_test
     %test with standard numbers  
     assertElementsAlmostEqual(delta2tr([0.1 0.2 0.3 0.4 0.5 0.6]),...
     [1.0000   -0.6000    0.5000    0.1000
@@ -21,7 +21,7 @@ function Test_delta2tr
     assertExceptionThrown(@()delta2tr(1),'MATLAB:badsubscript');
  
 %    eul2jac                    - Euler angles to Jacobian
-function Test_eul2jac
+function eul2jac_test
     % unit testing eul2jac with variable (0.1, 0.2, 0.3)
     assertElementsAlmostEqual(eul2jac(0.1, 0.2, 0.3),...
         [0.1898   -0.2955         0
@@ -40,7 +40,7 @@ function Test_eul2jac
     assertExceptionThrown(@()eul2jac(1),'MATLAB:inputArgUndefined');
 
 %    rpy2jac                    - RPY angles to Jacobian
-function Test_rpy2jac
+function rpy2jac_test
     % unit testing rpy2jac with variable (.1,.2,.3)
     assertElementsAlmostEqual(rpy2jac(.1, .2, .3),...
         [1.0000         0    0.1987
@@ -61,7 +61,7 @@ function Test_rpy2jac
     
 
 %    skew                       - vector to skew symmetric matrix
-function Test_skew
+function skew_test
     % unit testing the function skew with a vector matrix mat([.1, .2, .3])
     assertElementsAlmostEqual(skew([.1, .2, .3]),...
             [0   -0.3000    0.2000
@@ -83,7 +83,7 @@ function Test_skew
              1     0],'absolute',1e-4);
     
 %    tr2delta                   - HT to differential motion vector
-function Test_tr2delta
+function tr2delta_test
     % unit tessting tr2delta with a tr matrix
     assertElementsAlmostEqual(tr2delta([1 2 3 4;5 6 7 8;9 10 11 12;13 14 15 16]),...
             [4.0000
@@ -113,7 +113,7 @@ function Test_tr2delta
     assertExceptionThrown(@()tr2delta(1),'RTB:t2r:badarg');
     
 %    tr2jac                     - HT to Jacobian
-function Test_tr2jac
+function tr2jac_test
     % unit testing tr2jac with homogeneous transform
     assertElementsAlmostEqual(tr2jac([1 2 3 4;5 6 7 8;9 10 11 12;13 14 15 16]),...
             [1     5     9    12   -24    12
@@ -135,7 +135,7 @@ function Test_tr2jac
      
          
 %    vex                        - skew symmetric matrix to vector
-function Test_vex
+function vex_test
     % unit testing vex with homogeneous transform
     assertElementsAlmostEqual(vex([0 -.3 0.2;0.3 0 -0.1;-0.2 0.1 0]),...
             [0.1000

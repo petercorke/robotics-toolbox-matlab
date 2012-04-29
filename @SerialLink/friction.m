@@ -3,8 +3,9 @@
 % TAU = R.friction(QD) is the vector of joint friction forces/torques for the 
 % robot moving with joint velocities QD.  
 %
-% The friction model includes viscous friction (linear with velocity)
-% and Coulomb friction (proportional to sign(QD)).
+% The friction model includes:
+% - viscous friction which is linear with velocity;
+% - Coulomb friction which is proportional to sign(QD).
 %
 % See also Link.friction.
 
@@ -33,7 +34,8 @@ function  tau = friction(robot, qd)
 
 	L = robot.links;
 
-	for i=1:robot.n
-		tau(i) = friction(L(i), qd(i));
+    tau = zeros(1,robot.n);
+	for j=1:robot.n
+		tau(j) = L(j).friction(qd(j));
 	end
 
