@@ -112,9 +112,6 @@ mexFunction(
     fprintf(stderr, "Fast RNE: (c) Peter Corke 2002-2011\n");
     */
 
-    if (nrhs < 4)
-        mexErrMsgTxt("frne: must be at least 4 arguments\n");
-
     if (  !mxIsClass(ROBOT_IN, "SerialLink") )
         mexErrMsgTxt("frne: first argument is not a robot structure\n");
 
@@ -244,7 +241,6 @@ mexFunction(
         mexErrMsgTxt("frne: wrong number of arguments.");
     }
 
-
     /*
      * fill out the robot structure
      */
@@ -295,7 +291,7 @@ mexFunction(
      */
 
     if (first_time == 0) {
-        mexPrintf("Fast RNE: (c) Peter Corke 2002-2011\n");
+        mexPrintf("Fast RNE: (c) Peter Corke 2002-2012\n");
         first_time = 1;
     }
 
