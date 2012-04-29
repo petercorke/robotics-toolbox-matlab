@@ -30,6 +30,8 @@
   {\color{red}\sffamily\huge\bfseries}}
 \makeatother
 
+\input{release.tex}
+
 \usepackage{fancyvrb}
 \fvset{formatcom=\color{blue},fontseries=c,fontfamily=courier,xleftmargin=4mm,commentchar=!}
 \DefineVerbatimEnvironment{Code}{Verbatim}{formatcom=\color{blue},fontseries=c,fontfamily=courier,fontsize=\footnotesize,xleftmargin=4mm,commentchar=!}
@@ -44,15 +46,16 @@
 \newpage
 \vspace*{\fill}
 \begin{tabular}{ll}
+Release & \release \\
+Release date & \reldate \\[20pt]
 Licence & LGPL \\
 Toolbox home page &  \url{http://www.petercorke.com/robot} \\
 Discussion group & \url{http://groups.google.com.au/group/robotics-tool-box}
 \end{tabular}
 \vspace*{\fill}
 \hrule
-Copyright \textcopyright 2011 Peter Corke\\
+Copyright \textcopyright 2012 Peter Corke\\
 peter.i.corke$@$gmail.com\\
-September 2011\\    %% CHANGE
 \url{http://www.petercorke.com}
 \newpage
 \vspace*{\fill}
@@ -61,8 +64,8 @@ September 2011\\    %% CHANGE
 
 
 \pagestyle{headings}        % Gives page headings at top of page
-\lfoot{Robotics Toolbox 9 for \Mlab}
-\rfoot{Copyright \copyright Peter Corke 2011}
+\lfoot{Robotics Toolbox \release\ for \Mlab}
+\rfoot{Copyright \copyright Peter Corke 2012}
 
 \newpage
 \setcounter{section}{0}
@@ -124,7 +127,7 @@ solve many types of problems in robotics, and I commend it to you.
 All documentation is now in the m-file, making maintenance easier and consistency more likely.
 The negative consequence is that the manual is a little ``drier'' than it used to be.
 \item The Functions link from the Toolbox help browser lists all functions with hyperlinks to the individual help entries.
-\item Online HTML-format help is available from \url{www.petercorke.com/robot/??}.
+\item Online HTML-format help is available from \url{http://www.petercorke.com/RTB/r9/html}
 \end{itemize}
 
 \subsection{Changed behaviour}
