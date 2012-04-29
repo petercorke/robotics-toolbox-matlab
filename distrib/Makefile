@@ -41,8 +41,9 @@ build:
 	cp $(ROOT)/startup_rvc.m rvctools
 
 
-	# remove all SVN files
-	\rm -rf `find . -name .svn`
+	# remove all SVN files from rvctools and below
+    find rvctools -name .svn -exec rm {} \;
+	#\rm -rf `find . -name .svn`
 
 doco:
 	-\rm -rf tmpdoc
