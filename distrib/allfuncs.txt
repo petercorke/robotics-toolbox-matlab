@@ -23,6 +23,7 @@ transl      : set or extract the translational component of HT
 trnorm      : normalize HT 
 trplot      : plot HT as a coordinate frame
 trplot2     : plot HT, SE(2), as a coordinate frame
+trprint     : print an HT
 trotx       : HT for rotation about X-axis
 troty       : HT for rotation about Y-axis
 trotz       : HT for rotation about Z-axis
