@@ -1,6 +1,6 @@
 %SerialLink.coriolis Coriolis matrix
 %
-% C = R.CORIOLIS(Q, QD) is the NxN Coriolis/centripetal matrix for
+% C = R.coriolis(Q, QD) is the Coriolis/centripetal matrix (NxN) for
 % the robot in configuration Q and velocity QD, where N is the number of
 % joints.  The product C*QD is the vector of joint force/torque due to velocity
 % coupling.  The diagonal elements are due to centripetal effects and the 
@@ -8,14 +8,16 @@
 % known as the velocity coupling matrix, since gives the disturbance forces
 % on all joints due to velocity of any joint.
 %
-% If Q and QD are matrices (DxN), each row is interpretted as a joint state 
-% vector, and the result (NxNxD) is a 3d-matrix where each plane corresponds
+% If Q and QD are matrices (KxN), each row is interpretted as a joint state 
+% vector, and the result (NxNxK) is a 3d-matrix where each plane corresponds
 % to a row of Q and QD.
 %
+% C = R.coriolis( QQD) as above but the matrix QQD (1x2N) is [Q QD].
+%
 % Notes::
-% - joint friction is also a joint force proportional to velocity but it is
+% - Joint friction is also a joint force proportional to velocity but it is
 %   eliminated in the computation of this value.
-% - computationally slow, involves N^2/2 invocations of RNE.
+% - Computationally slow, involves N^2/2 invocations of RNE.
 %
 % See also SerialLink.rne.
 
@@ -43,11 +45,22 @@
 
 function C = coriolis(robot, q, qd)
 
-    if numcols(q) ~= robot.n
-        error('q must have %d columns', robot.n);
-    end
-    if numcols(qd) ~= robot.n
-        error('qd must have %d columns', robot.n);
+    n = robot.n;
+
+    if nargin == 2
+        % coriolis( [q qd] )
+        if numcols(q) ~= 2*n
+            error('RTB:coriolis:badarg', 'arg must have %d columns', 2*n);
+        end
+        qd = q(:,n+1:end);
+        q = q(:,1:n);
+    else
+        if numcols(q) ~= n
+            error('RTB:coriolis:badarg', 'Cq must have %d columns', n);
+        end
+        if numcols(qd) ~= n
+            error('RTB:coriolis:badarg', 'qd must have %d columns', n);
+        end
     end
 
     % we need to create a clone robot with no friciton, since friction
@@ -56,7 +69,7 @@ function C = coriolis(robot, q, qd)
 
     if numrows(q) > 1
         if numrows(q) ~= numrows(qd)
-            error('for trajectory q and qd must have same number of rows');
+            error('RTB:coriolis:badarg', 'for trajectory q and qd must have same number of rows');
         end
         C = [];
         for i=1:numrows(q)
