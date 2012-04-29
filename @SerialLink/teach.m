@@ -1,11 +1,27 @@
 %SerialLink.teach Graphical teach pendant
 %
-% R.teach() drive a graphical robot by means of a graphical slider panel.
+% R.teach(OPTIONS) drive a graphical robot by means of a graphical slider panel.
 % If no graphical robot exists one is created in a new window.  Otherwise
-% all current instanes of the graphical robots are driven.
+% all current instances of the graphical robot are driven.
 %
-% R.teach(Q) specifies the initial joint angle, otherwise it is taken from 
-% one of the existing graphical robots.
+% Options::
+% 'eul'        Display tool orientation in Euler angles
+% 'rpy'        Display tool orientation in roll/pitch/yaw angles
+% 'approach'   Display tool orientation as approach vector (z-axis)
+% 'degrees'    Display angles in degrees (default radians)
+% 'q0',q       Set initial joint coordinates
+%
+% GUI::
+%
+% - The record button adds the current joint coordinates as a row to the robot's
+%   qteach property.
+% - The Quit button destroys the teach window.
+%
+% Notes::
+% - The slider limits are derived from the joint limit properties.  If not
+%   set then for
+%   - a revolute joint they are assumed to be [-pi, +pi]
+%   - a prismatic joint they are assumed unknown and an error occurs.
 %
 % See also SerialLink.plot.
 
@@ -57,17 +73,14 @@ function teach(r, varargin)
 
     % drivebot(r, q)
     % drivebot(r, 'deg')
-    qscale = ones(r.n,1);
 
     n = r.n;
     width = 300;
     height = 40;
-    minVal = -pi;
-    maxVal = pi;    
 
     qlim = r.qlim;
-    if isempty(qlim)
-        qlim = [minVal*ones(r.n,1) maxVal*ones(r.n,1)];
+    if any(isinf(qlim))
+        error('for prismatic axes must define joint coordinate limits');
     end
 
     if isempty(opt.q0)
@@ -77,12 +90,11 @@ function teach(r, varargin)
     end
 
     % set up scale factor
-    qscale = [];
-    for L=r.links
+    qscale = ones(r.n,1);
+    for i=1:r.n
+        L=r.links(i);
         if opt.degrees && L.revolute
-            qscale = [qscale 180/pi];
-        else
-            qscale = [qscale 1];
+            qscale(i) = 180/pi;
         end
     end
     
@@ -90,6 +102,7 @@ function teach(r, varargin)
     handles.orientation = opt.orientation;
 
     T6 = r.fkine(q);
+
     fig = figure('Units', 'pixels', ...
         'Position', [0 -height width height*(n+2)+40], ...
         'BusyAction', 'cancel', ...
@@ -101,13 +114,13 @@ function teach(r, varargin)
     % first we check to see if there are any graphical robots of
     % this name, if so we use them, otherwise create a robot plot.
 
-    rh = findobj('Tag', r.name);
+    rhandles = findobj('Tag', r.name);
 
     % attempt to get current joint config of graphical robot
-    if ~isempty(rh)
-        rr = get(rh(1), 'UserData');
-        if ~isempty(rr.q)
-            q = rr.q;
+    if ~isempty(rhandles)
+        h = get(rhandles(1), 'UserData');
+        if ~isempty(h.q)
+            q = h.q;
         end
     end
 
@@ -263,7 +276,7 @@ function teach(r, varargin)
         'Units', 'pixels', ...
         'FontSize', 15, ...
         'Position', [0.05*width 8 0.9*width 0.7*height], ...
-        'CallBack', @(src,event) record(r), ...
+        'CallBack', @(src,event) record_callback(r, handles), ...
         'BackgroundColor', 'blue', ...
         'ForegroundColor', 'white', ...
         'String', 'record');
@@ -282,8 +295,8 @@ function teach(r, varargin)
 
         % if findjobj exists use it, since it lets us get continous callbacks while
         % a slider moves
-        if exist('findjobj') && ~ispc
-            disp('using findjobj');
+        if (exist('findjobj', 'file')>0) && ~ispc
+            %disp('using findjobj');
             drawnow
             jh = findjobj(handles.slider(i), 'nomenu');
             %jh.AdjustmentValueChangedCallback = {@sliderCallbackFunc, r.name, i};
@@ -291,7 +304,7 @@ function teach(r, varargin)
         end
     end
 
-    if isempty(rh)
+    if isempty(rhandles)
         figure
         r.plot(q);
     end
@@ -314,29 +327,29 @@ function teach_callback(src, name, j, handles)
             set(handles.edit(j), 'String', num2str(qscale(j)*newval));
         case 'edit'
             % edit box changed, get value and reflect it to slider
-            newval = str2num(get(src, 'String')) / qscale(j);
+            newval = str2double(get(src, 'String')) / qscale(j);
             set(handles.slider(j), 'Value', newval);
     end
-    fprintf('newval %d %f\n', j, newval);
+    %fprintf('newval %d %f\n', j, newval);
 
     
     % find all graphical objects tagged with the robot name, this is the 
     % instancs of that robot across all figures
-    rh = findobj('Tag', name);
+    rhandles = findobj('Tag', name);
 
-    for r=rh'       
+    for rhandle=rhandles'
         % for every graphical robot instance
         
-        robot = get(r, 'UserData'); % get the robot object
+        h = get(rhandle, 'UserData'); % get the robot object
+        robot = h.robot;
         q = robot.q;    % get its current joint angles
         if isempty(q)
-            888
             q = zeros(1,robot.n);
         end
         q(j) = newval;   % update the joint angle
 
         % update the robot object
-        robot.q = q;
+        %robot.q = q;
         %set(r, 'UserData', robot);
         
         robot.plot(q);   % plot it
@@ -365,24 +378,34 @@ function teach_callback(src, name, j, handles)
     robot.notify('Moved');
     %drawnow
 end
+
+function record_callback(robot, handles)
+    rhandles = findobj('Tag', robot.name);
+
+    if ~isempty(rhandles)
+        h = get(rhandles(1), 'UserData'); % get the plot graphics
+        h.q
+        robot.record(h.q);
+    end
+end
     
 function sliderCallbackFunc(src, h, name, joint, handles)
-persistent busy
+    persistent busy
 
-if busy
-    return
-end
+    % this is really ugly but it works
+    if busy
+        return
+    end
 
-if get(src,'ValueIsAdjusting') == 1
-busy = true;
-        try
-
-            teach_callback(h, name, joint, handles);
-        catch
-            fprintf('*******\n')
-            busy = false;
-            return
-        end
-end
-    busy = false;
-end
+    if get(src,'ValueIsAdjusting') == 1
+    busy = true;
+            try
+                teach_callback(h, name, joint, handles);
+            catch me
+                fprintf('*******\n')
+                busy = false;
+                return
+            end
+    end
+        busy = false;
+    end
