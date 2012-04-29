@@ -1,6 +1,16 @@
 The following files are contributed by others:
 
-ikine560.m % Robert Biro with Gary Von McMurray
-Fanuc10L.m:%Wynand Swart
-MotomanHP6.m:%Wynand Swart
-S4ABB2p8.m:%Wynand Swart
+% Robert Biro with Gary Von McMurray
+    SerialLink.ikine560.m 
+
+%Wynand Swart
+    mdl_Fanuc10L.m:
+    mdl_MotomanHP6.m
+    mdl_S4ABB2p8.m
+
+%Paul Pounds
+    quadrotor_dynamics.m
+    quadrotor_plot.m
+
+%Paul Newman
+    EKF.m

@@ -3,13 +3,12 @@ Citing the Toolbox:
 
 If you use the Toolbox and want to cite it in a paper please use:
 
-@ARTICLE{Corke96b,
-	AUTHOR             = {P.I. Corke},
-	JOURNAL            = {IEEE Robotics and Automation Magazine},
-	MONTH              = mar,
-	NUMBER             = {1},
-	PAGES              = {24-32},
-	TITLE              = {A Robotics Toolbox for {MATLAB}},
-	VOLUME             = {3},
-	YEAR               = {1996}
-}
+@book{Corke11a,
+    Author = {Peter I. Corke},
+    Date-Added = {2011-01-12 08:19:32 +1000},
+    Date-Modified = {2011-07-26 12:27:18 +0200},
+    Note = {ISBN 978-3-642-20143-1},
+    Publisher = {Springer},
+    Title = {Robotics, Vision \& Control: Fundamental Algorithms in Matlab},
+    Year = {2011}}
+
