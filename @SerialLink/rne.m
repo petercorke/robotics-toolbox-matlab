@@ -17,17 +17,23 @@
 % TAU = R.rne(X, GRAV, FEXT) as above but specifying a wrench 
 % acting on the end of the manipulator which is a 6-vector [Fx Fy Fz Mx My Mz].
 %
-% If Q,QD and QDD, or X are matrices with M rows representing a trajectory then
-% TAU is an MxN matrix with rows corresponding to each trajectory state.
+% [TAU,WBASE] = R.rne(X, GRAV, FEXT) as above but the extra output is the
+% wrench on the base.
 %
-% Notes:
-% - The robot base transform is ignored
-% - The torque computed also contains a contribution due to armature
-%   inertia.
-% - RNE can be either an M-file or a MEX-file.  See the manual for details on
-%   how to configure the MEX-file.  The M-file is a wrapper which calls either
-%   RNE_DH or RNE_MDH depending on the kinematic conventions used by the robot
-%   object.
+% If Q,QD and QDD (MxN), or X (Mx3N) are matrices with M rows representing a 
+% trajectory then TAU (MxN) is a matrix with rows corresponding to each trajectory 
+% step.
+%
+% Notes::
+% - The robot base transform is ignored.
+% - The torque computed contains a contribution due to armature
+%   inertia and joint friction.
+% - RNE can be either an M-file or a MEX-file.
+% - See the README file in the mex folder for details on how to configure 
+%   MEX-file operation.
+% - The M-file is a wrapper which calls either RNE_DH or RNE_MDH depending on 
+%   the kinematic conventions used by the robot object.
+% - Currently the MEX-file version does not compute WBASE.
 %
 % See also SerialLink.accel, SerialLink.gravload, SerialLink.inertia.
 
@@ -36,7 +42,6 @@
 %
 % verified against MAPLE code, which is verified by examples
 %
-
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke
@@ -59,9 +64,11 @@
 % http://www.petercorke.com
 
 
-function [tau,f] = rne(robot, varargin)
-	if robot.mdh == 0
-		[tau,f] = rne_dh(robot, varargin{:});
-	else
-		tau = rne_mdh(robot, varargin{:});
-	end
+function varargout = rne(robot, varargin)
+
+    if robot.mdh == 0
+        [varargout{1:nargout}] = rne_dh(robot, varargin{:});
+    else
+        [varargout{1:nargout}] = rne_mdh(robot, varargin{:});
+    end
+
