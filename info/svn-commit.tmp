@@ -1,0 +1,14 @@
+Info files to support MATLAB help browser
+--This line, and those below, will be ignored--
+
+A    .
+AM   release.html
+AM   introduction.html
+A    robot_product_page.html
+AM   license.html
+A    helpfuncbycat.xml
+A    icons
+AM   icons/more_arrows.gif
+AM   icons/bullet_orange.gif
+AM   acknowledgements.html
+AM   helptoc.xml

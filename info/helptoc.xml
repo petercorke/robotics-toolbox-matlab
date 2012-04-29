@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<toc version="1.0">
+
+<!-- this goes into the RTB menu in the doc browser contents pane -->
+
+<!-- Robotics Toolbox -->
+<tocitem target="robot_product_page.html" image="$toolbox/matlab/icons/book_mat.gif">Robotics Toolbox for MATLAB
+
+  <!-- Help -->
+
+  <!-- MATLAB Functions -->
+  <tocreference image="$toolbox/matlab/icons/help_fx.gif" target="helpfuncbycat.xml">
+  </tocreference>
+
+  <!-- Simulink -->
+  <tocitem target="simulink.html" image="$toolbox/matlab/icons/reficon.gif">Simulink</tocitem>
+
+  <!-- Manual -->
+  <tocitem target="../robot.pdf" image="$toolbox/matlab/icons/reficon.gif">Manual</tocitem>
+
+  <!-- Examples -->
+  <tocitem target="./examples/examples.html" image="$toolbox/matlab/icons/demoicon.gif">Examples</tocitem>
+
+  <!-- About -->
+  <tocitem target="./introduction.html" image="$toolbox/matlab/icons/pagesicon.gif">About</tocitem>
+
+  <!-- Acknowledgements -->
+  <tocitem target="./acknowledgements.html" image="$toolbox/matlab/icons/pagesicon.gif">Acknowledgements</tocitem>
+
+  <!-- Release Notes & Version History -->
+  <tocitem target="./release.html" image="$toolbox/matlab/icons/notesicon.gif">Release Notes &amp; Version History</tocitem>
+  
+  <!-- Copyrights & License -->
+  <tocitem target="./license.html" image="$toolbox/matlab/icons/notesicon.gif">Copyrights &amp; License</tocitem>
+  
+  <!-- Web Pages -->
+  <tocitem target="robot_product_page.html" image="$toolbox/matlab/icons/webicon.gif">Web Pages
+    <tocitem target="http://www.petercorke.com/robot" image="$toolbox/matlab/icons/webicon.gif">Robotics Toolbox web page</tocitem>
+    <tocitem target="http://groups.google.com/group/robotics-tool-box?hl=en" image="$toolbox/matlab/icons/webicon.gif">Robotics Toolbox discussion group</tocitem>
+    <tocitem target="http://www.petercorke.com/RVC" image="$toolbox/matlab/icons/webicon.gif">Robotics, Vision &amp; Control (the book)</tocitem>
+  </tocitem>
+
+</tocitem>
+</toc>

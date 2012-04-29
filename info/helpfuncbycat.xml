@@ -1,0 +1,135 @@
+<toc version="2.0">
+<tocitem>Functions
+  <tocitem target="zz.html">Homogeneous transformations
+    <tocitem target="angvec2r.html"><name>angvec2r</name><purpose>angle/vector to RM</purpose></tocitem>
+    <tocitem target="angvec2tr.html"><name>angvec2tr</name><purpose>angle/vector to HT</purpose></tocitem>
+    <tocitem target="eul2r.html"><name>eul2r</name><purpose>Euler angles to RM</purpose></tocitem>
+    <tocitem target="eul2tr.html"><name>eul2tr</name><purpose>Euler angles to HT</purpose></tocitem>
+    <tocitem target="oa2r.html"><name>oa2r</name><purpose>orientation and approach vector to RM</purpose></tocitem>
+    <tocitem target="oa2tr.html"><name>oa2tr</name><purpose>orientation and approach vector to HT</purpose></tocitem>
+    <tocitem target="r2t.html"><name>r2t</name><purpose>RM to HT</purpose></tocitem>
+    <tocitem target="rotx.html"><name>rotx</name><purpose>RM for rotation about X-axis</purpose></tocitem>
+    <tocitem target="roty.html"><name>roty</name><purpose>RM for rotation about Y-axis</purpose></tocitem>
+    <tocitem target="rotz.html"><name>rotz</name><purpose>RM for rotation about Z-axis</purpose></tocitem>
+    <tocitem target="rpy2r.html"><name>rpy2r</name><purpose>roll/pitch/yaw angles to RM</purpose></tocitem>
+    <tocitem target="rpy2tr.html"><name>rpy2tr</name><purpose>roll/pitch/yaw angles to HT</purpose></tocitem>
+    <tocitem target="t2r.html"><name>t2r</name><purpose>HT to RM</purpose></tocitem>
+    <tocitem target="tr2angvec.html"><name>tr2angvec</name><purpose>HT/RM to angle/vector form</purpose></tocitem>
+    <tocitem target="tr2eul.html"><name>tr2eul</name><purpose>HT/RM to Euler angles</purpose></tocitem>
+    <tocitem target="tr2rpy.html"><name>tr2rpy</name><purpose>HT/RM to roll/pitch/yaw angles</purpose></tocitem>
+    <tocitem target="tranimate.html"><name>tranimate</name><purpose>animate a coordinate frame</purpose></tocitem>
+    <tocitem target="transl.html"><name>transl</name><purpose>set or extract the translational component of HT</purpose></tocitem>
+    <tocitem target="trnorm.html"><name>trnorm</name><purpose>normalize HT</purpose></tocitem>
+    <tocitem target="trplot.html"><name>trplot</name><purpose>plot HT as a coordinate frame</purpose></tocitem>
+    <tocitem target="trotx.html"><name>trotx</name><purpose>HT for rotation about X-axis</purpose></tocitem>
+    <tocitem target="troty.html"><name>troty</name><purpose>HT for rotation about Y-axis</purpose></tocitem>
+    <tocitem target="trotz.html"><name>trotz</name><purpose>HT for rotation about Z-axis</purpose></tocitem>
+  </tocitem>
+  <tocitem>Differential motion
+    <tocitem target="delta2tr.html"><name>delta2tr</name><purpose>differential motion vector to HT</purpose></tocitem>
+    <tocitem target="eul2jac.html"><name>eul2jac</name><purpose>Euler angles to Jacobian</purpose></tocitem>
+    <tocitem target="rpy2jac.html"><name>rpy2jac</name><purpose>RPY angles to Jacobian</purpose></tocitem>
+    <tocitem target="skew.html"><name>skew</name><purpose>vector to skew symmetric matrix</purpose></tocitem>
+    <tocitem target="tr2delta.html"><name>tr2delta</name><purpose>HT to differential motion vector</purpose></tocitem>
+    <tocitem target="tr2jac.html"><name>tr2jac</name><purpose>HT to Jacobian</purpose></tocitem>
+    <tocitem target="vex.html"><name>vex</name><purpose>skew symmetric matrix to vector</purpose></tocitem>
+    <tocitem target="wtrans.html"><name>wtrans</name><purpose>transform wrench between frames</purpose></tocitem>
+  </tocitem>
+  <tocitem>Trajectory generation
+    <tocitem target="ctraj.html"><name>ctraj</name><purpose>Cartesian trajectory</purpose></tocitem>
+    <tocitem target="jtraj.html"><name>jtraj</name><purpose>joint space trajectory</purpose></tocitem>
+    <tocitem target="lspb.html"><name>lspb</name><purpose>1D trapezoidal trajectory</purpose></tocitem>
+    <tocitem target="mtraj.html"><name>mtraj</name><purpose>multi-axis trajectory for arbitrary function</purpose></tocitem>
+    <tocitem target="mstraj.html"><name>mstraj</name><purpose>multi-axis multi-segment trajectory</purpose></tocitem>
+    <tocitem target="tpoly.html"><name>tpoly</name><purpose>1D polynomial trajectory</purpose></tocitem>
+    <tocitem target="trinterp.html"><name>trinterp</name><purpose>interpolate HT s</purpose></tocitem>
+  </tocitem>
+  <tocitem>Quaternion
+    <tocitem target="Quaternion.html"><name>Quaternion</name><purpose>constructor</purpose></tocitem>
+    <tocitem target="/.html"><name>/</name><purpose>divide quaternion by quaternion or scalar</purpose></tocitem>
+    <tocitem target="*.html"><name>*</name><purpose>multiply quaternion by a quaternion or vector</purpose></tocitem>
+    <tocitem target="Quaternion.inv.html"><name>Quaternion.inv</name><purpose>invert a quaternion</purpose></tocitem>
+    <tocitem target="Quaternion.norm.html"><name>Quaternion.norm</name><purpose>norm of a quaternion</purpose></tocitem>
+    <tocitem target="Quaternion.plot.html"><name>Quaternion.plot</name><purpose>display a quaternion as a 3D rotation</purpose></tocitem>
+    <tocitem target="Quaternion.unit.html"><name>Quaternion.unit</name><purpose>unitize a quaternion</purpose></tocitem>
+    <tocitem target="Quaternion.interp.html"><name>Quaternion.interp</name><purpose>interpolate a quaternion</purpose></tocitem>
+  </tocitem>
+  <tocitem>Serial-link manipulator
+    <tocitem target="*.html"><name>*</name><purpose>compound two robots</purpose></tocitem>
+    <tocitem target="friction.html"><name>friction</name><purpose>return joint friction torques</purpose></tocitem>
+    <tocitem target="Link.html"><name>Link</name><purpose>construct a robot link object</purpose></tocitem>
+    <tocitem target="nofriction.html"><name>nofriction</name><purpose>return a robot object with no friction</purpose></tocitem>
+    <tocitem target="perturb.html"><name>perturb</name><purpose>return a robot object with perturbed parameters</purpose></tocitem>
+    <tocitem target="plot.html"><name>plot</name><purpose>plot/animate robot</purpose></tocitem>
+    <tocitem target="SerialLink.html"><name>SerialLink</name><purpose>construct a serial-link robot object</purpose></tocitem>
+    <tocitem target="teach.html"><name>teach</name><purpose>drive a graphical  robot</purpose></tocitem>
+  </tocitem>
+    <tocitem>SerialLink models
+      <tocitem target="DHFactor.html"><name>DHFactor</name><purpose>convert elementary transformations to DH form</purpose></tocitem>
+      <tocitem target="mdl_Fanuc10L.html"><name>mdl_Fanuc10L</name><purpose>Fanuc 10L (DH, kine)</purpose></tocitem>
+      <tocitem target="mdl_MotomanHP6.html"><name>mdl_MotomanHP6</name><purpose>Motoman HP6 (DH, kine)</purpose></tocitem>
+      <tocitem target="mdl_puma560.html"><name>mdl_puma560</name><purpose>Puma 560 data (DH, kine, dyn)</purpose></tocitem>
+      <tocitem target="mdl_puma560akb.html"><name>mdl_puma560akb</name><purpose>Puma 560 data (MDH, kine, dyn)</purpose></tocitem>
+      <tocitem target="mdl_robot.html"><name>mdl_robot</name><purpose>construct a robot object</purpose></tocitem>
+      <tocitem target="mdl_stanford.html"><name>mdl_stanford</name><purpose>Stanford arm data (DH, kine, dyn)</purpose></tocitem>
+      <tocitem target="mdl_S4ABB2p8.html"><name>mdl_S4ABB2p8</name><purpose>ABB S4 2.8 (DH, kine)</purpose></tocitem>
+      <tocitem target="mdl_twolink.html"><name>mdl_twolink</name><purpose>simple 2-link example (DH, kine)</purpose></tocitem>
+    </tocitem>
+    <tocitem>Kinematic methods
+      <tocitem target="fkine.html"><name>fkine</name><purpose>forward kinematics</purpose></tocitem>
+      <tocitem target="ikine.html"><name>ikine</name><purpose>inverse kinematics (numeric)</purpose></tocitem>
+      <tocitem target="ikine6s.html"><name>ikine6s</name><purpose>inverse kinematics for 6-axis arm with sph.wrist</purpose></tocitem>
+      <tocitem target="jacob0.html"><name>jacob0</name><purpose>Jacobian in base coordinate frame</purpose></tocitem>
+      <tocitem target="jacobn.html"><name>jacobn</name><purpose>Jacobian in end-effector coordinate frame</purpose></tocitem>
+    </tocitem>
+    <tocitem>Dynamics methods
+      <tocitem target="accel.html"><name>accel</name><purpose>forward dynamics</purpose></tocitem>
+      <tocitem target="cinertia.html"><name>cinertia</name><purpose>Cartesian manipulator inertia matrix</purpose></tocitem>
+      <tocitem target="coriolis.html"><name>coriolis</name><purpose>centripetal/coriolis torque</purpose></tocitem>
+      <tocitem target="fdyn.html"><name>fdyn</name><purpose>forward dynamics</purpose></tocitem>
+      <tocitem target="ftrans.html"><name>ftrans</name><purpose>transform a force/moment</purpose></tocitem>
+      <tocitem target="gravload.html"><name>gravload</name><purpose>gravity loading</purpose></tocitem>
+      <tocitem target="inertia.html"><name>inertia</name><purpose>manipulator inertia matrix</purpose></tocitem>
+      <tocitem target="itorque.html"><name>itorque</name><purpose>inertia torque</purpose></tocitem>
+      <tocitem target="rne.html"><name>rne</name><purpose>inverse dynamics</purpose></tocitem>
+    </tocitem>
+  <tocitem>Mobile robot
+    <tocitem target="Map.html"><name>Map</name><purpose>point feature map object</purpose></tocitem>
+    <tocitem target="RandomPath.html"><name>RandomPath</name><purpose>driver for Vehicle object</purpose></tocitem>
+    <tocitem target="RangeBearingSensor.html"><name>RangeBearingSensor</name><purpose>"laser scanner" object</purpose></tocitem>
+    <tocitem target="Vehicle.html"><name>Vehicle</name><purpose>construct a mobile robot object</purpose></tocitem>
+  </tocitem>
+    <tocitem>Localization
+      <tocitem target="EKF.html"><name>EKF</name><purpose>extended Kalman filter object</purpose></tocitem>
+      <tocitem target="ParticleFilter.html"><name>ParticleFilter</name><purpose>Monte Carlo estimator</purpose></tocitem>
+    </tocitem>
+    <tocitem>Path planning
+      <tocitem target="Bug2.html"><name>Bug2</name><purpose>bug navigation</purpose></tocitem>
+      <tocitem target="DXform.html"><name>DXform</name><purpose>distance transform from map</purpose></tocitem>
+      <tocitem target="Dstar.html"><name>Dstar</name><purpose>D* planner</purpose></tocitem>
+      <tocitem target="Pgraph.html"><name>Pgraph</name><purpose>general purpose graph class</purpose></tocitem>
+      <tocitem target="Polygon.html"><name>Polygon</name><purpose>general purpose polygon class</purpose></tocitem>
+      <tocitem target="PRM.html"><name>PRM</name><purpose>probabilistic roadmap planner</purpose></tocitem>
+      <tocitem target="RRT.html"><name>RRT</name><purpose>rapidly exploring random tree</purpose></tocitem>
+    </tocitem>
+  <tocitem>Graphics
+    <tocitem target="plot_box.html"><name>plot_box</name><purpose>draw a box</purpose></tocitem>
+    <tocitem target="plot_circle.html"><name>plot_circle</name><purpose>draw a circle</purpose></tocitem>
+    <tocitem target="plot_sphere.html"><name>plot_sphere</name><purpose>draw a sphere</purpose></tocitem>
+    <tocitem target="plot_ellipse.html"><name>plot_ellipse</name><purpose>draw an ellipse</purpose></tocitem>
+    <tocitem target="plot_ellipspoid.html"><name>plot_ellipspoid</name><purpose>draw an ellipsoid</purpose></tocitem>
+    <tocitem target="qplot.html"><name>qplot</name><purpose>plot joint angle trajectories</purpose></tocitem>
+  </tocitem>
+  <tocitem>Utility
+    <tocitem target="angdiff.html"><name>angdiff</name><purpose>subtract 2 angles modulo 2pi</purpose></tocitem>
+    <tocitem target="ishomog.html"><name>ishomog</name><purpose>true if argument is a 4x4 matrix</purpose></tocitem>
+    <tocitem target="isrot.html"><name>isrot</name><purpose>true if argument is a 3x3 matrix</purpose></tocitem>
+    <tocitem target="isvec.html"><name>isvec</name><purpose>true if argument is a 3-vector</purpose></tocitem>
+    <tocitem target="maniplty.html"><name>maniplty</name><purpose>compute manipulability</purpose></tocitem>
+    <tocitem target="unit.html"><name>unit</name><purpose>unitize a vector</purpose></tocitem>
+  </tocitem>
+  <tocitem>Demonstrations
+    <tocitem target="demos.html"><name>demos</name><purpose>toolbox demonstration</purpose></tocitem>
+  </tocitem>
+</tocitem>
+</toc>
