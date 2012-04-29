@@ -1,11 +1,16 @@
 %SerialLink.MANIPLTY Manipulability measure
 %
 % M = R.maniplty(Q, OPTIONS) is the manipulability index measure for the robot
-% at the joint configuration Q.  It indicates dexterity, how isotropic the
-% robot's motion is with respect to the 6 degrees of Cartesian motion.
-% The measure is low when the manipulator is close to a singularity.
-% If Q is a matrix M is a column vector of  manipulability 
+% at the joint configuration Q.  It indicates dexterity, that is, how isotropic 
+% the robot's motion is with respect to the 6 degrees of Cartesian motion.
+% The measure is high when the manipulator is capable of equal motion in all
+% directions and low when the manipulator is close to a singularity.
+%
+% If Q is a matrix (MxN) then M (Mx1) is a vector of  manipulability 
 % indices for each pose specified by a row of Q.
+%
+% [M,CI] = R.maniplty(Q, OPTIONS) as above, but for the case of the Asada
+% measure returns the Cartesian inertia matrix CI.
 %
 % Two measures can be selected:
 % - Yoshikawa's manipulability measure is based on the shape of the velocity
@@ -17,15 +22,27 @@
 %   spherical, giving a ratio of 1, but in practice will be less than 1.
 %
 % Options::
-% 'T'           compute manipulability for just transational motion
-% 'R'           compute manipulability for just rotational motion
-% 'yoshikawa'   use Asada algorithm (default)
+% 'T'           manipulability for transational motion only
+% 'R'           manipulability for rotational motion only
+% 'yoshikawa'   use Yoshikawa algorithm (default)
 % 'asada'       use Asada algorithm
 %
 % Notes::
-% - by default the measure includes rotational and translational dexterity, but
+% - By default the measure includes rotational and translational dexterity, but
 %   this involves adding different units.  It can be more useful to look at the
 %   translational and rotational manipulability separately.
+%
+% References::
+%
+% - Analysis and control of robot manipulators with redundancy,
+%   T. Yoshikawa,
+%   Robotics Research: The First International Symposium (M. Brady and R. Paul, eds.),
+%   pp. 735-747, The MIT press, 1984.
+% - A geometrical representation of manipulator dynamics and its application to 
+%   arm design,
+%   H. Asada, 
+%   Journal of Dynamic Systems, Measurement, and Control,
+%   vol. 105, p. 131, 1983.
 %
 % See also SerialLink.inertia, SerialLink.jacob0.
 
@@ -51,28 +68,41 @@
 % http://www.petercorke.com
 
 function [w,mx] = maniplty(robot, q, varargin)
-    n = robot.n;
 
     opt.method = {'yoshikawa', 'asada'};
-    opt.axes = {'all', 'T', 'R'};
+    opt.axes = {'T', 'all', 'R'};
 
     opt = tb_optparse(opt, varargin);
-
-    w = [];
-    MX = [];
+    
+    switch opt.axes
+        case 'T'
+            opt.dof = [1 1 1 0 0 0];
+        case 'R'
+            opt.dof = [0 0 0 1 1 1];
+        case 'all'
+            opt.dof = [1 1 1 1 1 1];
+    end
+    
+    opt.dof = logical(opt.dof);
 
     if strcmp(opt.method, 'yoshikawa')
-        for Q = q'
-            w = [w; yoshi(robot, Q', opt)];
+        w = zeros(numrows(q),1);
+        for i=1:numrows(q)
+            w(i) = yoshi(robot, q(i,:), opt);
         end
     elseif strcmp(opt.method, 'asada')
-        for Q = q'
-            if nargout > 1
-                [ww,mm] = asada(robot, Q');
-                w = [w; ww];
-                MX = cat(3, MX, mm);
-            else
-                w = [w; asada(robot, Q', opt)];
+        w = zeros(numrows(q),1);
+        if nargout > 1
+            dof = sum(opt.dof);
+            MX = zeros(dof,dof,numrows(q));
+            for i=1:numrows(q)
+                [ww,mm] = asada(robot, q(i,:), opt);
+                w(i) = ww;
+                MX(:,:,i) = mm;
+            end
+        else
+            for i=1:numrows(q)
+                w(i) = asada(robot, q(i,:), opt);
             end
         end
     end
@@ -83,12 +113,8 @@ function [w,mx] = maniplty(robot, q, varargin)
 
 function m = yoshi(robot, q, opt)
     J = robot.jacob0(q);
-    switch opt.axes
-    case 'T'
-        J = J(1:3,:);
-    case 'R'
-        J = J(4:6,:);
-    end
+    
+    J = J(opt.dof,:);
     m = sqrt(det(J * J'));
 
 function [m, mx] = asada(robot, q, opt)
@@ -100,16 +126,12 @@ function [m, mx] = asada(robot, q, opt)
         return;
     end
 
-    switch opt.axes
-    case 'T'
-        J = J(1:3,:);
-    case 'R'
-        J = J(4:6,:);
-    end
-    Ji = inv(J);
+    Ji = pinv(J);
     M = robot.inertia(q);
     Mx = Ji' * M * Ji;
-    e = eig(Mx(1:3,1:3));
+    d = find(opt.dof);
+    Mx = Mx(d,d);
+    e = eig(Mx);
     m = min(e) / max(e);
 
     if nargout > 1
