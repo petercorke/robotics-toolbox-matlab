@@ -1,8 +1,8 @@
 rne:	frne.c ne.c vmath.c
 	mex frne.c ne.c vmath.c
 
-install:
-	cp frne.mex* ../@SerialLink/rne$(suffix frne.mex*)
+install: rne
+	for f in *.mex*; do cp $$f ../@SerialLink/rne.$${f##*.}; done
 
 clean:
 	rm *.mex* *~
