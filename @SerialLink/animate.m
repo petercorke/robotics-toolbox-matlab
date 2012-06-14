@@ -41,17 +41,26 @@ function animate2(h, q)
     ys = zeros(1,n);
     zs = zeros(1,n);
 
+    % add first point to the link/shadow line, the base
+    x(1) = t(1,4);
+    y(1) = t(2,4);
+    z(1) = t(3,4);
+    xs(1) = t(1,4);
+    ys(1) = t(2,4);
+    zs(1) = h.zmin;
+    
+    % add subsequent points
     for j=1:n
         Tn(:,:,j) = t;
 
         t = t * L(j).A(q(j));
 
-        x(j) = t(1,4);
-        y(j) = t(2,4);
-        z(j) = t(3,4);
-        xs(j) = t(1,4);
-        ys(j) = t(2,4);
-        zs(j) = h.zmin;
+        x(j+1) = t(1,4);
+        y(j+1) = t(2,4);
+        z(j+1) = t(3,4);
+        xs(j+1) = t(1,4);
+        ys(j+1) = t(2,4);
+        zs(j+1) = h.zmin;
     end
     t = t *robot.tool;
 
