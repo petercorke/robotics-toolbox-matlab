@@ -1,7 +1,9 @@
 %ROTY Rotation about Y axis
 %
 % R = ROTY(THETA) is a rotation matrix representing a rotation of THETA 
-% about the y-axis.
+% radians about the y-axis.
+%
+% R = ROTY(THETA, 'deg') as above but THETA is in degrees.
 %
 % See also ROTX, ROTZ, ANGVEC2R.
 
@@ -23,7 +25,10 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function R = roty(t)
+function R = roty(t, deg)
+    if nargin > 1 && strcmp(deg, 'deg')
+        t = t *pi/180;
+    end
     ct = cos(t);
     st = sin(t);
     R = [

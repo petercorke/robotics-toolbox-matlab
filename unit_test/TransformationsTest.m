@@ -431,6 +431,31 @@ function trnorm_test
     assertExceptionThrown(@()trnorm(),'MATLAB:inputArgUndefined');    
           
      
+function rot_test
+    assertElementsAlmostEqual(rotx(0), eye(3), 'absolute', 1e-9);
+    assertElementsAlmostEqual(roty(0), eye(3), 'absolute', 1e-9);
+    assertElementsAlmostEqual(rotz(0), eye(3), 'absolute', 1e-9);
+
+    assertElementsAlmostEqual(rotx(pi/2), [1 0 0; 0 0 -1; 0 1 0], 'absolute', 1e-9);
+    assertElementsAlmostEqual(roty(pi/2), [0 0 1; 0 1 0; -1 0 0], 'absolute', 1e-9);
+    assertElementsAlmostEqual(rotz(pi/2), [0 -1 0; 1 0 0; 0 0 1], 'absolute', 1e-9);
+
+    assertElementsAlmostEqual(trotx(0), eye(4), 'absolute', 1e-9);
+    assertElementsAlmostEqual(troty(0), eye(4), 'absolute', 1e-9);
+    assertElementsAlmostEqual(trotz(0), eye(4), 'absolute', 1e-9);
+
+    assertElementsAlmostEqual(trotx(pi/2), [1 0 0 0; 0 0 -1 0; 0 1 0 0; 0 0 0 1], 'absolute', 1e-9);
+    assertElementsAlmostEqual(troty(pi/2), [0 0 1 0; 0 1 0 0; -1 0 0 0; 0 0 0 1], 'absolute', 1e-9);
+    assertElementsAlmostEqual(trotz(pi/2), [0 -1 0 0; 1 0 0 0; 0 0 1 0; 0 0 0 1], 'absolute', 1e-9);
+
+    assertElementsAlmostEqual(rotx(pi/2), rotx(90, 'deg'), 'absolute', 1e-9);
+    assertElementsAlmostEqual(roty(pi/2), roty(90, 'deg'), 'absolute', 1e-9);
+    assertElementsAlmostEqual(rotz(pi/2), rotz(90, 'deg'), 'absolute', 1e-9);
+
+    assertElementsAlmostEqual(trotx(pi/2), trotx(90, 'deg'), 'absolute', 1e-9);
+    assertElementsAlmostEqual(troty(pi/2), troty(90, 'deg'), 'absolute', 1e-9);
+    assertElementsAlmostEqual(trotz(pi/2), trotz(90, 'deg'), 'absolute', 1e-9);
+
 %    trotx                      - HT for rotation about X-axis
 function trotx_test
     %Unit test for trotz

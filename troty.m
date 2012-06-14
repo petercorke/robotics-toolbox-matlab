@@ -1,7 +1,9 @@
 %TROTY Rotation about Y axis
 %
 % T = TROTY(THETA) is a homogeneous transformation (4x4) representing a rotation 
-% of THETA about the y-axis.
+% radians about the y-axis.
+%
+% T = TROTY(THETA, 'deg') as above but THETA is in degrees.
 %
 % Notes::
 % - Translational component is zero.
@@ -26,5 +28,5 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function T = troty(t)
-	T =    [roty(t) [0 0 0]'; 0 0 0 1];
+function T = troty(t, varargin)
+	T =    [roty(t, varargin{:}) [0 0 0]'; 0 0 0 1];

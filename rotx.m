@@ -1,7 +1,9 @@
 %ROTX Rotation about X axis
 %
 % R = ROTX(THETA) is a rotation matrix representing a rotation of THETA 
-% about the x-axis.
+% radians about the x-axis.
+%
+% R = ROTX(THETA, 'deg') as above but THETA is in degrees.
 %
 % See also ROTY, ROTZ, ANGVEC2R.
 
@@ -23,7 +25,12 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function R = rotx(t)
+function R = rotx(t, deg)
+
+    if nargin > 1 && strcmp(deg, 'deg')
+        t = t *pi/180;
+    end
+    
     ct = cos(t);
     st = sin(t);
     R = [

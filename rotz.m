@@ -1,7 +1,9 @@
 %ROTZ Rotation about Z axis
 %
 % R = ROTZ(THETA) is a rotation matrix representing a rotation of THETA 
-% about the z-axis.
+% radians about the z-axis.
+%
+% R = ROTZ(THETA, 'deg') as above but THETA is in degrees.
 %
 % See also ROTX, ROTY, ANGVEC2R.
 
@@ -23,7 +25,11 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function R = rotz(t)
+function R = rotz(t, deg)
+    if nargin > 1 && strcmp(deg, 'deg')
+        t = t *pi/180;
+    end
+    
     ct = cos(t);
     st = sin(t);
     R = [

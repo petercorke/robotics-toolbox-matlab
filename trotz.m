@@ -1,7 +1,9 @@
 %TROTZ Rotation about Z axis
 %
 % T = TROTZ(THETA) is a homogeneous transformation (4x4) representing a rotation 
-% of THETA about the z-axis.
+% radians about the z-axis.
+%
+% T = TROTZ(THETA, 'deg') as above but THETA is in degrees.
 %
 % Notes::
 % - Translational component is zero.
@@ -26,5 +28,5 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function T = trotz(t)
-	T =    [rotz(t) [0 0 0]'; 0 0 0 1];
+function T = trotz(t, varargin)
+	T =    [rotz(t, varargin{:}) [0 0 0]'; 0 0 0 1];

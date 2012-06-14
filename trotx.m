@@ -1,7 +1,9 @@
 %TROTX Rotation about X axis
 %
 % T = TROTX(THETA) is a homogeneous transformation (4x4) representing a rotation 
-% of THETA about the x-axis.
+% radians about the x-axis.
+%
+% T = TROTX(THETA, 'deg') as above but THETA is in degrees.
 %
 % Notes::
 % - Translational component is zero.
@@ -26,5 +28,5 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function T = trotx(t)
-	T = [rotx(t) [0 0 0]'; 0 0 0 1];
+function T = trotx(t, varargin)
+	T = [rotx(t, varargin{:}) [0 0 0]'; 0 0 0 1];
