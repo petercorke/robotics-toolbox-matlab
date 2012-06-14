@@ -296,7 +296,7 @@ function teach(r, varargin)
         % if findjobj exists use it, since it lets us get continous callbacks while
         % a slider moves
         if (exist('findjobj', 'file')>0) && ~ispc
-            %disp('using findjobj');
+            disp('using findjobj');
             drawnow
             jh = findjobj(handles.slider(i), 'nomenu');
             %jh.AdjustmentValueChangedCallback = {@sliderCallbackFunc, r.name, i};
@@ -342,7 +342,7 @@ function teach_callback(src, name, j, handles)
         
         h = get(rhandle, 'UserData'); % get the robot object
         robot = h.robot;
-        q = robot.q;    % get its current joint angles
+        q = h.q;    % get its current joint angles
         if isempty(q)
             q = zeros(1,robot.n);
         end
@@ -398,14 +398,14 @@ function sliderCallbackFunc(src, h, name, joint, handles)
     end
 
     if get(src,'ValueIsAdjusting') == 1
-    busy = true;
-            try
-                teach_callback(h, name, joint, handles);
-            catch me
-                fprintf('*******\n')
-                busy = false;
-                return
-            end
+        busy = true;
+        try
+            teach_callback(h, name, joint, handles);
+        catch me
+            fprintf('*******\n')
+            busy = false;
+            return
+        end
     end
-        busy = false;
-    end
+    busy = false;
+end
