@@ -30,7 +30,7 @@ echo on
 %
 % First generate the transform corresponding to a particular joint coordinate,
     q = [0 -pi/4 -pi/4 0 pi/8 0]
-    T = p560.fkine(q);
+    T = p560.fkine(q)
 %
 % Now the inverse kinematic procedure for any specific robot can be derived 
 % symbolically and in general an efficient closed-form solution can be 
@@ -42,36 +42,49 @@ echo on
 % link. The starting point for the first point may be specified, or else it
 % defaults to zero (which is not a particularly good choice in this case)
     qi = p560.ikine(T);
-    qi'
+% and in fact it does not converge
+    qi
+pause % any key to continue
+% We can help the solution along by using the 'pinv' option
+    qi = p560.ikine(T, 'pinv');
+% and the result
+    qi
 %
-% Compared with the original value
+% is the same as the original set of joint angles.
     q
+% However in general this will not be the case, there are multiple
+% solutions, and the solution that is found depends on the initial
+% choice of angles.
+
+pause % any key to continue
+% A more efficient approach is to use an analytic solution and the toolbox 
+% supports the common case of a 6-axis robot arm with a spherical wrist
+    qi = p560.ikine6s(T)
+% which is different to the original joint angles, but as expected
+    p560.fkine(qi)
+% gives the same end-effector pose.
 %
-% A solution is not always possible, for instance if the specified transform 
-% describes a point out of reach of the manipulator.  As mentioned above 
-% the solutions are not necessarily unique, and there are singularities 
+% The analytic solution allows the specific solution to be specified
+% using a character string and to get the same set of joint angles
+    p560.ikine6s(T, 'rdf')
+% where we have specified that the robot is in a right-handed configuration
+% (r), with its elbow down (d), and the wrist flipped (f).
+
+pause % any key to continue
+
+%
+% A solution is not always possible, for instance if the specified 
+% transform describes a point out of reach of the manipulator.  As 
+% mentioned above the solutions are not necessarily unique, and there 
+% are singularities 
 % at which the manipulator loses degrees of freedom and joint coordinates 
 % become linearly dependent.
-pause % any key to continue
 %
-% To examine the effect at a singularity lets repeat the last example but for a
-% different pose.  At the `ready' position two of the Puma's wrist axes are 
-% aligned resulting in the loss of one degree of freedom.
-    T = p560.fkine(qr);
-    qi = p560.ikine(T);
-    qi'
-%
-% which is not the same as the original joint angle
-    qr
-pause % any key to continue
-%
-% However both result in the same end-effector position
-    p560.fkine(qi) - p560.fkine(qr)
 pause % any key to continue
     
 % Inverse kinematics may also be computed for a trajectory.
 % If we take a Cartesian straight line path
-    t = [0:.056:2]; 		% create a time vector
+    t = [0:.05:2]; 		% create a time vector
     T1 = transl(0.6, -0.5, 0.0) % define the start point
     T2 = transl(0.4, 0.5, 0.2)	% and destination
     T = ctraj(T1, T2, length(t)); 	% compute a Cartesian path

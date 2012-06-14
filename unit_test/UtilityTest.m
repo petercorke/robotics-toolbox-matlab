@@ -220,3 +220,24 @@ function tb_test_optparse
 
     assertExceptionThrown( @() tb_optparse(opt, {'two'}), 'RTB:tboptparse:badargs');
     assertExceptionThrown( @() tb_optparse(opt, 'bob'), 'RTB:tboptparse:badargs');
+
+function rtdemo_test
+
+    if exist('rttrdemo', 'file') == 2
+        tbpath = fileparts(which('tr2eul'));
+        demopath = fullfile(tbpath, 'demos');
+        addpath( demopath );
+    else
+        error('cant find demos folder');
+    end
+
+    % run through all the demos
+    pause off
+ 	rttrdemo
+ 	rttgdemo
+ 	rtfkdemo
+ 	rtandemo
+ 	rtikdemo
+ 	rtjademo
+ 	rtidemo
+ 	rtfddemo
