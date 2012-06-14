@@ -14,6 +14,16 @@ function SerialLink_test
     DH = [pi/2 0 0 1; 0 2 0 0];
     R2 = SerialLink(DH,'name','Robot2');
     
+function SerialLinkMDH_test
+    % minimalistic test of modified DH functionality
+    %  most code is common, need to exercise MDH code in Link and also for
+    %  RNE
+    mdl_puma560akb
+
+    T = p560m.fkine(qz);
+    J = p560m.jacobn(qz);
+    tau = p560m.rne(qz, qz, qz);
+        
 %    *                          - compound two robots
 function compound_test
     L(1)=Link([1 1 1 1 1]);
@@ -46,6 +56,7 @@ function fkine_test
     T=p560.fkine(q);
     expected_out = [4 4 2];
     assertElementsAlmostEqual(size(T),expected_out,'absolute',1e-4);
+    
 %    plot                       - plot/animate robot
 function SerialLink_plot_test
     L(1)=Link([1 1 1 1 1]);

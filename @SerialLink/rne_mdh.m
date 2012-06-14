@@ -87,15 +87,15 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 	% init some variables, compute the link rotation matrices
 	%
 		for j=1:n
-			link = robot.link{j};
-			Tj = link(q(j));
+			link = robot.links(j);
+			Tj = link.A(q(j));
 			if link.RP == 'R'
-				D = link.D;
+				D = link.d;
 			else
 				D = q(j);
 			end
 			alpha = link.alpha;
-			pm = [link.A; -D*sin(alpha); D*cos(alpha)];	% (i-1) P i
+			pm = [link.a; -D*sin(alpha); D*cos(alpha)];	% (i-1) P i
 			if j == 1
 				pm = t2r(robot.base) * pm;
 				Tj = robot.base * Tj;
@@ -112,7 +112,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 	%  the forward recursion
 	%
 		for j=1:n
-			link = robot.link{j};
+			link = robot.links(j);
 
 			R = Rm{j}';	% transpose!!
 			P = Pm(:,j);
@@ -143,8 +143,8 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 			wd = wd_;
 			vd = vd_;
 
-			vdC = cross(wd,Pc) + ...
-				cross(w,cross(w,Pc)) + vd;
+			vdC = cross(wd,Pc)' + ...
+				cross(w,cross(w,Pc))' + vd;
 			F = link.m*vdC;
 			N = link.I*wd + cross(w,link.I*w);
 			Fm = [Fm F];
@@ -172,7 +172,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 			% order of these statements is important, since both
 			% nn and f are functions of previous f.
 			%
-			link = robot.link{j};
+			link = robot.links(j);
 			
 			if j == n
 				R = eye(3,3);
@@ -184,7 +184,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 			Pc = link.r;
 			
 			f_ = R*f + Fm(:,j);
-			nn_ = Nm(:,j) + R*nn + cross(Pc,Fm(:,j)) + ...
+			nn_ = Nm(:,j) + R*nn + cross(Pc,Fm(:,j))' + ...
 				cross(P,R*f);
 			
 			f = f_;
@@ -199,12 +199,12 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 				% revolute
 				tau(p,j) = nn'*z0 + ...
 					link.G^2 * link.Jm*qdd(j) - ...
-					abs(link.G) * friction(link, qd(j));
+					friction(link, qd(j));
 			else
 				% prismatic
 				tau(p,j) = f'*z0 + ...
 					link.G^2 * link.Jm*qdd(j) - ...
-					abs(link.G) * friction(link, qd(j));
+					friction(link, qd(j));
 			end
 		end
 	end
