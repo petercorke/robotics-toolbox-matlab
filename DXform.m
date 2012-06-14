@@ -21,6 +21,8 @@
 % Example::
 %
 %        load map1           % load map
+%        goal = [50,30];     % goal point
+%        start = [20, 10];   % start point
 %        dx = DXform(map);   % create navigation object
 %        dx.plan(goal)       % create plan for specified goal
 %        dx.path(start)      % animate path from this start location

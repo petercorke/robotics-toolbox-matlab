@@ -17,6 +17,8 @@
 % Example::
 %
 %        load map1              % load map
+%        goal = [50,30];        % goal point
+%        start = [20, 10];      % start point
 %        prm = PRM(map);        % create navigation object
 %        prm.plan()             % create roadmaps
 %        prm.path(start, goal)  % animate path from this start location
@@ -156,7 +158,7 @@ classdef PRM < Navigation
 
             % are the vertices connected?
             if prm.graph.component(prm.vstart) ~= prm.graph.component(prm.vgoal)
-                error('Navigation: start and goal not connected');
+                error('PRM:plan:nopath', 'PRM: start and goal not connected: rerun the planner');
             end
             
             % find a path through the graph

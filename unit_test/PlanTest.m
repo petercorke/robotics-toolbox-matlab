@@ -88,10 +88,7 @@ function prm_test
 
 function rrt_test
 
-    map = zeros(100,100);
     goal = [0,0]; 
-    start = [20, 10];
-
     randinit
 
     veh = Vehicle([], 'stlim', 1.2);
@@ -99,3 +96,6 @@ function rrt_test
     s = rrt.char();
 
     rrt.plan();
+
+    p = rrt.path([0 0 0], [0 2 0]);
+

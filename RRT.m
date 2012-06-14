@@ -14,6 +14,16 @@
 %
 % Example::
 %
+%        goal = [0,0];
+%        start = [0,2,0];
+%        veh = Vehicle([], 'stlim', 1.2);
+%        rrt = RRT([], veh, 'goal', goal, 'range', 5);
+%        rrt.plan()             % create navigation tree
+%        rrt.path(start, goal)  % animate path from this start location
+%
+%  Robotics, Vision & Control compatability mode:
+%        goal = [0,0];
+%        start = [0,2,0];
 %        rrt = RRT();           % create navigation object
 %        rrt.plan()             % create navigation tree
 %        rrt.path(start, goal)  % animate path from this start location
@@ -64,6 +74,10 @@ classdef RRT < Navigation
         % R = RRT.RRT(MAP, VEH, OPTIONS) is a rapidly exploring tree navigation
         % object for a region with obstacles defined by the map object MAP.
         %
+        % R = RRT.RRT() as above but internally creates a Vehicle class object
+        % and does not support any MAP or OPTIONS.  For compatibility with
+        % RVC book.
+        %
         % Options::
         % 'npoints',N    Number of nodes in the tree
         % 'time',T       Period to simulate dynamic model toward random point
@@ -82,12 +96,23 @@ classdef RRT < Navigation
         %   will be used.
         % - There is no check that the steering range or speed is within the limits
         %   of the vehicle object.
+        %
+        % Reference::
+        % - Robotics, Vision & Control
+        %   Peter Corke, Springer 2011.  p102.
+        %
+        % See also Vehicle.
 
             % invoke the superclass constructor
             rrt = rrt@Navigation(varargin{:});
 
             rrt.graph = PGraph(3, 'distance', 'SE2');  % graph of points in SE(2)
-            rrt.vehicle = vehicle;
+            if nargin == 0
+                rrt.vehicle = Vehicle([], 'stlim', 1.2);
+            else
+                % RVC book compatability mode
+                rrt.vehicle = vehicle;
+            end
 
             opt.npoints = 500;
             opt.time = 0.5;
@@ -116,7 +141,7 @@ classdef RRT < Navigation
             if ~isempty(opt.steermax)
                 rrt.steermax = opt.steermax;
             else
-                rrt.steermax = vehicle.alphalim;
+                rrt.steermax = rrt.vehicle.alphalim;
             end
             rrt.speed = opt.speed;
             rrt.goal = opt.goal;
