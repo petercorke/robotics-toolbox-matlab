@@ -138,6 +138,8 @@ classdef Link < handle
  
             if nargin == 0
                 % create an 'empty' link
+
+                %% kinematic parameters
                 l.alpha = 0;
                 l.a = 0;
                 l.theta = 0;
@@ -145,15 +147,19 @@ classdef Link < handle
                 l.sigma = 0;
                 l.mdh = 0;
                 l.offset = 0;
+                l.qlim = [];
                 
+                %% dynamic parameters
+                % these parameters must be set by the user if dynamics is used
                 l.m = [];
                 l.r = [];
                 l.I = [];
-                l.Jm = [];
-                l.G = [];
+
+                % dynamic params with default (zero friction)
+                l.Jm = 0;
+                l.G = 0;
                 l.B = 0;
                 l.Tc = [0 0];
-                l.qlim = [];
 
             elseif isa(dh, 'Link')
                 % clone passed link
