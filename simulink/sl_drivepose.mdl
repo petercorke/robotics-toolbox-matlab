@@ -1,6 +1,6 @@
 Model {
   Name			  "sl_drivepose"
-  Version		  7.6
+  Version		  7.7
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
@@ -11,7 +11,7 @@ Model {
       Name		      "Out1"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.25"
+    ComputedModelVersion    "1.28"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -29,11 +29,11 @@ Model {
   Creator		  "pic"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "n6334687"
+  LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Feb 06 16:32:19 2012"
-  RTWModifiedTimeStamp	  250446736
-  ModelVersionFormat	  "1.%<AutoIncrement:25>"
+  LastModifiedDate	  "Sun Jul 15 20:59:52 2012"
+  RTWModifiedTimeStamp	  264286751
+  ModelVersionFormat	  "1.%<AutoIncrement:28>"
   ConfigurationManager	  "customverctrl"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -108,13 +108,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.10.0"
+      Version		      "1.11.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  StartTime		  "0.0"
 	  StopTime		  "20.0"
 	  AbsTol		  "auto"
@@ -148,7 +148,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -160,6 +160,7 @@ Model {
 	  SaveFinalState	  off
 	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Array"
+	  SignalLoggingSaveFormat "ModelDataLogs"
 	  SaveOutput		  on
 	  SaveState		  on
 	  SignalLogging		  on
@@ -179,7 +180,7 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -228,10 +229,11 @@ Model {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
+	  AccelParallelForEachSubsystem	on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -302,6 +304,7 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  SimStateOlderReleaseMsg "error"
 	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "Warning"
 	  BusNameAdapt		  "WarnAndRepair"
@@ -316,7 +319,7 @@ Model {
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -353,7 +356,7 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -368,7 +371,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -383,7 +386,7 @@ Model {
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -425,6 +428,7 @@ Model {
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
 	  GenerateSLWebview	  off
+	  GenerateCodeMetricsReport off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -433,7 +437,7 @@ Model {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.10.0"
+	      Version		      "1.11.0"
 	      Array {
 		Type			"Cell"
 		Dimension		17
@@ -494,7 +498,7 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.10.0"
+	      Version		      "1.11.0"
 	      Array {
 		Type			"Cell"
 		Dimension		15
@@ -521,6 +525,8 @@ Model {
 	      TargetFunctionLibrary   "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
+	      FunctionExecutionProfile off
+	      CodeExecutionProfiling  off
 	      ERTCodeCoverageTool     "None"
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
@@ -566,6 +572,7 @@ Model {
 	      RTWCAPISignals	      off
 	      RTWCAPIParams	      off
 	      RTWCAPIStates	      off
+	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
 	    }
 	    PropName		    "Components"
@@ -575,7 +582,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    " [ 203, 82, 1104, 704 ] "
+      ConfigPrmDlgPosition     [ 203, 82, 1104, 704 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -616,6 +623,17 @@ Model {
   }
   BlockParameterDefaults {
     Block {
+      BlockType		      Abs
+      ZeroCross		      on
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: Same as input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+    }
+    Block {
       BlockType		      Constant
       Value		      "1"
       VectorParams1D	      on
@@ -652,6 +670,7 @@ Model {
     Block {
       BlockType		      Inport
       Port		      "1"
+      OutputFunctionCall      off
       OutMin		      "[]"
       OutMax		      "[]"
       OutDataTypeStr	      "Inherit: auto"
@@ -667,8 +686,8 @@ Model {
       Interpolate	      on
     }
     Block {
-      BlockType		      "M-S-Function"
-      FunctionName	      "mlfile"
+      BlockType		      M-S-Function
+      FunctionName	      "matlabfile"
       DisplayMFileStacktrace  on
     }
     Block {
@@ -780,7 +799,7 @@ Model {
   }
   System {
     Name		    "sl_drivepose"
-    Location		    [1739, 281, 2572, 565]
+    Location		    [145, 77, 1024, 361]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -794,15 +813,24 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "100"
+    SIDHighWatermark	    "107"
+    Block {
+      BlockType		      Abs
+      Name		      "Abs"
+      SID		      "107"
+      Position		      [220, 190, 250, 220]
+      BlockMirror	      on
+      ShowName		      off
+      SaturateOnIntegerOverflow	off
+    }
     Block {
       BlockType		      Reference
       Name		      "Bicycle"
       SID		      "41"
       Ports		      [2, 3]
-      Position		      [290, 68, 350, 142]
+      Position		      [310, 68, 370, 142]
       DropShadow	      on
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.53"
       SourceBlock	      "roblocks/Dynamics/Bicycle"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -816,16 +844,30 @@ Model {
       GeneratePreprocessorConditionals off
       accel		      "1"
       vlim		      "1"
-      alim		      "pi"
+      alim		      "1"
+      L			      "1"
       x0		      "x0"
       handbrake		      "0"
+    }
+    Block {
+      BlockType		      Product
+      Name		      "Divide"
+      SID		      "103"
+      Ports		      [3, 1]
+      Position		      [220, 119, 250, 171]
+      ShowName		      off
+      Inputs		      "**/"
+      InputSameDT	      off
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Mux
       Name		      "Mux3"
       SID		      "18"
       Ports		      [3, 1]
-      Position		      [445, 70, 450, 140]
+      Position		      [465, 70, 470, 140]
       ShowName		      off
       Inputs		      "3"
       DisplayOption	      "bar"
@@ -842,21 +884,10 @@ Model {
       SaturateOnIntegerOverflow	off
     }
     Block {
-      BlockType		      Product
-      Name		      "Product1"
-      SID		      "94"
-      Ports		      [2, 1]
-      Position		      [220, 122, 250, 153]
-      ShowName		      off
-      InputSameDT	      off
-      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-      SaturateOnIntegerOverflow	off
-    }
-    Block {
       BlockType		      Stop
       Name		      "Stop \nSimulation"
       SID		      "95"
-      Position		      [765, 47, 800, 83]
+      Position		      [785, 47, 820, 83]
       ShowName		      off
     }
     Block {
@@ -877,7 +908,7 @@ Model {
       Name		      "Sum1"
       SID		      "92"
       Ports		      [2, 1]
-      Position		      [515, 95, 535, 115]
+      Position		      [535, 95, 555, 115]
       ShowName		      off
       IconShape		      "round"
       Inputs		      "-+|"
@@ -890,7 +921,7 @@ Model {
       Name		      "Sum2"
       SID		      "99"
       Ports		      [2, 1]
-      Position		      [735, 105, 755, 125]
+      Position		      [755, 105, 775, 125]
       ShowName		      off
       IconShape		      "round"
       Inputs		      "|++"
@@ -903,8 +934,8 @@ Model {
       Name		      "XY"
       SID		      "22"
       Ports		      [2]
-      Position		      [435, 165, 465, 200]
-      LibraryVersion	      "1.225"
+      Position		      [455, 165, 485, 200]
+      LibraryVersion	      "1.236"
       SourceBlock	      "simulink/Sinks/XY Graph"
       SourceType	      "XY scope."
       ShowPortLabels	      "FromPortIcon"
@@ -925,40 +956,35 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "alpha"
-      SID		      "97"
+      SID		      "105"
       Ports		      [1]
-      Position		      [645, 124, 675, 156]
+      Position		      [660, 124, 690, 156]
       Floating		      off
-      Location		      [97, 447, 421, 686]
+      Location		      [182, 439, 506, 678]
       Open		      on
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
       }
-      TimeRange		      "4"
-      YMin		      "-1.75"
-      YMax		      "1.75"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
     }
     Block {
       BlockType		      Scope
       Name		      "beta"
-      SID		      "98"
+      SID		      "104"
       Ports		      [1]
-      Position		      [705, 189, 735, 221]
+      Position		      [725, 189, 755, 221]
       Floating		      off
-      Location		      [434, 451, 758, 690]
+      Location		      [513, 443, 837, 682]
       Open		      on
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
       }
-      TimeRange		      "4"
-      YMin		      "-2"
-      SaveName		      "ScopeData1"
+      SaveName		      "ScopeData2"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
     }
@@ -966,14 +992,14 @@ Model {
       BlockType		      Constant
       Name		      "desired heading"
       SID		      "100"
-      Position		      [700, 141, 735, 169]
+      Position		      [720, 141, 755, 169]
       Value		      "xg(3)"
     }
     Block {
       BlockType		      Constant
       Name		      "desired pose"
       SID		      "93"
-      Position		      [460, 41, 515, 69]
+      Position		      [480, 41, 535, 69]
       Value		      "[xg(1:2) 0]"
     }
     Block {
@@ -1000,7 +1026,7 @@ Model {
       BlockType		      Gain
       Name		      "krho"
       SID		      "58"
-      Position		      [150, 80, 180, 110]
+      Position		      [145, 80, 175, 110]
       Gain		      "3"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
@@ -1011,7 +1037,7 @@ Model {
       Name		      "there yet?"
       SID		      "96"
       Ports		      [1, 1]
-      Position		      [660, 50, 720, 80]
+      Position		      [680, 50, 740, 80]
       MATLABFcn		      "double(abs(u)<0.05)"
       OutputSignalType	      "real"
     }
@@ -1020,7 +1046,7 @@ Model {
       Name		      "to polar"
       SID		      "84"
       Ports		      [1, 4]
-      Position		      [555, 54, 595, 151]
+      Position		      [575, 54, 615, 151]
       DropShadow	      on
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -1067,7 +1093,7 @@ Model {
 	  DisplayOption		  "bar"
 	}
 	Block {
-	  BlockType		  "M-S-Function"
+	  BlockType		  M-S-Function
 	  Name			  "Level-2 M-file\nS-Function"
 	  SID			  "87"
 	  Ports			  [1, 1]
@@ -1150,7 +1176,7 @@ Model {
       BlockType		      Outport
       Name		      "Out1"
       SID		      "37"
-      Position		      [490, 158, 520, 172]
+      Position		      [510, 158, 540, 172]
       IconDisplay	      "Port number"
     }
     Line {
@@ -1169,7 +1195,7 @@ Model {
     Line {
       SrcBlock		      "Bicycle"
       SrcPort		      1
-      Points		      [40, 0; 0, 0]
+      Points		      [40, 0]
       Branch {
 	DstBlock		"Mux3"
 	DstPort			1
@@ -1206,7 +1232,7 @@ Model {
       SrcPort		      2
       Points		      [25, 0; 0, 50]
       Branch {
-	Points			[0, 95; -585, 0; 0, -105]
+	Points			[0, 95; -595, 0; 0, -105]
 	DstBlock		"kalpha"
 	DstPort			1
       }
@@ -1231,8 +1257,16 @@ Model {
     Line {
       SrcBlock		      "Product"
       SrcPort		      1
-      DstBlock		      "Bicycle"
-      DstPort		      1
+      Points		      [25, 0]
+      Branch {
+	DstBlock		"Bicycle"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, 115]
+	DstBlock		"Abs"
+	DstPort			1
+      }
     }
     Line {
       SrcBlock		      "krho"
@@ -1245,13 +1279,13 @@ Model {
       SrcPort		      1
       Points		      [20, 0]
       Branch {
-	Labels			[2, 0]
-	Points			[0, -45; -490, 0; 0, 75]
-	DstBlock		"krho"
+	DstBlock		"there yet?"
 	DstPort			1
       }
       Branch {
-	DstBlock		"there yet?"
+	Labels			[2, 0]
+	Points			[0, -45; -510, 0]
+	DstBlock		"krho"
 	DstPort			1
       }
     }
@@ -1260,15 +1294,15 @@ Model {
       Labels		      [3, 0]
       SrcBlock		      "to polar"
       SrcPort		      4
-      Points		      [10, 0; 0, -111; -415, 0; 0, 51]
-      Branch {
-	Points			[0, 65]
-	DstBlock		"Product1"
-	DstPort			2
-      }
+      Points		      [10, 0; 0, -111; -440, 0; 0, 51]
       Branch {
 	DstBlock		"Product"
 	DstPort			1
+      }
+      Branch {
+	Points			[0, 65]
+	DstBlock		"Divide"
+	DstPort			2
       }
     }
     Line {
@@ -1287,7 +1321,7 @@ Model {
     Line {
       SrcBlock		      "Sum"
       SrcPort		      1
-      DstBlock		      "Product1"
+      DstBlock		      "Divide"
       DstPort		      1
     }
     Line {
@@ -1307,7 +1341,7 @@ Model {
       SrcPort		      1
       Points		      [20, 0; 0, 130; -120, 0]
       Branch {
-	Points			[-630, 0; 0, -65]
+	Points			[-640, 0; 0, -65]
 	DstBlock		"kbeta"
 	DstPort			1
       }
@@ -1325,11 +1359,18 @@ Model {
       DstPort		      2
     }
     Line {
-      SrcBlock		      "Product1"
+      SrcBlock		      "Divide"
       SrcPort		      1
-      Points		      [10, 0; 0, -15]
+      Points		      [10, 0; 0, -20]
       DstBlock		      "Bicycle"
       DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Abs"
+      SrcPort		      1
+      Points		      [-20, 0; 0, -45]
+      DstBlock		      "Divide"
+      DstPort		      3
     }
   }
 }

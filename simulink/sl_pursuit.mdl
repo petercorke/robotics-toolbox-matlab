@@ -1,6 +1,6 @@
 Model {
   Name			  "sl_pursuit"
-  Version		  7.6
+  Version		  7.7
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
@@ -26,7 +26,7 @@ Model {
       Name		      "v"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.14"
+    ComputedModelVersion    "1.16"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -44,11 +44,11 @@ Model {
   Creator		  "pic"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "n6334687"
+  LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Feb 06 16:38:35 2012"
-  RTWModifiedTimeStamp	  250447110
-  ModelVersionFormat	  "1.%<AutoIncrement:14>"
+  LastModifiedDate	  "Sun Jul 15 20:58:18 2012"
+  RTWModifiedTimeStamp	  264286354
+  ModelVersionFormat	  "1.%<AutoIncrement:16>"
   ConfigurationManager	  "customverctrl"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -123,13 +123,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.10.0"
+      Version		      "1.11.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  StartTime		  "0.0"
 	  StopTime		  "15"
 	  AbsTol		  "auto"
@@ -142,14 +142,14 @@ Model {
 	  MaxConsecutiveZCs	  "1000"
 	  ExtrapolationOrder	  4
 	  NumberNewtonIterations  1
-	  MaxStep		  "auto"
+	  MaxStep		  "0.1"
 	  MinStep		  "auto"
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
 	  ConcurrentTasks	  off
-	  Solver		  "ode3"
-	  SolverName		  "ode3"
+	  Solver		  "ode45"
+	  SolverName		  "ode45"
 	  SolverJacobianMethodControl "auto"
 	  ShapePreserveControl	  "DisableAll"
 	  ZeroCrossControl	  "UseLocalSettings"
@@ -163,7 +163,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -175,6 +175,7 @@ Model {
 	  SaveFinalState	  off
 	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Array"
+	  SignalLoggingSaveFormat "ModelDataLogs"
 	  SaveOutput		  on
 	  SaveState		  off
 	  SignalLogging		  on
@@ -194,7 +195,7 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -243,10 +244,11 @@ Model {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
+	  AccelParallelForEachSubsystem	on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -317,6 +319,7 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  SimStateOlderReleaseMsg "error"
 	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "Warning"
 	  BusNameAdapt		  "WarnAndRepair"
@@ -331,7 +334,7 @@ Model {
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -368,7 +371,7 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -383,7 +386,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -398,7 +401,7 @@ Model {
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.10.0"
+	  Version		  "1.11.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -440,6 +443,7 @@ Model {
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
 	  GenerateSLWebview	  off
+	  GenerateCodeMetricsReport off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -448,7 +452,7 @@ Model {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.10.0"
+	      Version		      "1.11.0"
 	      Array {
 		Type			"Cell"
 		Dimension		17
@@ -509,7 +513,7 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.10.0"
+	      Version		      "1.11.0"
 	      Array {
 		Type			"Cell"
 		Dimension		15
@@ -536,6 +540,8 @@ Model {
 	      TargetFunctionLibrary   "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
+	      FunctionExecutionProfile off
+	      CodeExecutionProfiling  off
 	      ERTCodeCoverageTool     "None"
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
@@ -581,6 +587,7 @@ Model {
 	      RTWCAPISignals	      off
 	      RTWCAPIParams	      off
 	      RTWCAPIStates	      off
+	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
 	    }
 	    PropName		    "Components"
@@ -590,7 +597,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    " [ 280, 126, 1160, 756 ] "
+      ConfigPrmDlgPosition     [ 280, 126, 1160, 756 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -711,7 +718,7 @@ Model {
   }
   System {
     Name		    "sl_pursuit"
-    Location		    [1847, 293, 2676, 595]
+    Location		    [1376, 113, 2205, 415]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -725,15 +732,15 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "97"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "49"
+    SIDHighWatermark	    "51"
     Block {
       BlockType		      Reference
       Name		      "Bicycle"
       SID		      "49"
       Ports		      [2, 3]
-      Position		      [555, 137, 615, 213]
+      Position		      [555, 132, 615, 208]
       DropShadow	      on
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.53"
       SourceBlock	      "roblocks/Dynamics/Bicycle"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -746,8 +753,9 @@ Model {
       RTWMemSecDataParameters "Inherit from model"
       GeneratePreprocessorConditionals off
       accel		      "1"
-      vlim		      "1"
-      alim		      "2"
+      vlim		      "2"
+      alim		      "1"
+      L			      "1"
       x0		      "[0, 0, 0]"
       handbrake		      "0"
     }
@@ -757,7 +765,7 @@ Model {
       SID		      "47"
       Ports		      [0, 1]
       Position		      [40, 60, 80, 120]
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.53"
       SourceBlock	      "roblocks/Trajectory/Circle"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -771,6 +779,13 @@ Model {
       GeneratePreprocessorConditionals off
       radius		      "1"
       freq		      "0.2"
+    }
+    Block {
+      BlockType		      Fcn
+      Name		      "Fcn"
+      SID		      "50"
+      Position		      [195, 250, 255, 280]
+      Expr		      "sqrt(u(1)^2+u(2)^2)"
     }
     Block {
       BlockType		      Gain
@@ -798,7 +813,7 @@ Model {
       SID		      "26"
       Ports		      [1, 1]
       Position		      [425, 115, 455, 145]
-      LibraryVersion	      "1.10"
+      LibraryVersion	      "1.11"
       SourceBlock	      "simulink_need_slupdate/PID Controller"
       SourceType	      "PID Controller"
       ShowPortLabels	      "FromPortIcon"
@@ -813,6 +828,24 @@ Model {
       P			      "1"
       I			      "0.5"
       D			      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "Scope"
+      SID		      "51"
+      Ports		      [1]
+      Position		      [290, 249, 320, 281]
+      Floating		      off
+      Location		      [1356, 592, 1680, 831]
+      Open		      on
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      SaveName		      "ScopeData3"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
     }
     Block {
       BlockType		      Sum
@@ -833,7 +866,7 @@ Model {
       SID		      "28"
       Ports		      [2]
       Position		      [670, 80, 700, 115]
-      LibraryVersion	      "1.225"
+      LibraryVersion	      "1.236"
       SourceBlock	      "simulink/Sinks/XY Graph"
       SourceType	      "XY scope."
       ShowPortLabels	      "FromPortIcon"
@@ -857,9 +890,9 @@ Model {
       SID		      "48"
       Ports		      [2, 1]
       Position		      [370, 162, 390, 213]
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.53"
       SourceBlock	      "roblocks/Trajectory/angdiff"
-      SourceType	      "SubSystem"
+      SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off
@@ -877,7 +910,7 @@ Model {
       Ports		      [1]
       Position		      [555, 244, 585, 276]
       Floating		      off
-      Location		      [1083, 384, 1407, 623]
+      Location		      [1016, 567, 1340, 806]
       Open		      on
       NumInputPorts	      "1"
       List {
@@ -917,7 +950,7 @@ Model {
       Name		      "throttle"
       SID		      "37"
       Position		      [205, 72, 340, 108]
-      Expr		      "sqrt(u(1)^2+u(2)^2)-0.05"
+      Expr		      "sqrt(u(1)^2+u(2)^2)-0.1"
     }
     Block {
       BlockType		      Scope
@@ -926,7 +959,7 @@ Model {
       Ports		      [1]
       Position		      [510, 79, 540, 111]
       Floating		      off
-      Location		      [970, 92, 1294, 331]
+      Location		      [683, 553, 1007, 792]
       Open		      on
       NumInputPorts	      "1"
       List {
@@ -971,7 +1004,7 @@ Model {
     Line {
       SrcBlock		      "Bicycle"
       SrcPort		      1
-      Points		      [0, -5; 15, 0]
+      Points		      [15, 0]
       Branch {
 	DstBlock		"Mux3"
 	DstPort			1
@@ -985,7 +1018,7 @@ Model {
     Line {
       SrcBlock		      "Bicycle"
       SrcPort		      2
-      Points		      [25, 0; 0, -10]
+      Points		      [25, 0; 0, -5]
       Branch {
 	DstBlock		"Mux3"
 	DstPort			2
@@ -1034,8 +1067,15 @@ Model {
       }
       Branch {
 	Points			[0, 85]
-	DstBlock		"steering"
-	DstPort			1
+	Branch {
+	  DstBlock		  "steering"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [0, 90]
+	  DstBlock		  "Fcn"
+	  DstPort		  1
+	}
       }
     }
     Line {
@@ -1054,7 +1094,7 @@ Model {
     Line {
       SrcBlock		      "Bicycle"
       SrcPort		      3
-      Points		      [25, 0; 0, 15]
+      Points		      [25, 0; 0, 20]
       Branch {
 	Points			[30, 0]
 	Branch {
@@ -1089,7 +1129,6 @@ Model {
 	DstPort			1
       }
       Branch {
-	Points			[15, 0]
 	DstBlock		"Bicycle"
 	DstPort			2
       }
@@ -1112,6 +1151,12 @@ Model {
 	DstBlock		"Bicycle"
 	DstPort			1
       }
+    }
+    Line {
+      SrcBlock		      "Fcn"
+      SrcPort		      1
+      DstBlock		      "Scope"
+      DstPort		      1
     }
   }
 }

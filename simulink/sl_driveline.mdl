@@ -11,7 +11,7 @@ Model {
       Name		      "xy"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.14"
+    ComputedModelVersion    "1.15"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -31,9 +31,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Feb 22 20:07:08 2012"
-  RTWModifiedTimeStamp	  251842024
-  ModelVersionFormat	  "1.%<AutoIncrement:14>"
+  LastModifiedDate	  "Sun Jul 15 20:32:34 2012"
+  RTWModifiedTimeStamp	  264285088
+  ModelVersionFormat	  "1.%<AutoIncrement:15>"
   ConfigurationManager	  "customverctrl"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -716,7 +716,7 @@ Model {
   }
   System {
     Name		    "sl_driveline"
-    Location		    [1782, 300, 2611, 602]
+    Location		    [1782, 322, 2611, 624]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -738,7 +738,7 @@ Model {
       Ports		      [2, 3]
       Position		      [450, 123, 510, 197]
       DropShadow	      on
-      LibraryVersion	      "1.31"
+      LibraryVersion	      "1.53"
       SourceBlock	      "roblocks/Dynamics/Bicycle"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -752,7 +752,8 @@ Model {
       GeneratePreprocessorConditionals off
       accel		      "1"
       vlim		      "1"
-      alim		      "2"
+      alim		      "1"
+      L			      "1"
       x0		      "x0"
       handbrake		      "0"
     }
@@ -844,9 +845,9 @@ Model {
       SID		      "34"
       Ports		      [2, 1]
       Position		      [210, 152, 230, 203]
-      LibraryVersion	      "1.31"
+      LibraryVersion	      "1.53"
       SourceBlock	      "roblocks/Trajectory/angdiff"
-      SourceType	      "SubSystem"
+      SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off

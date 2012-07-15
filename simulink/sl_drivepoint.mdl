@@ -17,7 +17,7 @@ Model {
       Name		      "theta "
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.17"
+    ComputedModelVersion    "1.19"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -37,9 +37,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Apr 23 21:03:57 2012"
-  RTWModifiedTimeStamp	  257115832
-  ModelVersionFormat	  "1.%<AutoIncrement:17>"
+  LastModifiedDate	  "Sun Jul 15 20:25:25 2012"
+  RTWModifiedTimeStamp	  264284681
+  ModelVersionFormat	  "1.%<AutoIncrement:19>"
   ConfigurationManager	  "customverctrl"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -722,7 +722,7 @@ Model {
   }
   System {
     Name		    "sl_drivepoint"
-    Location		    [1678, 608, 2507, 910]
+    Location		    [1214, 531, 2043, 833]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -744,7 +744,7 @@ Model {
       Ports		      [2, 3]
       Position		      [545, 133, 605, 207]
       DropShadow	      on
-      LibraryVersion	      "1.39"
+      LibraryVersion	      "1.53"
       SourceBlock	      "roblocks/Dynamics/Bicycle"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -758,7 +758,8 @@ Model {
       GeneratePreprocessorConditionals off
       accel		      "1"
       vlim		      "1"
-      alim		      "2"
+      alim		      "1"
+      L			      "1"
       x0		      "x0"
       handbrake		      "0"
       Port {
@@ -848,7 +849,7 @@ Model {
       SID		      "22"
       Ports		      [2, 1]
       Position		      [370, 162, 390, 213]
-      LibraryVersion	      "1.39"
+      LibraryVersion	      "1.53"
       SourceBlock	      "roblocks/Trajectory/angdiff"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"

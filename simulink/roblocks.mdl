@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sat Apr 28 16:29:30 2012"
-  RTWModifiedTimeStamp	  257531360
-  ModelVersionFormat	  "1.%<AutoIncrement:52>"
+  LastModifiedDate	  "Sun Jul 15 20:08:34 2012"
+  RTWModifiedTimeStamp	  264283690
+  ModelVersionFormat	  "1.%<AutoIncrement:53>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -643,6 +643,11 @@ Library {
       BusSelectionMode	      off
     }
     Block {
+      BlockType		      Fcn
+      Expr		      "sin(u[1])"
+      SampleTime	      "-1"
+    }
+    Block {
       BlockType		      Gain
       Gain		      "1"
       Multiplication	      "Element-wise(K.*u)"
@@ -830,7 +835,7 @@ Library {
   }
   System {
     Name		    "roblocks"
-    Location		    [688, 149, 997, 572]
+    Location		    [688, 171, 997, 594]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    212
@@ -844,7 +849,7 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "129"
+    SIDHighWatermark	    "144"
     Block {
       BlockType		      SubSystem
       Name		      "Dynamics"
@@ -869,8 +874,8 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Dynamics"
-	Location		[1109, 108, 1488, 658]
-	Open			off
+	Location		[1109, 130, 1488, 680]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -905,24 +910,24 @@ Library {
 	  "\n<b>Outputs::</b>\n \nx (1x1) x-coordinate in world frame [m]\ny (1x1) x-coordinate in world frame [m]\ntheta (1x1"
 	  ") heading angle in world frame [rad]\n\n \n<b>Notes::</b>\n \n- Steering limit is symmetric between -limit and +lim"
 	  "it\n- Same dynamic model as the Toolbox class Vehicle.\n\n"
-	  MaskPromptString	  "Acceleration|Velocity limit|Steering limits|Initial state (x, y, theta)|Handbrake"
-	  MaskStyleString	  "edit,edit,edit,edit,edit"
-	  MaskVariables		  "accel=@1;vlim=@2;alim=@3;x0=@4;handbrake=@5;"
-	  MaskTunableValueString  "on,on,on,on,on"
-	  MaskCallbackString	  "||||"
-	  MaskEnableString	  "on,on,on,on,on"
-	  MaskVisibilityString	  "on,on,on,on,on"
-	  MaskToolTipString	  "on,on,on,on,on"
+	  MaskPromptString	  "Acceleration|Velocity limit|Steering limits|Wheel base|Initial state (x, y, theta)|Handbrake"
+	  MaskStyleString	  "edit,edit,edit,edit,edit,edit"
+	  MaskVariables		  "accel=@1;vlim=@2;alim=@3;L=@4;x0=@5;handbrake=@6;"
+	  MaskTunableValueString  "on,on,on,on,on,on"
+	  MaskCallbackString	  "|||||"
+	  MaskEnableString	  "on,on,on,on,on,on"
+	  MaskVisibilityString	  "on,on,on,on,on,on"
+	  MaskToolTipString	  "on,on,on,on,on,on"
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
 	  MaskPortRotate	  "default"
 	  MaskIconUnits		  "autoscale"
-	  MaskValueString	  "1|1|2|[0, 0, 0]|0"
+	  MaskValueString	  "1|1|2|0|[0, 0, 0]|0"
 	  System {
 	    Name		    "Bicycle"
-	    Location		    [106, 86, 738, 355]
-	    Open		    off
+	    Location		    [101, 482, 733, 751]
+	    Open		    on
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -934,7 +939,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
+	    SIDHighWatermark	    "226"
 	    SIDPrevWatermark	    "225"
 	    Block {
 	      BlockType		      Inport
@@ -970,6 +975,14 @@ Library {
 	      DisplayOption	      "bar"
 	    }
 	    Block {
+	      BlockType		      Fcn
+	      Name		      "Fcn"
+	      SID		      "51:226"
+	      Position		      [135, 150, 195, 180]
+	      ShowName		      off
+	      Expr		      "tan(u)/L"
+	    }
+	    Block {
 	      BlockType		      Integrator
 	      Name		      "Integrator"
 	      SID		      "51:5"
@@ -1003,7 +1016,7 @@ Library {
 	      Name		      "Trigonometric\nFunction"
 	      SID		      "51:8"
 	      Ports		      [1, 1]
-	      Position		      [215, 80, 245, 110]
+	      Position		      [240, 80, 270, 110]
 	      ShowName		      off
 	      Operator		      "cos"
 	    }
@@ -1012,7 +1025,7 @@ Library {
 	      Name		      "Trigonometric\nFunction2"
 	      SID		      "51:9"
 	      Ports		      [1, 1]
-	      Position		      [215, 125, 245, 155]
+	      Position		      [240, 125, 270, 155]
 	      ShowName		      off
 	    }
 	    Block {
@@ -1077,14 +1090,13 @@ Library {
 	    Line {
 	      SrcBlock		      "steering\nangle\nlimit"
 	      SrcPort		      1
-	      Points		      [180, 0]
-	      DstBlock		      "Mux"
-	      DstPort		      3
+	      DstBlock		      "Fcn"
+	      DstPort		      1
 	    }
 	    Line {
 	      SrcBlock		      "Trigonometric\nFunction2"
 	      SrcPort		      1
-	      Points		      [10, 0; 0, -25]
+	      Points		      [5, 0; 0, -25]
 	      DstBlock		      "Mux"
 	      DstPort		      2
 	    }
@@ -1134,7 +1146,7 @@ Library {
 		DstPort			1
 	      }
 	      Branch {
-		Points			[0, 0; -350, 0; 0, -60]
+		Points			[-325, 0; 0, -60]
 		Branch {
 		  DstBlock		  "Trigonometric\nFunction2"
 		  DstPort		  1
@@ -1170,6 +1182,13 @@ Library {
 	      SrcPort		      1
 	      DstBlock		      "Mux"
 	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "Fcn"
+	      SrcPort		      1
+	      Points		      [95, 0]
+	      DstBlock		      "Mux"
+	      DstPort		      3
 	    }
 	    Annotation {
 	      Name		      "Bicycle kinematic model for mobile robot"
@@ -2403,7 +2422,7 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Kinematics"
-	Location		[1014, 131, 1391, 561]
+	Location		[1014, 153, 1391, 583]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -2711,8 +2730,8 @@ Library {
 	  MaskValueString	  "p560|'luf'"
 	  System {
 	    Name		    "ikine6s"
-	    Location		    [1467, 816, 1697, 898]
-	    Open		    on
+	    Location		    [1467, 838, 1697, 920]
+	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
