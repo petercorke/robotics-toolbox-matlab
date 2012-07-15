@@ -126,11 +126,17 @@ function [qt,histout] = ikine(robot, tr, varargin)
     qt = zeros(npoints, n);  % preallocate space for results
     tcount = 0;              % total iteration count
 
+    if ~ishomog(tr)
+        error('RTB:ikine:badarg', 'T is not a homog xform');
+    end
 
     history = [];
     failed = false;
     for i=1:npoints
         T = tr(:,:,i);
+        % undo base and tool transformations
+        T = inv(robot.base) * T * inv(robot.tool);
+
         nm = Inf;
         % initialize state for the ikine loop
         eprev = Inf;

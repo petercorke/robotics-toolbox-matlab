@@ -65,11 +65,12 @@ function theta = ikine6s(robot, T, varargin)
     d4 = L(4).d;
 
     if ~ishomog(T)
-        error('T is not a homog xform');
+        error('RTB:ikine:badarg', 'T is not a homog xform');
     end
 
-    % undo base transformation
-    T = robot.base \ T;
+    % undo base and tool transformations
+    T = inv(robot.base) * T;
+    T = T * inv(robot.tool);
 
     % The following parameters are extracted from the Homogeneous 
     % Transformation as defined in equation 1, p. 34
