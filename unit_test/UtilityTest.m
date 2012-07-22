@@ -234,7 +234,9 @@ function rtdemo_test
     % run through all the demos
     pause off
  	rttrdemo
- 	rttgdemo
+    mdl_puma560
+    qz = [0 0 0 0 0 0]; % zero angles, L shaped pose
+    qr = [0 -pi/2 pi/2 0 0 0]; % ready pose, arm up 	rttgdemo
  	rtfkdemo
  	rtandemo
  	rtikdemo
