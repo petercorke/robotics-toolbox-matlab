@@ -37,7 +37,7 @@ function eul2jac_test
         [0     0     0
          0     1     0
          1     0     1],'absolute',1e-4);
-    assertExceptionThrown(@()eul2jac(1),'MATLAB:inputArgUndefined');
+    assertExceptionThrown(@()eul2jac(1),'RTB:eul2jac:badarg');
 
 %    rpy2jac                    - RPY angles to Jacobian
 function rpy2jac_test
@@ -57,7 +57,7 @@ function rpy2jac_test
          0     1     0
          0     0     1],'absolute',1e-4);
      %Testing with a scalar number input 
-     assertExceptionThrown(@()rpy2jac(1),'MATLAB:inputArgUndefined');
+     assertExceptionThrown(@()rpy2jac(1),'RTB:rpy2jac:badarg');
     
 
 %    skew                       - vector to skew symmetric matrix

@@ -17,9 +17,9 @@ function angvec2r_test
      0     1     0
      0     0     1],'absolute',1e-4);
     %Unit test for angvec2r with variables ([1,2,3],0.1) 
-    assertExceptionThrown(@()angvec2r([1,2,3],0.1),'MATLAB:badsubscript');
+    assertExceptionThrown(@()angvec2r([1,2,3],0.1),'RTB:angvec2r:badarg');
     %Unit test for angvec2r with variables (1)
-    assertExceptionThrown(@()angvec2r(1),'MATLAB:inputArgUndefined');
+    assertExceptionThrown(@()angvec2r(1),'RTB:angvec2r:badarg');
 
 
 %    angvec2tr                  - angle/vector to HT
@@ -37,9 +37,9 @@ function angvec2tr_test
      0     0     1     0
      0     0     0     1],'absolute',1e-4);
     %Unit test for angvec2tr with variables ([1,2,3],0.1) 
-    assertExceptionThrown(@()angvec2tr([1,2,3],0.1),'MATLAB:badsubscript');
+    assertExceptionThrown(@()angvec2tr([1,2,3],0.1),'RTB:angvec2r:badarg');
     %Unit test for angvec2tr with variables (1)
-    assertExceptionThrown(@()angvec2tr(1),'MATLAB:inputArgUndefined');
+    assertExceptionThrown(@()angvec2tr(1),'RTB:angvec2tr:badarg');
      
 %    eul2r                      - Euler angles to RM
 function eul2r_test
@@ -144,7 +144,7 @@ function oa2r_test
          0     1     0
          0     0     1],'absolute',1e-4);
     %test for scalar input
-    assertExceptionThrown(@()oa2r(1),'MATLAB:inputArgUndefined');
+    assertExceptionThrown(@()oa2r(1),'RTB:oa2r:badarg');
 
 %    oa2tr                      - orientation and approach vector to HT
 function oa2tr_test
@@ -155,7 +155,7 @@ function oa2tr_test
          0     0     1     0
          0     0     0     1],'absolute',1e-4);
     %test for scalar input
-    assertExceptionThrown(@()oa2tr(1),'MATLAB:inputArgUndefined');
+    assertExceptionThrown(@()oa2tr(1),'RTB:oa2tr:badarg');
     
 %    r2t                        - RM to HT
 function r2t_test
@@ -428,7 +428,7 @@ function trnorm_test
         -0.1593    0.1538    0.9752         0
               0         0         0    1.0000],'absolute',1e-4); 
     %test for scalar input
-    assertExceptionThrown(@()trnorm(),'MATLAB:inputArgUndefined');    
+    assertExceptionThrown(@()trnorm(1),'RTB:trnorm:badarg');    
           
      
 function rot_test
