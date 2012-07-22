@@ -56,6 +56,10 @@
 
 % Peter Corke 8/2009.
 
+% TODO
+%  keep dimensions of workspace in this object, have a setaxes() method
+%  which transfers the dimensions to the current axes.
+
 classdef Navigation < handle
 
     properties
@@ -294,7 +298,7 @@ classdef Navigation < handle
             % iterate using the next() method until we reach the goal
             while true
                 if nargout == 0
-                    plot(robot(1), robot(2), 'g.');
+                    plot(robot(1), robot(2), 'g.', 'MarkerSize', 12);
                     drawnow 
                 end
 
@@ -387,7 +391,7 @@ classdef Navigation < handle
                 if numcols(p) ~= 2
                     error('expecting Nx2 matrix of points');
                 end
-                plot(p(:,1), p(:,2), 'g.');
+                plot(p(:,1), p(:,2), 'g.', 'MarkerSize', 12);
             end
             
             if ~isempty(nav.goal) && opt.goal
