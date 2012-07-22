@@ -4,6 +4,9 @@
 % If no graphical robot exists one is created in a new window.  Otherwise
 % all current instances of the graphical robot are driven.
 %
+% h = R.teach(OPTIONS) as above but returns a handle for the teach window.  Can
+% be used to programmatically delete the teach window.
+%
 % Options::
 % 'eul'        Display tool orientation in Euler angles
 % 'rpy'        Display tool orientation in roll/pitch/yaw angles
@@ -61,7 +64,7 @@
 %% Warning: FINDJOBJ relies on undocumented and unsupported Matlab/Java
 %% functionality.
 
-function teach(r, varargin)
+function handle = teach(r, varargin)
     bgcol = [135 206 250]/255;
 
     opt.degrees = false;
@@ -307,6 +310,10 @@ function teach(r, varargin)
     if isempty(rhandles)
         figure
         r.plot(q);
+    end
+    
+    if nargout > 0
+        handle = fig;
     end
 end
 
