@@ -20,6 +20,9 @@
 %   display      display state/parameters in human readable form
 %   char         convert to string
 %
+% Static methods::
+%   plotv        plot/animate a pose on current figure
+%
 % Properties (read/write)::
 %   x               true vehicle state (3x1)
 %   V               odometry covariance (2x2)
@@ -525,6 +528,16 @@ classdef Vehicle < handle
         % 'color',C    Color of vehicle.
         % 'fill'       Filled with solid color as per 'color' option
         % 'fps',F      Frames per second in animation mode (default 10)
+        %
+        % Example::
+        %
+        % Generate some path 3xN
+        %         p = PRM.plan(start, goal);
+        % Set the axis dimensions to stop them rescaling for every point on the path
+        %         axis([-5 5 -5 5]);
+        %
+        % Now invoke the static method
+        %         Vehicle.plotv(p);
         %
         % Notes::
         % - This is a static method.
