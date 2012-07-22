@@ -4,7 +4,7 @@ Model {
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
-    NumRootOutports	    3
+    NumRootOutports	    2
     Outport {
       BusObject		      ""
       BusOutputAsStruct	      "off"
@@ -15,13 +15,8 @@ Model {
       BusOutputAsStruct	      "off"
       Name		      "err"
     }
-    Outport {
-      BusObject		      ""
-      BusOutputAsStruct	      "off"
-      Name		      "tau"
-    }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.35"
+    ComputedModelVersion    "1.37"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -42,9 +37,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Apr 27 20:37:03 2012"
-  RTWModifiedTimeStamp	  257410999
-  ModelVersionFormat	  "1.%<AutoIncrement:35>"
+  LastModifiedDate	  "Wed Jun 20 20:33:12 2012"
+  RTWModifiedTimeStamp	  261836570
+  ModelVersionFormat	  "1.%<AutoIncrement:37>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -127,7 +122,7 @@ Model {
 	  $ObjectID		  2
 	  Version		  "1.11.0"
 	  StartTime		  "0.0"
-	  StopTime		  "10.0"
+	  StopTime		  "10"
 	  AbsTol		  "auto"
 	  FixedStep		  "0.01"
 	  InitialStep		  "auto"
@@ -138,7 +133,7 @@ Model {
 	  MaxConsecutiveZCs	  "1000"
 	  ExtrapolationOrder	  4
 	  NumberNewtonIterations  1
-	  MaxStep		  "auto"
+	  MaxStep		  "0.05"
 	  MinStep		  "auto"
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
@@ -148,7 +143,7 @@ Model {
 	  SolverName		  "ode45"
 	  SolverJacobianMethodControl "auto"
 	  ShapePreserveControl	  "DisableAll"
-	  ZeroCrossControl	  "UseLocalSettings"
+	  ZeroCrossControl	  "DisableAll"
 	  ZeroCrossAlgorithm	  "Nonadaptive"
 	  AlgebraicLoopSolver	  "TrustRegion"
 	  SolverResetMethod	  "Fast"
@@ -529,7 +524,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition     [ 786, 727, 1777, 1357 ] 
+      ConfigPrmDlgPosition     [ 289, 139, 1191, 761 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -631,7 +626,7 @@ Model {
   }
   System {
     Name		    "sl_ctorque"
-    Location		    [60, 63, 899, 345]
+    Location		    [56, 55, 895, 337]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -645,7 +640,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "39"
+    SIDHighWatermark	    "43"
     Block {
       BlockType		      Clock
       Name		      "Clock"
@@ -667,7 +662,7 @@ Model {
       SID		      "3"
       Position		      [570, 45, 600, 75]
       ForegroundColor	      "gray"
-      Gain		      "100"
+      Gain		      "20"
     }
     Block {
       BlockType		      Reference
@@ -676,7 +671,7 @@ Model {
       Ports		      [3, 1]
       Position		      [175, 147, 250, 223]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.50"
+      LibraryVersion	      "1.52"
       SourceBlock	      "roblocks/Dynamics/RNE"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -699,7 +694,7 @@ Model {
       Position		      [395, 147, 470, 223]
       BackgroundColor	      "red"
       DropShadow	      on
-      LibraryVersion	      "1.50"
+      LibraryVersion	      "1.52"
       SourceBlock	      "roblocks/Dynamics/Robot"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -748,11 +743,15 @@ Model {
       Inputs		      "|++"
     }
     Block {
-      BlockType		      Terminator
-      Name		      "Terminator"
-      SID		      "10"
-      Position		      [105, 200, 125, 220]
+      BlockType		      Sum
+      Name		      "Sum3"
+      SID		      "40"
+      Ports		      [2, 1]
+      Position		      [115, 200, 135, 220]
+      ForegroundColor	      "gray"
       ShowName		      off
+      IconShape		      "round"
+      Inputs		      "|++"
     }
     Block {
       BlockType		      Terminator
@@ -771,8 +770,8 @@ Model {
     Block {
       BlockType		      ZeroOrderHold
       Name		      "Tfb"
-      SID		      "27"
-      Position		      [295, 170, 330, 200]
+      SID		      "41"
+      Position		      [320, 170, 355, 200]
       SampleTime	      "0.01"
     }
     Block {
@@ -782,7 +781,7 @@ Model {
       Ports		      [0, 3]
       Position		      [45, 149, 80, 221]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.50"
+      LibraryVersion	      "1.52"
       SourceBlock	      "roblocks/Trajectory/jtraj"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -797,7 +796,7 @@ Model {
       q0		      "[0 0 0 0 0 0]"
       qf		      "[pi/4 pi/2 -pi/2 0 0 0]"
       tmax		      "10"
-      ts		      "0.02"
+      ts		      "-1"
     }
     Block {
       BlockType		      Reference
@@ -806,7 +805,7 @@ Model {
       Ports		      [1]
       Position		      [700, 132, 780, 188]
       BackgroundColor	      "red"
-      LibraryVersion	      "1.50"
+      LibraryVersion	      "1.52"
       SourceBlock	      "roblocks/Robot Graphics/plot"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -834,14 +833,6 @@ Model {
       SID		      "31"
       Position		      [570, 18, 600, 32]
       Port		      "2"
-      IconDisplay	      "Port number"
-    }
-    Block {
-      BlockType		      Outport
-      Name		      "tau"
-      SID		      "29"
-      Position		      [295, 218, 325, 232]
-      Port		      "3"
       IconDisplay	      "Port number"
     }
     Line {
@@ -893,25 +884,10 @@ Model {
       DstPort		      2
     }
     Line {
-      SrcBlock		      "Sum2"
-      SrcPort		      1
-      Points		      [10, 0; 0, 190; -510, 0]
-      DstBlock		      "RNE"
-      DstPort		      3
-    }
-    Line {
       SrcBlock		      "RNE"
       SrcPort		      1
-      Points		      [20, 0]
-      Branch {
-	DstBlock		"Tfb"
-	DstPort			1
-      }
-      Branch {
-	Points			[0, 40]
-	DstBlock		"tau"
-	DstPort			1
-      }
+      DstBlock		      "Tfb"
+      DstPort		      1
     }
     Line {
       SrcBlock		      "jtraj"
@@ -957,7 +933,7 @@ Model {
     Line {
       SrcBlock		      "jtraj"
       SrcPort		      3
-      DstBlock		      "Terminator"
+      DstBlock		      "Sum3"
       DstPort		      1
     }
     Line {
@@ -967,15 +943,28 @@ Model {
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Tfb"
-      SrcPort		      1
-      DstBlock		      "Robot"
-      DstPort		      1
-    }
-    Line {
       SrcBlock		      "Clock"
       SrcPort		      1
       DstBlock		      "Terminator2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Sum3"
+      SrcPort		      1
+      DstBlock		      "RNE"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "Sum2"
+      SrcPort		      1
+      Points		      [20, 0; 0, 185; -555, 0]
+      DstBlock		      "Sum3"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Tfb"
+      SrcPort		      1
+      DstBlock		      "Robot"
       DstPort		      1
     }
     Annotation {
