@@ -179,6 +179,8 @@ classdef DXform < Navigation
             if isempty(dx.distancemap)
                 error('No distancemap computed, you need to plan');
             end
+            
+            % list of all possible directions to move from current cell
             directions = [
                 -1 -1
                 0 -1
@@ -191,12 +193,23 @@ classdef DXform < Navigation
                 1 1];
 
             x = robot(1); y = robot(2);
-            region = dx.distancemap(y-1:y+1,x-1:x+1);
+            
+            % find the neighbouring cell that has the smallest distance
+            mindist = Inf;
+            mindir = [];
+            for d=directions'
+                % use exceptions to catch attempt to move outside the map
+                try
+                    if dx.distancemap(y+d(1), x+d(2)) < mindist
+                        mindir = d;
+                        mindist = dx.distancemap(y+d(1), x+d(2));
+                    end
+                catch
+                end
+            end
 
-            [~,k] = min(region(:));
-
-            x = x + directions(k,2);
-            y = y + directions(k,1);
+            x = x + mindir(2);
+            y = y + mindir(1);
 
             if all([x;y] == dx.goal)
                 n = [];     % indicate we are at the goal
