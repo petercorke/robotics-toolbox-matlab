@@ -1,12 +1,12 @@
 %SLACCEL	S-function for robot acceleration
 %
 % This is the S-function for computing robot acceleration. It assumes input
-% data u to be the state vector [q qd].
+% data u to be the vector [q qd tau].
 %
 % Implemented as an S-function to get around vector sizing problem with
 % Simulink 4.
 
-function [sys,x0,str,ts] = slaccel(t,x,u,flag, robot)
+function [sys, x0, str, ts] = slaccel(t, x, u, flag, robot)
 	switch flag,
 
 	case 0
@@ -15,7 +15,16 @@ function [sys,x0,str,ts] = slaccel(t,x,u,flag, robot)
 
 	case {3}
 		% come here to calculate derivitives
-		sys = accel(robot, u);
+        
+        % first check that the torque vector is sensible
+        if length(u) ~= (3*robot.n)
+            error('RTB:slaccel:badarg', 'Input vector is length %d, should be %d', length(u), 3*robot.n);
+        end
+        if ~isreal(u)
+            error('RTB:slaccel:badarg', 'Input vector is complex, should be real'); 
+        end
+        
+		sys = robot.accel(u(:)');
 	case {1, 2, 4, 9}
 		sys = [];
 	end
