@@ -300,22 +300,26 @@ classdef RRT < Navigation
 
             % find path through the graph using A* search
             path = g.Astar(vstart, vgoal);
-            cpath = g.coord(path);    % get coords from vertices
+            
+            % concatenate the vehicle motion segments
+            cpath = [];
+            for p = path(2:end)
+                cpath = [cpath g.data(p).path];
+            end
 
             if nargout == 0
                 % plot the path
                 clf; hold on
 
-                plot2(cpath', 'o');     % plot the node coordinates
-                for i=2:length(path)
-                    p0 = g.coord(path(i-1));    % start of edge
-                    p1 = g.coord(path(i));      % end of edge
-                    b = g.data(path(i));        % get path data for segment
-                    % draw line with direction dependent color
+                plot2(g.coord(path)', 'o');     % plot the node coordinates
+                for i = 2:length(path);
+                    b = g.data(path(i));            % get path data for segment
+                    % draw segment with direction dependent color
+                    seg = [g.coord(path(i-1)) b.path];
                     if b.vel > 0
-                        plot3([p0(1) p1(1)], [p0(2) p1(2)], [p0(3) p1(3)], 'b');
+                        plot2(seg', 'b');
                     else
-                        plot3([p0(1) p1(1)], [p0(2) p1(2)], [p0(3) p1(3)], 'r');
+                        plot2(seg', 'r');
                     end
                 end
                 xlabel('x'); ylabel('y'); zlabel('\theta');
@@ -331,7 +335,8 @@ classdef RRT < Navigation
         % R.plot() displays the navigation tree in 3D.
 
             clf
-            rrt.graph.plot('noedges', 'MarkerSize', 6, 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'g');
+            rrt.graph.plot('noedges', 'NodeSize', 6, 'NodeFaceColor', 'g', 'NodeEdgeColor', 'g', 'edges');
+
             hold on
             for i=2:rrt.graph.n
                 b = rrt.graph.data(i);
