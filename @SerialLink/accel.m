@@ -43,7 +43,10 @@ function qdd = accel(robot, Q, qd, torque)
 
 	n = robot.n;
 
-	if nargin == 2
+    if nargin == 2
+        if length(Q) ~= (3*robot.n)
+            error('RTB:accel:badarg', 'Input vector X is length %d, should be %d (q, qd, tau)', length(Q), 3*robot.n);
+        end
         % accel(X)
         Q = Q(:)';   % make it a row vector
 	    q = Q(1:n);
@@ -53,6 +56,7 @@ function qdd = accel(robot, Q, qd, torque)
         % accel(Q, qd, torque)
         
         if numrows(Q) > 1
+            % handle trajectory by recursion
             if numrows(Q) ~= numrows(qd)
                 error('for trajectory q and qd must have same number of rows');
             end
