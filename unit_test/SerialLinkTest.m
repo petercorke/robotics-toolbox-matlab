@@ -18,8 +18,12 @@ function SerialLinkMDH_test
     % minimalistic test of modified DH functionality
     %  most code is common, need to exercise MDH code in Link and also for
     %  RNE
-    mdl_puma560akb
 
+    mdl_puma560akb
+    
+    % qr is not set by the script, it clashes with the builtin function QR
+    qz = [0 0 0 0 0 0];
+   
     T = p560m.fkine(qz);
     J = p560m.jacobn(qz);
     tau = p560m.rne(qz, qz, qz);
@@ -73,7 +77,11 @@ function teach_test
     L(1).qlim = [-5 5];
     R1 = SerialLink(L,'name','robot1','comment', 'test robot','manufacturer', 'test',...
     'base', eye(4,4), 'tool', eye(4,4), 'offset', [1 1 0 0 0 0 ] );
-    R1.teach;
+    h = R1.teach;
+    drawnow
+    pause(0.5);
+    delete(h);
+
 
 %        ikine                  - inverse kinematics (numeric)
 function ikine_test
