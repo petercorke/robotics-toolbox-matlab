@@ -36,6 +36,8 @@ function J = rpy2jac(r, p, y)
         p = r(2);
         y = r(3);
         r = r(1);
+    elseif nargin ~= 3
+        error('RTB:rpy2jac:badarg', 'bad arguments');
     end
 	J = [	
         1  0       sin(p)

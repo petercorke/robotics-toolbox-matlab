@@ -31,6 +31,11 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
 function R = oa2r(o, a)
+
+    if nargin < 2 || ~isvec(o) || ~isvec(a)
+        error('RTB:oa2r:badarg', 'bad arguments');
+    end
+
     o = o(:); a = a(:);
 	n = cross(o, a);
     o = cross(a, n);

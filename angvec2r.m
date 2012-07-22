@@ -24,6 +24,10 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 function R = angvec2r(theta, k)
 
+    if nargin < 2 || ~isscalar(theta) || ~isvec(k)
+        error('RTB:angvec2r:badarg', 'bad arguments');
+    end
+
 	cth = cos(theta);
 	sth = sin(theta);
 	vth = (1 - cth);

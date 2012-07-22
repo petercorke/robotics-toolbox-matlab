@@ -36,6 +36,8 @@ function J = eul2jac(phi, theta, psi)
         theta = phi(2);
         psi = phi(3);
         phi = phi(1);
+    elseif nargin ~= 3
+        error('RTB:eul2jac:badarg', 'bad arguments');
     end
     J = [   
         cos(psi)*sin(theta)   -sin(psi)    0

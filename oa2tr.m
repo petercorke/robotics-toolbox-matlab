@@ -32,6 +32,9 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
 function r = oa2tr(o, a)
+    if nargin < 2
+        error('RTB:oa2tr:badarg', 'bad arguments');
+    end
 	n = cross(o, a);
     o = cross(a, n);
 	r = [unit(n(:)) unit(o(:)) unit(a(:)) zeros(3,1); 0 0 0 1];

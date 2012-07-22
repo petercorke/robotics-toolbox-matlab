@@ -46,5 +46,7 @@ function r = trnorm(t)
         r = [unit(n) unit(t(1:3,2)) unit(t(1:3,3)) t(1:3,4); 0 0 0 1];
     elseif all(size(t) == [3 3])
             r = t;
+    else
+        error('RTB:trnorm:badarg', 'argument must be 3x3 or 4x4 hom xform');
     end
 

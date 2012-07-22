@@ -28,4 +28,9 @@
 
 function T = angvec2tr(theta, k)
 
+    if nargin < 2 
+        error('RTB:angvec2tr:badarg', 'bad arguments');
+    end
+
+
     T = r2t( angvec2r(theta, k) );
