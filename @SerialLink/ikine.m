@@ -134,8 +134,6 @@ function [qt,histout] = ikine(robot, tr, varargin)
     failed = false;
     for i=1:npoints
         T = tr(:,:,i);
-        % undo base and tool transformations
-        T = inv(robot.base) * T * inv(robot.tool);
 
         nm = Inf;
         % initialize state for the ikine loop
@@ -155,7 +153,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
             end
 
             % compute the error
-            e = tr2delta(fkine(robot, q'), T);
+            e = tr2delta( robot.fkine(q'), T);
 
             % optionally adjust the step size
             if opt.varstep
