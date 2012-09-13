@@ -1,13 +1,14 @@
 Library {
   Name			  "roblocks"
-  Version		  7.7
+  Version		  7.9
   MdlSubVersion		  0
-  SavedCharacterEncoding  "windows-1252"
+  SavedCharacterEncoding  "ISO-8859-1"
   LibraryType		  "BlockLibrary"
   SaveDefaultBlockParams  on
   ScopeRefreshTime	  0.035000
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
+  FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
   Created		  "Mon Feb 06 11:30:26 2012"
   Creator		  "n6334687"
@@ -15,9 +16,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun Jul 15 20:08:34 2012"
-  RTWModifiedTimeStamp	  264283690
-  ModelVersionFormat	  "1.%<AutoIncrement:53>"
+  LastModifiedDate	  "Thu Sep 13 21:09:39 2012"
+  RTWModifiedTimeStamp	  269471369
+  ModelVersionFormat	  "1.%<AutoIncrement:54>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -25,6 +26,7 @@ Library {
   WideLines		  off
   ShowLineDimensions	  off
   ShowPortDataTypes	  off
+  ShowDesignRanges	  off
   ShowLoopsOnError	  on
   IgnoreBidirectionalLines off
   ShowStorageClass	  off
@@ -85,13 +87,13 @@ Library {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.11.0"
+      Version		      "1.12.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.11.0"
+	  Version		  "1.12.0"
 	  StartTime		  "0.0"
 	  StopTime		  "10.0"
 	  AbsTol		  "auto"
@@ -109,6 +111,7 @@ Library {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
+	  EnableConcurrentExecution off
 	  ConcurrentTasks	  off
 	  Solver		  "ode45"
 	  SolverName		  "ode45"
@@ -125,7 +128,7 @@ Library {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.11.0"
+	  Version		  "1.12.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -157,7 +160,7 @@ Library {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.11.0"
+	  Version		  "1.12.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    8
@@ -176,6 +179,7 @@ Library {
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
 	  UseIntDivNetSlope	  off
+	  UseFloatMulNetSlope	  off
 	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
@@ -208,11 +212,11 @@ Library {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
-	  AccelParallelForEachSubsystem	on
+	  ParallelExecutionInRapidAccelerator on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.11.0"
+	  Version		  "1.12.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -267,6 +271,7 @@ Library {
 	  UnconnectedOutputMsg	  "warning"
 	  UnconnectedLineMsg	  "warning"
 	  SFcnCompatibilityMsg	  "none"
+	  FrameProcessingCompatibilityMsg "warning"
 	  UniqueDataStoreMsg	  "none"
 	  BusObjectLabelMismatch  "warning"
 	  RootOutportRequireBusObject "warning"
@@ -295,10 +300,11 @@ Library {
 	  SFInvalidInputDataAccessInChartInitDiag "warning"
 	  SFNoUnconditionalDefaultTransitionDiag "warning"
 	  SFTransitionOutsideNaturalParentDiag "warning"
+	  SFUnconditionalTransitionShadowingDiag "warning"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.11.0"
+	  Version		  "1.12.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -335,7 +341,7 @@ Library {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.11.0"
+	  Version		  "1.12.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -350,7 +356,7 @@ Library {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.11.0"
+	  Version		  "1.12.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -365,7 +371,7 @@ Library {
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.11.0"
+	  Version		  "1.12.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    7
@@ -407,8 +413,9 @@ Library {
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
-	  GenerateSLWebview	  off
+	  GenerateWebview	  off
 	  GenerateCodeMetricsReport off
+	  GenerateCodeReplacementReport	off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -417,7 +424,7 @@ Library {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.11.0"
+	      Version		      "1.12.0"
 	      Array {
 		Type			"Cell"
 		Dimension		21
@@ -482,7 +489,7 @@ Library {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.11.0"
+	      Version		      "1.12.0"
 	      Array {
 		Type			"Cell"
 		Dimension		16
@@ -507,12 +514,10 @@ Library {
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
-	      TargetFunctionLibrary   "ANSI_C"
+	      CodeReplacementLibrary  "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
-	      FunctionExecutionProfile off
 	      CodeExecutionProfiling  off
-	      ERTCodeCoverageTool     "None"
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
 	      GenerateFullHeader      on
@@ -522,6 +527,7 @@ Library {
 	      ModelReferenceCompliant on
 	      ParMdlRefBuildCompliant on
 	      CompOptLevelCompliant   on
+	      ConcurrentExecutionCompliant on
 	      IncludeMdlTerminateFcn  on
 	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
@@ -546,6 +552,7 @@ Library {
 	      ModelStepFunctionPrototypeControlCompliant off
 	      CPPClassGenCompliant    off
 	      AutosarCompliant	      off
+	      GRTInterface	      on
 	      UseMalloc		      off
 	      ExtMode		      off
 	      ExtModeStaticAlloc      off
@@ -571,6 +578,7 @@ Library {
     }
     PropName		    "ConfigurationSets"
   }
+  ExplicitPartitioning	  off
   BlockDefaults {
     ForegroundColor	    "black"
     BackgroundColor	    "white"
@@ -617,10 +625,12 @@ Library {
     Block {
       BlockType		      Clock
       DisplayTime	      off
+      Decimation	      "10"
     }
     Block {
       BlockType		      Concatenate
       NumInputs		      "2"
+      Mode		      "Vector"
       ConcatenateDimension    "1"
     }
     Block {
@@ -797,6 +807,7 @@ Library {
       DataTypeOverride	      "UseLocalSettings"
       DataTypeOverrideAppliesTo	"AllNumericTypes"
       MinMaxOverflowLogging   "UseLocalSettings"
+      SFBlockType	      "NONE"
       Variant		      off
       GeneratePreprocessorConditionals off
     }
@@ -831,11 +842,12 @@ Library {
       SampleTime	      "1"
       StateMustResolveToSignalObject off
       RTWStateStorageClass    "Auto"
+      HasFrameUpgradeWarning  on
     }
   }
   System {
     Name		    "roblocks"
-    Location		    [688, 171, 997, 594]
+    Location		    [740, 56, 1049, 479]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    212
@@ -849,7 +861,7 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "144"
+    SIDHighWatermark	    "648"
     Block {
       BlockType		      SubSystem
       Name		      "Dynamics"
@@ -874,8 +886,8 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Dynamics"
-	Location		[1109, 130, 1488, 680]
-	Open			on
+	Location		[1110, 153, 1489, 703]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -926,8 +938,8 @@ Library {
 	  MaskValueString	  "1|1|2|0|[0, 0, 0]|0"
 	  System {
 	    Name		    "Bicycle"
-	    Location		    [101, 482, 733, 751]
-	    Open		    on
+	    Location		    [101, 504, 733, 773]
+	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -939,7 +951,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "226"
+	    SIDHighWatermark	    "227"
 	    SIDPrevWatermark	    "225"
 	    Block {
 	      BlockType		      Inport
@@ -985,7 +997,7 @@ Library {
 	    Block {
 	      BlockType		      Integrator
 	      Name		      "Integrator"
-	      SID		      "51:5"
+	      SID		      "51:227"
 	      Ports		      [2, 1]
 	      Position		      [440, 113, 470, 157]
 	      ExternalReset	      "level"
@@ -1191,6 +1203,7 @@ Library {
 	      DstPort		      3
 	    }
 	    Annotation {
+	      SID		      "51:228"
 	      Name		      "Bicycle kinematic model for mobile robot"
 	      Position		      [368, 29]
 	    }
@@ -2235,7 +2248,7 @@ Library {
 	    Block {
 	      BlockType		      Integrator
 	      Name		      "Integrator"
-	      SID		      "55:226"
+	      SID		      "55:246"
 	      Ports		      [1, 1]
 	      Position		      [265, 65, 295, 95]
 	      ShowName		      off
@@ -2249,7 +2262,7 @@ Library {
 	    Block {
 	      BlockType		      Integrator
 	      Name		      "Integrator1"
-	      SID		      "55:227"
+	      SID		      "55:247"
 	      Ports		      [1, 1]
 	      Position		      [345, 65, 375, 95]
 	      ShowName		      off
@@ -2257,7 +2270,7 @@ Library {
 	    Block {
 	      BlockType		      Mux
 	      Name		      "Mux"
-	      SID		      "55:228"
+	      SID		      "55:248"
 	      Ports		      [3, 1]
 	      Position		      [105, 44, 115, 116]
 	      ShowName		      off
@@ -2325,7 +2338,7 @@ Library {
 	    }
 	    Line {
 	      Name		      "qd"
-	      Labels		      [0, 0; 0, 0]
+	      Labels		      [0, 0]
 	      SrcBlock		      "Integrator"
 	      SrcPort		      1
 	      Points		      [30, 0]
@@ -2352,7 +2365,7 @@ Library {
 	    }
 	    Line {
 	      Name		      "qdd"
-	      Labels		      [0, 0; 0, 0]
+	      Labels		      [0, 0]
 	      SrcBlock		      "S-Function"
 	      SrcPort		      1
 	      Points		      [35, 0]
@@ -2369,27 +2382,32 @@ Library {
 	  }
 	}
 	Annotation {
+	  SID			  "145"
 	  Name			  "\nDynamics  \n "
 	  Position		  [47, 27]
 	  BackgroundColor	  "cyan"
 	  FontSize		  18
 	}
 	Annotation {
+	  SID			  "146"
 	  Name			  "Arm-type robot"
 	  Position		  [55, 100]
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
+	  SID			  "147"
 	  Name			  "Quadrotor"
 	  Position		  [41, 336]
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
+	  SID			  "148"
 	  Name			  "Mobile robot"
 	  Position		  [49, 214]
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
+	  SID			  "149"
 	  Name			  "Robotics Toolbox for MATLAB"
 	  Position		  [116, 17]
 	  HorizontalAlignment	  "left"
@@ -2401,7 +2419,7 @@ Library {
     Block {
       BlockType		      SubSystem
       Name		      "Kinematics"
-      SID		      "15"
+      SID		      "249"
       Ports		      []
       Position		      [154, 128, 260, 170]
       BackgroundColor	      "darkGreen"
@@ -2422,8 +2440,8 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Kinematics"
-	Location		[1014, 153, 1391, 583]
-	Open			on
+	Location		[1014, 175, 1391, 605]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -2435,12 +2453,12 @@ Library {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
-	SIDHighWatermark	"73"
+	SIDHighWatermark	"78"
 	SIDPrevWatermark	"14"
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "fkine"
-	  SID			  "15:22"
+	  SID			  "249:22"
 	  Ports			  [1, 1]
 	  Position		  [80, 84, 145, 146]
 	  BackgroundColor	  "red"
@@ -2492,14 +2510,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "q"
-	      SID		      "15:22:69"
+	      SID		      "249:22:69"
 	      Position		      [55, 68, 85, 82]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "15:22:70"
+	      SID		      "249:22:70"
 	      Ports		      [1, 1]
 	      Position		      [120, 60, 180, 90]
 	      MATLABFcn		      "fkine(robot,u)"
@@ -2509,7 +2527,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "T"
-	      SID		      "15:22:71"
+	      SID		      "249:22:71"
 	      Position		      [225, 68, 255, 82]
 	      IconDisplay	      "Port number"
 	    }
@@ -2530,7 +2548,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "ijacob"
-	  SID			  "15:23"
+	  SID			  "249:23"
 	  Ports			  [1, 1]
 	  Position		  [285, 185, 340, 255]
 	  BackgroundColor	  "red"
@@ -2574,14 +2592,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "J"
-	      SID		      "15:23:73"
+	      SID		      "249:23:73"
 	      Position		      [20, 33, 50, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "inverse\njacobian"
-	      SID		      "15:23:74"
+	      SID		      "249:23:74"
 	      Ports		      [1, 1]
 	      Position		      [110, 25, 170, 55]
 	      MATLABFcn		      "inv(u)"
@@ -2590,7 +2608,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "Ji"
-	      SID		      "15:23:75"
+	      SID		      "249:23:75"
 	      Position		      [220, 33, 250, 47]
 	      IconDisplay	      "Port number"
 	    }
@@ -2611,7 +2629,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "ikine"
-	  SID			  "15:71"
+	  SID			  "249:250"
 	  Ports			  [1, 1]
 	  Position		  [290, 83, 340, 147]
 	  BackgroundColor	  "red"
@@ -2660,14 +2678,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "T"
-	      SID		      "15:72"
+	      SID		      "249:72"
 	      Position		      [25, 33, 55, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "ikine"
-	      SID		      "15:70"
+	      SID		      "249:251"
 	      Ports		      [1, 1]
 	      Position		      [80, 25, 150, 55]
 	      MATLABFcn		      "robot.ikine(u, q0, m)"
@@ -2675,7 +2693,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "q"
-	      SID		      "15:73"
+	      SID		      "249:252"
 	      Position		      [175, 33, 205, 47]
 	      IconDisplay	      "Port number"
 	    }
@@ -2696,7 +2714,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "ikine6s"
-	  SID			  "15:66"
+	  SID			  "249:66"
 	  Ports			  [1, 1]
 	  Position		  [190, 84, 240, 146]
 	  BackgroundColor	  "red"
@@ -2746,14 +2764,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "T"
-	      SID		      "15:67"
+	      SID		      "249:67"
 	      Position		      [25, 33, 55, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "ikine6s"
-	      SID		      "15:65"
+	      SID		      "249:65"
 	      Ports		      [1, 1]
 	      Position		      [80, 25, 150, 55]
 	      MATLABFcn		      "robot.ikine6s(u,conf)"
@@ -2761,7 +2779,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "q"
-	      SID		      "15:68"
+	      SID		      "249:68"
 	      Position		      [175, 33, 205, 47]
 	      IconDisplay	      "Port number"
 	    }
@@ -2782,7 +2800,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "jacob0\n"
-	  SID			  "15:24"
+	  SID			  "249:24"
 	  Ports			  [1, 1]
 	  Position		  [80, 186, 140, 254]
 	  BackgroundColor	  "red"
@@ -2837,14 +2855,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "q"
-	      SID		      "15:24:77"
+	      SID		      "249:24:77"
 	      Position		      [20, 33, 50, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "15:24:78"
+	      SID		      "249:24:78"
 	      Ports		      [1, 1]
 	      Position		      [100, 25, 160, 55]
 	      MATLABFcn		      "jacob0(robot,u)"
@@ -2854,7 +2872,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "J"
-	      SID		      "15:24:79"
+	      SID		      "249:24:79"
 	      Position		      [220, 33, 250, 47]
 	      IconDisplay	      "Port number"
 	    }
@@ -2875,7 +2893,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "jacobn"
-	  SID			  "15:25"
+	  SID			  "249:25"
 	  Ports			  [1, 1]
 	  Position		  [180, 186, 235, 254]
 	  BackgroundColor	  "red"
@@ -2930,14 +2948,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "q"
-	      SID		      "15:25:81"
+	      SID		      "249:25:81"
 	      Position		      [20, 33, 50, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "15:25:82"
+	      SID		      "249:25:82"
 	      Ports		      [1, 1]
 	      Position		      [100, 25, 160, 55]
 	      MATLABFcn		      "jacobn(robot,u)"
@@ -2947,7 +2965,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "J"
-	      SID		      "15:25:83"
+	      SID		      "249:25:83"
 	      Position		      [220, 33, 250, 47]
 	      IconDisplay	      "Port number"
 	    }
@@ -2968,7 +2986,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "pose integral"
-	  SID			  "15:58"
+	  SID			  "249:58"
 	  Ports			  [1, 1]
 	  Position		  [180, 293, 250, 347]
 	  BackgroundColor	  "red"
@@ -3018,14 +3036,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "v"
-	      SID		      "15:59"
+	      SID		      "249:59"
 	      Position		      [25, 33, 55, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn3"
-	      SID		      "15:60"
+	      SID		      "249:60"
 	      Ports		      [1, 1]
 	      Position		      [80, 25, 140, 55]
 	      MATLABFcn		      "delta2tr(u)"
@@ -3034,7 +3052,7 @@ Library {
 	    Block {
 	      BlockType		      Product
 	      Name		      "Product"
-	      SID		      "15:61"
+	      SID		      "249:61"
 	      Ports		      [2, 1]
 	      Position		      [195, 29, 225, 76]
 	      Multiplication	      "Matrix(*)"
@@ -3045,7 +3063,7 @@ Library {
 	    Block {
 	      BlockType		      UnitDelay
 	      Name		      "Unit Delay"
-	      SID		      "15:62"
+	      SID		      "249:62"
 	      Position		      [345, 33, 380, 67]
 	      X0		      "T0"
 	      SampleTime	      "dt"
@@ -3053,7 +3071,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "trnorm"
-	      SID		      "15:63"
+	      SID		      "249:63"
 	      Ports		      [1, 1]
 	      Position		      [250, 35, 310, 65]
 	      MATLABFcn		      "trnorm(u)"
@@ -3062,7 +3080,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "T"
-	      SID		      "15:64"
+	      SID		      "249:64"
 	      Position		      [435, 43, 465, 57]
 	      IconDisplay	      "Port number"
 	    }
@@ -3110,7 +3128,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "tr2diff"
-	  SID			  "15:26"
+	  SID			  "249:26"
 	  Ports			  [2, 1]
 	  Position		  [80, 290, 125, 345]
 	  BackgroundColor	  "red"
@@ -3162,14 +3180,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "T1"
-	      SID		      "15:26:111"
+	      SID		      "249:26:111"
 	      Position		      [45, 38, 75, 52]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Inport
 	      Name		      "T2"
-	      SID		      "15:26:112"
+	      SID		      "249:26:112"
 	      Position		      [45, 93, 75, 107]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -3177,7 +3195,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "15:26:113"
+	      SID		      "249:26:113"
 	      Ports		      [1, 1]
 	      Position		      [215, 40, 275, 70]
 	      MATLABFcn		      "tr2delta(reshape(u(1:16),4,4), reshape(u(17:32),4,4))"
@@ -3186,7 +3204,7 @@ Library {
 	    Block {
 	      BlockType		      Mux
 	      Name		      "Mux"
-	      SID		      "15:26:114"
+	      SID		      "249:26:114"
 	      Ports		      [2, 1]
 	      Position		      [185, 36, 190, 74]
 	      ShowName		      off
@@ -3196,21 +3214,21 @@ Library {
 	    Block {
 	      BlockType		      Reshape
 	      Name		      "Reshape"
-	      SID		      "15:26:115"
+	      SID		      "249:26:115"
 	      Ports		      [1, 1]
 	      Position		      [115, 33, 145, 57]
 	    }
 	    Block {
 	      BlockType		      Reshape
 	      Name		      "Reshape1"
-	      SID		      "15:26:116"
+	      SID		      "249:26:116"
 	      Ports		      [1, 1]
 	      Position		      [125, 88, 155, 112]
 	    }
 	    Block {
 	      BlockType		      Outport
 	      Name		      "dx"
-	      SID		      "15:26:117"
+	      SID		      "249:26:117"
 	      Position		      [300, 48, 330, 62]
 	      IconDisplay	      "Port number"
 	    }
@@ -3254,12 +3272,14 @@ Library {
 	  }
 	}
 	Annotation {
+	  SID			  "249:256"
 	  Name			  "\nKinematics  \n "
 	  Position		  [52, 22]
 	  BackgroundColor	  "cyan"
 	  FontSize		  18
 	}
 	Annotation {
+	  SID			  "249:255"
 	  Name			  "Robotics Toolbox for MATLAB"
 	  Position		  [116, 17]
 	  HorizontalAlignment	  "left"
@@ -3267,17 +3287,20 @@ Library {
 	  FontWeight		  "bold"
 	}
 	Annotation {
+	  SID			  "249:76"
 	  Name			  "Forward\nkinematics"
 	  Position		  [8, 96]
 	  HorizontalAlignment	  "left"
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
+	  SID			  "249:254"
 	  Name			  "Jacobian"
 	  Position		  [31, 191]
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
+	  SID			  "249:253"
 	  Name			  "Spatial\nvelocity"
 	  Position		  [14, 306]
 	  HorizontalAlignment	  "left"
@@ -3309,7 +3332,7 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Robot Graphics"
-	Location		[420, 68, 796, 302]
+	Location		[63, 50, 439, 284]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -3322,7 +3345,7 @@ Library {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
-	SIDHighWatermark	"18"
+	SIDHighWatermark	"193"
 	SIDPrevWatermark	"16"
 	Block {
 	  BlockType		  SubSystem
@@ -3432,15 +3455,16 @@ Library {
 	  MaskDescription	  "Graphical robot display."
 	  MaskHelp		  "This block graphically displays the passed SerialLink class object.\n\nA new figure is created and the"
 	  " robot is animated (using SerialLink.plot)\nto a pose specified by the joint coordinate vector input to the block w"
-	  "hose\nwidth must match the number of robot joints."
-	  MaskPromptString	  "Robot object|Update rate (fps)"
-	  MaskStyleString	  "edit,edit"
-	  MaskVariables		  "robot=@1;fps=@2;"
-	  MaskTunableValueString  "off,on"
-	  MaskCallbackString	  "\n|"
-	  MaskEnableString	  "on,on"
-	  MaskVisibilityString	  "on,on"
-	  MaskToolTipString	  "on,on"
+	  "hose\nwidth must match the number of robot joints.\n\nIf the Hold checkbox is ticked then a \"hold\" command is iss"
+	  "ued at initialization\ntime allowing multiple robots to be displayed in the one plot."
+	  MaskPromptString	  "Robot object|Update rate (fps)|Hold"
+	  MaskStyleString	  "edit,edit,checkbox"
+	  MaskVariables		  "robot=@1;fps=@2;holdplot=@3;"
+	  MaskTunableValueString  "off,on,on"
+	  MaskCallbackString	  "\n||"
+	  MaskEnableString	  "on,on,on"
+	  MaskVisibilityString	  "on,on,on"
+	  MaskToolTipString	  "on,on,on"
 	  MaskSelfModifiable	  on
 	  MaskDisplay		  "port_label('input', 1, 'q')\nif ~isempty(robot)\n    text(0.5, 0.2, robot.name,  'horizontalAlignme"
 	  "nt', 'center')\nend\n"
@@ -3449,10 +3473,10 @@ Library {
 	  MaskIconRotate	  "none"
 	  MaskPortRotate	  "default"
 	  MaskIconUnits		  "normalized"
-	  MaskValueString	  "robot|25"
+	  MaskValueString	  "robot|25|on"
 	  System {
 	    Name		    "plot"
-	    Location		    [565, 519, 830, 601]
+	    Location		    [833, 247, 1098, 329]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -3481,7 +3505,7 @@ Library {
 	      Ports		      [1]
 	      Position		      [120, 25, 180, 55]
 	      FunctionName	      "slplotbot"
-	      Parameters	      "robot,fps"
+	      Parameters	      "robot,fps,holdplot"
 	      EnableBusSupport	      off
 	    }
 	    Line {
@@ -3493,6 +3517,7 @@ Library {
 	  }
 	}
 	Annotation {
+	  SID			  "16:19"
 	  Name			  "\nRobot\nGraphics  \n "
 	  Position		  [1, 32]
 	  HorizontalAlignment	  "left"
@@ -3500,6 +3525,7 @@ Library {
 	  FontSize		  18
 	}
 	Annotation {
+	  SID			  "16:20"
 	  Name			  "Robotics Toolbox for MATLAB"
 	  Position		  [96, 17]
 	  HorizontalAlignment	  "left"
@@ -3511,7 +3537,7 @@ Library {
     Block {
       BlockType		      SubSystem
       Name		      "Trajectory"
-      SID		      "17"
+      SID		      "257"
       Ports		      []
       Position		      [153, 60, 260, 102]
       BackgroundColor	      "darkGreen"
@@ -3598,14 +3624,13 @@ Library {
 	    Block {
 	      BlockType		      Clock
 	      Name		      "Clock"
-	      SID		      "56:17"
+	      SID		      "56:258"
 	      Position		      [25, 35, 45, 55]
-	      Decimation	      "10"
 	    }
 	    Block {
 	      BlockType		      Mux
 	      Name		      "Mux"
-	      SID		      "56:18"
+	      SID		      "56:259"
 	      Ports		      [2, 1]
 	      Position		      [230, 29, 240, 91]
 	      ShowName		      off
@@ -3615,7 +3640,7 @@ Library {
 	    Block {
 	      BlockType		      Product
 	      Name		      "Product1"
-	      SID		      "56:19"
+	      SID		      "56:260"
 	      Ports		      [2, 1]
 	      Position		      [280, 52, 310, 83]
 	      ShowName		      off
@@ -3626,7 +3651,7 @@ Library {
 	    Block {
 	      BlockType		      Trigonometry
 	      Name		      "Trigonometric\nFunction1"
-	      SID		      "56:20"
+	      SID		      "56:261"
 	      Ports		      [1, 1]
 	      Position		      [155, 30, 185, 60]
 	      ShowName		      off
@@ -3643,7 +3668,7 @@ Library {
 	    Block {
 	      BlockType		      Gain
 	      Name		      "freq"
-	      SID		      "56:22"
+	      SID		      "56:262"
 	      Position		      [70, 30, 95, 60]
 	      Gain		      "freq*2*pi"
 	      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
@@ -3653,14 +3678,14 @@ Library {
 	    Block {
 	      BlockType		      Constant
 	      Name		      "radius"
-	      SID		      "56:23"
+	      SID		      "56:263"
 	      Position		      [185, 185, 215, 215]
 	      Value		      "radius"
 	    }
 	    Block {
 	      BlockType		      Outport
 	      Name		      "xy"
-	      SID		      "56:24"
+	      SID		      "56:264"
 	      Position		      [335, 63, 365, 77]
 	      IconDisplay	      "Port number"
 	    }
@@ -3760,14 +3785,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "+"
-	      SID		      "57:56"
+	      SID		      "57:265"
 	      Position		      [35, 73, 65, 87]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Inport
 	      Name		      "-"
-	      SID		      "57:57"
+	      SID		      "57:266"
 	      Position		      [35, 113, 65, 127]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -3775,7 +3800,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "57:58"
+	      SID		      "57:267"
 	      Ports		      [1, 1]
 	      Position		      [175, 75, 235, 105]
 	      MATLABFcn		      "angdiff(u(1), u(2))"
@@ -3783,7 +3808,7 @@ Library {
 	    Block {
 	      BlockType		      Mux
 	      Name		      "Mux"
-	      SID		      "57:59"
+	      SID		      "57:268"
 	      Ports		      [2, 1]
 	      Position		      [125, 71, 130, 109]
 	      ShowName		      off
@@ -3793,7 +3818,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "d"
-	      SID		      "57:60"
+	      SID		      "57:269"
 	      Position		      [275, 83, 305, 97]
 	      IconDisplay	      "Port number"
 	    }
@@ -3827,7 +3852,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "jtraj"
-	  SID			  "58"
+	  SID			  "270"
 	  Ports			  [0, 3]
 	  Position		  [45, 84, 80, 156]
 	  BackgroundColor	  "red"
@@ -3885,14 +3910,13 @@ Library {
 	    Block {
 	      BlockType		      Clock
 	      Name		      "Clock"
-	      SID		      "58:85"
+	      SID		      "270:85"
 	      Position		      [20, 30, 40, 50]
-	      Decimation	      "10"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "58:86"
+	      SID		      "270:86"
 	      Ports		      [1, 1]
 	      Position		      [105, 25, 165, 55]
 	      MATLABFcn		      "interp1(t,q,u)"
@@ -3902,7 +3926,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn1"
-	      SID		      "58:87"
+	      SID		      "270:87"
 	      Ports		      [1, 1]
 	      Position		      [110, 75, 170, 105]
 	      MATLABFcn		      "interp1(t,qd,u)"
@@ -3912,7 +3936,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn2"
-	      SID		      "58:88"
+	      SID		      "270:88"
 	      Ports		      [1, 1]
 	      Position		      [110, 125, 170, 155]
 	      MATLABFcn		      "interp1(t,qdd,u)"
@@ -3922,14 +3946,14 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "q"
-	      SID		      "58:89"
+	      SID		      "270:89"
 	      Position		      [220, 33, 250, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Outport
 	      Name		      "qd"
-	      SID		      "58:90"
+	      SID		      "270:90"
 	      Position		      [220, 83, 250, 97]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -3937,7 +3961,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "qdd"
-	      SID		      "58:91"
+	      SID		      "270:91"
 	      Position		      [220, 133, 250, 147]
 	      Port		      "3"
 	      IconDisplay	      "Port number"
@@ -3986,7 +4010,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "lspb"
-	  SID			  "59"
+	  SID			  "271"
 	  Ports			  [0, 3]
 	  Position		  [130, 84, 165, 156]
 	  BackgroundColor	  "red"
@@ -4042,14 +4066,13 @@ Library {
 	    Block {
 	      BlockType		      Clock
 	      Name		      "Clock"
-	      SID		      "59:585"
+	      SID		      "271:585"
 	      Position		      [25, 30, 45, 50]
-	      Decimation	      "10"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "59:586"
+	      SID		      "271:586"
 	      Ports		      [1, 1]
 	      Position		      [110, 25, 170, 55]
 	      MATLABFcn		      "interp1(t,q,u)"
@@ -4058,7 +4081,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn1"
-	      SID		      "59:587"
+	      SID		      "271:587"
 	      Ports		      [1, 1]
 	      Position		      [115, 75, 175, 105]
 	      MATLABFcn		      "interp1(t,qd,u)"
@@ -4067,7 +4090,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn2"
-	      SID		      "59:588"
+	      SID		      "271:588"
 	      Ports		      [1, 1]
 	      Position		      [115, 125, 175, 155]
 	      MATLABFcn		      "interp1(t,qdd,u)"
@@ -4076,14 +4099,14 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "q"
-	      SID		      "59:593"
+	      SID		      "271:593"
 	      Position		      [225, 33, 255, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Outport
 	      Name		      "qd"
-	      SID		      "59:594"
+	      SID		      "271:594"
 	      Position		      [225, 83, 255, 97]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -4091,7 +4114,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "qdd"
-	      SID		      "59:595"
+	      SID		      "271:595"
 	      Position		      [225, 133, 255, 147]
 	      Port		      "3"
 	      IconDisplay	      "Port number"
@@ -4138,12 +4161,14 @@ Library {
 	  }
 	}
 	Annotation {
+	  SID			  "150"
 	  Name			  "\nTrajectory   \n "
 	  Position		  [52, 22]
 	  BackgroundColor	  "cyan"
 	  FontSize		  18
 	}
 	Annotation {
+	  SID			  "151"
 	  Name			  "Robotics Toolbox for MATLAB"
 	  Position		  [111, 12]
 	  HorizontalAlignment	  "left"
@@ -4192,7 +4217,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "Inverse"
-	  SID			  "67"
+	  SID			  "596"
 	  Ports			  [1, 1]
 	  Position		  [230, 90, 270, 150]
 	  LibraryVersion	  "1.61"
@@ -4232,14 +4257,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "T"
-	      SID		      "67:219"
+	      SID		      "596:219"
 	      Position		      [25, 33, 55, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "67:217"
+	      SID		      "596:217"
 	      Ports		      [1, 1]
 	      Position		      [80, 25, 140, 55]
 	      MATLABFcn		      "inv(u)"
@@ -4249,7 +4274,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "invT"
-	      SID		      "67:220"
+	      SID		      "596:220"
 	      Position		      [165, 33, 195, 47]
 	      IconDisplay	      "Port number"
 	    }
@@ -4270,7 +4295,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "Post multiply"
-	  SID			  "68"
+	  SID			  "597"
 	  Ports			  [1, 1]
 	  Position		  [130, 90, 170, 150]
 	  LibraryVersion	  "1.61"
@@ -4318,21 +4343,21 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "T1"
-	      SID		      "68:215"
+	      SID		      "597:215"
 	      Position		      [25, 38, 55, 52]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Constant
 	      Name		      "Constant"
-	      SID		      "68:221"
+	      SID		      "597:221"
 	      Position		      [25, 85, 55, 115]
 	      Value		      "T2"
 	    }
 	    Block {
 	      BlockType		      Product
 	      Name		      "Product"
-	      SID		      "68:212"
+	      SID		      "597:212"
 	      Ports		      [2, 1]
 	      Position		      [85, 29, 115, 96]
 	      Multiplication	      "Matrix(*)"
@@ -4343,7 +4368,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "T"
-	      SID		      "68:216"
+	      SID		      "597:216"
 	      Position		      [160, 58, 190, 72]
 	      IconDisplay	      "Port number"
 	    }
@@ -4371,7 +4396,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "Pre multiply"
-	  SID			  "69"
+	  SID			  "598"
 	  Ports			  [1, 1]
 	  Position		  [30, 90, 70, 150]
 	  LibraryVersion	  "1.61"
@@ -4419,14 +4444,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "T2"
-	      SID		      "69:208"
+	      SID		      "598:208"
 	      Position		      [25, 83, 55, 97]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Constant
 	      Name		      "Constant"
-	      SID		      "69:202"
+	      SID		      "598:202"
 	      Position		      [25, 30, 55, 60]
 	      Value		      "T"
 	      VectorParams1D	      off
@@ -4434,7 +4459,7 @@ Library {
 	    Block {
 	      BlockType		      Product
 	      Name		      "Product"
-	      SID		      "69:203"
+	      SID		      "598:203"
 	      Ports		      [2, 1]
 	      Position		      [85, 29, 115, 96]
 	      Multiplication	      "Matrix(*)"
@@ -4445,7 +4470,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "T"
-	      SID		      "69:207"
+	      SID		      "598:207"
 	      Position		      [160, 58, 190, 72]
 	      IconDisplay	      "Port number"
 	    }
@@ -4471,12 +4496,14 @@ Library {
 	  }
 	}
 	Annotation {
+	  SID			  "152"
 	  Name			  "\nTransform  \n "
 	  Position		  [52, 32]
 	  BackgroundColor	  "cyan"
 	  FontSize		  18
 	}
 	Annotation {
+	  SID			  "153"
 	  Name			  "Robotics Toolbox for MATLAB"
 	  Position		  [121, 17]
 	  HorizontalAlignment	  "left"
@@ -4488,7 +4515,7 @@ Library {
     Block {
       BlockType		      SubSystem
       Name		      "Transform Conversion"
-      SID		      "26"
+      SID		      "599"
       Ports		      []
       Position		      [15, 129, 123, 172]
       BackgroundColor	      "darkGreen"
@@ -4525,7 +4552,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "T2eul"
-	  SID			  "61"
+	  SID			  "600"
 	  Ports			  [1, 3]
 	  Position		  [265, 242, 300, 298]
 	  BackgroundColor	  "red"
@@ -4567,14 +4594,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "T"
-	      SID		      "61:35"
+	      SID		      "600:601"
 	      Position		      [30, 63, 60, 77]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Demux
 	      Name		      "Demux"
-	      SID		      "61:36"
+	      SID		      "600:36"
 	      Ports		      [1, 3]
 	      Position		      [225, 13, 230, 127]
 	      BackgroundColor	      "black"
@@ -4584,7 +4611,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "61:37"
+	      SID		      "600:37"
 	      Ports		      [1, 1]
 	      Position		      [105, 55, 165, 85]
 	      MATLABFcn		      "tr2eul(u)"
@@ -4593,14 +4620,14 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "a"
-	      SID		      "61:38"
+	      SID		      "600:38"
 	      Position		      [265, 23, 295, 37]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Outport
 	      Name		      "b"
-	      SID		      "61:39"
+	      SID		      "600:39"
 	      Position		      [255, 63, 285, 77]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -4608,7 +4635,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "c"
-	      SID		      "61:40"
+	      SID		      "600:40"
 	      Position		      [255, 103, 285, 117]
 	      Port		      "3"
 	      IconDisplay	      "Port number"
@@ -4648,7 +4675,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "T2rpy"
-	  SID			  "62"
+	  SID			  "602"
 	  Ports			  [1, 3]
 	  Position		  [155, 243, 195, 297]
 	  BackgroundColor	  "red"
@@ -4690,14 +4717,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "T"
-	      SID		      "62:42"
+	      SID		      "602:42"
 	      Position		      [30, 63, 60, 77]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Demux
 	      Name		      "Demux"
-	      SID		      "62:43"
+	      SID		      "602:43"
 	      Ports		      [1, 3]
 	      Position		      [225, 13, 230, 127]
 	      BackgroundColor	      "black"
@@ -4707,7 +4734,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "62:44"
+	      SID		      "602:44"
 	      Ports		      [1, 1]
 	      Position		      [105, 55, 165, 85]
 	      MATLABFcn		      "tr2rpy(u)"
@@ -4716,14 +4743,14 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "roll"
-	      SID		      "62:45"
+	      SID		      "602:45"
 	      Position		      [265, 23, 295, 37]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Outport
 	      Name		      "pitch"
-	      SID		      "62:46"
+	      SID		      "602:46"
 	      Position		      [255, 63, 285, 77]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -4731,7 +4758,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "yaw"
-	      SID		      "62:47"
+	      SID		      "602:47"
 	      Position		      [255, 103, 285, 117]
 	      Port		      "3"
 	      IconDisplay	      "Port number"
@@ -4771,7 +4798,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "T2xyz"
-	  SID			  "63"
+	  SID			  "603"
 	  Ports			  [1, 3]
 	  Position		  [55, 242, 90, 298]
 	  BackgroundColor	  "red"
@@ -4812,14 +4839,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "T"
-	      SID		      "63:49"
+	      SID		      "603:49"
 	      Position		      [30, 63, 60, 77]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Demux
 	      Name		      "Demux"
-	      SID		      "63:50"
+	      SID		      "603:50"
 	      Ports		      [1, 3]
 	      Position		      [225, 13, 230, 127]
 	      BackgroundColor	      "black"
@@ -4829,7 +4856,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "63:51"
+	      SID		      "603:604"
 	      Ports		      [1, 1]
 	      Position		      [105, 55, 165, 85]
 	      MATLABFcn		      "transl(u)"
@@ -4838,14 +4865,14 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "x"
-	      SID		      "63:52"
+	      SID		      "603:605"
 	      Position		      [265, 23, 295, 37]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Outport
 	      Name		      "y"
-	      SID		      "63:53"
+	      SID		      "603:606"
 	      Position		      [255, 63, 285, 77]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -4853,7 +4880,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "z"
-	      SID		      "63:54"
+	      SID		      "603:607"
 	      Position		      [255, 103, 285, 117]
 	      Port		      "3"
 	      IconDisplay	      "Port number"
@@ -4893,7 +4920,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "eul2T"
-	  SID			  "64"
+	  SID			  "608"
 	  Ports			  [3, 1]
 	  Position		  [265, 122, 300, 178]
 	  BackgroundColor	  "red"
@@ -4935,14 +4962,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "a"
-	      SID		      "64:62"
+	      SID		      "608:609"
 	      Position		      [25, 33, 55, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Inport
 	      Name		      "b"
-	      SID		      "64:63"
+	      SID		      "608:610"
 	      Position		      [25, 68, 55, 82]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -4950,7 +4977,7 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "c"
-	      SID		      "64:64"
+	      SID		      "608:611"
 	      Position		      [25, 103, 55, 117]
 	      Port		      "3"
 	      IconDisplay	      "Port number"
@@ -4958,7 +4985,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "64:65"
+	      SID		      "608:612"
 	      Ports		      [1, 1]
 	      Position		      [120, 60, 180, 90]
 	      MATLABFcn		      "eul2tr(u)"
@@ -4968,7 +4995,7 @@ Library {
 	    Block {
 	      BlockType		      Mux
 	      Name		      "Mux"
-	      SID		      "64:66"
+	      SID		      "608:613"
 	      Ports		      [3, 1]
 	      Position		      [85, 20, 90, 130]
 	      ShowName		      off
@@ -4978,7 +5005,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "T"
-	      SID		      "64:67"
+	      SID		      "608:614"
 	      Position		      [225, 68, 255, 82]
 	      IconDisplay	      "Port number"
 	    }
@@ -5017,7 +5044,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "rpy2T"
-	  SID			  "65"
+	  SID			  "615"
 	  Ports			  [3, 1]
 	  Position		  [155, 122, 195, 178]
 	  BackgroundColor	  "red"
@@ -5059,14 +5086,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "roll"
-	      SID		      "65:104"
+	      SID		      "615:104"
 	      Position		      [25, 33, 55, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Inport
 	      Name		      "pitch"
-	      SID		      "65:105"
+	      SID		      "615:105"
 	      Position		      [25, 68, 55, 82]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -5074,7 +5101,7 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "yaw"
-	      SID		      "65:106"
+	      SID		      "615:106"
 	      Position		      [25, 103, 55, 117]
 	      Port		      "3"
 	      IconDisplay	      "Port number"
@@ -5082,7 +5109,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "65:107"
+	      SID		      "615:107"
 	      Ports		      [1, 1]
 	      Position		      [120, 60, 180, 90]
 	      MATLABFcn		      "rpy2tr(u)"
@@ -5092,7 +5119,7 @@ Library {
 	    Block {
 	      BlockType		      Mux
 	      Name		      "Mux"
-	      SID		      "65:108"
+	      SID		      "615:108"
 	      Ports		      [3, 1]
 	      Position		      [85, 20, 90, 130]
 	      ShowName		      off
@@ -5102,7 +5129,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "T"
-	      SID		      "65:109"
+	      SID		      "615:109"
 	      Position		      [225, 68, 255, 82]
 	      IconDisplay	      "Port number"
 	    }
@@ -5141,7 +5168,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "xyz2T"
-	  SID			  "66"
+	  SID			  "616"
 	  Ports			  [3, 1]
 	  Position		  [55, 121, 90, 179]
 	  BackgroundColor	  "red"
@@ -5183,14 +5210,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "x"
-	      SID		      "66:119"
+	      SID		      "616:119"
 	      Position		      [25, 33, 55, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Inport
 	      Name		      "y"
-	      SID		      "66:120"
+	      SID		      "616:120"
 	      Position		      [25, 68, 55, 82]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -5198,7 +5225,7 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "z"
-	      SID		      "66:121"
+	      SID		      "616:121"
 	      Position		      [25, 103, 55, 117]
 	      Port		      "3"
 	      IconDisplay	      "Port number"
@@ -5206,7 +5233,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "66:122"
+	      SID		      "616:122"
 	      Ports		      [1, 1]
 	      Position		      [120, 60, 180, 90]
 	      MATLABFcn		      "transl(u)"
@@ -5216,7 +5243,7 @@ Library {
 	    Block {
 	      BlockType		      Mux
 	      Name		      "Mux"
-	      SID		      "66:123"
+	      SID		      "616:123"
 	      Ports		      [3, 1]
 	      Position		      [85, 20, 90, 130]
 	      ShowName		      off
@@ -5226,7 +5253,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "T"
-	      SID		      "66:124"
+	      SID		      "616:124"
 	      Position		      [225, 68, 255, 82]
 	      IconDisplay	      "Port number"
 	    }
@@ -5263,6 +5290,7 @@ Library {
 	  }
 	}
 	Annotation {
+	  SID			  "154"
 	  Name			  "\nTransform\nconversion  \n "
 	  Position		  [2, 32]
 	  HorizontalAlignment	  "left"
@@ -5270,6 +5298,7 @@ Library {
 	  FontSize		  18
 	}
 	Annotation {
+	  SID			  "155"
 	  Name			  "Robotics Toolbox for MATLAB"
 	  Position		  [121, 17]
 	  HorizontalAlignment	  "left"
@@ -5277,16 +5306,19 @@ Library {
 	  FontWeight		  "bold"
 	}
 	Annotation {
+	  SID			  "619"
 	  Name			  "Translation"
 	  Position		  [76, 91]
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
+	  SID			  "618"
 	  Name			  "roll/pitch/yaw\nangles"
 	  Position		  [181, 96]
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
+	  SID			  "617"
 	  Name			  "Euler angles"
 	  Position		  [286, 91]
 	  ForegroundColor	  "orange"
@@ -5333,7 +5365,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "Pose estimation"
-	  SID			  "70"
+	  SID			  "620"
 	  Ports			  [1, 1]
 	  Position		  [90, 462, 160, 518]
 	  DropShadow		  on
@@ -5386,14 +5418,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "p"
-	      SID		      "70:200"
+	      SID		      "620:200"
 	      Position		      [25, 33, 55, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "70:198"
+	      SID		      "620:198"
 	      Ports		      [1, 1]
 	      Position		      [80, 25, 140, 55]
 	      MATLABFcn		      "cam.estpose(P, u)"
@@ -5403,7 +5435,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "T"
-	      SID		      "70:201"
+	      SID		      "620:201"
 	      Position		      [165, 33, 195, 47]
 	      IconDisplay	      "Port number"
 	    }
@@ -5424,7 +5456,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "camera"
-	  SID			  "71"
+	  SID			  "621"
 	  Ports			  [1, 1]
 	  Position		  [95, 106, 175, 184]
 	  BackgroundColor	  "lightBlue"
@@ -5477,14 +5509,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "T"
-	      SID		      "71:133"
+	      SID		      "621:133"
 	      Position		      [25, 33, 55, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "71:134"
+	      SID		      "621:134"
 	      Ports		      [1, 1]
 	      Position		      [110, 25, 170, 55]
 	      MATLABFcn		      "cam.plot(points, 'Tcam', u)"
@@ -5494,7 +5526,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "p"
-	      SID		      "71:135"
+	      SID		      "621:135"
 	      Position		      [230, 33, 260, 47]
 	      IconDisplay	      "Port number"
 	    }
@@ -5515,7 +5547,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "camera2"
-	  SID			  "72"
+	  SID			  "622"
 	  Ports			  [2, 1]
 	  Position		  [245, 105, 330, 185]
 	  BackgroundColor	  "lightBlue"
@@ -5570,14 +5602,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "T"
-	      SID		      "72:254"
+	      SID		      "622:623"
 	      Position		      [15, 53, 45, 67]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Inport
 	      Name		      "Tobj"
-	      SID		      "72:257"
+	      SID		      "622:624"
 	      Position		      [15, 103, 45, 117]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -5585,7 +5617,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "72:248"
+	      SID		      "622:625"
 	      Ports		      [1, 1]
 	      Position		      [230, 55, 290, 85]
 	      MATLABFcn		      "cam.plot(points, 'Tcam', u(:,:,1), 'Tobj', u(:,:,2), 'drawnow')"
@@ -5596,7 +5628,7 @@ Library {
 	    Block {
 	      BlockType		      Concatenate
 	      Name		      "Matrix\nConcatenate"
-	      SID		      "72:251"
+	      SID		      "622:626"
 	      Ports		      [2, 1]
 	      Position		      [135, 49, 190, 91]
 	      Mode		      "Multidimensional array"
@@ -5605,7 +5637,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "p"
-	      SID		      "72:256"
+	      SID		      "622:627"
 	      Position		      [325, 63, 355, 77]
 	      IconDisplay	      "Port number"
 	    }
@@ -5639,7 +5671,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "image\nJacobian"
-	  SID			  "73"
+	  SID			  "628"
 	  Ports			  [1, 1]
 	  Position		  [95, 249, 165, 301]
 	  BackgroundColor	  "lightBlue"
@@ -5693,14 +5725,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "p"
-	      SID		      "73:137"
+	      SID		      "628:137"
 	      Position		      [25, 33, 55, 47]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn"
-	      SID		      "73:138"
+	      SID		      "628:138"
 	      Ports		      [1, 1]
 	      Position		      [105, 25, 165, 55]
 	      MATLABFcn		      "cam.visjac_p(u, z)"
@@ -5709,7 +5741,7 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "J"
-	      SID		      "73:139"
+	      SID		      "628:139"
 	      Position		      [210, 33, 240, 47]
 	      IconDisplay	      "Port number"
 	    }
@@ -5730,7 +5762,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "invJac"
-	  SID			  "75"
+	  SID			  "629"
 	  Ports			  [2, 2]
 	  Position		  [95, 360, 135, 420]
 	  BackgroundColor	  "red"
@@ -5772,14 +5804,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "J"
-	      SID		      "75:269"
+	      SID		      "629:630"
 	      Position		      [25, 103, 55, 117]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Inport
 	      Name		      "e"
-	      SID		      "75:271"
+	      SID		      "629:631"
 	      Position		      [25, 163, 55, 177]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -5787,7 +5819,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn2"
-	      SID		      "75:262"
+	      SID		      "629:632"
 	      Ports		      [1, 1]
 	      Position		      [185, 25, 245, 55]
 	      ShowName		      off
@@ -5797,7 +5829,7 @@ Library {
 	    Block {
 	      BlockType		      Product
 	      Name		      "Product1"
-	      SID		      "75:263"
+	      SID		      "629:633"
 	      Ports		      [2, 1]
 	      Position		      [240, 95, 275, 155]
 	      BackgroundColor	      "lightBlue"
@@ -5807,7 +5839,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "inv"
-	      SID		      "75:264"
+	      SID		      "629:634"
 	      Ports		      [1, 1]
 	      Position		      [120, 95, 180, 125]
 	      BackgroundColor	      "lightBlue"
@@ -5817,14 +5849,14 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "vdot"
-	      SID		      "75:270"
+	      SID		      "629:635"
 	      Position		      [315, 118, 345, 132]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Outport
 	      Name		      "cond"
-	      SID		      "75:268"
+	      SID		      "629:636"
 	      Position		      [315, 33, 345, 47]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -5873,7 +5905,7 @@ Library {
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "pinvJac"
-	  SID			  "76"
+	  SID			  "637"
 	  Ports			  [2, 2]
 	  Position		  [175, 360, 215, 420]
 	  BackgroundColor	  "red"
@@ -5917,14 +5949,14 @@ Library {
 	    Block {
 	      BlockType		      Inport
 	      Name		      "J"
-	      SID		      "76:141"
+	      SID		      "637:141"
 	      Position		      [25, 103, 55, 117]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Inport
 	      Name		      "e"
-	      SID		      "76:142"
+	      SID		      "637:142"
 	      Position		      [25, 163, 55, 177]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -5932,7 +5964,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "MATLAB Fcn2"
-	      SID		      "76:143"
+	      SID		      "637:143"
 	      Ports		      [1, 1]
 	      Position		      [185, 25, 245, 55]
 	      ShowName		      off
@@ -5942,7 +5974,7 @@ Library {
 	    Block {
 	      BlockType		      Product
 	      Name		      "Product1"
-	      SID		      "76:144"
+	      SID		      "637:144"
 	      Ports		      [2, 1]
 	      Position		      [240, 95, 275, 155]
 	      BackgroundColor	      "lightBlue"
@@ -5952,7 +5984,7 @@ Library {
 	    Block {
 	      BlockType		      MATLABFcn
 	      Name		      "pinv"
-	      SID		      "76:145"
+	      SID		      "637:638"
 	      Ports		      [1, 1]
 	      Position		      [120, 95, 180, 125]
 	      BackgroundColor	      "lightBlue"
@@ -5962,14 +5994,14 @@ Library {
 	    Block {
 	      BlockType		      Outport
 	      Name		      "vdot"
-	      SID		      "76:146"
+	      SID		      "637:639"
 	      Position		      [315, 118, 345, 132]
 	      IconDisplay	      "Port number"
 	    }
 	    Block {
 	      BlockType		      Outport
 	      Name		      "cond"
-	      SID		      "76:147"
+	      SID		      "637:640"
 	      Position		      [315, 33, 345, 47]
 	      Port		      "2"
 	      IconDisplay	      "Port number"
@@ -6016,30 +6048,35 @@ Library {
 	  }
 	}
 	Annotation {
+	  SID			  "645"
 	  Name			  "\nMachine Vision  \n "
 	  Position		  [72, 32]
 	  BackgroundColor	  "cyan"
 	  FontSize		  18
 	}
 	Annotation {
+	  SID			  "644"
 	  Name			  "Cameras"
 	  Position		  [17, 111]
 	  HorizontalAlignment	  "left"
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
+	  SID			  "643"
 	  Name			  "Image\nJacobian"
 	  Position		  [12, 266]
 	  HorizontalAlignment	  "left"
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
+	  SID			  "642"
 	  Name			  "Pose\nestimation"
 	  Position		  [12, 476]
 	  HorizontalAlignment	  "left"
 	  ForegroundColor	  "orange"
 	}
 	Annotation {
+	  SID			  "641"
 	  Name			  "Machine Vision Toolbox for MATLAB"
 	  Position		  [151, 17]
 	  HorizontalAlignment	  "left"
@@ -6049,6 +6086,7 @@ Library {
       }
     }
     Annotation {
+      SID		      "648"
       Name		      "Robotics Toolbox for MATLAB\n(release 9)"
       Position		      [21, 22]
       HorizontalAlignment     "left"
@@ -6056,6 +6094,7 @@ Library {
       FontWeight	      "bold"
     }
     Annotation {
+      SID		      "647"
       Name		      "Machine Vision Toolbox for Matlab\n(release 3)"
       Position		      [21, 277]
       HorizontalAlignment     "left"
@@ -6063,6 +6102,7 @@ Library {
       FontWeight	      "bold"
     }
     Annotation {
+      SID		      "646"
       Name		      "Copyright (c) 2002-2011 Peter Corke"
       Position		      [190, 395]
     }

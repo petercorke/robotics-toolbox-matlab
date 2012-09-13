@@ -6,7 +6,7 @@
 % Implemented as an S-function so as to update display at the end of
 % each Simulink major integration step.
 
-function [sys,x0,str,ts] = splotbot(t,x,u,flag, robot, fps)
+function [sys,x0,str,ts] = splotbot(t,x,u,flag, robot, fps, holdplot)
 	switch flag,
 
 	case 0
@@ -14,6 +14,9 @@ function [sys,x0,str,ts] = splotbot(t,x,u,flag, robot, fps)
 		[sys,x0,str,ts] = mdlInitializeSizes(fps);	% Init
         if ~isempty(robot)
             robot.plot(zeros(1, robot.n), 'delay', 0, 'noraise')
+        end
+        if holdplot
+            hold on
         end
 
 	case 3
