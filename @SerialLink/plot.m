@@ -24,6 +24,8 @@
 %  '[no]name'       display the robot's name 
 %  '[no]jaxes'      control display of joint axes
 %  '[no]joints'     controls display of joints
+%  'movie',M        save frames as files in the folder M
+%
 %
 % The options come from 3 sources and are processed in order:
 % - Cell array of options returned by the function PLOTBOTOPT (if it exists)
@@ -91,6 +93,12 @@
 %           p560.plot(q');
 %           bob.plot(q');
 %         end
+%
+% Making an animation movie::
+% - The 'movie' options saves frames as files NNNN.png.
+% - When using 'movie' option ensure that the window is fully visible.
+% - To convert frames to a movie use a command like:
+%        ffmpeg -r 10 -i %04d.png out.avi
 %
 % Notes::
 % - Delay betwen frames can be eliminated by setting option 'delay', 0 or
@@ -241,10 +249,22 @@ function retval = plot(robot, tg, varargin)
         % note this is a very time consuming operation
         figure(gcf);
     end
-
+    
+    if ~isempty(opt.movie)
+        mkdir(opt.movie);
+        framenum = 1;
+    end
+    
     while true
         for p=1:np      % for each point on path
             robot.animate(tg(p,:), handles);
+            
+            if ~isempty(opt.movie)
+                f = getframe( get(handles(1), 'Parent') );
+                imwrite(f.cdata, sprintf('%s/%04d.png', opt.movie, framenum));
+                framenum = framenum+1;
+            end
+            
             if opt.delay > 0
                 pause(opt.delay);
             end
@@ -260,7 +280,7 @@ function retval = plot(robot, tg, varargin)
         h.q = tg(end,:);
         set(handle, 'UserData', h);
     end
-
+end
 
 %PLOT_OPTIONS
 %
@@ -288,6 +308,8 @@ function o = plot_options(robot, optin)
     o.raise = true;
     o.cylinder = [0 0 0.7];
     o.workspace = [];
+    o.movie = [];
+
 
     % build a list of options from all sources
     %   1. the M-file plotbotopt if it exists
@@ -320,6 +342,8 @@ function o = plot_options(robot, optin)
         reach = min(abs(o.workspace));
     end
     o.mag = o.magscale * reach/10;
+    
+end
 
 %CREATE_NEW_ROBOT
 % 
@@ -466,3 +490,4 @@ function h = create_new_robot(robot, opt)
             h.jointlabel(i) = text(0, 0, 0, num2str(i), 'HorizontalAlignment', 'Center');
         end
     end
+end

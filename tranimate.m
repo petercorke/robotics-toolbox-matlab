@@ -18,6 +18,13 @@
 %  'fps', fps    Number of frames per second to display (default 10)
 %  'nsteps', n   The number of steps along the path (default 50)
 %  'axis',A      Axis bounds [xmin, xmax, ymin, ymax, zmin, zmax]
+%  'movie',M     Save frames as files in the folder M
+%
+% Notes::
+% - The 'movie' options saves frames as files NNNN.png.
+% - When using 'movie' option ensure that the window is fully visible.
+% - To convert frames to a movie use a command like:
+%        ffmpeg -r 10 -i %04d.png out.avi
 %
 % See also TRPLOT.
 
@@ -45,9 +52,14 @@ function tranimate(P2, varargin)
     opt.fps = 10;
     opt.nsteps = 50;
     opt.axis = [];
+    opt.movie = [];
 
     [opt, args] = tb_optparse(opt, varargin);
-
+    
+    if ~isempty(opt.movie)
+        mkdir(opt.movie);
+        framenum = 1;
+    end
     P1 = [];
 
     % convert quaternion and rotation matrix to hom transform
@@ -116,5 +128,12 @@ function tranimate(P2, varargin)
     for i=1:size(Ttraj,3)
         T = Ttraj(:,:,i);
         trplot(hg, T);
+        
+        if ~isempty(opt.movie)
+            f = getframe;
+            imwrite(f.cdata, sprintf('%s/%04d.png', opt.movie, framenum));
+            framenum = framenum+1;
+        end
+        
         pause(1/opt.fps);
     end
