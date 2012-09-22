@@ -6,6 +6,10 @@
 % ISHOMOG(T, 'valid') as above, but also checks the validity of the rotation
 % matrix.
 %
+% Notes::
+% - The first form is a fast, but incomplete, test for a transform in SE(3)
+% - Does not work for the SE(2) case
+%
 % See also ISROT, ISVEC.
 
 

@@ -5,6 +5,9 @@
 % ISROT(R, 'valid') as above, but also checks the validity of the rotation
 % matrix.
 %
+% Notes::
+% - A valid rotation matrix has determinant of 1.
+%
 % See also ISHOMOG, ISVEC.
 
 
