@@ -133,8 +133,8 @@ RRT : rapidly exploring random tree
 h1.Graphics : Useful graphic primitives
 plot2    : plot trajectory
 plotp    : plot points
-plot_box : draw a box
 plot_arrow : draw an arrow
+plot_box : draw a box
 plot_circle : draw a circle
 plot_ellipse : draw an ellipse
 plot_homline : plot homogeneous line
@@ -144,10 +144,14 @@ plot_sphere : draw a sphere
 qplot : plot joint angle trajectories
 plot2
 plotp
+xaxis : set x-axis scaling
+yaxis : set y-axis scaling
+xyzlabel : label axes x, y and z
 
 h1.Utility : Miscellaneous functions
 about       : summary of object size and type
 angdiff     : subtract 2 angles modulo 2pi
+bresenham   : Bresenhan line drawing
 circle      : compute/draw points on a circle
 colnorm     : columnwise norm of matrix
 diff2       : elementwise diff
@@ -158,7 +162,10 @@ isrot       : true if argument is a 3x3 matrix
 isvec       : true if argument is a 3-vector
 numcols     : number of columns in matrix
 numrows     : number of rows in matrix
+peak        : find peak in 1D signal
+peak2        : find peak in 2D signal
 PGraph : general purpose graph class
+polydiff    : derivative of polynomial
 Polygon : general purpose polygon class
 randinit    : initialize random number generator
 ramp        : create linear ramp
