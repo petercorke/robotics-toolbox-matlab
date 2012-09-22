@@ -209,7 +209,6 @@ function hout = trplot(T, varargin)
             set(h, 'Parent', hg);
         end
     else
-        hg
         for i=1:3
             plot2([mstart(i,1:3); mend(i,1:3)], 'Color', opt.color, 'Parent', hg);
         end
