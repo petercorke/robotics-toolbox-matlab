@@ -375,6 +375,7 @@ classdef Navigation < handle
                 
                 % display it with colorbar
                 image(opt.distance+1, 'CDataMapping', 'direct');
+                set(gcf, 'Renderer', 'Zbuffer')
                 colormap(cmap)
                 colorbar
             end
