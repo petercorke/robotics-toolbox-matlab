@@ -30,19 +30,19 @@ build:
 
 	# copy misc documentation files
 	cp ../RELEASE rvctools/robot
-	cp ../CHANGES rvctools/robot
+	-cp ../CHANGES rvctools/robot
 	cp ../README rvctools/robot
 	cp ../CONTRIB rvctools/robot
 	cp ../CITATION rvctools/robot
 	cp ../LGPL-LICENCE.txt rvctools/robot
 	cp ../startup_rtb.m rvctools/robot
 
-	cp $(ROOT)/common/*.m rvctools/common
+	#cp $(ROOT)/common/*.m rvctools/common
 	cp $(ROOT)/startup_rvc.m rvctools
 
 
 	# remove all SVN files from rvctools and below
-    find rvctools -name .svn -exec rm {} \;
+	find rvctools -name .svn -exec rm {} \;
 	#\rm -rf `find . -name .svn`
 
 doco:
@@ -99,7 +99,7 @@ dropbox:
 	cp -r ./{robot,simulink,common} $(HOME)/Dropbox
 
 install:
-	scp -C robot-*.zip geek:www/RTB/r9
+	scp -C robot-`cat ../RELEASE`.zip geek:www/RTB/r9
 	#scp -C robot.zip robot.tgz geek:www/RTB/r9
 	scp -Cr html geek:www/RTB/r9
 	scp -C rvctools/robot/robot.pdf geek:www/RTB/r9
