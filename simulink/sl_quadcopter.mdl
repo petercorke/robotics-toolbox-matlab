@@ -1,12 +1,12 @@
 Model {
-  Name			  "sl_quadrotor"
-  Version		  7.6
+  Name			  "sl_quadcopter"
+  Version		  7.9
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.22"
+    ComputedModelVersion    "1.23"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -19,18 +19,19 @@ Model {
   DataTypeOverrideAppliesTo "AllNumericTypes"
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
+  FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
-  InitFcn		  "% load parameters of the default quadrotor\ndisp('Quadrotor parameters loaded by InitFcn')\nmdl_quadco"
-  "pter"
+  InitFcn		  "% load parameters of the default quadrotor\ndisp('Quadrotor parameters loaded by InitFcn')\nmdl_quadcopt"
+  "er"
   Created		  "Sat Mar 20 12:13:00 2010"
   Creator		  "corkep"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "n6334687"
+  LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Feb 06 16:43:29 2012"
-  RTWModifiedTimeStamp	  250447386
-  ModelVersionFormat	  "1.%<AutoIncrement:22>"
+  LastModifiedDate	  "Sun Sep 23 12:03:58 2012"
+  RTWModifiedTimeStamp	  270302600
+  ModelVersionFormat	  "1.%<AutoIncrement:23>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -38,6 +39,7 @@ Model {
   WideLines		  on
   ShowLineDimensions	  on
   ShowPortDataTypes	  off
+  ShowDesignRanges	  off
   ShowLoopsOnError	  on
   IgnoreBidirectionalLines off
   ShowStorageClass	  off
@@ -105,13 +107,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.10.0"
+      Version		      "1.12.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  StartTime		  "0.0"
 	  StopTime		  "20"
 	  AbsTol		  "auto"
@@ -129,6 +131,7 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
+	  EnableConcurrentExecution off
 	  ConcurrentTasks	  off
 	  Solver		  "ode45"
 	  SolverName		  "ode45"
@@ -145,7 +148,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -157,6 +160,7 @@ Model {
 	  SaveFinalState	  off
 	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Array"
+	  SignalLoggingSaveFormat "ModelDataLogs"
 	  SaveOutput		  on
 	  SaveState		  off
 	  SignalLogging		  on
@@ -176,7 +180,7 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    7
@@ -194,6 +198,7 @@ Model {
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
 	  UseIntDivNetSlope	  off
+	  UseFloatMulNetSlope	  off
 	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
@@ -226,10 +231,11 @@ Model {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
+	  ParallelExecutionInRapidAccelerator on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -284,6 +290,7 @@ Model {
 	  UnconnectedOutputMsg	  "warning"
 	  UnconnectedLineMsg	  "warning"
 	  SFcnCompatibilityMsg	  "none"
+	  FrameProcessingCompatibilityMsg "warning"
 	  UniqueDataStoreMsg	  "none"
 	  BusObjectLabelMismatch  "warning"
 	  RootOutportRequireBusObject "warning"
@@ -300,6 +307,7 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  SimStateOlderReleaseMsg "error"
 	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "Warning"
 	  BusNameAdapt		  "WarnAndRepair"
@@ -311,10 +319,11 @@ Model {
 	  SFInvalidInputDataAccessInChartInitDiag "warning"
 	  SFNoUnconditionalDefaultTransitionDiag "warning"
 	  SFTransitionOutsideNaturalParentDiag "warning"
+	  SFUnconditionalTransitionShadowingDiag "warning"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -351,7 +360,7 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -366,7 +375,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -381,7 +390,7 @@ Model {
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -422,7 +431,9 @@ Model {
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
-	  GenerateSLWebview	  off
+	  GenerateWebview	  off
+	  GenerateCodeMetricsReport off
+	  GenerateCodeReplacementReport	off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -431,7 +442,7 @@ Model {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.10.0"
+	      Version		      "1.12.0"
 	      Array {
 		Type			"Cell"
 		Dimension		19
@@ -494,7 +505,7 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.10.0"
+	      Version		      "1.12.0"
 	      Array {
 		Type			"Cell"
 		Dimension		16
@@ -519,10 +530,10 @@ Model {
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
-	      TargetFunctionLibrary   "ANSI_C"
+	      CodeReplacementLibrary  "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
-	      ERTCodeCoverageTool     "None"
+	      CodeExecutionProfiling  off
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
 	      GenerateFullHeader      on
@@ -532,6 +543,7 @@ Model {
 	      ModelReferenceCompliant on
 	      ParMdlRefBuildCompliant on
 	      CompOptLevelCompliant   on
+	      ConcurrentExecutionCompliant on
 	      IncludeMdlTerminateFcn  on
 	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
@@ -556,6 +568,7 @@ Model {
 	      ModelStepFunctionPrototypeControlCompliant off
 	      CPPClassGenCompliant    off
 	      AutosarCompliant	      off
+	      GRTInterface	      on
 	      UseMalloc		      off
 	      ExtMode		      off
 	      ExtModeStaticAlloc      off
@@ -567,6 +580,7 @@ Model {
 	      RTWCAPISignals	      off
 	      RTWCAPIParams	      off
 	      RTWCAPIStates	      off
+	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
 	    }
 	    PropName		    "Components"
@@ -576,7 +590,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    " [ 1496, 110, 2376, 740 ] "
+      ConfigPrmDlgPosition     [ 1496, 110, 2376, 740 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -584,6 +598,7 @@ Model {
     $PropName		    "ActiveConfigurationSet"
     $ObjectID		    1
   }
+  ExplicitPartitioning	  off
   BlockDefaults {
     ForegroundColor	    "black"
     BackgroundColor	    "white"
@@ -623,6 +638,7 @@ Model {
     Block {
       BlockType		      Clock
       DisplayTime	      off
+      Decimation	      "10"
     }
     Block {
       BlockType		      Constant
@@ -700,6 +716,7 @@ Model {
       YMax		      "5"
       SaveToWorkspace	      off
       SaveName		      "ScopeData"
+      DataFormat	      "Array"
       LimitDataPoints	      on
       MaxDataPoints	      "5000"
       Decimation	      "1"
@@ -741,12 +758,14 @@ Model {
       MaxDataPoints	      "1000"
       Decimation	      "1"
       SampleTime	      "0"
+      SaveFormat	      "Array"
       FixptAsFi		      off
+      NumInputs		      "1"
     }
   }
   System {
-    Name		    "sl_quadrotor"
-    Location		    [1826, 218, 2887, 880]
+    Name		    "sl_quadcopter"
+    Location		    [401, 50, 1374, 617]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -760,7 +779,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "93"
+    SIDHighWatermark	    "105"
     Block {
       BlockType		      BusSelector
       Name		      "Bus\nSelector1"
@@ -884,7 +903,6 @@ Model {
       BackgroundColor	      "yellow"
       ShowName		      off
       DisplayTime	      on
-      Decimation	      "10"
     }
     Block {
       BlockType		      Reference
@@ -893,18 +911,9 @@ Model {
       Ports		      [4, 5]
       Position		      [700, 45, 760, 355]
       DropShadow	      on
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.54"
       SourceBlock	      "roblocks/Dynamics/Control Mixer"
-      SourceType	      "SubSystem"
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
+      SourceType	      ""
     }
     Block {
       BlockType		      Gain
@@ -1052,20 +1061,11 @@ Model {
       Name		      "Quadrotor"
       SID		      "85"
       Ports		      [4, 1]
-      Position		      [810, 18, 875, 302]
+      Position		      [810, 47, 870, 293]
       DropShadow	      on
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.54"
       SourceBlock	      "roblocks/Dynamics/Quadrotor"
       SourceType	      ""
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
       quad		      "quad"
     }
     Block {
@@ -1075,18 +1075,10 @@ Model {
       Ports		      [1]
       Position		      [650, 422, 680, 468]
       DropShadow	      on
-      LibraryVersion	      "1.28"
+      LibraryVersion	      "1.54"
       SourceBlock	      "roblocks/Robot Graphics/Quadrotor plot"
-      SourceType	      "SubSystem"
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
+      SourceType	      ""
+      x			      "0"
     }
     Block {
       BlockType		      MATLABFcn
@@ -1112,6 +1104,17 @@ Model {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
       }
+      List {
+	ListType		ScopeGraphics
+	FigureColor		"[0.5 0.5 0.5]"
+	AxesColor		"[0 0 0]"
+	AxesTickColor		"[1 1 1]"
+	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
+	LineStyles		"-|-|-|-|-|-"
+	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
+	MarkerStyles		"none|none|none|none|none|none"
+      }
+      ShowLegends	      off
       YMin		      "-0.04"
       YMax		      "0.045"
       DataFormat	      "StructureWithTime"
@@ -1264,7 +1267,6 @@ Model {
       VariableName	      "result"
       MaxDataPoints	      "inf"
       SampleTime	      "-1"
-      SaveFormat	      "Array"
     }
     Block {
       BlockType		      ToWorkspace
@@ -1276,7 +1278,6 @@ Model {
       VariableName	      "T"
       MaxDataPoints	      "inf"
       SampleTime	      "-1"
-      SaveFormat	      "Array"
     }
     Block {
       BlockType		      Constant
@@ -1313,18 +1314,9 @@ Model {
       SID		      "84"
       Ports		      [0, 1]
       Position		      [25, 280, 55, 310]
-      LibraryVersion	      "1.225"
+      LibraryVersion	      "1.260"
       SourceBlock	      "simulink/Sources/Ramp"
       SourceType	      "Ramp"
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
       slope		      "0.2"
       start		      "2"
       X0		      "0"
@@ -1341,14 +1333,12 @@ Model {
     Line {
       SrcBlock		      "Control Mixer"
       SrcPort		      1
-      Points		      [0, -25]
       DstBlock		      "Quadrotor"
       DstPort		      1
     }
     Line {
       SrcBlock		      "Control Mixer"
       SrcPort		      4
-      Points		      [10, 0; 0, 5]
       DstBlock		      "Quadrotor"
       DstPort		      4
     }
@@ -1374,7 +1364,7 @@ Model {
     Line {
       SrcBlock		      "Quadrotor"
       SrcPort		      1
-      Points		      [50, 0; 0, 375; -130, 0]
+      Points		      [55, 0; 0, 365; -130, 0]
       Branch {
 	Points			[0, 0; -180, 0]
 	Branch {
@@ -1631,7 +1621,7 @@ Model {
       }
       Branch {
 	Labels			[3, 0]
-	Points			[65, 0; 0, -110; 100, 0; 0, -25; 10, 0; 0, -5]
+	Points			[65, 0; 0, -110; 90, 0; 0, -30]
 	DstBlock		"Control Mixer"
 	DstPort			4
       }
@@ -1706,70 +1696,80 @@ Model {
     Line {
       SrcBlock		      "Control Mixer"
       SrcPort		      3
-      Points		      [15, 0; 0, -5]
       DstBlock		      "Quadrotor"
       DstPort		      3
     }
     Line {
       SrcBlock		      "Control Mixer"
       SrcPort		      2
-      Points		      [15, 0; 0, -15]
       DstBlock		      "Quadrotor"
       DstPort		      2
     }
     Annotation {
+      SID		      "94"
       Name		      " "
       Position		      [470, 40]
     }
     Annotation {
+      SID		      "95"
       Name		      "state vector"
       Position		      [446, 523]
     }
     Annotation {
+      SID		      "96"
       Name		      "gravity feedforward"
       Position		      [442, 475]
     }
     Annotation {
+      SID		      "97"
       Name		      "attitude rate\nloop"
       Position		      [582, 135]
       HorizontalAlignment     "left"
     }
     Annotation {
+      SID		      "98"
       Name		      "attitude\nloop"
       Position		      [504, 135]
       HorizontalAlignment     "left"
     }
     Annotation {
+      SID		      "99"
       Name		      "position rate\nloop"
       Position		      [367, 130]
       HorizontalAlignment     "left"
     }
     Annotation {
+      SID		      "100"
       Name		      "position\nloop"
       Position		      [242, 50]
       HorizontalAlignment     "left"
     }
     Annotation {
+      SID		      "101"
       Name		      "yaw rate\nloop"
       Position		      [287, 365]
       HorizontalAlignment     "left"
     }
     Annotation {
+      SID		      "102"
       Name		      "yaw angle\nloop"
       Position		      [242, 300]
       HorizontalAlignment     "left"
     }
     Annotation {
+      SID		      "103"
       Name		      "height rate\nloop"
       Position		      [292, 470]
       HorizontalAlignment     "left"
     }
     Annotation {
+      SID		      "104"
       Name		      "height \nloop"
       Position		      [242, 430]
       HorizontalAlignment     "left"
     }
     Annotation {
+      SID		      "105"
       Name		      "state"
       Position		      [938, 140]
     }
