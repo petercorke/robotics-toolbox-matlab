@@ -85,11 +85,18 @@ function [theta, v] = tr2angvec(R)
 		ky = ky - ky1;
 		kz = kz - kz1;
 	end
-	v = unit([kx ky kz]);
-    theta = 2*acos(qs);
-    if theta > pi
-        theta = pi - theta;
-        v = -v;
+	n = norm([kx ky kz]);
+    if n < eps
+        % for zero rotation case set arbitrary rotation axis and zero angle
+        v = [1 0 0];
+        theta = 0;
+    else
+        theta = 2*acos(qs);
+        v = [kx ky kz] /n;          % unit vector
+        if theta > pi
+            theta = pi - theta;
+            v = -v;
+        end
     end
 
     if nargout == 0
