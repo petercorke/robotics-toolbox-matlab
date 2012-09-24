@@ -6,10 +6,6 @@ function braitenberg_test
     sim('sl_braitenberg');
 	close all
 
-function bicycle_test
-    sim('sl_bicycle');
-	close all
-
 function lanechange_test
     sim('sl_lanechange');
 	close all
