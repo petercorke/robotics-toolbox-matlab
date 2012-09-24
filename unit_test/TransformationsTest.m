@@ -355,6 +355,11 @@ function t2r_test
 % CHECK OUTPUT OF THIS FUNCTION!!!!!!!!!!!!!!!!!!!!!!
 function tr2angvec_test
     % unit test for tr2angvec using a tr matrix 
+    [theta, v] = tr2angvec(eye(4,4));
+    assertElementsAlmostEqual(theta,...
+        0.0,'absolute',1e-4);
+
+    % unit test for tr2angvec using a tr matrix 
     [theta, v] = tr2angvec(eul2tr([.1, .2, .3]));
     assertElementsAlmostEqual(theta,...
         0.4466,'absolute',1e-4);

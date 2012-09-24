@@ -221,6 +221,20 @@ function tb_test_optparse
     assertExceptionThrown( @() tb_optparse(opt, {'two'}), 'RTB:tboptparse:badargs');
     assertExceptionThrown( @() tb_optparse(opt, 'bob'), 'RTB:tboptparse:badargs');
 
+function trprint_test
+
+    a = transl([1,2,3]) * eul2tr([.1, .2, .3]);
+
+    trprint(a);
+    trprint(a, 'euler');
+    trprint(a, 'euler', 'radian');
+    trprint(a, 'rpy');
+    trprint(a, 'rpy', 'radian');
+    trprint(a, 'angvec');
+    trprint(a, 'angvec', 'radian');
+    trprint(a, 'angvec', 'radian', 'fmt', '%g');
+    trprint(a, 'angvec', 'radian', 'fmt', '%g', 'label', 'bob');
+
 function rtdemo_test
 
     if exist('rttrdemo', 'file') == 2
