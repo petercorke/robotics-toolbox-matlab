@@ -79,8 +79,16 @@ function C = coriolis(robot, q, qd)
     end
 
     N = robot2.n;
-    C = zeros(N,N);
-    Csq = zeros(N,N);
+    
+    if isa(q, 'sym')
+        C(N,N) = sym();
+        Csq(N,N) = sym();
+    else
+        
+        C = zeros(N,N);
+        Csq = zeros(N,N);
+    end
+
 
     % find the torques that depend on a single finite joint speed,
     % these are due to the squared (centripetal) terms
@@ -108,3 +116,7 @@ function C = coriolis(robot, q, qd)
         end
     end
     C = C + Csq * diag(qd);
+    
+    if isa(q, 'sym')
+        C = simplify(C);
+    end

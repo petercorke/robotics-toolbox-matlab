@@ -568,6 +568,13 @@ classdef SerialLink < handle
         function record(r, q)
             r.qteach = [r.qteach; q];
         end
+
+        function sr = sym(r)
+            sr = SerialLink(r);
+            for i=1:r.n
+                sr.links(i) = r.links(i).sym;
+            end
+        end
     end % methods
 
 end % classdef

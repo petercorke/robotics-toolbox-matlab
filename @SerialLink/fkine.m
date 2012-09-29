@@ -62,7 +62,11 @@ function t = fkine(robot, q)
 			end
 			t = cat(3, t, tt * robot.tool);
 		end
-	end
+    end
+    
+    if isa(t, 'sym')
+        t = simplify(t);
+    end
 
     %robot.T = t;
     %robot.notify('Moved');

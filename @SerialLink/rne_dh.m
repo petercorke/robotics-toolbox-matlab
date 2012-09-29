@@ -79,7 +79,11 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
         end
     end
     
-    tau = zeros(np,n);
+    if isa(Q, 'sym')
+        tau(np, n) = sym();
+    else
+        tau = zeros(np,n);
+    end
 
     for p=1:np
         q = Q(p,:)';
@@ -218,4 +222,8 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
         nn = R*(nn);
         f = R*f;
         wbase = [f; nn];
+    end
+    
+    if isa(tau, 'sym')
+        tau = simplify(tau);
     end

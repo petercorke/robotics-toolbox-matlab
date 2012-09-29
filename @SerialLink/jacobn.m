@@ -49,8 +49,12 @@ function J = jacobn(robot, q, varargin)
     
     n = robot.n;
     L = robot.links;        % get the links
-
-    J = zeros(6, robot.n);
+    
+    if isa(q, 'sym')
+        tau(6, robot.n) = sym();
+    else
+        J = zeros(6, robot.n);
+    end
     U = robot.tool;
     for j=n:-1:1
         if robot.mdh == 0
@@ -80,4 +84,8 @@ function J = jacobn(robot, q, varargin)
         J = J(1:3,:);
     elseif opt.rot
         J = J(4:6,:);
+    end
+    
+    if isa(J, 'sym')
+        J = simplify(J);
     end
