@@ -39,9 +39,7 @@ function J = eul2jac(phi, theta, psi)
     elseif nargin ~= 3
         error('RTB:eul2jac:badarg', 'bad arguments');
     end
-    J = [   
-        cos(psi)*sin(theta)   -sin(psi)    0
-        sin(psi)*sin(theta)  cos(psi)      0
-        cos(theta)           0             1
-        ];
+J = [ 0, -sin(phi), cos(phi)*sin(theta)
+      0,  cos(phi), sin(phi)*sin(theta)
+      1,        0,           cos(theta) ];  
         
