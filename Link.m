@@ -44,7 +44,7 @@
 % - Robotics, Vision & Control, Chap 7
 %   P. Corke, Springer 2011.
 %
-% See also SerialLink, Link.Link.
+% See also Link, Revolute, Prismatic, SerialLink.
 
 % Copyright (C) 1993-2011, by Peter I. Corke
 %
@@ -117,6 +117,10 @@ classdef Link < handle
         % 'B',B        joint friction, motor referenced (default 0)
         % 'Jm',J       motor inertia, motor referenced (default 0)
         % 'Tc',T       Coulomb friction, motor referenced (1x1 or 2x1), (default [0 0])
+        % 'revolute'   for a revolute joint (default)
+        % 'prismatic'  for a prismatic joint 'p'
+        % 'standard'   for standard D&H parameters (default).
+        % 'modified'   for modified D&H parameters.
         % 'sym'        consider all parameter values as symbolic not numeric
         %
         % - It is an error to specify 'theta' and 'd'
