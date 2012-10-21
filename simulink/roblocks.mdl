@@ -16,9 +16,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Sep 13 21:09:39 2012"
-  RTWModifiedTimeStamp	  269471369
-  ModelVersionFormat	  "1.%<AutoIncrement:54>"
+  LastModifiedDate	  "Sun Oct 21 12:23:00 2012"
+  RTWModifiedTimeStamp	  272722952
+  ModelVersionFormat	  "1.%<AutoIncrement:55>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -847,7 +847,7 @@ Library {
   }
   System {
     Name		    "roblocks"
-    Location		    [740, 56, 1049, 479]
+    Location		    [740, 78, 1049, 501]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    212
@@ -886,8 +886,8 @@ Library {
       MaskIconUnits	      "pixels"
       System {
 	Name			"Dynamics"
-	Location		[1110, 153, 1489, 703]
-	Open			off
+	Location		[1110, 175, 1489, 725]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -951,7 +951,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "227"
+	    SIDHighWatermark	    "243"
 	    SIDPrevWatermark	    "225"
 	    Block {
 	      BlockType		      Inport
@@ -1251,7 +1251,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
+	    SIDHighWatermark	    "249"
 	    SIDPrevWatermark	    "225"
 	    Block {
 	      BlockType		      Inport
@@ -1748,7 +1748,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
+	    SIDHighWatermark	    "234"
 	    SIDPrevWatermark	    "225"
 	    Block {
 	      BlockType		      Inport
@@ -2223,8 +2223,8 @@ Library {
 	  MaskValueString	  "robot|[0 0 0 0 0 0]"
 	  System {
 	    Name		    "Robot"
-	    Location		    [280, 398, 812, 626]
-	    Open		    off
+	    Location		    [280, 420, 812, 648]
+	    Open		    on
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -2236,7 +2236,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "232"
+	    SIDHighWatermark	    "248"
 	    SIDPrevWatermark	    "232"
 	    Block {
 	      BlockType		      Inport
@@ -2266,6 +2266,7 @@ Library {
 	      Ports		      [1, 1]
 	      Position		      [345, 65, 375, 95]
 	      ShowName		      off
+	      InitialCondition	      "q0"
 	    }
 	    Block {
 	      BlockType		      Mux
@@ -2453,7 +2454,7 @@ Library {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
-	SIDHighWatermark	"78"
+	SIDHighWatermark	"256"
 	SIDPrevWatermark	"14"
 	Block {
 	  BlockType		  SubSystem
@@ -3394,7 +3395,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "230"
+	    SIDHighWatermark	    "233"
 	    SIDPrevWatermark	    "230"
 	    Block {
 	      BlockType		      Inport
@@ -3619,7 +3620,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
+	    SIDHighWatermark	    "233"
 	    SIDPrevWatermark	    "225"
 	    Block {
 	      BlockType		      Clock
@@ -3780,7 +3781,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
+	    SIDHighWatermark	    "230"
 	    SIDPrevWatermark	    "225"
 	    Block {
 	      BlockType		      Inport
@@ -4589,7 +4590,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
+	    SIDHighWatermark	    "601"
 	    SIDPrevWatermark	    "225"
 	    Block {
 	      BlockType		      Inport
@@ -4834,7 +4835,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
+	    SIDHighWatermark	    "607"
 	    SIDPrevWatermark	    "225"
 	    Block {
 	      BlockType		      Inport
@@ -4957,7 +4958,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
+	    SIDHighWatermark	    "614"
 	    SIDPrevWatermark	    "225"
 	    Block {
 	      BlockType		      Inport
@@ -5597,7 +5598,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "257"
+	    SIDHighWatermark	    "627"
 	    SIDPrevWatermark	    "257"
 	    Block {
 	      BlockType		      Inport
@@ -5799,7 +5800,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "271"
+	    SIDHighWatermark	    "636"
 	    SIDPrevWatermark	    "271"
 	    Block {
 	      BlockType		      Inport
@@ -5944,7 +5945,7 @@ Library {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "225"
+	    SIDHighWatermark	    "640"
 	    SIDPrevWatermark	    "225"
 	    Block {
 	      BlockType		      Inport
