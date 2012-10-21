@@ -14,7 +14,7 @@
 %
 % Example::
 %
-%        goal = [0,0];
+%        goal = [0,0,0];
 %        start = [0,2,0];
 %        veh = Vehicle([], 'stlim', 1.2);
 %        rrt = RRT([], veh, 'goal', goal, 'range', 5);
@@ -22,7 +22,7 @@
 %        rrt.path(start, goal)  % animate path from this start location
 %
 %  Robotics, Vision & Control compatability mode:
-%        goal = [0,0];
+%        goal = [0,0,0];
 %        start = [0,2,0];
 %        rrt = RRT();           % create navigation object
 %        rrt.plan()             % create navigation tree
@@ -117,7 +117,7 @@ classdef RRT < Navigation
             opt.npoints = 500;
             opt.time = 0.5;
             opt.range = 5;
-            opt.goal = [0, 0];
+            opt.goal = [0, 0, 0];
             opt.steermax = [];
             opt.speed = 1;
             
@@ -268,8 +268,10 @@ classdef RRT < Navigation
 %                 end
 
                 % Step 7,8
-                % add xnew to the graph, with an edge to xnear
-                v = rrt.graph.add_node(xnew, vnear);
+                % add xnew to the graph, with an edge from xnear
+                v = rrt.graph.add_node(xnew);
+                rrt.graph.add_edge(vnear, v);
+                
                 rrt.graph.setdata(v, best);
             end
 
@@ -303,8 +305,17 @@ classdef RRT < Navigation
             
             % concatenate the vehicle motion segments
             cpath = [];
-            for p = path(2:end)
-                cpath = [cpath g.data(p).path];
+            for i = 1:length(path)
+                p = path(i);
+                data = g.data(p);
+                if ~isempty(data)
+                    if i >= length(path) || g.edgedir(p, path(i+1)) > 0
+                        cpath = [cpath data.path];
+                    else
+                        cpath = [cpath data.path(:,end:-1:1)];
+
+                    end
+                end
             end
 
             if nargout == 0
@@ -312,16 +323,33 @@ classdef RRT < Navigation
                 clf; hold on
 
                 plot2(g.coord(path)', 'o');     % plot the node coordinates
-                for i = 2:length(path);
-                    b = g.data(path(i));            % get path data for segment
+                
+                for i = 1:length(path)
+                    p = path(i)
+                    b = g.data(p);            % get path data for segment
+                    
                     % draw segment with direction dependent color
-                    seg = [g.coord(path(i-1)) b.path];
-                    if b.vel > 0
-                        plot2(seg', 'b');
-                    else
-                        plot2(seg', 'r');
+                    if ~isempty(b)
+                        % if the vertex has a path leading to it
+                        
+                        if i >= length(path) || g.edgedir(p, path(i+1)) > 0
+                            % positive edge
+                            %  draw from prev vertex to end of path
+                            seg = [g.coord(path(i-1)) b.path]';
+                        else
+                            % negative edge
+                            %  draw reverse path to next next vertex
+                            seg = [  b.path(:,end:-1:1)  g.coord(path(i+1))]';
+                        end
+                        
+                        if b.vel > 0
+                            plot2(seg, 'b');
+                        else
+                            plot2(seg, 'r');
+                        end
                     end
                 end
+
                 xlabel('x'); ylabel('y'); zlabel('\theta');
                 grid
             else
@@ -367,6 +395,10 @@ classdef RRT < Navigation
             if ~isempty(rrt.vehicle)
                 s = char(s, char(rrt.vehicle) );
             end
+        end
+        
+        function test(rrt)
+            xy = rrt.randxy()
         end
 
 
