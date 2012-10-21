@@ -37,6 +37,12 @@ function PGraph2_test
     assertEqual(sum(I), [2 2 2 2 2 2]);
     assertEqual(sum(I'), [3 3 2 3 1]);
     assertEqual(max(max(A-A')), 0);
+    
+    assertEqual( g.edgedir(1,3), 1);
+    assertEqual( g.edgedir(3,1), -1);
+    assertEqual( g.edgedir(2,5), 0);
+    assertEqual(g.neighbours_d(2), [-1 3 4]);
+
 
     s = g.char();
 
@@ -70,6 +76,10 @@ function PGraph2_test
 
     g.setcost(1, 99);
     assertEqual( g.cost(1), 99);
+    
+    g.Astar(3, 5);
+    assertEqual(path, [3 2 4 5]);
+
 
 function PGraph3_test
  
