@@ -438,7 +438,12 @@ classdef Navigation < handle
             s = [class(nav) ' navigation class:'];
             s = char(s, sprintf('  occupancy grid: %dx%d', size(nav.occgrid)));
             if ~isempty(nav.goal)
-                s = char(s, sprintf('  goal: (%d,%d)', nav.goal) );
+                if length(nav.goal) == 2
+                    s = char(s, sprintf('  goal: (%d,%d)', nav.goal) );
+                else
+                    s = char(s, sprintf('  goal: (%g,%g, %g)', nav.goal) );
+                    
+                end
             end
         end
 
