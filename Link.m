@@ -181,7 +181,7 @@ classdef Link < handle
                 % create an 'empty' Link object
                 % this call signature is needed to support arrays of Links
 
-                %% kinematic parameters
+                            %% kinematic parameters
                 l.alpha = 0;
                 l.a = 0;
                 l.theta = 0;
@@ -202,7 +202,6 @@ classdef Link < handle
                 l.G = 0;
                 l.B = 0;
                 l.Tc = [0 0];
-
             elseif nargin == 1 && isa(varargin{1}, 'Link')
                 % clone the passed Link object
                 l = copy(varargin{1});
@@ -743,6 +742,33 @@ classdef Link < handle
             end
         end 
 
+        function links = horzcat(this, varargin)
+            links(1) = this.toLink();
+            
+            for i=1:length(varargin)
+                links(i+1) = varargin{i}.toLink();
+            end
+        end
+        
+        function links = vertcat(this, varargin)
+            links = this.horzcat(varargin{:});
+        end
+        
+        function new = toLink(this)
+            class(this)
+            
+            for j=1:length(this)
+                new(j) = Link();
+                
+                % Copy all non-hidden properties.
+                p = properties(this(j));
+                for i = 1:length(p)
+                    new(j).(p{i}) = this(j).(p{i});
+                end
+            end
+            
+        end
+        
         function sl = sym(l)
 
             sl = Link(l);   % clone the link

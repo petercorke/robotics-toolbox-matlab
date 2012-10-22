@@ -34,6 +34,10 @@ classdef Prismatic < Link
     methods
         function L = Prismatic(varargin)
             L = L@Link(varargin{:});
+            
+            if nargin == 0
+                L.d = [];
+            end
             if isempty(L.theta)
                 L.theta = 0;
             end

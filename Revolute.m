@@ -35,6 +35,10 @@ classdef Revolute < Link
     methods
         function L = Revolute(varargin)
             L = L@Link(varargin{:});
+            
+            if nargin == 0
+                L.theta = [];
+            end
             L.sigma = 0;
             if isempty(L.d)
                 L.d = 0;
@@ -43,5 +47,6 @@ classdef Revolute < Link
                 error('theta cannot be specified for a prismatic link');
             end
         end
+        
     end
 end
