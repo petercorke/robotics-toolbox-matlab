@@ -20,6 +20,7 @@
 %  std          standard deviation of the particle population
 %  Q            covariance of noise added to state at each step
 %  L            covariance of likelihood model
+%  w0           offset in likelihood model
 %  dim          maximum xy dimension
 %
 % Example::
@@ -114,6 +115,7 @@ classdef ParticleFilter < handle
         h           % graphics handle for particles
         randstream
         seed0
+        w0
     end % properties
 
     methods
@@ -155,6 +157,7 @@ classdef ParticleFilter < handle
             pf.history = [];
             pf.x = [];
             pf.weight = [];
+            pf.w0 = 0.05;
 
             opt.private = false;
             opt.reset = false;
@@ -210,7 +213,10 @@ classdef ParticleFilter < handle
         function run(pf, niter, varargin)
             %ParticleFilter.run Run the particle filter
             %
-            % PF.run(N) runs the filter for N time steps.
+            % PF.run(N, OPTIONS) runs the filter for N time steps.
+            %
+            % Options::
+            % 'noplot'   Do not show animation.
             %
             % Notes::
             % - All previously estimated states and estimation history is
@@ -301,6 +307,46 @@ classdef ParticleFilter < handle
             % LS are passed to plot.
             plot(pf.x_est(:,1), pf.x_est(:,2), varargin{:});
         end
+        
+        function display(pf)
+            %ParticleFilter.display Display status of particle filter object
+            %
+            % PF.display() displays the state of the ParticleFilter object in
+            % human-readable form.
+            %
+            % Notes::
+            % - This method is invoked implicitly at the command line when the result
+            %   of an expression is a ParticleFilter object and the command has no trailing
+            %   semicolon.
+            %
+            % See also ParticleFilter.char.
+            
+            loose = strcmp( get(0, 'FormatSpacing'), 'loose');
+            if loose
+                disp(' ');
+            end
+            disp([inputname(1), ' = '])
+            disp( char(pf) );
+        end % display()
+
+        function s = char(pf)
+            %ParticleFilter.char Convert to string
+            %
+            % PF.char() is a string representing the state of the ParticleFilter
+            % object in human-readable form.
+            %
+            % See also ParticleFilter.display.
+            s = sprintf('ParticleFilter object: %d particles', pf.nparticles);
+            if ~isempty(pf.robot)
+                s = char(s, char(pf.robot) );
+            end
+            if ~isempty(pf.sensor)
+                s = char(s, char(pf.sensor));
+            end
+            s = char(s, ['Q:  ' mat2str(pf.Q, 3)] );
+            s = char(s, ['L:  ' mat2str(pf.L, 3)] );
+            s = char(s, sprintf('w0: %g', pf.w0) );
+        end
 
 
     end % methods
@@ -356,7 +402,7 @@ classdef ParticleFilter < handle
 
             LL = -0.5*[invL(1,1); invL(2,2); 2*invL(1,2)];
             e = [z_pred(:,1).^2 z_pred(:,2).^2 z_pred(:,1).*z_pred(:,2)]*LL;
-            pf.weight = exp(e) + 0.05;
+            pf.weight = exp(e) + pf.w0;  
         end
 
         % step 4
