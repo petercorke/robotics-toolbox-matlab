@@ -36,17 +36,20 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
 classdef Sensor < handle
+    % TODO, pose option, wrt vehicle
 
     properties
         robot
         map
 
         verbose
+        
+        ls
     end
 
     methods
 
-        function s = Sensor(robot, map)
+        function s = Sensor(robot, map, varargin)
         %Sensor.Sensor Sensor object constructor
         %
         % S = Sensor(VEHICLE, MAP) is a sensor mounted on the Vehicle object
@@ -57,6 +60,16 @@ classdef Sensor < handle
             s.robot = robot;
             s.map = map;
             s.verbose = false;
+        end
+        
+        function plot(s, jf)
+            if ~isempty(s.ls)
+                xi = s.map.map(:,jf);
+                h = plot([s.robot.x(1), xi(1)], [s.robot.x(2), xi(2)], s.ls);
+                pause(0.3);
+                delete(h);
+                drawnow
+            end
         end
 
         function display(s)
@@ -85,8 +98,7 @@ classdef Sensor < handle
             % s = S.char() is a string showing sensor parameters in
             % a compact human readable format.
             str = [class(s) ' sensor class:'];
-            str = char(str, sprintf('  %d features', s.map.nfeatures));
-            str = char(str, sprintf('  dimension %.1f', s.map.dim));
+            str = char(str, char(s.map));
         end
 
     end % method
