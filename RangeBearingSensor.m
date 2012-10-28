@@ -18,7 +18,7 @@
 % Gz        Jacobian matrix dg/dz
 %
 % Properties (read/write)::
-% R            measurement covariance matrix (2x2)
+% W            measurement covariance matrix (2x2)
 % interval     valid measurements returned every interval'th call to reading()
 %
 % Reference::
@@ -49,7 +49,7 @@
 classdef RangeBearingSensor < Sensor
 
     properties
-        R           % measurment covariance
+        W           % measurment covariance
         interval    % measurement return subsample factor
         r_range     % range limits
         theta_range % angle limits
@@ -64,10 +64,10 @@ classdef RangeBearingSensor < Sensor
 
     methods
 
-        function s = RangeBearingSensor(robot, map, R, varargin)
+        function s = RangeBearingSensor(robot, map, W, varargin)
             %RangeBearingSensor.RangeBearingSensor Range and bearing sensor constructor
             %
-            % S = RangeBearingSensor(VEHICLE, MAP, R, OPTIONS) is an object representing
+            % S = RangeBearingSensor(VEHICLE, MAP, W, OPTIONS) is an object representing
             % a range and bearing angle sensor mounted on the Vehicle object
             % VEHICLE and observing an environment of known landmarks represented by the
             % map object MAP.  The sensor covariance is R (2x2) representing range and bearing
@@ -99,7 +99,7 @@ classdef RangeBearingSensor < Sensor
 
             opt = tb_optparse(opt, varargin);
 
-            s.R = R;
+            s.W = W;
             if ~isempty(opt.range)
                 if length(opt.range) == 1
                     s.r_range = [0 opt.range];
@@ -150,31 +150,51 @@ classdef RangeBearingSensor < Sensor
                 return;
             end
 
-            % randomly choose the feature
-            jf = s.selectFeature();
+            if ~isempty(s.r_range)  || ~isempty(s.theta_range)
+                % if range and bearing angle limits are in place look for
+                % any landmarks that match criteria
+                
+                % get range/bearing to all landmarks
+                z = s.h(s.robot.x');
+                jf = 1:numcols(s.map.map);
+                
+                if ~isempty(s.r_range)
+                    % find all within range
+                    k = find(z(:,1) >= s.r_range(1) & z(:,1) <= s.r_range(2));
+                    z = z(k,:);
+                    jf = jf(k);
+                end
+                if ~isempty(s.theta_range)
+                    % find all within angular range
+                    k = find(z(:,2) >= s.theta_range(1) & z(:,2) <= s.theta_range(2));
+                    z = z(k,:);
+                    jf = jf(k);
+                end
+                
+                if isempty(k)
+                    % no landmarks found
+                    z = [];
+                    jf = NaN;
+                elseif length(k) >= 1
+                    % more than 1 in range, pick a random one
+                    i = s.randstream.randi(length(k));
+                    z = z(i,:);
+                    jf = jf(i);
+                end
 
-            % compute the range and bearing from robot to feature
-            z = s.h(s.robot.x', jf);
-
+            else
+                % randomly choose the feature
+                jf = s.selectFeature();
+                
+                % compute the range and bearing from robot to feature
+                z = s.h(s.robot.x', jf);   
+            end
+            
             if s.verbose
                 fprintf('Sensor:: feature %d: %.1f %.1f\n', k, z);
             end
-
-            % if range and bearing angle limits are in place, enforce them
-            %  return jf=NaN in this case
-            if ~isempty(s.r_range)
-                if z(1) < s.r_range(1) || z(1)r > s.r_range(2)
-                    z = [];
-                    jf = NaN;
-                    return;
-                end
-            end
-            if ~isempty(s.theta_range)
-                if z(2) < s.theta_range(1) || z(2) > s.theta_range(2)
-                    z = [];
-                    jf = NaN;
-                    return;
-                end
+            if ~isempty(z)
+                s.plot(jf);
             end
         end
 
@@ -187,13 +207,22 @@ classdef RangeBearingSensor < Sensor
             %
             % Z = S.h(XV, XF) as above but compute range and bearing to a feature at coordinate XF.
             %
+            % Z = s.h(XV) as above but computer range and bearing to all
+            % map features.  Z has one row per feature.
+            %
             % Notes::
             % - Supports vectorized operation where XV (Nx3) and Z (Nx2).
             %
             % See also RangeBearingSensor.Hx, RangeBearingSensor.Hw, RangeBearingSensor.Hxf.
-            if length(jf) == 1
+            
+            if nargin < 3
+                % s.h(XV)
+                xf = s.map.map;
+            elseif length(jf) == 1
+                % s.h(XV, JF)
                 xf = s.map.map(:,jf);
             else
+                % s.h(XV, XF)
                 xf = jf;
             end
 
@@ -207,8 +236,10 @@ classdef RangeBearingSensor < Sensor
             %
             % Vectorized code:
 
-            dx = xf(1) - xv(:,1); dy = xf(2) - xv(:,2);
-            z = [sqrt(dx.^2 + dy.^2) atan2(dy, dx)-xv(:,3) ];   % range & bearing measurement
+            dx = xf(1,:) - xv(:,1); dy = xf(2,:) - xv(:,2);
+            z = [sqrt(dx.^2 + dy.^2); atan2(dy, dx)-xv(:,3) ]';   % range & bearing measurement
+            % add noise with covariance W
+            z = z + s.randstream.randn(size(z)) * sqrt(s.W);
         end
 
         function J = Hx(s, xv, jf)
@@ -315,5 +346,18 @@ classdef RangeBearingSensor < Sensor
                 ];
         end
 
+        function str = char(s)
+            str = char@Sensor(s);
+            str = char(str, ['W = ', mat2str(s.W, 3)]);
+
+            str = char(str, sprintf('interval %d samples', s.interval) );
+            if ~isempty(s.r_range)
+                str = char(str, sprintf('range: %g to %g', s.r_range) );
+            end
+            if ~isempty(s.theta_range)
+                str = char(str, sprintf('angle: %g to %g', s.r_range) );
+            end
+        end
+        
     end % method
 end % classdef
