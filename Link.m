@@ -743,10 +743,10 @@ classdef Link < handle
         end 
 
         function links = horzcat(this, varargin)
-            links(1) = this.toLink();
+            links = this.toLink();
             
             for i=1:length(varargin)
-                links(i+1) = varargin{i}.toLink();
+                links = cat(2, links, varargin{i}.toLink());
             end
         end
         
@@ -754,9 +754,7 @@ classdef Link < handle
             links = this.horzcat(varargin{:});
         end
         
-        function new = toLink(this)
-            class(this)
-            
+        function new = toLink(this)            
             for j=1:length(this)
                 new(j) = Link();
                 
