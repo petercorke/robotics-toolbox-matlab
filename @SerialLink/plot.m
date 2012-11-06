@@ -36,6 +36,12 @@
 % Many boolean options can be enabled or disabled with the 'no' prefix.  The
 % various option sources can toggle an option, the last value is taken.
 %
+% To save the effort of processing options on each call they can be preprocessed by
+%        opts = robot.plot({'opt1', 'opt2', ... });
+% and the resulting object can be passed in to subsequent calls instead of text-based
+% options, for example:
+%        robot.plot(q, opts);
+%
 % Graphical annotations and options::
 %
 % The robot is displayed as a basic stick figure robot with annotations 
@@ -164,7 +170,7 @@ function retval = plot(robot, tg, varargin)
     % opts = PLOT(robot, options)
     %  just convert options list to an options struct
     if (nargin == 2) && iscell(tg)
-        retval = plot_options(robot, varargin{:});
+        retval = plot_options(robot, tg);
         return;
     end
         
@@ -309,6 +315,9 @@ function o = plot_options(robot, optin)
     o.cylinder = [0 0 0.7];
     o.workspace = [];
     o.movie = [];
+    o.render = true;
+    o.ortho = true;
+    o.perspective = false;
 
 
     % build a list of options from all sources
