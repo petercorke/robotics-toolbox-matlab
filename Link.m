@@ -733,7 +733,8 @@ classdef Link < handle
 
             for j=1:length(this)
                 % Instantiate new object of the same class. 
-                new(j) = feval(class(this(j))); 
+                %new(j) = feval(class(this(j))); 
+                new(j) = Link();
                 % Copy all non-hidden properties. 
                 p = properties(this(j)); 
                 for i = 1:length(p) 
