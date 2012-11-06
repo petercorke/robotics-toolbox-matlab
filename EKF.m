@@ -26,6 +26,7 @@
 %   plot_P         plot the estimated covariance norm along the path
 %   plot_map       plot estimated feature points and confidence limits
 %   plot_ellipse   plot estimated path with covariance ellipses
+%   plot_error     plot estimation error with standard deviation bounds
 %   display        print the filter state in human readable form
 %   char           convert the filter state to human readable string
 %
@@ -170,6 +171,11 @@ classdef EKF < handle
 
     %TODO
     % add a hook for data association
+    % show ellipses and laser scan landmark strikes (perhaps this in Map
+    % class)
+    % show landmark covar as ellipse or pole
+    % show vehicle covar as ellipse
+    % show track
     properties
         % STATE:
         % the state vector is [x_vehicle x_map] where
@@ -204,6 +210,8 @@ classdef EKF < handle
         joseph          % flag: use Joseph form to compute p
         verbose
         keepHistory     % keep history
+        P0              % passed initial covariance
+        map             % passed map
 
         % HISTORY:
         % vector of structs to hold EKF history
@@ -258,6 +266,8 @@ classdef EKF < handle
             ekf.verbose = opt.verbose;
             ekf.keepHistory = opt.history;
             ekf.joseph = opt.joseph;
+            ekf.P0 = P0;
+            ekf.map = map;
             
             ekf.sensor = [];
             ekf.robot = robot;
@@ -267,25 +277,8 @@ classdef EKF < handle
                 ekf.W_est = W_est;
             end
             ekf.joseph = true;
-            if isempty(V_est)
-                % perfect vehicle case
-                ekf.estVehicle = false;
-                ekf.x_est = [];
-                ekf.P_est = [];
-            else
-                % noisy odometry case
-                ekf.x_est = robot.x0(:);   % column vector
-                ekf.P_est = P0;
-                ekf.estVehicle = true;
-            end
-            if nargin >= 6 && isempty(map)
-                ekf.estMap = true;
-                ekf.features = NaN*zeros(2, sensor.map.nfeatures);
-            else
-                ekf.estMap = false;
-            end
 
-            ekf.history = [];
+            ekf.init();
         end
 
         function init(ekf)
@@ -294,17 +287,32 @@ classdef EKF < handle
         % E.init() resets the filter state and clears the history.
             ekf.robot.init();
 
-            % init the state vector
-            if ekf.estVehicle
-                ekf.x_est = ekf.robot.x;
-            else
-                ekf.x_est = [];
-            end
             % clear the history
             ekf.history = [];
+            
+            if isempty(ekf.V_est)
+                % perfect vehicle case
+                ekf.estVehicle = false;
+                ekf.x_est = [];
+                ekf.P_est = [];
+            else
+                % noisy odometry case
+                ekf.x_est = ekf.robot.x(:);   % column vector
+                ekf.P_est = ekf.P0;
+                ekf.estVehicle = true;
+                
+            end
+            if ~isempty(ekf.map)
+                ekf.estMap = true;
+                ekf.features = NaN*zeros(2, ekf.sensor.map.nfeatures);
+            else
+                ekf.estMap = false;
+            end
+
+            
         end
 
-        function run(ekf, n)
+        function run(ekf, n, varargin)
         %EKF.run Run the filter
         %
         % E.run(N) runs the filter for N time steps and shows an animation
@@ -313,10 +321,24 @@ classdef EKF < handle
         % Notes::
         % - All previously estimated states and estimation history are initially
         %   cleared.
-            ekf.robot.init();
+        
+            opt.plot = true;
+            opt = tb_optparse(opt, varargin);
+            
+            ekf.init();
+            
+            if ~isempty(ekf.sensor)
+                ekf.sensor.map.plot();
+            end
+            a = axis;
+            a(5:6) = [-pi pi];
+            axis(a)
+            zlabel('heading (rad)');
+
+            ekf.robot.plot();
 
             for k=1:n
-                ekf.step();
+                ekf.step(opt);
             end
         end
 
@@ -332,11 +354,14 @@ classdef EKF < handle
         % P = E.plot_xy() returns the estimated vehicle pose trajectory
         % as a matrix (Nx3) where each row is x, y, theta.
         %
-        % See also EKF.plot_ellipse, EKF.plot_P.
+        % See also EKF.plot_error, EKF.plot_ellipse, EKF.plot_P.
+
+            
             if ekf.estVehicle
                 xyt = zeros(length(ekf.history), 3);
                 for i=1:length(ekf.history)
-                    xyt(i,:) = ekf.history(i).x_est(1:3)';
+                    h = ekf.history(i);
+                    xyt(i,:) = h.x_est(1:3)';
                 end
                 if nargout == 0
                     plot(xyt(:,1), xyt(:,2), varargin{:});
@@ -346,6 +371,87 @@ classdef EKF < handle
             end
             if nargout > 0
                 out = xyt;
+            end
+        end
+        
+        function out = plot_error(ekf, varargin)
+        %EKF.plot_error Plot vehicle position
+        %
+        % E.plot_error(OPTIONS) plot the error between actual and estimated vehicle 
+        % path (x, y, theta).  Heading error is wrapped into the range [-pi,pi)
+        %
+        % OUT = E.plot_error() is the estimation error versus time as a matrix (Nx3) 
+        % where each row is x, y, theta.
+        %
+        % Options::
+        % 'bound',S         Display the S sigma confidence bounds (default 3).
+        %                   If S =0 do not display bounds.
+        % 'boundcolor',C    Display the bounds using color C
+        % LS                Use MATLAB linestyle LS for the plots
+        %
+        % Notes::
+        % - The bounds show the instantaneous standard deviation associated
+        %   with the state.  Observations tend to decrease the uncertainty
+        %   while periods of dead-reckoning increase it.
+        % - Ideally the error should lie "mostly" within the +/-3sigma
+        %   bounds.
+        %
+        % See also EKF.plot_xy, EKF.plot_ellipse, EKF.plot_P.            
+            opt.bounds = 3;
+            opt.boundcolor = 'r';
+            
+            [opt,args] = tb_optparse(opt, varargin);
+            
+            if ekf.estVehicle
+                err = zeros(length(ekf.history), 3);
+                for i=1:length(ekf.history)
+                    h = ekf.history(i);
+                    % error is true - estimated
+                    err(i,:) = ekf.robot.x_hist(i,:) - h.x_est(1:3)';
+                    err(i,3) = angdiff(err(i,3));
+                    P = diag(h.P);
+                    pxy(i,:) = opt.bounds*sqrt(P(1:3));
+                end
+                if nargout == 0
+                    clf
+                    t = 1:numrows(pxy);
+                    t = [t t(end:-1:1)]';
+
+                    subplot(311)
+                    if opt.bounds
+                        edge = [pxy(:,1); -pxy(end:-1:1,1)];
+                        h = patch(t, edge ,opt.boundcolor);
+                        set(h, 'EdgeColor', 'none', 'FaceAlpha', 0.3);
+                        hold on
+                        plot(err(:,1), args{:});
+                        hold off
+                    end
+                    grid
+                    ylabel('x error')
+                    
+                    subplot(312)
+                    edge = [pxy(:,2); -pxy(end:-1:1,2)];
+                    h = patch(t, edge, opt.boundcolor);
+                    set(h, 'EdgeColor', 'none', 'FaceAlpha', 0.3);
+                    hold on
+                    plot(err(:,2), args{:});
+                    hold off
+                    grid
+                    ylabel('y error')
+                       
+                    subplot(313)
+                    edge = [pxy(:,3); -pxy(end:-1:1,3)];
+                    h = patch(t, edge, opt.boundcolor);
+                    set(h, 'EdgeColor', 'none', 'FaceAlpha', 0.3);
+                    hold on
+                    plot(err(:,3), args{:});
+                    hold off
+                    grid
+                    xlabel('time (samples)')
+                    ylabel('\theta error')
+                else
+                    out = pxy;
+                end
             end
         end
         
@@ -361,15 +467,21 @@ classdef EKF < handle
         % E.plot_map(I, LS) as above but pass line style arguments
         % LS to plot_ellipse.
         %
+        % P = E.plot_map() returns the estimated landmark locations (2xN)
+        % and column I is the I'th map feature.  If the landmark was not
+        % estimated the corresponding column contains NaNs.
+        %
         % See also plot_ellipse.
 
         % TODO:  some option to plot map evolution, layered ellipses
             if nargin < 2 || isempty(interval)
                 interval = round(length(ekf.history)/20);
             end
+            xy = [];
             for i=1:numcols(ekf.features)
                 n = ekf.features(1,i);
                 if isnan(n)
+                    xy = [xy [NaN; NaN]];
                     continue;
                 end
                 % n is an index into the *feature* part of the state
@@ -384,6 +496,11 @@ classdef EKF < handle
                 %plot_ellipse(xf, P, interval, 0, [], varargin{:});
                 plot_ellipse(P, xf, varargin{:});
                 plot(xf(1), xf(2), '+')
+                xy = [xy xf];
+            end
+            
+            if nargout > 0
+                out = xy;
             end
         end
 
@@ -483,6 +600,8 @@ classdef EKF < handle
             if ~isempty(ekf.sensor)
                 s = char(s, char(ekf.sensor));
             end
+            s = char(s, ['W_est:  ' mat2str(ekf.W_est, 3)] );
+            s = char(s, ['V_est:  ' mat2str(ekf.V_est, 3)] );
         end
 
 
@@ -492,7 +611,7 @@ classdef EKF < handle
     %    P R I V A T E    M E T H O D S
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods (Access=protected)
-        function x_est = step(ekf)
+        function x_est = step(ekf, opt)
 
             %fprintf('-------step\n');
             % move the robot along its path and get odometry
@@ -682,7 +801,12 @@ classdef EKF < handle
             % update the state and covariance for next time
             ekf.x_est = x_est;
             ekf.P_est = P_est;
-
+            
+            if opt.plot
+                ekf.robot.plot();
+                drawnow
+            end
+            
             % record time history
             if ekf.keepHistory
                 hist = [];
