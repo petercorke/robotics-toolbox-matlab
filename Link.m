@@ -372,8 +372,10 @@ classdef Link < handle
         %   Coulomb friction value in the non-symmetric case.
 
             tau = l.B * abs(l.G) * qd;
-
-            if qd > 0
+            
+			if isa(qd, 'sym')
+                tau = tau + sym('Tc');
+            elseif qd > 0
                 tau = tau + l.Tc(1);
             elseif qd < 0
                 tau = tau + l.Tc(2);
@@ -461,6 +463,8 @@ classdef Link < handle
             end
             if length(v) == 1
                 l.Tc = [v -v];
+            elseif isa(v, 'sym')
+                s = char(v);
             elseif length(v) == 2
                 if v(1) < v(2)
                     error('RTB:Link:badarg', 'Coulomb friction is [Tc+ Tc-]');

@@ -35,19 +35,24 @@
 %
 % http://www.petercorke.com
 
-function t = fkine(robot, q)
+function [t allt] = fkine(robot, q)
 	%
 	% evaluate fkine for each point on a trajectory of 
 	% theta_i or q_i data
 	%
 
 	n = robot.n;
-
+    allt = zeros(4,4,n);
+    if isa(q,'sym')
+        allt = sym(allt);
+    end
+    
 	L = robot.links;
 	if numel(q) == n
 		t = robot.base;
 		for i=1:n
 			t = t * L(i).A(q(i));
+            allt(:,:,i) = t; % intermediate transformations
 		end
 		t = t * robot.tool;
 	else
