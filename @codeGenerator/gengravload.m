@@ -1,5 +1,5 @@
-function [t,allT] = genfkine(CGen)
-%% GENFKINE Generates code from the symbolic robot specific forward kinematics expression.
+function [] = gengravload(CGen)
+%% GENJACOBIAN Generates code from the symbolic robot specific gravitational load expression.
 %
 %  Authors::
 %        Jörn Malzahn
@@ -28,43 +28,30 @@ function [t,allT] = genfkine(CGen)
 
 
 %% Derivation of symbolic expressions
-CGen.logmsg([datestr(now),'\tDeriving forward kinematics ']);
+CGen.logmsg([datestr(now),'\tDeriving gravitational load vector ']);
 
 q = CGen.rob.gencoords;
-[t, allT] = CGen.rob.fkine(q);
+gravload = CGen.rob.gravload(q);
 
 CGen.logmsg('\t%s\n',' done!');
 
 %% Save symbolic expressions
 if CGen.saveresult
-    CGen.logmsg([datestr(now),'\tSaving symbolic forward kinematics up to end-effector frame ']);
+    CGen.logmsg([datestr(now),'\tSaving symbolic expression for gravitational load ']);
     
-    CGen.savesym(t,'fkine','fkine.mat')
-    
-    CGen.logmsg('\t%s\n',' done!');
-    
-    CGen.logmsg([datestr(now),'\tSaving symbolic forward kinematics for joint: ']);
-    
-    for iJoint = 1:CGen.rob.n
-        CGen.logmsg(' %s ',num2str(iJoint));
-        tName = ['T0_',num2str(iJoint)];
-        eval([tName,' = allT(:,:,',num2str(iJoint),');']);
-        CGen.savesym(eval(tName),tName,[tName,'.mat']);
-    end
+    CGen.savesym(gravload,'gravload','gravload.mat');
     
     CGen.logmsg('\t%s\n',' done!');
 end
 
-%% M-Functions
+% M-Functions
 if CGen.genmfun
-    CGen.genmfunfkine;
+    CGen.genmfungravload;
 end
 
-%% Embedded Matlab Function Simulink blocks
+% Embedded Matlab Function Simulink blocks
 if CGen.genslblock
-    
-    genslblockfkine(CGen);
-    
+    CGen.genslblockgravload;
 end
 
 end

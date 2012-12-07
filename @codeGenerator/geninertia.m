@@ -1,5 +1,5 @@
-function [t,allT] = genfkine(CGen)
-%% GENFKINE Generates code from the symbolic robot specific forward kinematics expression.
+function [] = geninertia(CGen)
+%% GENJACOBIAN Generates code from the symbolic robot specific inertia matrix.
 %
 %  Authors::
 %        Jörn Malzahn
@@ -28,43 +28,41 @@ function [t,allT] = genfkine(CGen)
 
 
 %% Derivation of symbolic expressions
-CGen.logmsg([datestr(now),'\tDeriving forward kinematics ']);
+CGen.logmsg([datestr(now),'\tDeriving robot inertia matrix ']);
 
+nJoints = CGen.rob.n;
 q = CGen.rob.gencoords;
-[t, allT] = CGen.rob.fkine(q);
+inertia = CGen.rob.inertia(q);
+
 
 CGen.logmsg('\t%s\n',' done!');
 
 %% Save symbolic expressions
 if CGen.saveresult
-    CGen.logmsg([datestr(now),'\tSaving symbolic forward kinematics up to end-effector frame ']);
+%     CGen.logmsg([datestr(now),'\tSaving symbolic expression for robot inertia matrix ']);
+%     
+%     CGen.savesym(inertia,'inertia','inertia.mat');
+%     
+%     CGen.logmsg('\t%s\n',' done!');
     
-    CGen.savesym(t,'fkine','fkine.mat')
-    
-    CGen.logmsg('\t%s\n',' done!');
-    
-    CGen.logmsg([datestr(now),'\tSaving symbolic forward kinematics for joint: ']);
-    
-    for iJoint = 1:CGen.rob.n
-        CGen.logmsg(' %s ',num2str(iJoint));
-        tName = ['T0_',num2str(iJoint)];
-        eval([tName,' = allT(:,:,',num2str(iJoint),');']);
-        CGen.savesym(eval(tName),tName,[tName,'.mat']);
+    CGen.logmsg([datestr(now),'\tSaving rows of the inertia matrix: ']);
+    for kJoints = 1:nJoints
+        CGen.logmsg(' %i ',kJoints);           
+        inertiaRow = inertia(kJoints,:);
+        symName = ['inertia_row_',num2str(kJoints)];
+        CGen.savesym(inertiaRow,symName,[symName,'.mat']);
     end
-    
-    CGen.logmsg('\t%s\n',' done!');
+    CGen.logmsg('\t%s\n',' done!');   
 end
 
-%% M-Functions
+% M-Functions
 if CGen.genmfun
-    CGen.genmfunfkine;
+    CGen.genmfuninertia;
 end
 
-%% Embedded Matlab Function Simulink blocks
+% Embedded Matlab Function Simulink blocks
 if CGen.genslblock
-    
-    genslblockfkine(CGen);
-    
+    CGen.genslblockinertia;
 end
 
 end

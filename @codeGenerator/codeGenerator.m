@@ -30,7 +30,7 @@
 %
 %  getrobfname   get robot name and remove any blanks
 %  savesym       save symbolic expression to disk
-% 
+%
 %  genfkine      generate forward kinematics code
 %  genjacobian   generate jacobian code
 %  genfdyn       generate forward dynamics code
@@ -60,6 +60,25 @@
 %        http://www.rst.e-technik.tu-dortmund.de
 %
 % See also SerialLink, Link.
+
+% Copyright (C) 1993-2012, by Peter I. Corke
+%
+% This file is part of The Robotics Toolbox for Matlab (RTB).
+% 
+% RTB is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Lesser General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% RTB is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Lesser General Public License for more details.
+% 
+% You should have received a copy of the GNU Leser General Public License
+% along with RTB.  If not, see <http://www.gnu.org/licenses/>.
+%
+% http://www.petercorke.com
 
 classdef codeGenerator
     properties (SetAccess = private)
@@ -140,7 +159,15 @@ classdef codeGenerator
             if any([CGen.genmfun, CGen.genslblock])
                 CGen.saveresult = true;
             end
-    
+            
+            if ~isempty(CGen.logfile) 
+                logfid = fopen(CGen.logfile,'w+'); % open or create file, discard existing contents
+                fclose(logfid);  
+            end
+            CGen.logmsg([datestr(now),' +++++++++++++++++++++++++++++++++++\n']);
+            CGen.logmsg([datestr(now),'\tLog for ',CGen.getrobfname,'\n']);
+            CGen.logmsg([datestr(now),' +++++++++++++++++++++++++++++++++++\n']);
+            
         end
         
         function robName = getrobfname(CGen)
@@ -163,7 +190,24 @@ classdef codeGenerator
             CGen.genfdyn;
             CGen.geninvdyn;
         end
-        
+        function CGen = set.genmfun(CGen,value)
+            CGen.genmfun = value;
+            if value == true
+                CGen.saveresult = value;
+            end
+            
+            if ~exist(fullfile(CGen.robjpath,CGen.getrobfname),'file')
+                CGen.logmsg([datestr(now),'\tCreating ',CGen.getrobfname,' m-constructor ']);
+                CGen.createmconstructor;
+                CGen.logmsg('\t%s\n',' done!');
+            end
+        end
+        function CGen = set.genslblock(CGen,value)
+            CGen.genslblock = value;
+            if value == true
+                CGen.saveresult = true;
+            end
+        end
     end
     
 end

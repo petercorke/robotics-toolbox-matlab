@@ -1,5 +1,5 @@
 function genslblockfkine(CGen)
-%% GENSLBLOCKFKINE Generates Embedded Matlab Function blocks from the symbolic robot specific forward kinematics expressions.
+%% GENSLBLOCKFKINE Generates Embedded Matlab Function blocks from the symbolic robot jacobian expressions.
 %
 %  Authors::
 %        Jörn Malzahn
@@ -38,15 +38,16 @@ else
 end
 set_param(CGen.slib,'lock','off');
 
-%% Forward kinematics up to tool center point
-CGen.logmsg([datestr(now),'\tGenerating forward kinematics Embedded Matlab Function Block up to the end-effector frame: ']);
-symname = 'fkine';
+%% Jacobian0
+CGen.logmsg([datestr(now),'\tGenerating jacobian Embedded Matlab Function Block with respect to the robot base frame']);
+%     [datestr(now),'\tGenerating jacobian Embedded Matlab Function Block with respect to the end-effector frame']);
+symname = 'jacob0';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
 if exist(fname,'file')
     tmpStruct = load(fname);
 else
-    error ('genslblockfkine:SymbolicsNotFound','Save symbolic expressions to disk first!')
+    error ('genSLBlockFkine:SymbolicsNotFound','Save symbolic expressions to disk first!')
 end
 
 blockaddress = [CGen.slib,'/',symname];          % treat intermediate transformations separately
@@ -59,30 +60,24 @@ symexpr2slblock(blockaddress,tmpStruct.(symname));
 
 CGen.logmsg('\t%s\n',' done!');
 
-%% Individual joint forward kinematics
-CGen.logmsg([datestr(now),'\tGenerating forward kinematics Embedded Matlab Function Block up to joint: ']);
-for iJoints=1:CGen.rob.n
-    
-    CGen.logmsg(' %i ',iJoints);
-    symname = ['T0_',num2str(iJoints)];
-    fname = fullfile(CGen.sympath,[symname,'.mat']);
-    
-    tmpStruct = struct;
+%% Jacobn
+CGen.logmsg([datestr(now),'\tGenerating jacobian Embedded Matlab Function Block with respect to the end-effector frame']);
+symname = 'jacobn';
+fname = fullfile(CGen.sympath,[symname,'.mat']);
+
+if exist(fname,'file')
     tmpStruct = load(fname);
-    
-    funFileName = fullfile(CGen.robjpath,[symname,'.m']);
-    q = CGen.rob.gencoords;
-    
-    
-    blockaddress = [CGen.slib,'/',symname];          % treat intermediate transformations separately
-    if doesblockexist(CGen.slib,symname)
-        delete_block(blockaddress);
-        save_system;
-    end
-    
-    symexpr2slblock(blockaddress,tmpStruct.(symname));
-    
+else
+    error ('genSLBlockFkine:SymbolicsNotFound','Save symbolic expressions to disk first!')
 end
+
+blockaddress = [CGen.slib,'/',symname];          % treat intermediate transformations separately
+if doesblockexist(CGen.slib,symname)
+    delete_block(blockaddress);
+    save_system;
+end
+
+symexpr2slblock(blockaddress,tmpStruct.(symname));
 CGen.logmsg('\t%s\n',' done!');
 
 %% Cleanup
