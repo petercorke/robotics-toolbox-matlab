@@ -67,23 +67,31 @@
 %
 % http://www.petercorke.com
 
+%TODO
+% return the ellipsoid?
+
 function [w,mx] = maniplty(robot, q, varargin)
 
     opt.method = {'yoshikawa', 'asada'};
     opt.axes = {'T', 'all', 'R'};
+    opt.dof = [];
 
     opt = tb_optparse(opt, varargin);
     
-    switch opt.axes
-        case 'T'
-            opt.dof = [1 1 1 0 0 0];
-        case 'R'
-            opt.dof = [0 0 0 1 1 1];
-        case 'all'
-            opt.dof = [1 1 1 1 1 1];
+    if isempty(opt.dof)
+        switch opt.axes
+            case 'T'
+                dof = [1 1 1 0 0 0];
+            case 'R'
+                dof = [0 0 0 1 1 1];
+            case 'all'
+                dof = [1 1 1 1 1 1];
+        end
+    else
+        dof = opt.dof;
     end
     
-    opt.dof = logical(opt.dof);
+    opt.dof = logical(dof);
 
     if strcmp(opt.method, 'yoshikawa')
         w = zeros(numrows(q),1);
