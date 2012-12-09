@@ -87,7 +87,6 @@ hold off
 % walk!
 k = 1;
 while 1
-    q = qcycle(p,:);
     legs(1).plot( gait(qcycle, k, 0,   0), plotopt);
     legs(2).plot( gait(qcycle, k, 100, 0), plotopt);
     legs(3).plot( gait(qcycle, k, 200, 1), plotopt);
