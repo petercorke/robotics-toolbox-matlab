@@ -48,6 +48,9 @@
 %   and angles without any kind of weighting.
 % - The inverse kinematic solution is generally not unique, and 
 %   depends on the initial guess Q0 (defaults to 0).
+% - The default value of Q0 is zero which is a poor choice for most
+%   manipulators (eg. puma560, twolink) since it corresponds to a kinematic
+%   singularity.
 % - Such a solution is completely general, though much less efficient 
 %   than specific inverse kinematic solutions derived symbolically, like
 %   ikine6s or ikine3.
@@ -130,6 +133,12 @@ function [qt,histout] = ikine(robot, tr, varargin)
         error('RTB:ikine:badarg', 'T is not a homog xform');
     end
 
+    J0 = jacob0(robot, q);
+    J0 = J0(m, m);
+    if cond(J0) > 100
+        warning('RTB:ikine:singular', 'Initial joint angles results in near-singular configuration, this may slow convergence');
+    end
+
     history = [];
     failed = false;
     for i=1:npoints
@@ -141,6 +150,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
         save.e = [Inf Inf Inf Inf Inf Inf];
         save.q = [];
         count = 0;
+
         while true
             % update the count and test against iteration limit
             count = count + 1;
