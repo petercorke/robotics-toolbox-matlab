@@ -211,6 +211,7 @@ classdef RangeBearingSensor < Sensor
             % map features.  Z has one row per feature.
             %
             % Notes::
+            % - Noise with covariance W is added to each row of Z.
             % - Supports vectorized operation where XV (Nx3) and Z (Nx2).
             %
             % See also RangeBearingSensor.Hx, RangeBearingSensor.Hw, RangeBearingSensor.Hxf.
