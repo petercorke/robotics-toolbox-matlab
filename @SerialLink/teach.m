@@ -83,7 +83,7 @@ function handle = teach(r, varargin)
 
     qlim = r.qlim;
     if any(isinf(qlim))
-        error('for prismatic axes must define joint coordinate limits');
+        error('for prismatic axes must define joint coordinate limits, set qlim properties for prismatic Links');
     end
 
     if isempty(opt.q0)
@@ -294,12 +294,13 @@ function handle = teach(r, varargin)
         
         % slider
         set(handles.slider(i), ...
-            'Callback', @(src,event)teach_callback(src, r.name, i, handles));
+             'Callback', @(src,event)teach_callback(src, r.name, i, handles));
 
         % if findjobj exists use it, since it lets us get continous callbacks while
         % a slider moves
-        if (exist('findjobj', 'file')>0) && ~ispc
+        if (exist('findjobj', 'file')>0)  && verLessThan('matlab', '8') && ~ispc
             disp('using findjobj');
+            pause(0.1);
             drawnow
             jh = findjobj(handles.slider(i), 'nomenu');
             %jh.AdjustmentValueChangedCallback = {@sliderCallbackFunc, r.name, i};
