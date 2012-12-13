@@ -1,5 +1,5 @@
-function [gravload] = gengravload(CGen)
-%% GENJACOBIAN Generates code from the symbolic robot specific gravitational load expression.
+function [ output_args ] = gencoriolis( CGen )
+%% GENCORIOLIS  Generates code from the symbolic robot specific Coriolis matrix (matrix of centrifugal and Coriolis forces/torques).
 %
 %  Authors::
 %        Jörn Malzahn
@@ -28,30 +28,35 @@ function [gravload] = gengravload(CGen)
 
 
 %% Derivation of symbolic expressions
-CGen.logmsg([datestr(now),'\tDeriving gravitational load vector ']);
+CGen.logmsg([datestr(now),'\tDeriving robot Coriolis matrix ']);
 
-q = CGen.rob.gencoords;
-gravload = CGen.rob.gravload(q);
+nJoints = CGen.rob.n;
+[q, qd] = CGen.rob.gencoords;
+coriolis = CGen.rob.coriolis(q,qd);
+
 
 CGen.logmsg('\t%s\n',' done!');
 
 %% Save symbolic expressions
 if CGen.saveresult
-    CGen.logmsg([datestr(now),'\tSaving symbolic expression for gravitational load ']);
-    
-    CGen.savesym(gravload,'gravload','gravload.mat');
-    
-    CGen.logmsg('\t%s\n',' done!');
+    CGen.logmsg([datestr(now),'\tSaving rows of the Coriolis matrix: ']);
+    for kJoints = 1:nJoints
+        CGen.logmsg(' %i ',kJoints);           
+        coriolisRow = coriolis(kJoints,:);
+        symName = ['coriolis_row_',num2str(kJoints)];
+        CGen.savesym(coriolisRow,symName,[symName,'.mat']);
+    end
+    CGen.logmsg('\t%s\n',' done!');   
 end
 
 % M-Functions
 if CGen.genmfun
-    CGen.genmfungravload;
+    CGen.genmfuncoriolis;
 end
 
 % Embedded Matlab Function Simulink blocks
 if CGen.genslblock
-    CGen.genslblockgravload;
+    CGen.genslblockcoriolis;
 end
 
 end

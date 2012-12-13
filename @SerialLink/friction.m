@@ -35,6 +35,11 @@ function  tau = friction(robot, qd)
 	L = robot.links;
 
     tau = zeros(1,robot.n);
+    if robot.issym
+        tau = sym(tau);
+    end
+    
+    
 	for j=1:robot.n
 		tau(j) = L(j).friction(qd(j));
 	end

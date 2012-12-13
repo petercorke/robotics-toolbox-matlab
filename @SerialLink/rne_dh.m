@@ -86,8 +86,8 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
     end
 
     for p=1:np
-        q = Q(p,:)';
-        qd = Qd(p,:)';
+        q = Q(p,:).';
+        qd = Qd(p,:).';
         qdd = Qdd(p,:)';
     
         Fm = [];
@@ -119,7 +119,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
             Rm{j} = t2r(Tj);
             if debug>1
                 Rm{j}
-                Pstarm(:,j)'
+                Pstarm(:,j).'
             end
         end
 
@@ -129,7 +129,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
         for j=1:n
             link = robot.links(j);
 
-            Rt = Rm{j}';    % transpose!!
+            Rt = Rm{j}.';    % transpose!!
             pstar = pstarm(:,j);
             r = link.r;
 
@@ -156,8 +156,8 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
             end
 
             %whos
-            vhat = cross(wd,r') + ...
-                cross(w,cross(w,r')) + vd;
+            vhat = cross(wd,r.') + ...
+                cross(w,cross(w,r.')) + vd;
             F = link.m*vhat;
             N = link.I*wd + cross(w,link.I*w);
             Fm = [Fm F];
@@ -195,7 +195,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
             end
             r = link.r;
             nn = R*(nn + cross(R'*pstar,f)) + ...
-                cross(pstar+r',Fm(:,j)) + ...
+                cross(pstar+r.',Fm(:,j)) + ...
                 Nm(:,j);
             f = R*f + Fm(:,j);
             if debug
@@ -207,12 +207,12 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
             R = Rm{j};
             if link.RP == 'R'
                 % revolute
-                tau(p,j) = nn'*(R'*z0) + ...
+                tau(p,j) = nn.'*(R'*z0) + ...
                     link.G^2 * link.Jm*qdd(j) - ...
                     link.friction(qd(j));
             else
                 % prismatic
-                tau(p,j) = f'*(R'*z0) + ...
+                tau(p,j) = f.'*(R'*z0) + ...
                     link.G^2 * link.Jm*qdd(j) - ...
                     link.friction(qd(j));
             end

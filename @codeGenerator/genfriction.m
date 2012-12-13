@@ -1,5 +1,5 @@
-function [gravload] = gengravload(CGen)
-%% GENJACOBIAN Generates code from the symbolic robot specific gravitational load expression.
+function [ F ] = genfriction( CGen )
+%% GENFRICTION Generates code from the symbolic robot specific friction model.
 %
 %  Authors::
 %        Jörn Malzahn
@@ -28,30 +28,30 @@ function [gravload] = gengravload(CGen)
 
 
 %% Derivation of symbolic expressions
-CGen.logmsg([datestr(now),'\tDeriving gravitational load vector ']);
+CGen.logmsg([datestr(now),'\tDeriving joint friction ']);
 
-q = CGen.rob.gencoords;
-gravload = CGen.rob.gravload(q);
+[~,qd] = CGen.rob.gencoords;
+F = CGen.rob.friction(qd);
 
 CGen.logmsg('\t%s\n',' done!');
 
 %% Save symbolic expressions
 if CGen.saveresult
-    CGen.logmsg([datestr(now),'\tSaving symbolic expression for gravitational load ']);
+    CGen.logmsg([datestr(now),'\tSaving symbolic friction expression']);
     
-    CGen.savesym(gravload,'gravload','gravload.mat');
+    CGen.savesym(F,'friction','friction.mat')
     
     CGen.logmsg('\t%s\n',' done!');
 end
 
-% M-Functions
+%% M-Functions
 if CGen.genmfun
-    CGen.genmfungravload;
+    CGen.genmfunfriction;
 end
 
-% Embedded Matlab Function Simulink blocks
+%% Embedded Matlab Function Simulink blocks
 if CGen.genslblock
-    CGen.genslblockgravload;
+    CGen.genslblockfriction;
 end
 
 end

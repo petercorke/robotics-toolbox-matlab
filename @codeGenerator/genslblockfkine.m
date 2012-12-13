@@ -38,6 +38,8 @@ else
 end
 set_param(CGen.slib,'lock','off');
 
+q = CGen.rob.gencoords;
+
 %% Forward kinematics up to tool center point
 CGen.logmsg([datestr(now),'\tGenerating forward kinematics Embedded Matlab Function Block up to the end-effector frame: ']);
 symname = 'fkine';
@@ -55,7 +57,7 @@ if doesblockexist(CGen.slib,symname)
     save_system;
 end
 
-symexpr2slblock(blockaddress,tmpStruct.(symname));
+symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q});
 
 CGen.logmsg('\t%s\n',' done!');
 
@@ -80,7 +82,7 @@ for iJoints=1:CGen.rob.n
         save_system;
     end
     
-    symexpr2slblock(blockaddress,tmpStruct.(symname));
+    symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q});
     
 end
 CGen.logmsg('\t%s\n',' done!');

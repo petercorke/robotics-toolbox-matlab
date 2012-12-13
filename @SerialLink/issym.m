@@ -14,9 +14,7 @@ function res = issym(l)
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de    
 %
-	if isa(l,'Link')
-		res = isa(l.alpha,'sym');
-	elseif isa(l,'SerialLink')
-		res = isa(l.links(1).alpha,'sym');
-	end
+
+	res = issym(l.links(1));
+	
 end

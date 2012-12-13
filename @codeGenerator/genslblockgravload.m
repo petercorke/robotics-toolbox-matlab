@@ -38,6 +38,8 @@ else
 end
 set_param(CGen.slib,'lock','off');
 
+q = CGen.rob.gencoords;
+
 %% Generate Block
 CGen.logmsg([datestr(now),'\tGenerating Embedded Matlab Function Block for the vector of gravitational load forces/torques ']);
 symname = 'gravload';
@@ -55,7 +57,7 @@ if doesblockexist(CGen.slib,symname)
     save_system;
 end
 
-symexpr2slblock(blockaddress,tmpStruct.(symname));
+symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q});
 
 CGen.logmsg('\t%s\n',' done!');
 

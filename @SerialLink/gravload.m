@@ -42,5 +42,8 @@ function tg = gravload(robot, q, grav)
 		tg = rne(robot, q, zeros(size(q)), zeros(size(q)));
 	elseif nargin == 3
 		tg = rne(robot, q, zeros(size(q)), zeros(size(q)), grav);
-	end
-	
+    end
+    
+% 	if robot.issym
+%        tg = subs(tg,{sym('Tc'),sym('Tcp'),sym('Tcm')},0); %set friction to zero
+%     end

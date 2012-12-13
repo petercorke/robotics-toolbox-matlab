@@ -71,9 +71,9 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 	tau = zeros(np,n);
 
 	for p=1:np
-		q = Q(p,:)';
-		qd = Qd(p,:)';
-		qdd = Qdd(p,:)';
+		q = Q(p,:).';
+		qd = Qd(p,:).';
+		qdd = Qdd(p,:).';
 	
 		Fm = [];
 		Nm = [];
@@ -104,7 +104,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 			Rm{j} = t2r(Tj);
 			if debug>1
 				Rm{j}
-				Pm(:,j)'
+				Pm(:,j).'
 			end
 		end
 
@@ -114,7 +114,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 		for j=1:n
 			link = robot.links(j);
 
-			R = Rm{j}';	% transpose!!
+			R = Rm{j}.';	% transpose!!
 			P = Pm(:,j);
 			Pc = link.r;
 
@@ -143,8 +143,8 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 			wd = wd_;
 			vd = vd_;
 
-			vdC = cross(wd,Pc)' + ...
-				cross(w,cross(w,Pc))' + vd;
+			vdC = cross(wd,Pc).' + ...
+				cross(w,cross(w,Pc)).' + vd;
 			F = link.m*vdC;
 			N = link.I*wd + cross(w,link.I*w);
 			Fm = [Fm F];
@@ -184,7 +184,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 			Pc = link.r;
 			
 			f_ = R*f + Fm(:,j);
-			nn_ = Nm(:,j) + R*nn + cross(Pc,Fm(:,j))' + ...
+			nn_ = Nm(:,j) + R*nn + cross(Pc,Fm(:,j)).' + ...
 				cross(P,R*f);
 			
 			f = f_;
@@ -197,12 +197,12 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 			end
 			if link.RP == 'R'
 				% revolute
-				tau(p,j) = nn'*z0 + ...
+				tau(p,j) = nn.'*z0 + ...
 					link.G^2 * link.Jm*qdd(j) - ...
 					friction(link, qd(j));
 			else
 				% prismatic
-				tau(p,j) = f'*z0 + ...
+				tau(p,j) = f.'*z0 + ...
 					link.G^2 * link.Jm*qdd(j) - ...
 					friction(link, qd(j));
 			end

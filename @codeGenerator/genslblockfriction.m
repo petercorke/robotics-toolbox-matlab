@@ -1,5 +1,5 @@
-function genslblockfkine(CGen)
-%% GENSLBLOCKFKINE Generates Embedded Matlab Function blocks from the symbolic robot jacobian expressions.
+function [ F ] = genslblockfriction( CGen )
+%% GENSLBLOCKFRICTION Generates Embedded Matlab Function block from the symbolic robot specific joint friction model.
 %
 %  Authors::
 %        Jörn Malzahn
@@ -38,17 +38,17 @@ else
 end
 set_param(CGen.slib,'lock','off');
 
-q = CGen.rob.gencoords;
-%% Jacobian0
-CGen.logmsg([datestr(now),'\tGenerating jacobian Embedded Matlab Function Block with respect to the robot base frame']);
-%     [datestr(now),'\tGenerating jacobian Embedded Matlab Function Block with respect to the end-effector frame']);
-symname = 'jacob0';
+[~,qd]=CGen.rob.gencoords;
+
+%% Generate block
+CGen.logmsg([datestr(now),'\tGenerating joint friction Embedded Matlab Function Block:']);
+symname = 'friction';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
 if exist(fname,'file')
     tmpStruct = load(fname);
 else
-    error ('genSLBlockFkine:SymbolicsNotFound','Save symbolic expressions to disk first!')
+    error ('genslblockgfriction:SymbolicsNotFound','Save symbolic expressions to disk first!')
 end
 
 blockaddress = [CGen.slib,'/',symname];          % treat intermediate transformations separately
@@ -57,28 +57,8 @@ if doesblockexist(CGen.slib,symname)
     save_system;
 end
 
-symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q});
+symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{qd});
 
-CGen.logmsg('\t%s\n',' done!');
-
-%% Jacobn
-CGen.logmsg([datestr(now),'\tGenerating jacobian Embedded Matlab Function Block with respect to the end-effector frame']);
-symname = 'jacobn';
-fname = fullfile(CGen.sympath,[symname,'.mat']);
-
-if exist(fname,'file')
-    tmpStruct = load(fname);
-else
-    error ('genSLBlockFkine:SymbolicsNotFound','Save symbolic expressions to disk first!')
-end
-
-blockaddress = [CGen.slib,'/',symname];          % treat intermediate transformations separately
-if doesblockexist(CGen.slib,symname)
-    delete_block(blockaddress);
-    save_system;
-end
-
-symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q});
 CGen.logmsg('\t%s\n',' done!');
 
 %% Cleanup

@@ -98,7 +98,7 @@ function C = coriolis(robot, q, qd)
         QD = zeros(1,N);
         QD(j) = 1;
         tau = robot2.rne(q, QD, zeros(size(q)), [0 0 0]');
-        Csq(:,j) = Csq(:,j) + tau';
+        Csq(:,j) = Csq(:,j) + tau.';
     end
 
     % find the torques that depend on a pair of finite joint speeds,
@@ -112,7 +112,7 @@ function C = coriolis(robot, q, qd)
             QD(j) = 1;
             QD(k) = 1;
             tau = robot2.rne(q, QD, zeros(size(q)), [0 0 0]');
-            C(:,k) = C(:,k) + (tau' - Csq(:,k) - Csq(:,j)) * qd(j);
+            C(:,k) = C(:,k) + (tau.' - Csq(:,k) - Csq(:,j)) * qd(j);
         end
     end
     C = C + Csq * diag(qd);

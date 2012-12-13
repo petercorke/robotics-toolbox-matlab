@@ -1,5 +1,5 @@
-function genslblockinertia(CGen)
-%% GENSLBLOCKINERTIA Generates the robot specific Embedded Matlab Function Block for the robot inertia matrix.
+function [ ] = genslblockcoriolis( CGen )
+%GENSLBLOCKCORIOLIS Generates the robot specific Embedded Matlab Function Block for the robot Coriolis matrix.
 %
 %  Authors::
 %        Jörn Malzahn
@@ -38,49 +38,50 @@ else
 end
 set_param(CGen.slib,'lock','off');
 
-q = CGen.rob.gencoords;
+[q,qd] = CGen.rob.gencoords;
 
-%% Generate Inertia Block
-CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the robot inertia matrix: \n']);
+%% Generate Coriolis Block
+CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the robot Coriolis matrix: \n']);
 nJoints = CGen.rob.n;
 
 CGen.logmsg([datestr(now),'\t\t... enclosing subsystem ']);
-InertiaBlock = [CGen.slib,'/inertia'];
-if ~isempty(find_system(CGen.slib,'Name','inertia'))                    % Delete previously generated inertia matrix block
-    delete_block(InertiaBlock)
+CoriolisBlock = [CGen.slib,'/coriolis'];
+if ~isempty(find_system(CGen.slib,'Name','coriolis'))                    % Delete previously generated inertia matrix block
+    delete_block(CoriolisBlock)
 end
 % Subsystem in which individual rows are concatenated
-add_block('built-in/SubSystem',InertiaBlock);                               % Add new inertia matrix block
+add_block('built-in/SubSystem',CoriolisBlock);                               % Add new inertia matrix block
 add_block('Simulink/Math Operations/Matrix Concatenate'...
-    , [InertiaBlock,'/inertia']...
+    , [CoriolisBlock,'/coriolis']...
     , 'NumInputs',num2str(nJoints)...
     , 'ConcatenateDimension','1');
-add_block('Simulink/Sinks/Out1',[InertiaBlock,'/out']);
-add_block('Simulink/Sources/In1',[InertiaBlock,'/q']);
-add_line(InertiaBlock,'inertia/1','out/1');
+add_block('Simulink/Sinks/Out1',[CoriolisBlock,'/out']);
+add_block('Simulink/Sources/In1',[CoriolisBlock,'/q']);
+add_block('Simulink/Sources/In1',[CoriolisBlock,'/qd']);
+add_line(CoriolisBlock,'coriolis/1','out/1');
 CGen.logmsg('\t%s\n',' done!');
 
 for kJoints = 1:nJoints
     CGen.logmsg([datestr(now),'\t\t... Embedded Matlab Function Block for joint ',num2str(kJoints),': ']);
     
     % Generate Embedded Matlab Function block for each row
-    symname = ['inertia_row_',num2str(kJoints)];
+    symname = ['coriolis_row_',num2str(kJoints)];
     fname = fullfile(CGen.sympath,[symname,'.mat']);
     
     if exist(fname,'file')
         tmpStruct = load(fname);
     else
-        error ('genslblockinertia:SymbolicsNotFound','Save symbolic expressions to disk first!')
+        error ('genslblockcoriolis:SymbolicsNotFound','Save symbolic expressions to disk first!')
     end
     
-    blockaddress = [InertiaBlock,'/',symname];
+    blockaddress = [CoriolisBlock,'/',symname];
     if doesblockexist(CGen.slib,symname)
         delete_block(blockaddress);
         save_system;
     end
     
     CGen.logmsg('%s',' block creation');
-    symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q});
+    symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q,qd});
     
     
     % connect output
@@ -92,69 +93,34 @@ for kJoints = 1:nJoints
         % a row vector of zeros here, which we have to construct on our
         % own.
         add_block('Simulink/Math Operations/Matrix Concatenate'...              % Use a matrix concatenation block ...
-            , [InertiaBlock,'/DimCorrection',num2str(kJoints)]...               % ... named with the current row number ...
+            , [CoriolisBlock,'/DimCorrection',num2str(kJoints)]...               % ... named with the current row number ...
             , 'NumInputs',num2str(nJoints),'ConcatenateDimension','2');         % ... intended to concatenate zero values for each joint ...
         % ... columnwise. This will circumvent the bug.
         
         for iJoints = 1:nJoints                                                 % Connect signal lines from the created block (which outputs
-            add_line(InertiaBlock...                                            % a scalar zero in this case) with the bugfix block.
+            add_line(CoriolisBlock...                                            % a scalar zero in this case) with the bugfix block.
                 , [symname,'/1']...
                 , ['DimCorrection',num2str(kJoints),'/', num2str(iJoints)]);
         end
         
-        add_line(InertiaBlock,['DimCorrection',num2str(kJoints)...              % Connect the fixed row with other rows.
-            , '/1'],['inertia/', num2str(kJoints)]);
+        add_line(CoriolisBlock,['DimCorrection',num2str(kJoints)...              % Connect the fixed row with other rows.
+            , '/1'],['coriolis/', num2str(kJoints)]);
         
     else
-        add_line(InertiaBlock,[symname,'/1']...          % In case that no bug occurs, we can just connect the rows.
-            , ['inertia/', num2str(kJoints)]);
+        add_line(CoriolisBlock,[symname,'/1']...          % In case that no bug occurs, we can just connect the rows.
+            , ['coriolis/', num2str(kJoints)]);
     end
     
-    % Connect inputs
-    CGen.logmsg('%s',', input wiring');
-    add_line(InertiaBlock,'q/1',[symname,'/1']);
+    % Vector generalized joint values
+    add_line(CoriolisBlock,'q/1',[symname,'/1']);
+    % Vector generalized joint velocities
+    add_line(CoriolisBlock,'qd/1',[symname,'/2']);
+    
     CGen.logmsg('\t%s\n','row complete!');
 end
-addterms(InertiaBlock); % Add terminators where needed
-CGen.logmsg([datestr(now),'\tInertia matrix block complete.\n']);
+addterms(CoriolisBlock); % Add terminators where needed
+CGen.logmsg([datestr(now),'\tCoriolis matrix block complete.\n']);
 
-
-%% Built inverse Inertia matrix block
-CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the inverse robot inertia matrix: \n']);
-CGen.logmsg([datestr(now),'\t\t... enclosing subsystem ']);
-% block address
-invInertiaBlock = [CGen.slib,'/invinertia'];
-% remove any existing blocks
-if ~isempty(find_system(CGen.slib,'Name','invinertia'))
-    delete_block(invInertiaBlock)
-end
-add_block('built-in/SubSystem',invInertiaBlock);
-CGen.logmsg('\t%s\n',' done!');
-
-% matrix inversion
-CGen.logmsg([datestr(now),'\t\t... matrix inversion block ']);
-add_block('Simulink/Math Operations/Product',[invInertiaBlock,'/inverse']); % Use a product block...
-set_param([invInertiaBlock,'/inverse'],'Inputs','/');                       % ... with single input '/'...
-set_param([invInertiaBlock,'/inverse'],'Multiplication','Matrix(*)');       % ... and matrix multiplication
-CGen.logmsg('\t%s\n',' done!');
-
-% wire the input and output
-CGen.logmsg([datestr(now),'\t\t... input and output ']);
-add_block(InertiaBlock,[invInertiaBlock,'/inertiaMatrix']);
-add_block('Simulink/Sources/In1',[invInertiaBlock,'/q']);
-add_block('Simulink/Sinks/Out1',[invInertiaBlock,'/out']);
-
-
-% wire the blocks among each other
-CGen.logmsg('and internal wiring');
-add_line(invInertiaBlock,'q/1','inertiaMatrix/1');
-add_line(invInertiaBlock,'inertiaMatrix/1','inverse/1');
-add_line(invInertiaBlock,'inverse/1','out/1');
-CGen.logmsg('\t%s\n',' done!');
-
-% add terminators where necessary
-addterms(invInertiaBlock);
-CGen.logmsg([datestr(now),'\tInverse inertia matrix block complete.\n']);
 
 %% Cleanup
 % Arrange blocks
