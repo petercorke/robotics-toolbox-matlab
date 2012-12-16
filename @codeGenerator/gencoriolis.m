@@ -1,11 +1,36 @@
-function [ output_args ] = gencoriolis( CGen )
+function [ coriolis ] = gencoriolis( CGen )
 %% GENCORIOLIS  Generates code from the symbolic robot specific Coriolis matrix (matrix of centrifugal and Coriolis forces/torques).
+%
+%  coriolis = gencoriolis(cGen)
+%  coriolis = cGen.gencoriolis
+%
+%  Inputs::
+%       cGen:  a codeGenerator class object
+%
+%       If cGen has the active flag:
+%           - saveresult: the symbolic expressions are saved to
+%           disk in the directory specified by cGen.sympath
+%
+%           - genmfun: ready to use m-functions are generated and
+%           provided via a subclass of SerialLink stored in cGen.robjpath
+%
+%           - genslblock: a Simulink block is generated and stored in a
+%           robot specific block library cGen.slib in the directory
+%           cGen.basepath
+%
+%       The coriolis matrix is stored row by row to avoid memory issues.
+%       The generated code recombines these rows to output the full matrix.
+%
+%  Outputs::
+%       coriolis: nxn symbolic matrix of centrifugal and Coriolis
+%       forces/torques.
 %
 %  Authors::
 %        Jörn Malzahn
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
+%  See also codeGenerator, geninertia, genfkine
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -28,7 +53,7 @@ function [ output_args ] = gencoriolis( CGen )
 
 
 %% Derivation of symbolic expressions
-CGen.logmsg([datestr(now),'\tDeriving robot Coriolis matrix ']);
+CGen.logmsg([datestr(now),'\tDeriving robot Coriolis matrix']);
 
 nJoints = CGen.rob.n;
 [q, qd] = CGen.rob.gencoords;
@@ -39,7 +64,7 @@ CGen.logmsg('\t%s\n',' done!');
 
 %% Save symbolic expressions
 if CGen.saveresult
-    CGen.logmsg([datestr(now),'\tSaving rows of the Coriolis matrix: ']);
+    CGen.logmsg([datestr(now),'\tSaving rows of the Coriolis matrix']);
     for kJoints = 1:nJoints
         CGen.logmsg(' %i ',kJoints);           
         coriolisRow = coriolis(kJoints,:);

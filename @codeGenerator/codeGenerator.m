@@ -64,17 +64,17 @@
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -160,9 +160,9 @@ classdef codeGenerator
                 CGen.saveresult = true;
             end
             
-            if ~isempty(CGen.logfile) 
+            if ~isempty(CGen.logfile)
                 logfid = fopen(CGen.logfile,'w+'); % open or create file, discard existing contents
-                fclose(logfid);  
+                fclose(logfid);
             end
             CGen.logmsg([datestr(now),' +++++++++++++++++++++++++++++++++++\n']);
             CGen.logmsg([datestr(now),'\tLog for ',CGen.getrobfname,'\n']);
@@ -186,9 +186,13 @@ classdef codeGenerator
         end
         function [] = geneverything(CGen)
             [t,allT] = CGen.genfkine;
-            CGen.genjacobian;
-            CGen.genfdyn;
-            CGen.geninvdyn;
+            [J0,Jn] = CGen.genjacobian;
+            [G] = CGen.gengravload;
+            [I] = CGen.geninertia;
+            [C] = CGen.gencoriolis;
+            [F] = CGen.genfriction;
+            [Iqdd] = CGen.genfdyn;
+            [tau] = CGen.geninvdyn;
         end
         function CGen = set.genmfun(CGen,value)
             CGen.genmfun = value;
@@ -208,6 +212,28 @@ classdef codeGenerator
                 CGen.saveresult = true;
             end
         end
+        function [] = purge(CGen,varargin)
+            
+            dopurge = 0;
+            
+            if exist(CGen.basepath,'dir')
+                if nargin > 1
+                    dopurge = varargin{1}
+                else
+                    qstn = ['Do you really want to delete ',CGen.basepath, ' and all of it''s contents?'];
+                    tit = ['Purge: ',CGen.getrobfname];
+                    str1 = 'Yes';
+                    str2 = 'No';
+                    button = questdlg(qstn,tit,str1,str2,str1)
+                    dopurge = strcmp(button,str1);
+                end
+            end
+            
+            if dopurge
+                rmdir(CGen.basepath,'s')
+            end
+        end
+        
     end
     
 end

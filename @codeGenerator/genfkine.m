@@ -1,11 +1,36 @@
 function [t,allT] = genfkine(CGen)
 %% GENFKINE Generates code from the symbolic robot specific forward kinematics expression.
 %
+%  [T, allT] = genfkine(cGen)
+%  [T, allT] = cGen.genfkine
+%
+%  Inputs::
+%       cGen:  a codeGenerator class object
+%
+%       If cGen has the active flag:
+%           - saveresult: the symbolic expressions are saved to
+%           disk in the directory specified by cGen.sympath
+%
+%           - genmfun: ready to use m-functions are generated and
+%           provided via a subclass of SerialLink stored in cGen.robjpath
+%
+%           - genslblock: a Simulink block is generated and stored in a
+%           robot specific block library cGen.slib in the directory
+%           cGen.basepath
+%
+%  Outputs::
+%       T: the symbolic expression (4x4) for the pose of the robot end-effector 
+%       as a homogeneous transformation
+%
+%       allT: the symbolic expressions (4x4xN) for the poses of the individual robot joints 
+%       as a homogeneous transformation
+%
 %  Authors::
 %        Jörn Malzahn
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
+%  See also codeGenerator, geninvdyn, genjacobian
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -28,7 +53,7 @@ function [t,allT] = genfkine(CGen)
 
 
 %% Derivation of symbolic expressions
-CGen.logmsg([datestr(now),'\tDeriving forward kinematics ']);
+CGen.logmsg([datestr(now),'\tDeriving forward kinematics']);
 
 q = CGen.rob.gencoords;
 [t, allT] = CGen.rob.fkine(q);
@@ -37,13 +62,13 @@ CGen.logmsg('\t%s\n',' done!');
 
 %% Save symbolic expressions
 if CGen.saveresult
-    CGen.logmsg([datestr(now),'\tSaving symbolic forward kinematics up to end-effector frame ']);
+    CGen.logmsg([datestr(now),'\tSaving symbolic forward kinematics up to end-effector frame']);
     
     CGen.savesym(t,'fkine','fkine.mat')
     
     CGen.logmsg('\t%s\n',' done!');
     
-    CGen.logmsg([datestr(now),'\tSaving symbolic forward kinematics for joint: ']);
+    CGen.logmsg([datestr(now),'\tSaving symbolic forward kinematics for joint']);
     
     for iJoint = 1:CGen.rob.n
         CGen.logmsg(' %s ',num2str(iJoint));

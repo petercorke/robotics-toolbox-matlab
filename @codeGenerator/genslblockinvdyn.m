@@ -1,11 +1,29 @@
 function [ output_args ] = genslblockinvdyn( CGen )
-%% GENSLBLOCKINVDYN Generates the robot specific Embedded Matlab Function Block for the inverse dynamics.
+%% GENSLBLOCKINVDYN Generates the robot specific real-time capable Simulink block for the inverse dynamics.
+%
+%  [] = genslblockinvdyn(cGen)
+%  [] = cGen.genslblockinvdyn
+%
+%  Inputs::
+%       cGen:  a codeGenerator class object
+%
+%       If cGen has the active flag:
+%           - saveresult: the symbolic expressions are saved to
+%           disk in the directory specified by cGen.sympath
+%
+%           - genmfun: ready to use m-functions are generated and
+%           provided via a subclass of SerialLink stored in cGen.robjpath
+%
+%           - genslblock: a Simulink block is generated and stored in a
+%           robot specific block library cGen.slib in the directory
+%           cGen.basepath
 %
 %  Authors::
 %        Jörn Malzahn
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
+%  See also codeGenerator, geninvdyn
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -22,7 +40,7 @@ function [ output_args ] = genslblockinvdyn( CGen )
 % GNU Lesser General Public License for more details.
 %
 % You should have received a copy of the GNU Leser General Public License
-% along with RTB.  If not, see <http://www.gnu.org/licenses/>.
+% along with RTB. If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
@@ -50,7 +68,7 @@ end
 CGen.logmsg('\t%s\n',' done!');
 
 % Subsystem in which individual rows are concatenated
-CGen.logmsg([datestr(now),'\t\t... adding Embedded Matlab Function Blocks for all components ']);
+CGen.logmsg([datestr(now),'\t\t... adding Simulink blocks for all components']);
 add_block('built-in/SubSystem',InvDynBlock);                               % Add new inertia matrix block
 add_block([CGen.slib,'/inertia'],[InvDynBlock,'/inertia']);
 add_block([CGen.slib,'/coriolis'],[InvDynBlock,'/coriolis']);
@@ -81,6 +99,7 @@ add_line(InvDynBlock,'coriolisTorque/1','Sum/2');
 add_line(InvDynBlock,'gravload/1','Sum/3');
 add_line(InvDynBlock,'friction/1','Sum/4');
 add_line(InvDynBlock,'Sum/1','tau/1');
+distributeBlocks(InvDynBlock);
 CGen.logmsg('\t%s\n',' done!');
 
 CGen.logmsg([datestr(now),'\tInverse dynamics block complete.\n']);

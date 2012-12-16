@@ -1,11 +1,35 @@
-function [] = geninertia(CGen)
-%% GENJACOBIAN Generates code from the symbolic robot specific inertia matrix.
+function [inertia] = geninertia(CGen)
+%% GENINERTIA Generates code from the symbolic robot specific inertia matrix.
+%
+%  [I] = geninertia(cGen)
+%  [I] = cGen.geninertia
+%
+%  Inputs::
+%       cGen:  a codeGenerator class object
+%
+%       If cGen has the active flag:
+%           - saveresult: the symbolic expressions are saved to
+%           disk in the directory specified by cGen.sympath
+%
+%           - genmfun: ready to use m-functions are generated and
+%           provided via a subclass of SerialLink stored in cGen.robjpath
+%
+%           - genslblock: a Simulink block is generated and stored in a
+%           robot specific block library cGen.slib in the directory
+%           cGen.basepath
+%
+%       The inertia matrix is stored row by row to avoid memory issues.
+%       The generated code recombines these rows to output the full matrix. 
+%
+%  Outputs::
+%       I: the symbolic robot inertia matrix (nxn)
 %
 %  Authors::
 %        Jörn Malzahn
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
+%  See also codeGenerator, geninvdyn, genfdyn
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -28,24 +52,17 @@ function [] = geninertia(CGen)
 
 
 %% Derivation of symbolic expressions
-CGen.logmsg([datestr(now),'\tDeriving robot inertia matrix ']);
+CGen.logmsg([datestr(now),'\tDeriving robot inertia matrix']);
 
 nJoints = CGen.rob.n;
 q = CGen.rob.gencoords;
 inertia = CGen.rob.inertia(q);
 
-
 CGen.logmsg('\t%s\n',' done!');
 
 %% Save symbolic expressions
 if CGen.saveresult
-%     CGen.logmsg([datestr(now),'\tSaving symbolic expression for robot inertia matrix ']);
-%     
-%     CGen.savesym(inertia,'inertia','inertia.mat');
-%     
-%     CGen.logmsg('\t%s\n',' done!');
-    
-    CGen.logmsg([datestr(now),'\tSaving rows of the inertia matrix: ']);
+    CGen.logmsg([datestr(now),'\tSaving rows of the inertia matrix']);
     for kJoints = 1:nJoints
         CGen.logmsg(' %i ',kJoints);           
         inertiaRow = inertia(kJoints,:);

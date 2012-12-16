@@ -1,11 +1,29 @@
 function [ ] = genslblockcoriolis( CGen )
-%GENSLBLOCKCORIOLIS Generates the robot specific Embedded Matlab Function Block for the robot Coriolis matrix.
+%%GENSLBLOCKCORIOLIS Generates the robot specific and real-time capable Simulink block for the robot Coriolis matrix.
+%
+%  [] = genslblockcoriolis(cGen)
+%  [] = cGen.genslblockcoriolis
+%
+%  Inputs::
+%       cGen:  a codeGenerator class object
+%
+%       If cGen has the active flag:
+%           - saveresult: the symbolic expressions are saved to
+%           disk in the directory specified by cGen.sympath
+%
+%           - genmfun: ready to use m-functions are generated and
+%           provided via a subclass of SerialLink stored in cGen.robjpath
+%
+%           - genslblock: a Simulink block is generated and stored in a
+%           robot specific block library cGen.slib in the directory
+%           cGen.basepath
 %
 %  Authors::
 %        Jörn Malzahn
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
+%  See also codeGenerator, gencoriolis
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -41,7 +59,7 @@ set_param(CGen.slib,'lock','off');
 [q,qd] = CGen.rob.gencoords;
 
 %% Generate Coriolis Block
-CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the robot Coriolis matrix: \n']);
+CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the robot Coriolis matrix\n']);
 nJoints = CGen.rob.n;
 
 CGen.logmsg([datestr(now),'\t\t... enclosing subsystem ']);
@@ -119,7 +137,8 @@ for kJoints = 1:nJoints
     CGen.logmsg('\t%s\n','row complete!');
 end
 addterms(CoriolisBlock); % Add terminators where needed
-CGen.logmsg([datestr(now),'\tCoriolis matrix block complete.\n']);
+distributeBlocks(CoriolisBlock);
+CGen.logmsg([datestr(now),'\tCoriolis matrix block complete\n']);
 
 
 %% Cleanup

@@ -1,11 +1,33 @@
 function [gravload] = gengravload(CGen)
-%% GENJACOBIAN Generates code from the symbolic robot specific gravitational load expression.
+%% GENGRAVLOAD Generates code from the symbolic robot specific gravitational load equations
+%
+%  [G] = gengravload(cGen)
+%  [G] = cGen.gengravload
+%
+%  Inputs::
+%       cGen:  a codeGenerator class object
+%
+%       If cGen has the active flag:
+%           - saveresult: the symbolic expressions are saved to
+%           disk in the directory specified by cGen.sympath
+%
+%           - genmfun: ready to use m-functions are generated and
+%           provided via a subclass of SerialLink stored in cGen.robjpath
+%
+%           - genslblock: a Simulink block is generated and stored in a
+%           robot specific block library cGen.slib in the directory
+%           cGen.basepath
+%
+%  Outputs::
+%       G: the symbolic vector (1xn) of joint load forces/torques due to
+%       gravity
 %
 %  Authors::
 %        Jörn Malzahn
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
+%  See also codeGenerator, geninvdyn, genfdyn
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -28,7 +50,7 @@ function [gravload] = gengravload(CGen)
 
 
 %% Derivation of symbolic expressions
-CGen.logmsg([datestr(now),'\tDeriving gravitational load vector ']);
+CGen.logmsg([datestr(now),'\tDeriving gravitational load vector']);
 
 q = CGen.rob.gencoords;
 gravload = CGen.rob.gravload(q);
@@ -37,7 +59,7 @@ CGen.logmsg('\t%s\n',' done!');
 
 %% Save symbolic expressions
 if CGen.saveresult
-    CGen.logmsg([datestr(now),'\tSaving symbolic expression for gravitational load ']);
+    CGen.logmsg([datestr(now),'\tSaving symbolic expression for gravitational load']);
     
     CGen.savesym(gravload,'gravload','gravload.mat');
     

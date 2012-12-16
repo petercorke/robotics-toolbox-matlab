@@ -201,3 +201,23 @@ end
 hFString = [hFString, sprintf('%s \n', '%   ')];
 
 hFString = [hFString, sprintf('%s \n', '   ')];
+
+%% Copyright note
+hFString = [hFString, sprintf('%s \n', '% Copyright (C) 1993-2012, by Peter I. Corke')];
+hFString = [hFString, sprintf('%s \n', '%')];
+hFString = [hFString, sprintf('%s \n', '% This file has been generated with The Robotics Toolbox for Matlab (RTB).')];
+hFString = [hFString, sprintf('%s \n', '%')];
+hFString = [hFString, sprintf('%s \n', '% RTB is free software: you can redistribute it and/or modify')];
+hFString = [hFString, sprintf('%s \n', '% it under the terms of the GNU Lesser General Public License as published by')];
+hFString = [hFString, sprintf('%s \n', '% the Free Software Foundation, either version 3 of the License, or')];
+hFString = [hFString, sprintf('%s \n', '% (at your option) any later version.')];
+hFString = [hFString, sprintf('%s \n', '% ')];
+hFString = [hFString, sprintf('%s \n', '% RTB is distributed in the hope that it will be useful,')];
+hFString = [hFString, sprintf('%s \n', '% but WITHOUT ANY WARRANTY; without even the implied warranty of')];
+hFString = [hFString, sprintf('%s \n', '% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the')];
+hFString = [hFString, sprintf('%s \n', '% GNU Lesser General Public License for more details.')];
+hFString = [hFString, sprintf('%s \n', '% ')];
+hFString = [hFString, sprintf('%s \n', '% You should have received a copy of the GNU Leser General Public License')];
+hFString = [hFString, sprintf('%s \n', '% along with RTB.  If not, see <http://www.gnu.org/licenses/>.')];
+hFString = [hFString, sprintf('%s \n', '%')];
+hFString = [hFString, sprintf('%s \n', '% http://www.petercorke.com');];

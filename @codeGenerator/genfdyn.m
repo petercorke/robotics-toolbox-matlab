@@ -1,8 +1,8 @@
-function [ tau ] = geninvdyn( CGen )
-%% GENINVDYN Generates code from the symbolic robot specific inverse dynamics.
+function [Iqdd] = genfdyn(CGen)
+%% GENFDYN Generates code from the symbolic robot specific forward dynamics.
 %
-%  tau = geninvdyn(cGen)
-%  tau = cGen.geninvdyn
+%  Iqdd = genfdyn(cGen)
+%  Iqdd = cGen.genfdyn
 %
 %  Inputs::
 %       cGen:  a codeGenerator class object
@@ -19,14 +19,14 @@ function [ tau ] = geninvdyn( CGen )
 %           cGen.basepath
 %
 %  Outputs::
-%       tau: 1xn symbolic vector of joint forces/torques
+%       Iqdd: 1xn symbolic vector of joint inertial reaction forces/torques
 %
 %  Authors::
 %        Jörn Malzahn
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
-%  See also codeGenerator, genfdyn, genfkine
+%  See also codeGenerator, geninvdyn, genfkine
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -47,30 +47,13 @@ function [ tau ] = geninvdyn( CGen )
 %
 % http://www.petercorke.com
 
-[q,qd,qdd] = CGen.rob.gencoords;
+[q,qd] = CGen.rob.gencoords;
+tau = CGen.rob.genforces;
 nJoints = CGen.rob.n;
 
-%% Inertia matrix
-CGen.logmsg([datestr(now),'\tLoading inertia matrix row by row']);
-
-I = sym(zeros(nJoints));
-for kJoints = 1:nJoints
-    CGen.logmsg(' %s ',num2str(kJoints));
-    symname = ['inertia_row_',num2str(kJoints)];
-    fname = fullfile(CGen.sympath,[symname,'.mat']);
-    
-    if ~exist(fname,'file')
-        CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n'])
-        CGen.geninertia;
-    end
-    tmpstruct = load(fname);
-    I(kJoints,:)=tmpstruct.(symname);
-    
-end
-CGen.logmsg('\t%s\n',' done!');
-
+CGen.logmsg([datestr(now),'\tLoading required symbolic expressions\n']);
 %% Matrix of centrifugal and Coriolis forces/torques matrix
-CGen.logmsg([datestr(now),'\tLoading Coriolis matrix row by row']);
+CGen.logmsg([datestr(now),'\t\tCoriolis matrix by row']);
 
 C = sym(zeros(nJoints));
 for kJoints = 1:nJoints
@@ -89,7 +72,7 @@ end
 CGen.logmsg('\t%s\n',' done!');
 
 %% Vector of gravitational load
-CGen.logmsg([datestr(now),'\tLoading vector of gravitational forces/torques']);
+CGen.logmsg([datestr(now),'\t\tvector of gravitational forces/torques']);
 symname = 'gravload';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
@@ -103,7 +86,7 @@ G = tmpstruct.(symname);
 CGen.logmsg('\t%s\n',' done!');
 
 %% Joint friction
-CGen.logmsg([datestr(now),'\tLoading joint friction vector']);
+CGen.logmsg([datestr(now),'\t\tjoint friction vector']);
 symname = 'friction';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
@@ -116,22 +99,23 @@ F = tmpstruct.(symname);
 
 CGen.logmsg('\t%s\n',' done!');
 
-%% Full inverse dynamics
-tau = I*qdd.'+C*qd.'+ G.' + F.';
-
+% Full inverse dynamics
+CGen.logmsg([datestr(now),'\tGenerating symbolic inertial reaction forces/torques expression\n']);
+Iqdd = tau.'-C*qd.' -G.' -F.';
+Iqdd = Iqdd.';
 
 %% Save symbolic expressions
 if CGen.saveresult
-    CGen.logmsg([datestr(now),'\tSaving symbolic inverse dynamics']);
+    CGen.logmsg([datestr(now),'\tSaving symbolic inertial reaction forces/torques expression']);
     
-    CGen.savesym(tau,'invdyn','invdyn.mat')
+    CGen.savesym(Iqdd,'Iqdd','Iqdd.mat')
     
     CGen.logmsg('\t%s\n',' done!');
 end
 
 %% M-Functions
 if CGen.genmfun
-    CGen.genmfuninvdyn;
+    CGen.genmfunfdyn;
 end
 
 %% Embedded Matlab Function Simulink blocks

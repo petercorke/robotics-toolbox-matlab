@@ -1,11 +1,29 @@
 function genslblockinertia(CGen)
-%% GENSLBLOCKINERTIA Generates the robot specific Embedded Matlab Function Block for the robot inertia matrix.
+%% GENSLBLOCKINERTIA Generates the robot specific real-time capable Simulink block for the robot inertia matrix.
+%
+%  [] = genslblockinertia(cGen)
+%  [] = cGen.genslbgenslblockinertia
+%
+%  Inputs::
+%       cGen:  a codeGenerator class object
+%
+%       If cGen has the active flag:
+%           - saveresult: the symbolic expressions are saved to
+%           disk in the directory specified by cGen.sympath
+%
+%           - genmfun: ready to use m-functions are generated and
+%           provided via a subclass of SerialLink stored in cGen.robjpath
+%
+%           - genslblock: a Simulink block is generated and stored in a
+%           robot specific block library cGen.slib in the directory
+%           cGen.basepath
 %
 %  Authors::
 %        Jörn Malzahn
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
+%  See also codeGenerator, geninertia
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -22,7 +40,7 @@ function genslblockinertia(CGen)
 % GNU Lesser General Public License for more details.
 %
 % You should have received a copy of the GNU Leser General Public License
-% along with RTB.  If not, see <http://www.gnu.org/licenses/>.
+% along with RTB. If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
@@ -41,7 +59,7 @@ set_param(CGen.slib,'lock','off');
 q = CGen.rob.gencoords;
 
 %% Generate Inertia Block
-CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the robot inertia matrix: \n']);
+CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the robot inertia matrix\n']);
 nJoints = CGen.rob.n;
 
 CGen.logmsg([datestr(now),'\t\t... enclosing subsystem ']);
@@ -116,11 +134,12 @@ for kJoints = 1:nJoints
     CGen.logmsg('\t%s\n','row complete!');
 end
 addterms(InertiaBlock); % Add terminators where needed
-CGen.logmsg([datestr(now),'\tInertia matrix block complete.\n']);
+distributeBlocks(InertiaBlock);
+CGen.logmsg([datestr(now),'\tInertia matrix block complete\n']);
 
 
 %% Built inverse Inertia matrix block
-CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the inverse robot inertia matrix: \n']);
+CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the inverse robot inertia matrix\n']);
 CGen.logmsg([datestr(now),'\t\t... enclosing subsystem ']);
 % block address
 invInertiaBlock = [CGen.slib,'/invinertia'];
@@ -154,6 +173,7 @@ CGen.logmsg('\t%s\n',' done!');
 
 % add terminators where necessary
 addterms(invInertiaBlock);
+distributeBlocks(invInertiaBlock);
 CGen.logmsg([datestr(now),'\tInverse inertia matrix block complete.\n']);
 
 %% Cleanup
