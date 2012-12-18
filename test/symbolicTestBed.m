@@ -4,7 +4,8 @@ bdclose all;
 clc;
 
 disp('Load 3-joint-Puma')
-mdl_puma560_3_sym;
+mdl_puma560_3;
+% mdl_twolink
 
 cGen = codeGenerator(p560,'default','logfile','myLog.txt')
 
