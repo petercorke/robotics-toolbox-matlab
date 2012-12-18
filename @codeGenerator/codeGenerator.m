@@ -231,6 +231,9 @@ classdef codeGenerator
             
             if dopurge
                 rmdir(CGen.basepath,'s')
+                if ~isempty(CGen.logfile) && exist(CGen.logfile,'file')
+                    delete(CGen.logfile);
+                end
             end
         end
         
