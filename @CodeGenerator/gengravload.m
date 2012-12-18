@@ -1,4 +1,4 @@
-function [gravload] = gengravload(CGen)
+function [G] = gengravload(CGen)
 %% GENGRAVLOAD Generates code from the symbolic robot specific gravitational load equations
 %
 %  [G] = gengravload(cGen)
@@ -53,7 +53,7 @@ function [gravload] = gengravload(CGen)
 CGen.logmsg([datestr(now),'\tDeriving gravitational load vector']);
 
 q = CGen.rob.gencoords;
-gravload = CGen.rob.gravload(q);
+G = CGen.rob.gravload(q);
 
 CGen.logmsg('\t%s\n',' done!');
 
@@ -61,7 +61,7 @@ CGen.logmsg('\t%s\n',' done!');
 if CGen.saveresult
     CGen.logmsg([datestr(now),'\tSaving symbolic expression for gravitational load']);
     
-    CGen.savesym(gravload,'gravload','gravload.mat');
+    CGen.savesym(G,'gravload','gravload.mat');
     
     CGen.logmsg('\t%s\n',' done!');
 end

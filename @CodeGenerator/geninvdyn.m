@@ -60,7 +60,7 @@ for kJoints = 1:nJoints
     fname = fullfile(CGen.sympath,[symname,'.mat']);
     
     if ~exist(fname,'file')
-        CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n'])
+        CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n']);
         CGen.geninertia;
     end
     tmpstruct = load(fname);
@@ -79,7 +79,7 @@ for kJoints = 1:nJoints
     fname = fullfile(CGen.sympath,[symname,'.mat']);
     
     if ~exist(fname,'file')
-        CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n'])
+        CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n']);
         CGen.gencoriolis;
     end
     tmpstruct = load(fname);
@@ -94,7 +94,7 @@ symname = 'gravload';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
 if ~exist(fname,'file')
-    CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n'])
+    CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n']);
     CGen.gengravload;
 end
 tmpstruct = load(fname);
@@ -108,7 +108,7 @@ symname = 'friction';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
 if ~exist(fname,'file')
-    CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n'])
+    CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n']);
     CGen.genfriction;
 end
 tmpstruct = load(fname);

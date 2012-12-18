@@ -99,14 +99,14 @@ add_line(InvDynBlock,'coriolisTorque/1','Sum/2');
 add_line(InvDynBlock,'gravload/1','Sum/3');
 add_line(InvDynBlock,'friction/1','Sum/4');
 add_line(InvDynBlock,'Sum/1','tau/1');
-distributeBlocks(InvDynBlock);
+distributeblocks(InvDynBlock);
 CGen.logmsg('\t%s\n',' done!');
 
 CGen.logmsg([datestr(now),'\tInverse dynamics block complete.\n']);
 
 %% Cleanup
 % Arrange blocks
-distributeBlocks(CGen.slib);
+distributeblocks(CGen.slib);
 
 % Lock, save and close library
 set_param(CGen.slib,'lock','on');

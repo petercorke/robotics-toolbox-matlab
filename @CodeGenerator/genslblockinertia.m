@@ -134,7 +134,7 @@ for kJoints = 1:nJoints
     CGen.logmsg('\t%s\n','row complete!');
 end
 addterms(InertiaBlock); % Add terminators where needed
-distributeBlocks(InertiaBlock);
+distributeblocks(InertiaBlock);
 CGen.logmsg([datestr(now),'\tInertia matrix block complete\n']);
 
 

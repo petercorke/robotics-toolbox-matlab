@@ -45,5 +45,5 @@ function tg = gravload(robot, q, grav)
     end
     
 % 	if robot.issym
-%        tg = subs(tg,{sym('Tc'),sym('Tcp'),sym('Tcm')},0); %set friction to zero
+%        tg = subs(tg,{sym('Tc'),sym('Tcp'),sym('Tcm')},{0 0 0}); %set friction to zero
 %     end
