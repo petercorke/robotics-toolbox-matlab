@@ -5,7 +5,7 @@ function [J0, Jn] = genjacobian(CGen)
 %  [J0, Jn] = cGen.genjacobian
 %
 %  Inputs::
-%       cGen:  a codeGenerator class object
+%       cGen:  a CodeGenerator class object
 %
 %       If cGen has the active flag:
 %           - saveresult: the symbolic expressions are saved to
@@ -30,7 +30,7 @@ function [J0, Jn] = genjacobian(CGen)
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
-%  See also codeGenerator, geninvdyn, genjacobian
+%  See also CodeGenerator, geninvdyn, genjacobian
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %

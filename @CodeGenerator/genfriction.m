@@ -5,7 +5,7 @@ function [ F ] = genfriction( CGen )
 %  [F] = cGen.genfriction
 %
 %  Inputs::
-%       cGen:  a codeGenerator class object
+%       cGen:  a CodeGenerator class object
 %
 %       If cGen has the active flag:
 %           - saveresult: the symbolic expressions are saved to
@@ -26,7 +26,7 @@ function [ F ] = genfriction( CGen )
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
-%  See also codeGenerator, geninvdyn, genfdyn
+%  See also CodeGenerator, geninvdyn, genfdyn
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %

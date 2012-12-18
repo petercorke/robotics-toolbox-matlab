@@ -5,7 +5,7 @@ function genslblockjacobian(CGen)
 %  [] = cGen.genslblockjacobian
 %
 %  Inputs::
-%       cGen:  a codeGenerator class object
+%       cGen:  a CodeGenerator class object
 %
 %       If cGen has the active flag:
 %           - saveresult: the symbolic expressions are saved to
@@ -23,7 +23,7 @@ function genslblockjacobian(CGen)
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
-%  See also codeGenerator, genjacobian
+%  See also CodeGenerator, genjacobian
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -101,7 +101,7 @@ CGen.logmsg('\t%s\n',' done!');
 
 %% Cleanup
 % Arrange blocks
-distributeBlocks(CGen.slib);
+distributeblocks(CGen.slib);
 
 % Lock, save and close library
 set_param(CGen.slib,'lock','on');

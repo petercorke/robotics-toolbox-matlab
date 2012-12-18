@@ -2,7 +2,8 @@ function bfixString = getPiBugfixString(CGen)
 %% GETPIBUGFIXSTRING Returns a string to fix PI-Bug in auto genereated functions.
 % =========================================================================
 % 
-%   bfixString = getPiBugfixString()
+%   bfixString = getPiBugfixString(CGen)
+%   bfixString = CGen.getPiBugfixString
 % 
 %  Description::
 %    In some versions the symbolic toolbox writes the constant $pi$ in

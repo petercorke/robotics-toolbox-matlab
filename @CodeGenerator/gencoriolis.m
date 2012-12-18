@@ -5,7 +5,7 @@ function [ coriolis ] = gencoriolis( CGen )
 %  coriolis = cGen.gencoriolis
 %
 %  Inputs::
-%       cGen:  a codeGenerator class object
+%       cGen:  a CodeGenerator class object
 %
 %       If cGen has the active flag:
 %           - saveresult: the symbolic expressions are saved to
@@ -30,7 +30,7 @@ function [ coriolis ] = gencoriolis( CGen )
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
-%  See also codeGenerator, geninertia, genfkine
+%  See also CodeGenerator, geninertia, genfkine
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %

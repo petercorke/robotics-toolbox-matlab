@@ -1,5 +1,5 @@
 function [cnt] = logmsg(CGen, varargin)
-%% MULTIDFPRINTF Print codeGenerator logs.
+%% MULTIDFPRINTF Print CodeGenerator logs.
 %
 %   [count] = logmsg(CGen, FORMAT, A, ...)
 %   [count] = CGen.logmsg( FORMAT, A, ...)

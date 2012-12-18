@@ -5,7 +5,7 @@ function [ F ] = genslblockfriction( CGen )
 %  [] = cGen.genslblockfriction
 %
 %  Inputs::
-%       cGen:  a codeGenerator class object
+%       cGen:  a CodeGenerator class object
 %
 %       If cGen has the active flag:
 %           - saveresult: the symbolic expressions are saved to
@@ -23,7 +23,7 @@ function [ F ] = genslblockfriction( CGen )
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
-%  See also codeGenerator, genfriction
+%  See also CodeGenerator, genfriction
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %

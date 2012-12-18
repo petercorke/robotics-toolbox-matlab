@@ -5,7 +5,7 @@ function [] = genslblockfdyn(CGen)
 %  [] = cGen.genslblockfdyn
 %
 %  Inputs::
-%       cGen:  a codeGenerator class object
+%       cGen:  a CodeGenerator class object
 %
 %       If cGen has the active flag:
 %           - saveresult: the symbolic expressions are saved to
@@ -23,7 +23,7 @@ function [] = genslblockfdyn(CGen)
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
-%  See also codeGenerator, genfdyn
+%  See also CodeGenerator, genfdyn
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %

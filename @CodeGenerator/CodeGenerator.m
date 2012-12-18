@@ -1,6 +1,6 @@
 %% CODEGENERATOR Class for code generation from symboic SerialLink objects.
 %
-% Objects of the codeGenerator class enable the automated robot specific
+% Objects of the CodeGenerator class enable the automated robot specific
 % model code generation for SerialLink robot objects.
 %
 % Currently the generation supports:
@@ -9,9 +9,9 @@
 % - real-time capable robot specific Simulink blocks
 %
 % Constructor::
-%   cGen = codeGenerator(rob)
-%   cGen = codeGenerator(rob,'optionSet')
-%   cGen = codeGenerator(...,'par1', val1, 'par2', val2,... )
+%   cGen = CodeGenerator(rob)
+%   cGen = CodeGenerator(rob,'optionSet')
+%   cGen = CodeGenerator(...,'par1', val1, 'par2', val2,... )
 %
 %       'optionSet' || verbose || saveResult ||    logFile     || genMFun    || genSLBlock    ||
 %       -------------++---------++------------++----------------++------------++---------------++
@@ -80,7 +80,7 @@
 %
 % http://www.petercorke.com
 
-classdef codeGenerator
+classdef CodeGenerator
     properties (SetAccess = private)
         rob
     end
@@ -100,9 +100,9 @@ classdef codeGenerator
         debug;        % just appears because of tb_optparse, so hide it from the user
     end
     methods
-        function CGen = codeGenerator(rob,varargin)
+        function CGen = CodeGenerator(rob,varargin)
             if ~isa(rob,'SerialLink')
-                error('codeGenerator:wrongConstructorInput','The input variable %s must be a SerialLink object.',inputname(1));
+                error('CodeGenerator:wrongConstructorInput','The input variable %s must be a SerialLink object.',inputname(1));
             end
             
             if ~issym(rob)

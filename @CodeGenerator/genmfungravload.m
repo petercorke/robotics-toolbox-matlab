@@ -5,7 +5,7 @@ function [] = genmfungravload(CGen)
 %  [] = cGen.genmfungravload
 %
 %  Inputs::
-%       cGen:  a codeGenerator class object
+%       cGen:  a CodeGenerator class object
 %
 %       If cGen has the active flag:
 %           - saveresult: the symbolic expressions are saved to
@@ -23,7 +23,7 @@ function [] = genmfungravload(CGen)
 %        2012 RST, Technische Universität Dortmund, Germany
 %        http://www.rst.e-technik.tu-dortmund.de
 %
-%  See also codeGenerator, geninertia
+%  See also CodeGenerator, geninertia
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
