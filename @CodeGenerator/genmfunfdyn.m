@@ -44,6 +44,15 @@ function [] = genmfunfdyn(CGen)
 %
 % http://www.petercorke.com
 
+%% Does robot class exist?
+if ~exist(fullfile(CGen.robjpath,[CGen.getrobfname,'.m']),'file')
+    CGen.logmsg([datestr(now),'\tCreating ',CGen.getrobfname,' m-constructor ']);
+    CGen.createmconstructor;
+    CGen.logmsg('\t%s\n',' done!');
+end
+
+%%
+
 CGen.logmsg([datestr(now),'\tGenerating m-function for the joint inertial reaction forces/torques' ]);
 
 symname = 'Iqdd';

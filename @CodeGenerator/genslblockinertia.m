@@ -178,7 +178,7 @@ CGen.logmsg([datestr(now),'\tInverse inertia matrix block complete.\n']);
 
 %% Cleanup
 % Arrange blocks
-distributeBlocks(CGen.slib);
+distributeblocks(CGen.slib);
 
 % Lock, save and close library
 set_param(CGen.slib,'lock','on');

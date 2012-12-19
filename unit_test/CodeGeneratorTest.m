@@ -96,24 +96,25 @@ qd = rand(1,specRob.n);
 assertElementsAlmostEqual(specRob.friction(qd), tStruct.rob.friction(qd));
 assertElementsAlmostEqual(specRob.friction(qd), subs(F,symQD,qd));
 
-% function geninvdyn_test(tStruct)
-% % - test inverse dynamics against numeric version
-% tau = tStruct.cGen.geninvdyn;
-% 
-% addpath(tStruct.cGen.basepath);
-% specRob = eval(tStruct.cGen.getrobfname);
-% 
-% q = rand(1,specRob.n);
-% qd = rand(1,specRob.n);
-% qdd = rand(1,specRob.n);
-% [symQ,symQD,symQDD] = tStruct.rob.gencoords;
-% 
-% assertElementsAlmostEqual(specRob.invdyn(q,qd,qdd), tStruct.rob.rne(q,qd,qdd).');
-% 
-% symTau = subs(tau,symQ,q);
-% symTau = subs(symTau,symQD,qd);
-% symTau = subs(symTau,symQDD,qdd);
-% assertElementsAlmostEqual(specRob.invdyn(q,qd,qdd), symTau);
+function geninvdyn_test(tStruct)
+% - test inverse dynamics against numeric version
+tau = tStruct.cGen.geninvdyn;
+
+addpath(tStruct.cGen.basepath);
+specRob = eval(tStruct.cGen.getrobfname);
+
+q = rand(1,specRob.n);
+% qd = [0 0 0]; % this one works -> coriolis matrix disabled
+qd = rand(1,specRob.n); % this one does not work -> coriolis matrix enabled
+qdd = rand(1,specRob.n);
+[symQ,symQD,symQDD] = tStruct.rob.gencoords;
+
+assertElementsAlmostEqual(specRob.invdyn(q,qd,qdd), tStruct.rob.rne(q,qd,qdd).');
+
+symTau = subs(tau,symQ,q);
+symTau = subs(symTau,symQD,qd);
+symTau = subs(symTau,symQDD,qdd);
+assertElementsAlmostEqual(specRob.invdyn(q,qd,qdd), symTau);
 % 
 % function genfdyn_test(tStruct)
 % % - test forward dynamics against numeric version
