@@ -49,7 +49,7 @@ Jacobians, animations, path planning, forward and inverse kinematics, and forwar
    </demoitem>
       <demoitem>
       <label>Symbolics and code generation</label>
-      <callback>showdemo rtsymcgendemo</callback>
+      <callback>rtsymcgendemo</callback>
    </demoitem>
 </demosection>
 

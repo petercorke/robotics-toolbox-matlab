@@ -1,3 +1,4 @@
+
 %% Getting started with symbolics and code generation
 % This is a brief example about how we can derive symbolic robot model 
 % expressions and how we can generate robot specific functions as well as 
@@ -8,7 +9,8 @@
 % A requirement for this demo is that we have the Mathworks Symbolic Toolbox
 % installed besides the Robotics Toolbox.
 %
-
+clc;
+echo on;
 %% Instantiate a |CodeGenerator| class object
 % We tart off with the instantiation of a |CodeGenerator| class object.
 % First, we load the |SerialLink| object for which we intend to generate
@@ -20,6 +22,7 @@ mdl_puma560_3
 % object is used to instantiate the CodeGenerator.
 cGen = CodeGenerator(p560)
 
+pause % press any key
 %% Code generation 
 % By default |CodeGenerator| class objects are configured to generate:
 %
@@ -35,6 +38,7 @@ cGen = CodeGenerator(p560)
 % 560.
 symExp = cGen.genfkine
 
+pause % press any key
 %%
 % The text output to the console may be disabled 
 cGen.verbose = false;
@@ -42,6 +46,7 @@ cGen.verbose = false;
 % or logged to disk by specifying a log file name
 cGen.logfile = 'roblog.txt'
 
+pause % press any key
 %%
 % The output variable |symExp| now contains the symbolic expression for the
 % forward kinematics. This expression is the same as would be obtained by
@@ -53,6 +58,7 @@ symExpDir = symP560.fkine(q)
 % So we have basically two ways for deriving symbolic expressions using the
 % Robotics Toolbox.
 
+pause % press any key
 %%
 % The difference is that in addtion the functional output the symbolic
 % expression has now been saved to disk along with the generated m-code and
@@ -93,6 +99,7 @@ tic
 Tz2 = specRob.fkine(qz)
 t2 = toc
 
+
 %% Speedup
 % The specialized robot version of fkine runs a little faster
 % because it only performs the computations necessary for the specific robot.
@@ -108,6 +115,7 @@ t2 = toc
 % This way the specialized m-code can be used to decrease simulation times.
 %
 
+pause % press any key
 %%
 % We obtain the exact solution without floating point notation if we use
 % the symbolic expression as follows:
@@ -124,6 +132,8 @@ toc
 % useful for example for during derivation of analytical inverse kinematics
 % solutions. See the documentation of genfkine for details.
 %
+
+pause % press any key
 %% Inheritance
 % Even though we have not yet generated robot specific code for |SerialLink|
 % metods other than |fkine|, we can still use all functionality of
@@ -132,6 +142,7 @@ toc
 J01 = p560.jacob0(qz)
 J02 = specRob.jacob0(qz)
 
+pause % press any key
 %% A look at the generated Simulink blocks
 % The Simulink blocks are stored in a Simulink library file. By opening the
 % generated Simulink library we can investigate the already optimized robot 
@@ -147,6 +158,8 @@ snapnow;
 % This way we avoid tedious and error prone reimplementation of the model 
 % on the target hardware.
 %
+
+pause % press any key
 bdclose(cGen.slib);
 
 %% Further information
@@ -160,16 +173,19 @@ bdclose(cGen.slib);
 % displayed.
 methods CodeGenerator
 
+pause % press any key
 %%
 % The same applies to the configurable properties:
 properties CodeGenerator
 
+pause % press any key
 %% Cleanup
 % If we whish to clean our disk from all the generated code, we can simply
 % remove it from the search path
 rmpath(cGen.basepath)
 %%
 % and purge everything.
-cGen.purge(1)
+pause % press any key
+cGen.purge
 snapnow
 echo off
