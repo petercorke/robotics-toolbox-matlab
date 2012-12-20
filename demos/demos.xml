@@ -47,6 +47,10 @@ Jacobians, animations, path planning, forward and inverse kinematics, and forwar
       <label>Inverse dynamics</label>
       <callback>rtiddemo</callback>
    </demoitem>
+      <demoitem>
+      <label>Symbolics and code generation</label>
+      <callback>showdemo rtsymcgendemo</callback>
+   </demoitem>
 </demosection>
 
 <demosection>
