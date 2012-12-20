@@ -1,7 +1,7 @@
 %% Getting started with symbolics and code generation
 % This is a brief example about how we can derive symbolic robot model 
 % expressions and how we can generate robot specific functions as well as 
-% real-time capable Simulink blocks using the CodeGenerator class. The
+% real-time capable Simulink blocks using the |CodeGenerator| class. The
 % example uses a reduced version of the Puma 560 arm with the first 3
 % links.
 %
@@ -9,19 +9,19 @@
 % installed besides the Robotics Toolbox.
 %
 
-%% Instantiate a CodeGenerator class object
-% We tart off with the instantiation of a CodeGenerator class object.
-% First, we load the SerialLink object for which we intend to generate
+%% Instantiate a |CodeGenerator| class object
+% We tart off with the instantiation of a |CodeGenerator| class object.
+% First, we load the |SerialLink| object for which we intend to generate
 % code.
 mdl_puma560_3
 
 %%
-% After that, we find a SerialLink object named p560 in the workspace. This
+% After that, we find a |SerialLink| object named p560 in the workspace. This
 % object is used to instantiate the CodeGenerator.
 cGen = CodeGenerator(p560)
 
 %% Code generation 
-% By default CodeGenerator class objects are configured to generate:
+% By default |CodeGenerator| class objects are configured to generate:
 %
 % * symbolic expressions
 % * m-code 
@@ -29,7 +29,7 @@ cGen = CodeGenerator(p560)
 %
 % and they document the CodeGeneration progress on the Matlab console. 
 % We may modify this behaviour by passing extra arguments to the
-% CodeGenerator constructor. (Type |help CodeGenerator| for details)
+% |CodeGenerator| constructor. (Type |help CodeGenerator| for details)
 %
 % Now let's generate code for the forward kinematics of our reduced Puma
 % 560.
@@ -79,7 +79,7 @@ ls(cGen.robjpath)
 % 
 qz
 %%
-% With the generic version of the fkine function from the SerialLink 
+% With the generic version of the fkine function from the |SerialLink| 
 % class we would compute the forward kinematics as follows:
 tic;
 Tz1 = p560.fkine(qz)
@@ -118,17 +118,16 @@ toc
 % This is however more time consuming. Most probably we might use the
 % symbolic expressions for algorithm development, controller design, 
 % stability proofs as well as analysis, system identification or teaching. 
-% It is also possible to get the symbolic expressions for the homogenous
-% transformations of up to each individual joint. 
 %
-% This has been found to be useful for example for during derivation of 
-% analytical inverse kinematics solutions  as well as collision avoidance 
-% schemes. See the documentation of genfkine for details.
+% It is also possible to get the symbolic expressions for the homogenous
+% transformations of up to each individual joint. This has been found to be
+% useful for example for during derivation of analytical inverse kinematics
+% solutions. See the documentation of genfkine for details.
 %
 %% Inheritance
 % Even though we have not yet generated robot specific code for |SerialLink|
 % metods other than |fkine|, we can still use all functionality of
-% SerialLink objects with our new specialized robot object which inherits
+% |SerialLink| objects with our new specialized robot object which inherits
 % from |SerialLink|.
 J01 = p560.jacob0(qz)
 J02 = specRob.jacob0(qz)
@@ -138,7 +137,7 @@ J02 = specRob.jacob0(qz)
 % generated Simulink library we can investigate the already optimized robot 
 % specific code within the blocks.
 % The usage of these blocks is also accompanied with a noticable speedup 
-% compared to the blocks based on generic SerialLink objects.
+% compared to the blocks based on generic |SerialLink| objects.
 eval(cGen.slib);
 snapnow;
 %%
@@ -152,12 +151,12 @@ bdclose(cGen.slib);
 
 %% Further information
 % For further information on symbolics and code generation see the
-% documentation of the SerialLink and CodeGenerator class.
+% documentation of the |SerialLink| and |CodeGenerator| class.
 %
 % All generated functions come with their own headers so that information
 % about their usage can be found by typing |help funname|.
 %
-% A list of all available methods provide by the CodeGenerator class can be
+% A list of all available methods provide by the |CodeGenerator| class can be
 % displayed.
 methods CodeGenerator
 

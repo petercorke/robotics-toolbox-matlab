@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Getting started with symbolics and code generation</title><meta name="generator" content="MATLAB 7.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2012-12-20"><meta name="DC.source" content="rtsymcgendemo.m"><style type="text/css">
+      --><title>Getting started with symbolics and code generation</title><meta name="generator" content="MATLAB 7.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2012-12-21"><meta name="DC.source" content="rtsymcgendemo.m"><style type="text/css">
 
 body {
   background-color: white;
@@ -62,12 +62,12 @@ p.footer {
   color: gray;
 }
 
-  </style></head><body><div class="content"><h1>Getting started with symbolics and code generation</h1><!--introduction--><p>This is a brief example about how we can derive symbolic robot model expressions and how we can generate robot specific functions as well as real-time capable Simulink blocks using the CodeGenerator class. The example uses a reduced version of the Puma 560 arm with the first 3 links.</p><p>A requirement for this demo is that we have the Mathworks Symbolic Toolbox installed besides the Robotics Toolbox.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Instantiate a CodeGenerator class object</a></li><li><a href="#3">Code generation</a></li><li><a href="#9">Using the generated m-code</a></li><li><a href="#12">Speedup</a></li><li><a href="#15">Inheritance</a></li><li><a href="#16">A look at the generated Simulink blocks</a></li><li><a href="#18">Further information</a></li><li><a href="#20">Cleanup</a></li></ul></div><h2>Instantiate a CodeGenerator class object<a name="1"></a></h2><p>We tart off with the instantiation of a CodeGenerator class object. First, we load the SerialLink object for which we intend to generate code.</p><pre class="codeinput">mdl_puma560_3
-</pre><p>After that, we find a SerialLink object named p560 in the workspace. This object is used to instantiate the CodeGenerator.</p><pre class="codeinput">cGen = CodeGenerator(p560)
-</pre><pre class="codeoutput">20-Dec-2012 23:48:52	Creating robot m-constructor 	 done!
-20-Dec-2012 23:48:52 +++++++++++++++++++++++++++++++++++
-20-Dec-2012 23:48:52	Log for robot
-20-Dec-2012 23:48:52 +++++++++++++++++++++++++++++++++++
+  </style></head><body><div class="content"><h1>Getting started with symbolics and code generation</h1><!--introduction--><p>This is a brief example about how we can derive symbolic robot model expressions and how we can generate robot specific functions as well as real-time capable Simulink blocks using the <tt>CodeGenerator</tt> class. The example uses a reduced version of the Puma 560 arm with the first 3 links.</p><p>A requirement for this demo is that we have the Mathworks Symbolic Toolbox installed besides the Robotics Toolbox.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Instantiate a <tt>CodeGenerator</tt> class object</a></li><li><a href="#3">Code generation</a></li><li><a href="#9">Using the generated m-code</a></li><li><a href="#12">Speedup</a></li><li><a href="#15">Inheritance</a></li><li><a href="#16">A look at the generated Simulink blocks</a></li><li><a href="#18">Further information</a></li><li><a href="#20">Cleanup</a></li></ul></div><h2>Instantiate a <tt>CodeGenerator</tt> class object<a name="1"></a></h2><p>We tart off with the instantiation of a <tt>CodeGenerator</tt> class object. First, we load the <tt>SerialLink</tt> object for which we intend to generate code.</p><pre class="codeinput">mdl_puma560_3
+</pre><p>After that, we find a <tt>SerialLink</tt> object named p560 in the workspace. This object is used to instantiate the CodeGenerator.</p><pre class="codeinput">cGen = CodeGenerator(p560)
+</pre><pre class="codeoutput">21-Dec-2012 00:06:58	Creating robot m-constructor 	 done!
+21-Dec-2012 00:06:58 +++++++++++++++++++++++++++++++++++
+21-Dec-2012 00:06:58	Log for robot
+21-Dec-2012 00:06:58 +++++++++++++++++++++++++++++++++++
 
 cGen = 
 
@@ -87,14 +87,14 @@ cGen =
     genslblock: 1
 
 
-</pre><h2>Code generation<a name="3"></a></h2><p>By default CodeGenerator class objects are configured to generate:</p><div><ul><li>symbolic expressions</li><li>m-code</li><li>Simulink blocks</li></ul></div><p>and they document the CodeGeneration progress on the Matlab console. We may modify this behaviour by passing extra arguments to the CodeGenerator constructor. (Type <tt>help CodeGenerator</tt> for details)</p><p>Now let's generate code for the forward kinematics of our reduced Puma 560.</p><pre class="codeinput">symExp = cGen.genfkine
-</pre><pre class="codeoutput">20-Dec-2012 23:48:52	Deriving forward kinematics	 done!
-20-Dec-2012 23:48:52	Saving symbolic forward kinematics up to end-effector frame	 done!
-20-Dec-2012 23:48:52	Saving symbolic forward kinematics for joint 1  2  3 	 done!
-20-Dec-2012 23:48:52	Generating forward kinematics m-function up to the end-effector frame: 	 done!
-20-Dec-2012 23:48:52	Generating forward kinematics m-function up to joint:  1  2  3 	 done!
-20-Dec-2012 23:48:53	Generating forward kinematics Simulink block up to the end-effector frame	 done!
-20-Dec-2012 23:48:54	Generating forward kinematics Simulink block up to joint 1  2  3 	 done!
+</pre><h2>Code generation<a name="3"></a></h2><p>By default <tt>CodeGenerator</tt> class objects are configured to generate:</p><div><ul><li>symbolic expressions</li><li>m-code</li><li>Simulink blocks</li></ul></div><p>and they document the CodeGeneration progress on the Matlab console. We may modify this behaviour by passing extra arguments to the <tt>CodeGenerator</tt> constructor. (Type <tt>help CodeGenerator</tt> for details)</p><p>Now let's generate code for the forward kinematics of our reduced Puma 560.</p><pre class="codeinput">symExp = cGen.genfkine
+</pre><pre class="codeoutput">21-Dec-2012 00:06:58	Deriving forward kinematics	 done!
+21-Dec-2012 00:06:58	Saving symbolic forward kinematics up to end-effector frame	 done!
+21-Dec-2012 00:06:58	Saving symbolic forward kinematics for joint 1  2  3 	 done!
+21-Dec-2012 00:06:58	Generating forward kinematics m-function up to the end-effector frame: 	 done!
+21-Dec-2012 00:06:58	Generating forward kinematics m-function up to joint:  1  2  3 	 done!
+21-Dec-2012 00:06:59	Generating forward kinematics Simulink block up to the end-effector frame	 done!
+21-Dec-2012 00:07:00	Generating forward kinematics Simulink block up to joint 1  2  3 	 done!
  
 symExp =
  
@@ -155,7 +155,7 @@ qz =
 
      0     0     0
 
-</pre><p>With the generic version of the fkine function from the SerialLink class we would compute the forward kinematics as follows:</p><pre class="codeinput">tic;
+</pre><p>With the generic version of the fkine function from the <tt>SerialLink</tt> class we would compute the forward kinematics as follows:</p><pre class="codeinput">tic;
 Tz1 = p560.fkine(qz)
 t1 = toc
 </pre><pre class="codeoutput">
@@ -169,7 +169,7 @@ Tz1 =
 
 t1 =
 
-    0.0032
+    0.0033
 
 </pre><p>In order to use the generated robot specific m-functions we add them to the search path and instantiate a new robot object.</p><pre class="codeinput">addpath(cGen.basepath)
 specRob = eval(cGen.getrobfname)
@@ -205,7 +205,7 @@ Tz2 =
 
 t2 =
 
-  9.8853e-004
+    0.0010
 
 </pre><h2>Speedup<a name="12"></a></h2><p>The specialized robot version of fkine runs a little faster because it only performs the computations necessary for the specific robot. The speedup of the generated robot specific m-code becomes even more appearent if we repeat the comparison of the execution times for dynamics functions such as:</p><div><ul><li>gravload -&gt; cGen.gengravload</li><li>inertia  -&gt; cGen.geninertia</li><li>coriolis -&gt; cGen.gencoriolis</li><li>invdyn   -&gt; cGen.geninvdyn</li></ul></div><p>This way the specialized m-code can be used to decrease simulation times.</p><p>We obtain the exact solution without floating point notation if we use the symbolic expression as follows:</p><pre class="codeinput">tic
 Tz1 = subs(symExp,<span class="string">'[q1, q2, q3]'</span>,qz)
@@ -218,8 +218,8 @@ Tz1 =
 [ 0, 0, 1,           0]
 [ 0, 0, 0,           1]
  
-Elapsed time is 0.036019 seconds.
-</pre><p>This is however more time consuming. Most probably we might use the symbolic expressions for algorithm development, controller design, stability proofs as well as analysis, system identification or teaching. It is also possible to get the symbolic expressions for the homogenous transformations of up to each individual joint.</p><p>This has been found to be useful for example for during derivation of analytical inverse kinematics solutions  as well as collision avoidance schemes. See the documentation of genfkine for details.</p><h2>Inheritance<a name="15"></a></h2><p>Even though we have not yet generated robot specific code for <tt>SerialLink</tt> metods other than <tt>fkine</tt>, we can still use all functionality of SerialLink objects with our new specialized robot object which inherits from <tt>SerialLink</tt>.</p><pre class="codeinput">J01 = p560.jacob0(qz)
+Elapsed time is 0.039568 seconds.
+</pre><p>This is however more time consuming. Most probably we might use the symbolic expressions for algorithm development, controller design, stability proofs as well as analysis, system identification or teaching.</p><p>It is also possible to get the symbolic expressions for the homogenous transformations of up to each individual joint. This has been found to be useful for example for during derivation of analytical inverse kinematics solutions. See the documentation of genfkine for details.</p><h2>Inheritance<a name="15"></a></h2><p>Even though we have not yet generated robot specific code for <tt>SerialLink</tt> metods other than <tt>fkine</tt>, we can still use all functionality of <tt>SerialLink</tt> objects with our new specialized robot object which inherits from <tt>SerialLink</tt>.</p><pre class="codeinput">J01 = p560.jacob0(qz)
 J02 = specRob.jacob0(qz)
 </pre><pre class="codeoutput">
 J01 =
@@ -241,10 +241,10 @@ J02 =
          0   -1.0000   -1.0000
     1.0000         0         0
 
-</pre><h2>A look at the generated Simulink blocks<a name="16"></a></h2><p>The Simulink blocks are stored in a Simulink library file. By opening the generated Simulink library we can investigate the already optimized robot specific code within the blocks. The usage of these blocks is also accompanied with a noticable speedup compared to the blocks based on generic SerialLink objects.</p><pre class="codeinput">eval(cGen.slib);
+</pre><h2>A look at the generated Simulink blocks<a name="16"></a></h2><p>The Simulink blocks are stored in a Simulink library file. By opening the generated Simulink library we can investigate the already optimized robot specific code within the blocks. The usage of these blocks is also accompanied with a noticable speedup compared to the blocks based on generic <tt>SerialLink</tt> objects.</p><pre class="codeinput">eval(cGen.slib);
 snapnow;
 </pre><img vspace="5" hspace="5" src="rtsymcgendemo_01.png" alt=""> <p>Beyond the speedup for simulations all blocks in the generated library may be directly compiled for real-time operating systems such as xPC-Target or dSpace systems for model based control of real hardware setups. This way we avoid tedious and error prone reimplementation of the model on the target hardware.</p><pre class="codeinput">bdclose(cGen.slib);
-</pre><h2>Further information<a name="18"></a></h2><p>For further information on symbolics and code generation see the documentation of the SerialLink and CodeGenerator class.</p><p>All generated functions come with their own headers so that information about their usage can be found by typing <tt>help funname</tt>.</p><p>A list of all available methods provide by the CodeGenerator class can be displayed.</p><pre class="codeinput">methods <span class="string">CodeGenerator</span>
+</pre><h2>Further information<a name="18"></a></h2><p>For further information on symbolics and code generation see the documentation of the <tt>SerialLink</tt> and <tt>CodeGenerator</tt> class.</p><p>All generated functions come with their own headers so that information about their usage can be found by typing <tt>help funname</tt>.</p><p>A list of all available methods provide by the <tt>CodeGenerator</tt> class can be displayed.</p><pre class="codeinput">methods <span class="string">CodeGenerator</span>
 </pre><pre class="codeoutput">
 Methods for class CodeGenerator:
 
@@ -288,7 +288,7 @@ dopurge =
 %% Getting started with symbolics and code generation
 % This is a brief example about how we can derive symbolic robot model 
 % expressions and how we can generate robot specific functions as well as 
-% real-time capable Simulink blocks using the CodeGenerator class. The
+% real-time capable Simulink blocks using the |CodeGenerator| class. The
 % example uses a reduced version of the Puma 560 arm with the first 3
 % links.
 %
@@ -296,19 +296,19 @@ dopurge =
 % installed besides the Robotics Toolbox.
 %
 
-%% Instantiate a CodeGenerator class object
-% We tart off with the instantiation of a CodeGenerator class object.
-% First, we load the SerialLink object for which we intend to generate
+%% Instantiate a |CodeGenerator| class object
+% We tart off with the instantiation of a |CodeGenerator| class object.
+% First, we load the |SerialLink| object for which we intend to generate
 % code.
 mdl_puma560_3
 
 %%
-% After that, we find a SerialLink object named p560 in the workspace. This
+% After that, we find a |SerialLink| object named p560 in the workspace. This
 % object is used to instantiate the CodeGenerator.
 cGen = CodeGenerator(p560)
 
 %% Code generation 
-% By default CodeGenerator class objects are configured to generate:
+% By default |CodeGenerator| class objects are configured to generate:
 %
 % * symbolic expressions
 % * m-code 
@@ -316,7 +316,7 @@ cGen = CodeGenerator(p560)
 %
 % and they document the CodeGeneration progress on the Matlab console. 
 % We may modify this behaviour by passing extra arguments to the
-% CodeGenerator constructor. (Type |help CodeGenerator| for details)
+% |CodeGenerator| constructor. (Type |help CodeGenerator| for details)
 %
 % Now let's generate code for the forward kinematics of our reduced Puma
 % 560.
@@ -366,7 +366,7 @@ ls(cGen.robjpath)
 % 
 qz
 %%
-% With the generic version of the fkine function from the SerialLink 
+% With the generic version of the fkine function from the |SerialLink| 
 % class we would compute the forward kinematics as follows:
 tic;
 Tz1 = p560.fkine(qz)
@@ -405,17 +405,16 @@ toc
 % This is however more time consuming. Most probably we might use the
 % symbolic expressions for algorithm development, controller design, 
 % stability proofs as well as analysis, system identification or teaching. 
-% It is also possible to get the symbolic expressions for the homogenous
-% transformations of up to each individual joint. 
 %
-% This has been found to be useful for example for during derivation of 
-% analytical inverse kinematics solutions  as well as collision avoidance 
-% schemes. See the documentation of genfkine for details.
+% It is also possible to get the symbolic expressions for the homogenous
+% transformations of up to each individual joint. This has been found to be
+% useful for example for during derivation of analytical inverse kinematics
+% solutions. See the documentation of genfkine for details.
 %
 %% Inheritance
 % Even though we have not yet generated robot specific code for |SerialLink|
 % metods other than |fkine|, we can still use all functionality of
-% SerialLink objects with our new specialized robot object which inherits
+% |SerialLink| objects with our new specialized robot object which inherits
 % from |SerialLink|.
 J01 = p560.jacob0(qz)
 J02 = specRob.jacob0(qz)
@@ -425,7 +424,7 @@ J02 = specRob.jacob0(qz)
 % generated Simulink library we can investigate the already optimized robot 
 % specific code within the blocks.
 % The usage of these blocks is also accompanied with a noticable speedup 
-% compared to the blocks based on generic SerialLink objects.
+% compared to the blocks based on generic |SerialLink| objects.
 eval(cGen.slib);
 snapnow;
 %%
@@ -439,12 +438,12 @@ bdclose(cGen.slib);
 
 %% Further information
 % For further information on symbolics and code generation see the
-% documentation of the SerialLink and CodeGenerator class.
+% documentation of the |SerialLink| and |CodeGenerator| class.
 %
 % All generated functions come with their own headers so that information
 % about their usage can be found by typing |help funname|.
 %
-% A list of all available methods provide by the CodeGenerator class can be
+% A list of all available methods provide by the |CodeGenerator| class can be
 % displayed.
 methods CodeGenerator
 
