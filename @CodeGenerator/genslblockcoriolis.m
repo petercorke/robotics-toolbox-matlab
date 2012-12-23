@@ -137,13 +137,13 @@ for kJoints = 1:nJoints
     CGen.logmsg('\t%s\n','row complete!');
 end
 addterms(CoriolisBlock); % Add terminators where needed
-distributeBlocks(CoriolisBlock);
+distributeblocks(CoriolisBlock);
 CGen.logmsg([datestr(now),'\tCoriolis matrix block complete\n']);
 
 
 %% Cleanup
 % Arrange blocks
-distributeBlocks(CGen.slib);
+distributeblocks(CGen.slib);
 
 % Lock, save and close library
 set_param(CGen.slib,'lock','on');

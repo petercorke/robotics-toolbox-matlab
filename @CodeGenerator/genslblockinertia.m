@@ -173,7 +173,7 @@ CGen.logmsg('\t%s\n',' done!');
 
 % add terminators where necessary
 addterms(invInertiaBlock);
-distributeBlocks(invInertiaBlock);
+distributeblocks(invInertiaBlock);
 CGen.logmsg([datestr(now),'\tInverse inertia matrix block complete.\n']);
 
 %% Cleanup

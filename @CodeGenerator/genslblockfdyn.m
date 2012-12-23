@@ -105,7 +105,7 @@ add_line(forwDynamicsBlock,'coriolisMultiply/1','Sum/2');
 add_line(forwDynamicsBlock,'gravload/1','Sum/3');
 add_line(forwDynamicsBlock,'friction/1','Sum/4');
 add_line(forwDynamicsBlock,'coriolis/1','coriolisMultiply/1');
-distributeBlocks(forwDynamicsBlock);
+distributeblocks(forwDynamicsBlock);
 CGen.logmsg('\t%s\n',' done!');
 
 CGen.logmsg([datestr(now),'\tForward dynamics block complete\n']);

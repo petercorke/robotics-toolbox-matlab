@@ -52,6 +52,26 @@ tau = CGen.rob.genforces;
 nJoints = CGen.rob.n;
 
 CGen.logmsg([datestr(now),'\tLoading required symbolic expressions\n']);
+
+%% Inertia matrix
+CGen.logmsg([datestr(now),'\tLoading inertia matrix row by row']);
+
+I = sym(zeros(nJoints));
+for kJoints = 1:nJoints
+    CGen.logmsg(' %s ',num2str(kJoints));
+    symname = ['inertia_row_',num2str(kJoints)];
+    fname = fullfile(CGen.sympath,[symname,'.mat']);
+    
+    if ~exist(fname,'file')
+        CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n']);
+        CGen.geninertia;
+    end
+    tmpstruct = load(fname);
+    I(kJoints,:)=tmpstruct.(symname);
+    
+end
+CGen.logmsg('\t%s\n',' done!');
+
 %% Matrix of centrifugal and Coriolis forces/torques matrix
 CGen.logmsg([datestr(now),'\t\tCoriolis matrix by row']);
 
@@ -62,7 +82,7 @@ for kJoints = 1:nJoints
     fname = fullfile(CGen.sympath,[symname,'.mat']);
     
     if ~exist(fname,'file')
-        CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n'])
+        CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n']);
         CGen.gencoriolis;
     end
     tmpstruct = load(fname);
@@ -77,7 +97,7 @@ symname = 'gravload';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
 if ~exist(fname,'file')
-    CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n'])
+    CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n']);
     CGen.gengravload;
 end
 tmpstruct = load(fname);
@@ -91,7 +111,7 @@ symname = 'friction';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
 if ~exist(fname,'file')
-    CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n'])
+    CGen.logmsg(['\n',datestr(now),'\t Symbolics not found, generating...\n']);
     CGen.genfriction;
 end
 tmpstruct = load(fname);
@@ -101,7 +121,7 @@ CGen.logmsg('\t%s\n',' done!');
 
 % Full inverse dynamics
 CGen.logmsg([datestr(now),'\tGenerating symbolic inertial reaction forces/torques expression\n']);
-Iqdd = tau.'-C*qd.' -G.' -F.';
+Iqdd = tau.'-C*qd.' -G.' +F.';
 Iqdd = Iqdd.';
 
 %% Save symbolic expressions

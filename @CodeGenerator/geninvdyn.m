@@ -117,7 +117,7 @@ F = tmpstruct.(symname);
 CGen.logmsg('\t%s\n',' done!');
 
 %% Full inverse dynamics
-tau = I*qdd.'+C*qd.'+ G.' + F.';
+tau = I*qdd.'+C*qd.'+ G.' - F.';
 
 
 %% Save symbolic expressions

@@ -6,6 +6,8 @@ function [tStruct] = setup
 tStruct = struct;
 mdl_puma560_3;
 tStruct.rob = p560.nofriction;
+% mdl_twolink
+% tStruct.rob = twolink;
 
 tStruct.cGen = CodeGenerator(tStruct.rob,'default','logfile','myLog.txt');
 
@@ -104,8 +106,7 @@ addpath(tStruct.cGen.basepath);
 specRob = eval(tStruct.cGen.getrobfname);
 
 q = rand(1,specRob.n);
-% qd = [0 0 0]; % this one works -> coriolis matrix disabled
-qd = rand(1,specRob.n); % this one does not work -> coriolis matrix enabled
+qd = rand(1,specRob.n);
 qdd = rand(1,specRob.n);
 [symQ,symQD,symQDD] = tStruct.rob.gencoords;
 
@@ -115,6 +116,23 @@ symTau = subs(tau,symQ,q);
 symTau = subs(symTau,symQD,qd);
 symTau = subs(symTau,symQDD,qdd);
 assertElementsAlmostEqual(specRob.invdyn(q,qd,qdd), symTau);
-% 
-% function genfdyn_test(tStruct)
-% % - test forward dynamics against numeric version
+
+function genfdyn_test(tStruct)
+% - test forward dynamics against numeric version
+Iqdd = tStruct.cGen.genfdyn;
+
+addpath(tStruct.cGen.basepath);
+specRob = eval(tStruct.cGen.getrobfname);
+
+q = rand(1,specRob.n);
+qd = rand(1,specRob.n);
+tau = rand(1,specRob.n);
+[symQ,symQD] = tStruct.rob.gencoords;
+symTau = tStruct.rob.genforces;
+
+assertElementsAlmostEqual(specRob.accel(q,qd,tau), tStruct.rob.accel(q,qd,tau));
+
+symIQdd = subs(Iqdd,symQ,q);
+symIQdd = subs(symIQdd,symQD,qd);
+symIQdd = subs(symIQdd,symTau,tau);
+assertElementsAlmostEqual(specRob.Iqdd(q,qd,tau), symIQdd);
