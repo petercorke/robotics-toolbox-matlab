@@ -140,7 +140,7 @@ end
 
 %% Embedded Matlab Function Simulink blocks
 if CGen.genslblock
-    CGen.genslblockinvdyn;
+    CGen.genslblockfdyn;
 end
 
 end
