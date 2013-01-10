@@ -266,8 +266,8 @@ function retval = plot(robot, tg, varargin)
             robot.animate(tg(p,:), handles);
             
             if ~isempty(opt.movie)
-                f = getframe( get(handles(1), 'Parent') );
-                imwrite(f.cdata, sprintf('%s/%04d.png', opt.movie, framenum));
+                % write the frame to the movie folder
+                print( '-dpng', fullfile(opt.movie, sprintf('%04d.png', framenum)) );
                 framenum = framenum+1;
             end
             
