@@ -22,8 +22,11 @@
 %   spherical, giving a ratio of 1, but in practice will be less than 1.
 %
 % Options::
-% 'T'           manipulability for transational motion only
+% 'T'           manipulability for transational motion only (default)
 % 'R'           manipulability for rotational motion only
+% 'all'         manipulability for all motions
+% 'dof',D       D is a vector (1x6) with non-zero elements if the
+%               corresponding DOF is to be included for manipulability
 % 'yoshikawa'   use Yoshikawa algorithm (default)
 % 'asada'       use Asada algorithm
 %
