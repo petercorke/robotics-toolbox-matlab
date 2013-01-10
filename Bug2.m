@@ -85,6 +85,9 @@ classdef Bug2 < Navigation
 
         function navigate_init(bug, robot)
 
+            if isempty(bug.goal)
+                error('RTB:bug2:nogoal', 'no goal set, cant compute path');
+            end
             % parameters of the M-line, direct from initial position to goal
             % as a vector mline, such that [robot 1]*mline = 0
             dims = axis;
