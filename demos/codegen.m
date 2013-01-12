@@ -1,3 +1,23 @@
+% Copyright (C) 1993-2013, by Jorn Malzahn
+%
+% This file is part of The Robotics Toolbox for MATLAB (RTB).
+% 
+% RTB is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Lesser General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% RTB is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Lesser General Public License for more details.
+% 
+% You should have received a copy of the GNU Leser General Public License
+% along with RTB.  If not, see <http://www.gnu.org/licenses/>.
+%
+% http://www.petercorke.com
+
+%%begin
 
 %% Getting started with symbolics and code generation
 % This is a brief example about how we can derive symbolic robot model 
@@ -9,8 +29,6 @@
 % A requirement for this demo is that we have the Mathworks Symbolic Toolbox
 % installed besides the Robotics Toolbox.
 %
-
-%%begin
 
 %% Instantiate a |CodeGenerator| class object
 % We start off with the instantiation of a |CodeGenerator| class object.
