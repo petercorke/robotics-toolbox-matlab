@@ -237,7 +237,7 @@ function trprint_test
 
 function rtdemo_test
 
-    if exist('rttrdemo', 'file') == 2
+    if exist('rtbdemo', 'file') == 2
         tbpath = fileparts(which('tr2eul'));
         demopath = fullfile(tbpath, 'demos');
         addpath( demopath );
@@ -246,14 +246,26 @@ function rtdemo_test
     end
 
     % run through all the demos
-    pause off
- 	rttrdemo
-    mdl_puma560
-    qz = [0 0 0 0 0 0]; % zero angles, L shaped pose
-    qr = [0 -pi/2 pi/2 0 0 0]; % ready pose, arm up 	rttgdemo
- 	rtfkdemo
- 	rtandemo
- 	rtikdemo
- 	rtjademo
- 	rtidemo
- 	rtfddemo
+    braitnav
+    bugnav
+    codegen
+    drivepose
+    dstarnav
+    fdyn
+    fkine
+    graphics
+    idyn
+    ikine
+    jacob
+    particlefilt
+    prmnav
+    quadrotor
+    robot
+    rotation
+    slam
+    symbolic
+    traj
+    trans
+    ztorque
+
+    close all

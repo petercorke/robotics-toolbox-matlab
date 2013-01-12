@@ -9,10 +9,11 @@
 % A requirement for this demo is that we have the Mathworks Symbolic Toolbox
 % installed besides the Robotics Toolbox.
 %
-clc;
-echo on;
+
+%%begin
+
 %% Instantiate a |CodeGenerator| class object
-% We tart off with the instantiation of a |CodeGenerator| class object.
+% We start off with the instantiation of a |CodeGenerator| class object.
 % First, we load the |SerialLink| object for which we intend to generate
 % code.
 mdl_puma560_3
@@ -22,7 +23,6 @@ mdl_puma560_3
 % object is used to instantiate the CodeGenerator.
 cGen = CodeGenerator(p560)
 
-pause % press any key
 %% Code generation 
 % By default |CodeGenerator| class objects are configured to generate:
 %
@@ -38,15 +38,13 @@ pause % press any key
 % 560.
 symExp = cGen.genfkine
 
-pause % press any key
 %%
 % The text output to the console may be disabled 
 cGen.verbose = false;
-%%
+%
 % or logged to disk by specifying a log file name
 cGen.logfile = 'roblog.txt'
 
-pause % press any key
 %%
 % The output variable |symExp| now contains the symbolic expression for the
 % forward kinematics. This expression is the same as would be obtained by
@@ -54,13 +52,12 @@ pause % press any key
 symP560 = p560.sym;
 q = symP560.gencoords;
 symExpDir = symP560.fkine(q)
-%
+
 % So we have basically two ways for deriving symbolic expressions using the
 % Robotics Toolbox.
 
-pause % press any key
 %%
-% The difference is that in addtion the functional output the symbolic
+% The difference is that in addition the functional output the symbolic
 % expression has now been saved to disk along with the generated m-code and
 % Simulink blocks. The storage directory is given in |cGen.basepath|, which
 % we now add to our search path.
@@ -87,18 +84,13 @@ qz
 %%
 % With the generic version of the fkine function from the |SerialLink| 
 % class we would compute the forward kinematics as follows:
-tic;
-Tz1 = p560.fkine(qz)
-t1 = toc
+tic; Tz1 = p560.fkine(qz); t1 = toc
 %% 
 % In order to use the generated robot specific m-functions we add them to
 % the search path and instantiate a new robot object.
 addpath(cGen.basepath)
 specRob = eval(cGen.getrobfname)
-tic
-Tz2 = specRob.fkine(qz)
-t2 = toc
-
+tic; Tz2 = specRob.fkine(qz); t2 = toc
 
 %% Speedup
 % The specialized robot version of fkine runs a little faster
@@ -115,13 +107,10 @@ t2 = toc
 % This way the specialized m-code can be used to decrease simulation times.
 %
 
-pause % press any key
 %%
 % We obtain the exact solution without floating point notation if we use
 % the symbolic expression as follows:
-tic
-Tz1 = subs(symExp,'[q1, q2, q3]',qz)
-toc
+tic; Tz1 = subs(symExp,'[q1, q2, q3]',qz); toc
 %%
 % This is however more time consuming. Most probably we might use the
 % symbolic expressions for algorithm development, controller design, 
@@ -133,7 +122,6 @@ toc
 % solutions. See the documentation of genfkine for details.
 %
 
-pause % press any key
 %% Inheritance
 % Even though we have not yet generated robot specific code for |SerialLink|
 % metods other than |fkine|, we can still use all functionality of
@@ -142,7 +130,6 @@ pause % press any key
 J01 = p560.jacob0(qz)
 J02 = specRob.jacob0(qz)
 
-pause % press any key
 %% A look at the generated Simulink blocks
 % The Simulink blocks are stored in a Simulink library file. By opening the
 % generated Simulink library we can investigate the already optimized robot 
@@ -159,7 +146,6 @@ snapnow;
 % on the target hardware.
 %
 
-pause % press any key
 bdclose(cGen.slib);
 
 %% Further information
@@ -173,19 +159,15 @@ bdclose(cGen.slib);
 % displayed.
 methods CodeGenerator
 
-pause % press any key
 %%
 % The same applies to the configurable properties:
 properties CodeGenerator
 
-pause % press any key
 %% Cleanup
 % If we whish to clean our disk from all the generated code, we can simply
 % remove it from the search path
 rmpath(cGen.basepath)
 %%
 % and purge everything.
-pause % press any key
 cGen.purge
 snapnow
-echo off

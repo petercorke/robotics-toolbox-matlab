@@ -19,20 +19,21 @@
 %
 % http://www.petercorke.com
 
-%**************************animation********************************************
-figure(2)
-echo on
-clf
-%
+%%begin
+% We will work with a model of the Puma 560 robot
+mdl_puma560
+
 % The trajectory demonstration has shown how a joint coordinate trajectory
 % may be generated
-    t = [0:.056:2]'; 	% generate a time vector
-    q = jtraj(qz, qr, t); % generate joint coordinate trajectory
-%
+
+t = [0:.05:2]'; 	% generate a time vector
+q = jtraj(qz, qr, t); % generate joint coordinate trajectory
+
 % the overloaded function plot() animates a stick figure robot moving 
 % along a trajectory.
 
-    p560.plot(q);
+p560.plot(q);
+
 % The drawn line segments do not necessarily correspond to robot links, but 
 % join the origins of sequential link coordinate frames.
 %
@@ -41,34 +42,33 @@ clf
 %
 % A shadow appears on the ground which helps to give some better idea of the
 % 3D object.
-
-pause % any key to continue
 %
+% This is a 3D plot so using the tools on the figure toolbar you can rotate the
+% figure and change your viewpoint.
+
+%--
 % We can also place additional robots into a figure.
 %
 % Let's make a clone of the Puma robot, but change its name and base location
 
-    p560_2 = SerialLink(p560, ...
-        'name', 'another Puma', ...
-        'base', transl(-0.5, 0.5, 0) )
-    hold on
-    p560_2.plot(q);
-pause % any key to continue
+p560_2 = SerialLink(p560, ...
+    'name', 'another Puma', ...
+    'base', transl(-0.5, 0.5, 0) )
+hold on
+p560_2.plot(q);
 
 % We can also have multiple views of the same robot
-    clf
-    p560.plot(qr);
-    figure
-    p560.plot(qr);
-    view(40,50)
-    p560.plot(q)
-pause % any key to continue
-%
+
+clf
+p560.plot(qr);
+figure
+p560.plot(qr);
+view(40,50)
+p560.plot(q)
+
 % Sometimes it's useful to be able to manually drive the robot around to
 % get an understanding of how it works.
 
-    p560.teach()
-%
-% use the sliders to control the robot (in fact both views).  Hit the red quit
+p560.teach()
+% Use the sliders to control the robot (in fact both views).  Hit the red quit
 % button when you are done.
-echo off

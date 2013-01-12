@@ -15,41 +15,64 @@ Jacobians, animations, path planning, forward and inverse kinematics, and forwar
    <label>MATLAB Examples</label>
     <icon>$toolbox/matlab/icons/matlabicon.gif</icon>
    <demoitem>
-      <label>Transform and quaternion primitives</label>
-      <callback>rttrdemo</callback>
-      <description>Show the power of matrices</description>
+      <label>Representing rotation</label>
+      <callback>rotation</callback>
+      <description>Ways to represent rotation in 3D</description>
    </demoitem>
    <demoitem>
-      <label>Forward kinematics</label>
-      <callback>rtfkdemo</callback>
-   </demoitem>
-   <demoitem>
-      <label>Jacobians</label>
-      <callback>rtjademo</callback>
+      <label>Representing pose</label>
+      <callback>trans</callback>
+      <description>Representing pose in 3D</description>
    </demoitem>
    <demoitem>
       <label>Trajectories</label>
-      <callback>rttrdemo</callback>
+      <callback>traj</callback>
+      <description>Representing sequences of poses</description>
    </demoitem>
    <demoitem>
-      <label>Animation</label>
-      <callback>rtandemo</callback>
+      <label>Creating a robot</label>
+      <callback>robot</callback>
+      <description>Links and serial-link manipulators</description>
+   </demoitem>
+   <demoitem>
+      <label>Forward kinematics</label>
+      <callback>fkine</callback>
+      <description>Manipulator forward kinematics: angles to pose</description>
    </demoitem>
    <demoitem>
       <label>Inverse kinematics</label>
-      <callback>rtikdemo</callback>
+      <callback>ikine</callback>
+      <description>Manipulator inverse kinematics: pose to angles</description>
    </demoitem>
    <demoitem>
-      <label>Forward dynamics</label>
-      <callback>rtfddemo</callback>
+      <label>Robot graphics and animation</label>
+      <callback>graphics</callback>
+      <description>Advanced use of plot and animation</description>
+   </demoitem>
+   <demoitem>
+      <label>Jacobians</label>
+      <callback>jacob</callback>
+      <description>Infinitissimal motion and manipulator Jacobians</description>
    </demoitem>
    <demoitem>
       <label>Inverse dynamics</label>
-      <callback>rtiddemo</callback>
+      <callback>idyn</callback>
+      <description>Inverse manipulator dynamics: joint rates to torque</description>
    </demoitem>
-      <demoitem>
-      <label>Symbolics and code generation</label>
-      <callback>rtsymcgendemo</callback>
+   <demoitem>
+      <label>Forward dynamics</label>
+      <callback>fdyn</callback>
+      <description>Forward manipulator dynamics: torque to joint rates</description>
+   </demoitem>
+   <demoitem>
+      <label>Symbolics</label>
+      <callback>symbolic</callback>
+      <description>Using symbolic variables with the Toolbox</description>
+   </demoitem>
+  <demoitem>
+      <label>Code generation</label>
+      <callback>codegen</callback>
+      <description>Generate efficient run-time kinematic and dynamic code</description>
    </demoitem>
 </demosection>
 
@@ -58,9 +81,53 @@ Jacobians, animations, path planning, forward and inverse kinematics, and forwar
    <label>Simulink Examples</label>
    <demoitem>
       <label>Puma robot falling under gravity</label>
-      <type>model</type>
-      <source>demo1</source>
+      <callback>ztorque</callback>
       <dependency>Simulink</dependency>
+   </demoitem>
+   <demoitem>
+      <label>Braitenberg vehicle</label>
+      <callback>braitnav</callback>
+      <description>Demonstrate a Braitenberg vehicle</description>
+   </demoitem>
+   <demoitem>
+      <label>Driving to a pose</label>
+      <callback>drivepose</callback>
+      <description>Control a car-like mobile robot to move toward a desired pose</description>
+   </demoitem>
+   <demoitem>
+      <label>Quadrotor flying</label>
+      <callback>quadrotor</callback>
+      <description>Control a quadrotor flying vehicle to take off and fly in a circle</description>
+   </demoitem>
+</demosection>
+
+<demosection>
+    <icon>$toolbox/matlab/icons/matlabicon.gif</icon>
+   <label>Mobile robot Examples</label>
+   <demoitem>
+      <label>Bug navigation</label>
+      <callback>bugnav</callback>
+      <description>Demonstrate the Bug2 goal finding algorithm</description>
+   </demoitem>
+   <demoitem>
+      <label></label>
+      <callback>dstarnav</callback>
+      <description>Demonstrate D* path planning</description>
+   </demoitem>
+   <demoitem>
+      <label>PRM navigation</label>
+      <callback>prmnav</callback>
+      <description>Demonstrate probabistic roadmap path planning</description>
+   </demoitem>
+   <demoitem>
+      <label>SLAM</label>
+      <callback>slam</callback>
+      <description>Demonstrate the simultaneous estimation of robot pose and landmark positions using an extended Kalman filter (EKF)</description>
+   </demoitem>
+   <demoitem>
+      <label>Particle filter localization</label>
+      <callback>particlefilt</callback>
+      <description>Demonstrate the estimation of robot pose using a Monte-Carlo style particle filter</description>
    </demoitem>
 </demosection>
 

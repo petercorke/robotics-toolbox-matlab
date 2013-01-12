@@ -1,0 +1,41 @@
+%%begin
+
+% Our robot will operate within a grid world that contains free
+% space where it can drive and obstacles.  We load a map of the world
+load map1
+% which loads a variable called map
+about map
+
+% The elements of the obstacle map are converted into traversibility values, an
+% obstacle has an infinite traversibility while free space has a nominal
+% travesibility of 1.
+
+% Now we create an instance of a robot with the D* navigation algorithm
+dstar = Dstar(map, 'quiet');
+
+% Now we define the goal and start coordinates
+goal = [50,30];
+start = [20, 10];
+
+% then ask the robot to plan a path to goal (it will take few seconds)
+dstar.plan(goal);
+
+% Now we can display the obstacles and the cost to reach the goal from every
+% point in the world
+dstar.plot()
+% where the cost scale is shown by the bar to the right.
+
+% Now we can execute the planned path, it will be animated with green dots
+tic; dstar.path(start); toc
+
+% Now lets change the difficulty of some of the terrain, make it more costly
+% to travese
+for r=78:85; for c=12:45; dstar.modify_cost([c,r], 2); end; end
+
+% Now we can replan, but D* does this in an incremental way which is faster than
+% recomputing the whole plan from scratch
+tic; dstar.plan(); toc
+% that took less time than before...
+
+% and the best path is now
+dstar.path(start)
