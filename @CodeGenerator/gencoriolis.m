@@ -1,34 +1,24 @@
-function [ coriolis ] = gencoriolis( CGen )
-%% GENCORIOLIS  Generates code from the symbolic robot specific Coriolis matrix (matrix of centrifugal and Coriolis forces/torques).
+%GENCORIOLIS  Generate code for Coriolis forces
 %
-%  coriolis = gencoriolis(cGen)
-%  coriolis = cGen.gencoriolis
+% coriolis = cGen.gencoriolis() is a symbolic matrix (NxN) of centrifugal and Coriolis
+% forces/torques.
 %
-%  Inputs::
-%       cGen:  a CodeGenerator class object
+% Notes::
+% - The coriolis matrix is stored row by row to avoid memory issues.
+%   The generated code recombines these rows to output the full matrix.
+% - Behaviour depends on the cGen flags:
+%   - saveresult: the symbolic expressions are saved to
+%     disk in the directory specified by cGen.sympath
+%   - genmfun: ready to use m-functions are generated and
+%     provided via a subclass of SerialLink stored in cGen.robjpath
+%   - genslblock: a Simulink block is generated and stored in a
+%     robot specific block library cGen.slib in the directory
+%     cGen.basepath
 %
-%       If cGen has the active flag:
-%           - saveresult: the symbolic expressions are saved to
-%           disk in the directory specified by cGen.sympath
-%
-%           - genmfun: ready to use m-functions are generated and
-%           provided via a subclass of SerialLink stored in cGen.robjpath
-%
-%           - genslblock: a Simulink block is generated and stored in a
-%           robot specific block library cGen.slib in the directory
-%           cGen.basepath
-%
-%       The coriolis matrix is stored row by row to avoid memory issues.
-%       The generated code recombines these rows to output the full matrix.
-%
-%  Outputs::
-%       coriolis: nxn symbolic matrix of centrifugal and Coriolis
-%       forces/torques.
-%
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
 %  See also CodeGenerator, geninertia, genfkine
 
@@ -51,6 +41,7 @@ function [ coriolis ] = gencoriolis( CGen )
 %
 % http://www.petercorke.com
 
+function [ coriolis ] = gencoriolis( CGen )
 
 %% Derivation of symbolic expressions
 CGen.logmsg([datestr(now),'\tDeriving robot Coriolis matrix']);

@@ -1,4 +1,4 @@
-%% CODEGENERATOR Class for code generation from symboic SerialLink objects.
+% CODEGENERATOR Class for code generation from symbolic SerialLink objects.
 %
 % Objects of the CodeGenerator class enable the automated robot specific
 % model code generation for SerialLink robot objects.
@@ -8,34 +8,16 @@
 % - m-functions with symbolic robot specific model code
 % - real-time capable robot specific Simulink blocks
 %
-% Constructor::
-%   cGen = CodeGenerator(rob)
-%   cGen = CodeGenerator(rob,'optionSet')
-%   cGen = CodeGenerator(...,'par1', val1, 'par2', val2,... )
-%
-%       'optionSet' || verbose || saveResult ||    logFile     || genMFun    || genSLBlock    ||
-%       -------------++---------++------------++----------------++------------++---------------++
-%       'default'   ||    1    ||     1      ||      ''        ||     1      ||      1        ||
-%       'debug'     ||    1    ||     1      || 'robModel.log' ||     1      ||      1        ||
-%       'silent'    ||    0    ||     1      ||      ''        ||     1      ||      1        ||
-%       'disk'      ||    1    ||     1      ||      ''        ||     0      ||      0        ||
-%       'workspace' ||    1    ||     0      ||      ''        ||     0      ||      0        ||
-%       'mfun     ' ||    1    ||     1      ||      ''        ||     1      ||      0        ||
-%       'slblock  ' ||    1    ||     1      ||      ''        ||     0      ||      1        ||
-%
-%   The option sets can be passed as an optional parameter to the symbolic
-%   model creation functions. If 'optionSet' is ommitted, then 'default' is used.
 %
 % Methods::
 %
-%  getrobfname   get robot name and remove any blanks
-%  savesym       save symbolic expression to disk
-%
-%  genfkine      generate forward kinematics code
-%  genjacobian   generate jacobian code
-%  genfdyn       generate forward dynamics code
-%  geninvdyn     generate forward dynamics code
-%  geneverything generate code for all of the above
+%  getrobfname     get robot name and remove any blanks
+%  savesym         save symbolic expression to disk
+%  genfkine        generate forward kinematics code
+%  genjacobian     generate jacobian code
+%  genfdyn         generate forward dynamics code
+%  geninvdyn       generate forward dynamics code
+%  geneverything   generate code for all of the above
 %
 % Properties (read/write)::
 %
@@ -54,10 +36,10 @@
 %  rob            SerialLink object to generate code for (1x1).
 %
 %
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
 % See also SerialLink, Link.
 
@@ -100,7 +82,33 @@ classdef CodeGenerator
         debug;        % just appears because of tb_optparse, so hide it from the user
     end
     methods
+
         function CGen = CodeGenerator(rob,varargin)
+        %CodeGenerator.CodeGenerator Construct a code generator object
+        %
+        % cGen = CodeGenerator(ROB) is a code generator object for the SerialLink
+        % object ROB.
+        %
+        % cGen = CodeGenerator(ROB, OPTIONS) as above but with options described below.
+        %   cGen = CodeGenerator(rob,'optionSet')
+        %   cGen = CodeGenerator(...,'par1', val1, 'par2', val2,... )
+        %
+        % Options::
+        %
+        % 
+        %
+        %       'optionSet' || verbose || saveResult ||    logFile     || genMFun    || genSLBlock    ||
+        %       -------------++---------++------------++----------------++------------++---------------++
+        %       'default'   ||    1    ||     1      ||      ''        ||     1      ||      1        ||
+        %       'debug'     ||    1    ||     1      || 'robModel.log' ||     1      ||      1        ||
+        %       'silent'    ||    0    ||     1      ||      ''        ||     1      ||      1        ||
+        %       'disk'      ||    1    ||     1      ||      ''        ||     0      ||      0        ||
+        %       'workspace' ||    1    ||     0      ||      ''        ||     0      ||      0        ||
+        %       'mfun     ' ||    1    ||     1      ||      ''        ||     1      ||      0        ||
+        %       'slblock  ' ||    1    ||     1      ||      ''        ||     0      ||      1        ||
+        %
+        %   The option sets can be passed as an optional parameter to the symbolic
+        %   model creation functions. If 'optionSet' is ommitted, then 'default' is used.
             if ~isa(rob,'SerialLink')
                 error('CodeGenerator:wrongConstructorInput','The input variable %s must be a SerialLink object.',inputname(1));
             end
@@ -175,6 +183,7 @@ classdef CodeGenerator
             blanks = isspace(robName)==1;
             robName(blanks)= [];
         end
+
         function savesym(CGen,sym2save, symname, fname)
             
             if ~exist(CGen.sympath,'dir')
@@ -184,6 +193,7 @@ classdef CodeGenerator
             eval([symname,'= sym2save;']);
             save(fullfile(CGen.sympath,fname),symname);
         end
+
         function [] = geneverything(CGen)
             [t,allT] = CGen.genfkine;
             [J0,Jn] = CGen.genjacobian;
@@ -194,6 +204,7 @@ classdef CodeGenerator
             [Iqdd] = CGen.genfdyn;
             [tau] = CGen.geninvdyn;
         end
+
         function CGen = set.genmfun(CGen,value)
             CGen.genmfun = value;
             if value == true
@@ -206,12 +217,14 @@ classdef CodeGenerator
                 CGen.logmsg('\t%s\n',' done!');
             end
         end
+
         function CGen = set.genslblock(CGen,value)
             CGen.genslblock = value;
             if value == true
                 CGen.saveresult = true;
             end
         end
+
         function [] = purge(CGen,varargin)
             
             dopurge = 0;
@@ -236,8 +249,5 @@ classdef CodeGenerator
                 end
             end
         end
-        
     end
-    
 end
-

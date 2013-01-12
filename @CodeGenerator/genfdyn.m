@@ -1,5 +1,4 @@
-function [Iqdd] = genfdyn(CGen)
-%% GENFDYN Generates code from the symbolic robot specific forward dynamics.
+%GENFDYN Generates code from the symbolic robot specific forward dynamics.
 %
 %  Iqdd = genfdyn(cGen)
 %  Iqdd = cGen.genfdyn
@@ -47,6 +46,7 @@ function [Iqdd] = genfdyn(CGen)
 %
 % http://www.petercorke.com
 
+function [Iqdd] = genfdyn(CGen)
 [q,qd] = CGen.rob.gencoords;
 tau = CGen.rob.genforces;
 nJoints = CGen.rob.n;
