@@ -1,29 +1,20 @@
-function [ ] = genmfuncoriolis( CGen )
-%% GENMFUNCORIOLIS Generates the robot specific m-function to compute the centrifugal and Coriolis forces/torques acting on the joints.
+%CodeGenerator.genmfuncoriolis  Generates M-functions for the Coriolis matrix.
 %
-%  [] = genmfuncoriolis(cGen)
-%  [] = cGen.genmfuncoriolis
+% cGen.genmfuncoriolis()
 %
-%  Inputs::
-%       cGen:  a CodeGenerator class object
+% Notes::
+% - Is called by CodeGenerator.gencoriolis if cGen has active flag genmfun
+% - The Coriolis matrix is stored row by row to avoid memory issues.
+% - The generated M-function recombines the individual M-functions for each row.
+% - Access to generated functions is provided via 
+% subclass of SerialLink stored in cGen.robjpath
 %
-%       If cGen has the active flag:
-%           - saveresult: the symbolic expressions are saved to
-%           disk in the directory specified by cGen.sympath
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%           - genmfun: ready to use m-functions are generated and
-%           provided via a subclass of SerialLink stored in cGen.robjpath
-%
-%           - genslblock: a Simulink block is generated and stored in a
-%           robot specific block library cGen.slib in the directory
-%           cGen.basepath
-%
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
-%
-%  See also CodeGenerator, gencoriolis
+% See also CodeGenerator, gencoriolis, geninertia
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -43,6 +34,8 @@ function [ ] = genmfuncoriolis( CGen )
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [ ] = genmfuncoriolis( CGen )
 
 %% Does robot class exist?
 if ~exist(fullfile(CGen.robjpath,[CGen.getrobfname,'.m']),'file')

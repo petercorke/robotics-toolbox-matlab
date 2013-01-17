@@ -1,32 +1,25 @@
-function [ F ] = genfriction( CGen )
-%% GENFRICTION Generates code from the symbolic robot specific friction model.
+%CodeGenerator.genfriction Generates code for the friction model.
 %
-%  [F] = genfriction(cGen)
-%  [F] = cGen.genfriction
+% F = cGen.genfriction is the symbolic (1xN) vector of joint friction
 %
-%  Inputs::
-%       cGen:  a CodeGenerator class object
+% Notes::
+% - The coriolis matrix is stored row by row to avoid memory issues.
+%   The generated code recombines these rows to output the full matrix.
+% - Behaviour depends on the cGen flags:
+%   - saveresult: the symbolic expressions are saved to
+%     disk in the directory specified by cGen.sympath
+%   - genmfun: ready to use m-functions are generated and
+%     provided via a subclass of SerialLink stored in cGen.robjpath
+%   - genslblock: a Simulink block is generated and stored in a
+%     robot specific block library cGen.slib in the directory
+%     cGen.basepath
 %
-%       If cGen has the active flag:
-%           - saveresult: the symbolic expressions are saved to
-%           disk in the directory specified by cGen.sympath
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%           - genmfun: ready to use m-functions are generated and
-%           provided via a subclass of SerialLink stored in cGen.robjpath
-%
-%           - genslblock: a Simulink block is generated and stored in a
-%           robot specific block library cGen.slib in the directory
-%           cGen.basepath
-%
-%  Outputs::
-%       F: the symbolic vector (1xn) of joint friction
-%
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
-%
-%  See also CodeGenerator, geninvdyn, genfdyn
+% See also CodeGenerator, geninvdyn, genfdyn
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -46,6 +39,8 @@ function [ F ] = genfriction( CGen )
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [ F ] = genfriction( CGen )
 
 %% Derivation of symbolic expressions
 CGen.logmsg([datestr(now),'\tDeriving joint friction model']);

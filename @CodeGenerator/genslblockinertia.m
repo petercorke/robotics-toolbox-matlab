@@ -1,29 +1,21 @@
-function genslblockinertia(CGen)
-%% GENSLBLOCKINERTIA Generates the robot specific real-time capable Simulink block for the robot inertia matrix.
+%CodeGenerator.genslblockinertia Generates Simulink blocks for the robot inertia matrix.
 %
-%  [] = genslblockinertia(cGen)
-%  [] = cGen.genslbgenslblockinertia
+% cGen.genslbgenslblockinertia()
 %
-%  Inputs::
-%       cGen:  a CodeGenerator class object
+% Notes::
+% - Is called by CodeGenerator.geninertia if cGen has active flag genslblock
+% - The Inertia matrix is stored row by row to avoid memory issues.
+% - The Simulink block recombines the the individual blocks for each row.
+% - The Simulink blocks are generated and stored in a
+% robot specific block library cGen.slib in the directory
+% cGen.basepath
 %
-%       If cGen has the active flag:
-%           - saveresult: the symbolic expressions are saved to
-%           disk in the directory specified by cGen.sympath
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%           - genmfun: ready to use m-functions are generated and
-%           provided via a subclass of SerialLink stored in cGen.robjpath
-%
-%           - genslblock: a Simulink block is generated and stored in a
-%           robot specific block library cGen.slib in the directory
-%           cGen.basepath
-%
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
-%
-%  See also CodeGenerator, geninertia
+% See also CodeGenerator, geninertia
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -43,6 +35,8 @@ function genslblockinertia(CGen)
 % along with RTB. If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function genslblockinertia(CGen)
 
 %% Open or create block library
 bdclose('all')                                                              % avoid problems with previously loaded libraries

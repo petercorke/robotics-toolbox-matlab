@@ -1,32 +1,26 @@
-function [ tau ] = geninvdyn( CGen )
-%% GENINVDYN Generates code from the symbolic robot specific inverse dynamics.
+%CodeGenerator.geninvdyn Generates code for the inverse dynamics.
 %
-%  tau = geninvdyn(cGen)
-%  tau = cGen.geninvdyn
+% TAU = cGen.geninvdyn (1xN) is the symbolic vector of joint forces/torques
 %
-%  Inputs::
-%       cGen:  a CodeGenerator class object
+% Notes::
+% - The inverse dynamics vector is composed of the previously computed inertia matrix
+%   coriolis matrix, vector of gravitational load and joint friction for speedup.
+%   The generated code recombines these components to output the final vector.
+% - Behaviour depends on the cGen flags:
+%   - saveresult: the symbolic expressions are saved to
+%     disk in the directory specified by cGen.sympath
+%   - genmfun: ready to use m-functions are generated and
+%     provided via a subclass of SerialLink stored in cGen.robjpath
+%   - genslblock: a Simulink block is generated and stored in a
+%     robot specific block library cGen.slib in the directory
+%     cGen.basepath
 %
-%       If cGen has the active flag:
-%           - saveresult: the symbolic expressions are saved to
-%           disk in the directory specified by cGen.sympath
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%           - genmfun: ready to use m-functions are generated and
-%           provided via a subclass of SerialLink stored in cGen.robjpath
-%
-%           - genslblock: a Simulink block is generated and stored in a
-%           robot specific block library cGen.slib in the directory
-%           cGen.basepath
-%
-%  Outputs::
-%       tau: 1xn symbolic vector of joint forces/torques
-%
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
-%
-%  See also CodeGenerator, genfdyn, genfkine
+% See also CodeGenerator, genfdyn, genfkine
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -46,6 +40,8 @@ function [ tau ] = geninvdyn( CGen )
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [ tau ] = geninvdyn( CGen )
 
 [q,qd,qdd] = CGen.rob.gencoords;
 nJoints = CGen.rob.n;

@@ -1,31 +1,23 @@
-%GENFDYN Generates code from the symbolic robot specific forward dynamics.
+%CodeGenerator.genfdyn Generates code from the symbolic robot specific forward dynamics.
 %
-%  Iqdd = genfdyn(cGen)
-%  Iqdd = cGen.genfdyn
+% Iqdd = cGen.genfdyn is a (1xN) symbolic vector of joint inertial reaction forces/torques
 %
-%  Inputs::
-%       cGen:  a CodeGenerator class object
+% Notes::
+% - Behaviour depends on the cGen flags:
+%   - saveresult: the symbolic expressions are saved to
+%     disk in the directory specified by cGen.sympath
+%   - genmfun: ready to use m-functions are generated and
+%     provided via a subclass of SerialLink stored in cGen.robjpath
+%   - genslblock: a Simulink block is generated and stored in a
+%     robot specific block library cGen.slib in the directory
+%     cGen.basepath
 %
-%       If cGen has the active flag:
-%           - saveresult: the symbolic expressions are saved to
-%           disk in the directory specified by cGen.sympath
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%           - genmfun: ready to use m-functions are generated and
-%           provided via a subclass of SerialLink stored in cGen.robjpath
-%
-%           - genslblock: a Simulink block is generated and stored in a
-%           robot specific block library cGen.slib in the directory
-%           cGen.basepath
-%
-%  Outputs::
-%       Iqdd: 1xn symbolic vector of joint inertial reaction forces/torques
-%
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
-%
-%  See also CodeGenerator, geninvdyn, genfkine
+% See also CodeGenerator, geninertia, genfkine
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %

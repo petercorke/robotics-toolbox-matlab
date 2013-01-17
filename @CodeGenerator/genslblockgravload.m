@@ -1,29 +1,19 @@
-function genslblockgravload(CGen)
-%% GENSLBLOCKGRAVLOAD Generates the robot specific real-time capable Simulink blocks for the gravitational load forces/torques.
+%CodeGenerator.genslblockgravload Generates Simulink blocks for the vector of gravitational load forces/torques.
 %
-%  [] = genslblockgravload(cGen)
-%  [] = cGen.genslblockgravload
+% cGen.genslblockgravload()
 %
-%  Inputs::
-%       cGen:  a CodeGenerator class object
+% Notes::
+% - Is called by CodeGenerator.gengravload if cGen has active flag genslblock
+% - The Simulink blocks are generated and stored in a
+% robot specific block library cGen.slib in the directory
+% cGen.basepath
 %
-%       If cGen has the active flag:
-%           - saveresult: the symbolic expressions are saved to
-%           disk in the directory specified by cGen.sympath
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%           - genmfun: ready to use m-functions are generated and
-%           provided via a subclass of SerialLink stored in cGen.robjpath
-%
-%           - genslblock: a Simulink block is generated and stored in a
-%           robot specific block library cGen.slib in the directory
-%           cGen.basepath
-%
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
-%
-%  See also CodeGenerator, gengravload
+% See also CodeGenerator, gengravload
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -44,6 +34,8 @@ function genslblockgravload(CGen)
 %
 % http://www.petercorke.com
  
+function genslblockgravload(CGen)
+
 %% Open or create block library
 bdclose('all')                                                              % avoid problems with previously loaded libraries
 load_system('simulink');

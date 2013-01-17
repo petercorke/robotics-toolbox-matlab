@@ -1,29 +1,21 @@
 function [] = genmfuninertia(CGen)
-%% GENMFUNINERTIA Generates the robot specific m-Function to compute the robot inertia matrix.
+%CodeGeneration.genmfuninertia Generates M-functions for the robot inertia matrix
 %
-%  [] = genmfuninertia(cGen)
-%  [] = cGen.genmfuninertia
+% cGen.genmfuninertia()
 %
-%  Inputs::
-%       cGen:  a CodeGenerator class object
+% Notes::
+% - Is called by CodeGenerator.geninertia if cGen has active flag genmfun
+% - The inertia matrix is stored row by row to avoid memory issues.
+% - The generated M-function recombines the individual M-functions for each row.
+% - Access to generated functions is provided via 
+% subclass of SerialLink stored in cGen.robjpath
 %
-%       If cGen has the active flag:
-%           - saveresult: the symbolic expressions are saved to
-%           disk in the directory specified by cGen.sympath
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%           - genmfun: ready to use m-functions are generated and
-%           provided via a subclass of SerialLink stored in cGen.robjpath
-%
-%           - genslblock: a Simulink block is generated and stored in a
-%           robot specific block library cGen.slib in the directory
-%           cGen.basepath
-%
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
-%
-%  See also CodeGenerator, gencoriolis
+% See also CodeGenerator, gencoriolis
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %

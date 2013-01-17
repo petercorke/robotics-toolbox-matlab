@@ -1,33 +1,24 @@
-function [G] = gengravload(CGen)
-%% GENGRAVLOAD Generates code from the symbolic robot specific gravitational load equations
+%CodeGenerator.gengravload Generates code for the vector of gravitational load
 %
-%  [G] = gengravload(cGen)
-%  [G] = cGen.gengravload
+%  [G] = cGen.gengravload is a (1xN) vector of joint load forces/torques due to
+%  gravity
 %
-%  Inputs::
-%       cGen:  a CodeGenerator class object
+% Notes::
+% - Behaviour depends on the cGen flags:
+%   - saveresult: the symbolic expressions are saved to
+%     disk in the directory specified by cGen.sympath
+%   - genmfun: ready to use m-functions are generated and
+%     provided via a subclass of SerialLink stored in cGen.robjpath
+%   - genslblock: a Simulink block is generated and stored in a
+%     robot specific block library cGen.slib in the directory
+%     cGen.basepath
 %
-%       If cGen has the active flag:
-%           - saveresult: the symbolic expressions are saved to
-%           disk in the directory specified by cGen.sympath
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%           - genmfun: ready to use m-functions are generated and
-%           provided via a subclass of SerialLink stored in cGen.robjpath
-%
-%           - genslblock: a Simulink block is generated and stored in a
-%           robot specific block library cGen.slib in the directory
-%           cGen.basepath
-%
-%  Outputs::
-%       G: the symbolic vector (1xn) of joint load forces/torques due to
-%       gravity
-%
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
-%
-%  See also CodeGenerator, geninvdyn, genfdyn
+% See also CodeGenerator, geninvdyn, genfdyn
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -48,6 +39,7 @@ function [G] = gengravload(CGen)
 %
 % http://www.petercorke.com
 
+function [G] = gengravload(CGen)
 
 %% Derivation of symbolic expressions
 CGen.logmsg([datestr(now),'\tDeriving gravitational load vector']);

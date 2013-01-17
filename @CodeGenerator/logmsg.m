@@ -1,27 +1,19 @@
-function [cnt] = logmsg(CGen, varargin)
-%% MULTIDFPRINTF Print CodeGenerator logs.
+%CodeGenerator.logmsg Print CodeGenerator logs.
 %
-%   [count] = logmsg(CGen, FORMAT, A, ...)
-%   [count] = CGen.logmsg( FORMAT, A, ...)
+% count = CGen.logmsg( FORMAT, A, ...) is the number of characters written to the CGen.logfile.
+% For the additional arguments see fprintf.
 %
-%  Description::
-%    Matlab ships with a function for writing formatted strings into a text
-%    file or to the console (fprintf). The function works with single 
-%    target identifiers (file, console, string). This function uses the 
-%    same syntax as for the fprintf function to output log messages to 
-%    either the Matlab console, a log file or both. 
+% Note::
+%  Matlab ships with a function for writing formatted strings into a text
+%  file or to the console (fprintf). The function works with single 
+%  target identifiers (file, console, string). This function uses the 
+%  same syntax as for the fprintf function to output log messages to 
+%  either the Matlab console, a log file or both. 
 %
-%  Input::
-%       FORMAT:        Format string as used by sprintf and fprintf. 
-%       A:             Array of elements, to which the format will be applied.
-%
-%  Output::
-%       count:         Vector with the number of bytes written to each ID
-%
-%  Authors::
-%        Jörn Malzahn   
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
+% Authors::
+%  Jörn Malzahn   
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
 %  See also multidfprintf,fprintf,sprintf.
 
@@ -43,6 +35,8 @@ function [cnt] = logmsg(CGen, varargin)
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [cnt] = logmsg(CGen, varargin)
 
 % Output to logfile?
 if ~isempty(CGen.logfile)

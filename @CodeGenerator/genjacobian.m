@@ -1,36 +1,27 @@
-function [J0, Jn] = genjacobian(CGen)
-%% GENJACOBIAN Generates code from the symbolic robot specific jacobian expression.
+%CodeGenerator.genjacobian Generates code for the robot jacobians
 %
-%  [J0, Jn] = genjacobian(cGen)
-%  [J0, Jn] = cGen.genjacobian
+% [J0, Jn] = cGen.genjacobian
+% J0 is the symbolic expression for the (6xN) Jacobian matrix 
+% expressed in the base coordinate frame
+% Jn is the symbolic expression for the (6xN) Jacobian matrix 
+% expressed in the end-effector frame
 %
-%  Inputs::
-%       cGen:  a CodeGenerator class object
+% Notes::
+% - Behaviour depends on the cGen flags:
+%   - saveresult: the symbolic expressions are saved to
+%     disk in the directory specified by cGen.sympath
+%   - genmfun: ready to use m-functions are generated and
+%     provided via a subclass of SerialLink stored in cGen.robjpath
+%   - genslblock: a Simulink block is generated and stored in a
+%     robot specific block library cGen.slib in the directory
+%     cGen.basepath
 %
-%       If cGen has the active flag:
-%           - saveresult: the symbolic expressions are saved to
-%           disk in the directory specified by cGen.sympath
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%           - genmfun: ready to use m-functions are generated and
-%           provided via a subclass of SerialLink stored in cGen.robjpath
-%
-%           - genslblock: a Simulink block is generated and stored in a
-%           robot specific block library cGen.slib in the directory
-%           cGen.basepath
-%
-%  Outputs::
-%       J0: the symbolic expression (6xn) for the Jacobian matrix (6xN)
-%       expressed in the base coordinate frame
-%
-%       Jn: the symbolic expression (6xn) for the Jacobian matrix (6xN)
-%       expressed in the end-effector frame
-%
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
-%
-%  See also CodeGenerator, geninvdyn, genjacobian
+% See also CodeGenerator, geninvdyn, genjacobian
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -50,6 +41,8 @@ function [J0, Jn] = genjacobian(CGen)
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [J0, Jn] = genjacobian(CGen)
 
 %% Derivation of symbolic expressions
 CGen.logmsg([datestr(now),'\tDeriving robot jacobians']);

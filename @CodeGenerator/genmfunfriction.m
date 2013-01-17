@@ -1,29 +1,18 @@
-function [ F ] = genmfunfriction( CGen )
-%% GENMFUNFRICTION Generates M-functions from the symbolic robot specific friction model.
+%CodeGenerator.genmfunfriction Generates M-functions for the joint friction model.
 %
-%  [] = genmfunfriction(cGen)
-%  [] = cGen.genmfunfriction
+% cGen.genmfunfriction()
 %
-%  Inputs::
-%       cGen:  a CodeGenerator class object
+% Notes::
+% - Is called only if cGen has active flag genmfun
+% - Access to generated functions is provided via 
+% subclass of SerialLink stored in cGen.robjpath
 %
-%       If cGen has the active flag:
-%           - saveresult: the symbolic expressions are saved to
-%           disk in the directory specified by cGen.sympath
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%           - genmfun: ready to use m-functions are generated and
-%           provided via a subclass of SerialLink stored in cGen.robjpath
-%
-%           - genslblock: a Simulink block is generated and stored in a
-%           robot specific block library cGen.slib in the directory
-%           cGen.basepath
-%
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
-%
-%  See also CodeGenerator, gengravload
+% See also CodeGenerator, gengravload
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -43,6 +32,8 @@ function [ F ] = genmfunfriction( CGen )
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com 
+
+function [ F ] = genmfunfriction( CGen )
 
 %% Does robot class exist?
 if ~exist(fullfile(CGen.robjpath,[CGen.getrobfname,'.m']),'file')

@@ -1,36 +1,27 @@
-function [t,allT] = genfkine(CGen)
-%% GENFKINE Generates code from the symbolic robot specific forward kinematics expression.
+%CodeGenerator.genfkine Generates code for forward kinematics.
 %
-%  [T, allT] = genfkine(cGen)
-%  [T, allT] = cGen.genfkine
-%
-%  Inputs::
-%       cGen:  a CodeGenerator class object
-%
-%       If cGen has the active flag:
-%           - saveresult: the symbolic expressions are saved to
-%           disk in the directory specified by cGen.sympath
-%
-%           - genmfun: ready to use m-functions are generated and
-%           provided via a subclass of SerialLink stored in cGen.robjpath
-%
-%           - genslblock: a Simulink block is generated and stored in a
-%           robot specific block library cGen.slib in the directory
-%           cGen.basepath
-%
-%  Outputs::
-%       T: the symbolic expression (4x4) for the pose of the robot end-effector 
+% [T, ALLT] = cGen.genfkine
+%  T is the symbolic expression (4x4) for the pose of the robot end-effector 
+%       as a homogeneous transformation
+%  ALLT are the symbolic expressions (4x4xN) for the poses of the individual robot joints 
 %       as a homogeneous transformation
 %
-%       allT: the symbolic expressions (4x4xN) for the poses of the individual robot joints 
-%       as a homogeneous transformation
+% Notes::
+% - Behaviour depends on the cGen flags:
+%   - saveresult: the symbolic expressions are saved to
+%     disk in the directory specified by cGen.sympath
+%   - genmfun: ready to use m-functions are generated and
+%     provided via a subclass of SerialLink stored in cGen.robjpath
+%   - genslblock: a Simulink block is generated and stored in a
+%     robot specific block library cGen.slib in the directory
+%     cGen.basepath
 %
-%  Authors::
-%        Jörn Malzahn
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
+% Authors::
+%  Jörn Malzahn
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%  See also CodeGenerator, geninvdyn, genjacobian
+% See also CodeGenerator, geninvdyn, genjacobian
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -50,7 +41,7 @@ function [t,allT] = genfkine(CGen)
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
-
+function [t,allT] = genfkine(CGen)
 
 %% Derivation of symbolic expressions
 CGen.logmsg([datestr(now),'\tDeriving forward kinematics']);

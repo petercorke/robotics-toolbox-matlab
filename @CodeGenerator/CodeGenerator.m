@@ -1,4 +1,4 @@
-% CODEGENERATOR Class for code generation from symbolic SerialLink objects.
+%CodeGenerator Class for code generation from symbolic SerialLink objects.
 %
 % Objects of the CodeGenerator class enable the automated robot specific
 % model code generation for SerialLink robot objects.
@@ -22,19 +22,18 @@
 % Properties (read/write)::
 %
 %  basepath       basic working directory of the code generator
-%  robjpath;      subdirectory for specialized matlab functions
-%  sympath;       subdirectory for symbolic expressions
-%  slib;          filename of the simulink library
-%  slibpath;      subdirectory for the simulink library
-%  verbose;       print code generation progress on console (bool)
-%  saveresult;    save symbolic expressions to .mat-files (bool)
-%  logfile;       print modeling progress to specified text file (string)
-%  genmfun;       generate executable M-functions (bool)
-%  genslblock;    generate Embedded Matlab Function blocks (bool)
+%  robjpath       subdirectory for specialized matlab functions
+%  sympath        subdirectory for symbolic expressions
+%  slib           filename of the simulink library
+%  slibpath       subdirectory for the simulink library
+%  verbose        print code generation progress on console (bool)
+%  saveresult     save symbolic expressions to .mat-files (bool)
+%  logfile        print modeling progress to specified text file (string)
+%  genmfun        generate executable M-functions (bool)
+%  genslblock     generate Embedded Matlab Function blocks (bool)
 %
 % Object properties (read only)::
 %  rob            SerialLink object to generate code for (1x1).
-%
 %
 % Authors::
 %  Jörn Malzahn
@@ -90,25 +89,31 @@ classdef CodeGenerator
         % object ROB.
         %
         % cGen = CodeGenerator(ROB, OPTIONS) as above but with options described below.
-        %   cGen = CodeGenerator(rob,'optionSet')
         %   cGen = CodeGenerator(...,'par1', val1, 'par2', val2,... )
+        %   cGen = CodeGenerator(rob,'optionSet')
         %
         % Options::
         %
+        %  The following option sets can be passed as an optional parameter:
+        %
+        %  'default'                set the options verbose, saveResult, genMFun, genSLBlock
+        %  'debug'                  set the options verbose, saveResult, genMFun, genSLBlock and create a logfile named 'robModel.log' in the working directory
+        %  'silent'                 set the options saveResult, genMFun, genSLBlock
+        %  'disk'                   set the options verbose and saveResult
+        %  'workspace'              set the option verbose, just outputs symbolic expressions to workspace
+        %  'mfun'                   set the options verbose, saveResult, genMFun
+        %  'slblock'                set the options verbose, saveResult, genSLBlock
+        %
+        %  If 'optionSet' is ommitted, then 'default' is used. The options control the code generation and user information: 
+        %
+        %  'verbose', flag          write code generation progress to command window
+        %  'saveResult, flag        save results to hard disk (always enabled, when genMFun and genSLBlock are set)
+        %  'logFile', logfile       write code generation progress to specified logfile
+        %  'genMFun', flag          generate robot specific m-functions
+        %  'genSLBlock', flag       generate real-time capable robot specific Simulink blocks
         % 
-        %
-        %       'optionSet' || verbose || saveResult ||    logFile     || genMFun    || genSLBlock    ||
-        %       -------------++---------++------------++----------------++------------++---------------++
-        %       'default'   ||    1    ||     1      ||      ''        ||     1      ||      1        ||
-        %       'debug'     ||    1    ||     1      || 'robModel.log' ||     1      ||      1        ||
-        %       'silent'    ||    0    ||     1      ||      ''        ||     1      ||      1        ||
-        %       'disk'      ||    1    ||     1      ||      ''        ||     0      ||      0        ||
-        %       'workspace' ||    1    ||     0      ||      ''        ||     0      ||      0        ||
-        %       'mfun     ' ||    1    ||     1      ||      ''        ||     1      ||      0        ||
-        %       'slblock  ' ||    1    ||     1      ||      ''        ||     0      ||      1        ||
-        %
-        %   The option sets can be passed as an optional parameter to the symbolic
-        %   model creation functions. If 'optionSet' is ommitted, then 'default' is used.
+        %  Any option may also be modified individually as optional parameter value pairs.
+
             if ~isa(rob,'SerialLink')
                 error('CodeGenerator:wrongConstructorInput','The input variable %s must be a SerialLink object.',inputname(1));
             end
@@ -185,7 +190,6 @@ classdef CodeGenerator
         end
 
         function savesym(CGen,sym2save, symname, fname)
-            
             if ~exist(CGen.sympath,'dir')
                 mkdir(CGen.sympath)
             end
@@ -226,7 +230,10 @@ classdef CodeGenerator
         end
 
         function [] = purge(CGen,varargin)
-            
+        %CodeGenerator.purge
+        %
+        % cGen.purge    displays a question dialog to make sure the user really wants to delete all generated files
+        % cGen.purge(1) skips the question dialog and deletes all generated files
             dopurge = 0;
             
             if exist(CGen.basepath,'dir')
