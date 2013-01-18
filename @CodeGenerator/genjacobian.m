@@ -1,6 +1,6 @@
-%CodeGenerator.genjacobian Generates code for the robot jacobians
+%CODEGENERATOR.GENJACOBIAN Generates code for the robot jacobians
 %
-% [J0, Jn] = cGen.genjacobian
+% [J0, Jn] = cGen.genjacobian()
 % J0 is the symbolic expression for the (6xN) Jacobian matrix 
 % expressed in the base coordinate frame
 % Jn is the symbolic expression for the (6xN) Jacobian matrix 

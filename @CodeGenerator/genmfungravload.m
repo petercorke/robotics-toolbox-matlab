@@ -1,4 +1,4 @@
-%CodeGenerator.genmfungravload Generates M-functions for the vector of gravitational load forces/torques.
+%CODEGENERATOR.GENMFUNGRAVLOAD Generates M-functions for the vector of gravitational load forces/torques.
 %
 % cGen.genmfungravload()
 %

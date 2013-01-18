@@ -1,4 +1,4 @@
-%CodeGenerator.genmfunfkine Generates M-functions for the forward kinematics
+%CODEGENERATOR.GENMFUNFKINE Generates M-functions for the forward kinematics
 %
 % cGen.genmfunfkine()
 %

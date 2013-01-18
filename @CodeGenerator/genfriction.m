@@ -1,6 +1,6 @@
-%CodeGenerator.genfriction Generates code for the friction model.
+%CODEGENERATOR.GENFRICTION Generates code for the friction model.
 %
-% F = cGen.genfriction is the symbolic (1xN) vector of joint friction
+% F = cGen.genfriction() is the symbolic (1xN) vector of joint friction
 %
 % Notes::
 % - The coriolis matrix is stored row by row to avoid memory issues.

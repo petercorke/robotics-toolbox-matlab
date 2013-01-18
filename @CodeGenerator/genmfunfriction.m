@@ -1,4 +1,4 @@
-%CodeGenerator.genmfunfriction Generates M-functions for the joint friction model.
+%CODEGENERATOR.GENMFUNFRICTION Generates M-functions for the joint friction model.
 %
 % cGen.genmfunfriction()
 %

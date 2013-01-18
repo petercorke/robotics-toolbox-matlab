@@ -1,6 +1,6 @@
-%CodeGenerator.genfkine Generates code for forward kinematics.
+%CODEGENERATOR.GENFKINE Generates code for forward kinematics.
 %
-% [T, ALLT] = cGen.genfkine
+% [T, ALLT] = cGen.genfkine()
 %  T is the symbolic expression (4x4) for the pose of the robot end-effector 
 %       as a homogeneous transformation
 %  ALLT are the symbolic expressions (4x4xN) for the poses of the individual robot joints 

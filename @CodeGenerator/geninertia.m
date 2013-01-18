@@ -1,6 +1,6 @@
-%CodeGenerator.geninertia Generates code inertia matrix
+%CODEGENERATOR.GENINERTIA Generates code inertia matrix
 %
-% I = cGen.geninertia is the (NxN) symbolic robot inertia matrix
+% I = cGen.geninertia() is the (NxN) symbolic robot inertia matrix
 %
 % Notes::
 % - The inertia matrix is stored row by row to avoid memory issues.

@@ -1,4 +1,4 @@
-%CodeGenerator.gencoriolis  Generate code for Coriolis forces
+%CODEGENERATOR.GENCORIOLIS Generate code for Coriolis forces
 %
 % coriolis = cGen.gencoriolis() is a symbolic matrix (NxN) of centrifugal and Coriolis
 % forces/torques.

@@ -1,4 +1,4 @@
-%CodeGenerator.genmfuninvdyn Generates M-functions for the inverse dynamics
+%CODEGENERATOR.GENMFUNINVDYN Generates M-functions for the inverse dynamics
 % 
 % cGen.genmfuninvdyn()
 %

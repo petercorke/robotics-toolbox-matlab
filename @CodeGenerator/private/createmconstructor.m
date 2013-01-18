@@ -1,4 +1,6 @@
-%CodeGenerator.createmconstructor Creates the constructor of the specialized robot class collecting the generated m-function code.
+%CODEGENERATOR.CREATEMCONSTRUCTOR Creates the constructor of the specialized robot class collecting the generated m-function code.
+%
+% cGen.createmconstructor()
 %
 % Authors::
 %  Jörn Malzahn   

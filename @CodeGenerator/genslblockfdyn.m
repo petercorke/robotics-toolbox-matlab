@@ -1,4 +1,4 @@
-%CodeGenerator.genslblockfdyn Generates Simulink blocks for the forward dynamics
+%CODEGENERATOR.GENSLBLOCKFDYN Generates Simulink blocks for the forward dynamics
 %
 % cGen.genslblockfdyn()
 %

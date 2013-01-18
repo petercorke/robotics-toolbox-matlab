@@ -1,4 +1,4 @@
-%CodeGenerator.genslblockcoriolis Generates Simulink blocks for the Coriolis matrix
+%CODEGENERATOR.GENSLBLOCKCORIOLIS Generates Simulink blocks for the Coriolis matrix
 %
 % cGen.genslblockcoriolis()
 %

@@ -1,6 +1,6 @@
-%CodeGenerator.finsertfront Insert a string at the beginning of a textfile.
+%CODEGENERATOR.FINSERTFRONT Insert a string at the beginning of a textfile.
 %
-% CGen.finsertfront( FNAME,NTEXT)
+% CGen.finsertfront(FNAME,NTEXT)
 % FNAME is the full or relative path to the text file.
 % NTEXT is the string containing the text to be inserted at the beginning 
 % of the file.

@@ -1,4 +1,4 @@
-%CodeGenerator.constructheaderstring Creates common toolbox header string.
+%CODEGENERATOR.CONSTRUCTHEADERSTRING Creates common toolbox header string.
 %
 % HFSTRING = CGen.constructheaderstring(HSTRUCT) is the formatted header
 % string.

@@ -1,4 +1,4 @@
-%CodeGenerator.genslblockfriction Generates Simulink blocks for the joint friction model
+%CODEGENERATOR.GENSLBLOCKFRICTION Generates Simulink blocks for the joint friction model
 %
 % cGen.genslblockfriction()
 %

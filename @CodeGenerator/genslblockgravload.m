@@ -1,4 +1,4 @@
-%CodeGenerator.genslblockgravload Generates Simulink blocks for the vector of gravitational load forces/torques.
+%CODEGENERATOR.GENSLBLOCKGRAVLOAD Generates Simulink blocks for the vector of gravitational load forces/torques.
 %
 % cGen.genslblockgravload()
 %

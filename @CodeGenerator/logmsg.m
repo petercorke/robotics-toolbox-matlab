@@ -1,4 +1,4 @@
-%CodeGenerator.logmsg Print CodeGenerator logs.
+%CODEGENERATOR.LOGMSG Print CodeGenerator logs.
 %
 % count = CGen.logmsg( FORMAT, A, ...) is the number of characters written to the CGen.logfile.
 % For the additional arguments see fprintf.

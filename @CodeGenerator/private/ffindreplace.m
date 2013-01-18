@@ -1,4 +1,4 @@
-%CodeGenerator.ffindreplace Find and replace all occurrences of string in a file.
+%CODEGENERATOR.FFINDREPLACE Find and replace all occurrences of string in a file.
 %
 %   CGen.ffindreplace(fName, oText, nText, varargin)
 %   FNAME is the absolute or relative path to the file to replace the text in.

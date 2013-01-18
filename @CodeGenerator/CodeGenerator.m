@@ -1,4 +1,4 @@
-%CodeGenerator Class for code generation from symbolic SerialLink objects.
+%CODEGENERATOR Class for code generation from symbolic SerialLink objects.
 %
 % Objects of the CodeGenerator class enable the automated robot specific
 % model code generation for SerialLink robot objects.

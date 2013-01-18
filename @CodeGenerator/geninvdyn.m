@@ -1,6 +1,6 @@
-%CodeGenerator.geninvdyn Generates code for the inverse dynamics.
+%CODEGENERATOR.GENINVDYN Generates code for the inverse dynamics.
 %
-% TAU = cGen.geninvdyn (1xN) is the symbolic vector of joint forces/torques
+% TAU = cGen.geninvdyn() (1xN) is the symbolic vector of joint forces/torques
 %
 % Notes::
 % - The inverse dynamics vector is composed of the previously computed inertia matrix

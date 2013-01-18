@@ -1,4 +1,4 @@
-%CodeGenerator.genslblockinvdyn Generates Simulink blocks for the inverse dynamics.
+%CODEGENERATOR.GENSLBLOCKINVDYN Generates Simulink blocks for the inverse dynamics.
 %
 % cGen.genslblockinvdyn()
 %

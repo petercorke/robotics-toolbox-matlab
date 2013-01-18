@@ -1,4 +1,4 @@
-%CodeGenerator.genslblockinertia Generates Simulink blocks for the robot inertia matrix.
+%CODEGENERATOR.GENSLBLOCKINERTIA Generates Simulink blocks for the robot inertia matrix.
 %
 % cGen.genslbgenslblockinertia()
 %

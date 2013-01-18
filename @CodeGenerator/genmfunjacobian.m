@@ -1,4 +1,4 @@
-%CodeGenerator.genmfunjacobian Generates M-functions for the robot jacobians.
+%CODEGENERATOR.GENMFUNJACOBIAN Generates M-functions for the robot jacobians.
 %
 % cGen.genmfunjacobian()
 %

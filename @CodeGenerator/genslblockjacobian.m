@@ -1,4 +1,4 @@
-%CodeGenerator.genslblockjacobian Generates Simulink blocks for the robot jacobians.
+%CODEGENERATOR.GENSLBLOCKJACOBIAN Generates Simulink blocks for the robot jacobians.
 %
 % cGen.genslblockjacobian()
 %

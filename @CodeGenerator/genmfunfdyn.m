@@ -1,4 +1,4 @@
-%CodeGenerator.genmfunfdyn Generates M-functions for the forward dynamics
+%CODEGENERATOR.GENMFUNFDYN Generates M-functions for the forward dynamics
 %
 % cGen.genmfunfdyn()
 %

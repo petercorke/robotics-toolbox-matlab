@@ -1,4 +1,4 @@
-%CodeGenerator.genmfuncoriolis  Generates M-functions for the Coriolis matrix.
+%CODEGENERATOR.GENMFUNCORIOLIS Generates M-functions for the Coriolis matrix.
 %
 % cGen.genmfuncoriolis()
 %

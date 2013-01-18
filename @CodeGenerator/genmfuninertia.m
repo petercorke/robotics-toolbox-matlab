@@ -1,5 +1,4 @@
-function [] = genmfuninertia(CGen)
-%CodeGeneration.genmfuninertia Generates M-functions for the robot inertia matrix
+%CODEGENERATION.GENMFUNINERTIA Generates M-functions for the robot inertia matrix
 %
 % cGen.genmfuninertia()
 %
@@ -35,6 +34,8 @@ function [] = genmfuninertia(CGen)
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com 
+
+function [] = genmfuninertia(CGen)
 
 %% Does robot class exist?
 if ~exist(fullfile(CGen.robjpath,[CGen.getrobfname,'.m']),'file')

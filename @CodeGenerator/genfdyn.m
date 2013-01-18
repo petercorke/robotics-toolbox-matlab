@@ -1,6 +1,6 @@
-%CodeGenerator.genfdyn Generates code from the symbolic robot specific forward dynamics.
+%CODEGENERATOR.GENFDYN Generates code from the symbolic robot specific forward dynamics.
 %
-% Iqdd = cGen.genfdyn is a (1xN) symbolic vector of joint inertial reaction forces/torques
+% Iqdd = cGen.genfdyn() is a (1xN) symbolic vector of joint inertial reaction forces/torques
 %
 % Notes::
 % - Behaviour depends on the cGen flags:

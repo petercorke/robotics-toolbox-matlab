@@ -1,6 +1,6 @@
-%CodeGenerator.genslblockfkine Generates Simulink blocks for the forward kinematics
+%CODEGENERATOR.GENSLBLOCKFKINE Generates Simulink blocks for the forward kinematics
 %
-% cGen.genslblockfkine
+% cGen.genslblockfkine()
 %
 % Notes::
 % - Is called by CodeGenerator.genfkine if cGen has active flag genslblock

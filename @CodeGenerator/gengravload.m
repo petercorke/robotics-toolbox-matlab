@@ -1,6 +1,6 @@
-%CodeGenerator.gengravload Generates code for the vector of gravitational load
+%CODEGENERATOR.GENGRAVLOAD Generates code for the vector of gravitational load
 %
-%  [G] = cGen.gengravload is a (1xN) vector of joint load forces/torques due to
+%  [G] = cGen.gengravload() is a (1xN) vector of joint load forces/torques due to
 %  gravity
 %
 % Notes::
