@@ -1,44 +1,37 @@
-function [hFString] = constructheaderstring(CGen,hStruct)
-%% CONSTRUCTHEADERSTRING Creates common toolbox header string.
+%CodeGenerator.constructheaderstring Creates common toolbox header string.
 %
-%   [hFString] = constructheaderstring(CGen,hStruct)
-%   [hFString] = CGen.constructheaderstring(hStruct)
+% HFSTRING = CGen.constructheaderstring(HSTRUCT) is the formatted header
+% string.
+% HSTRUCT  is the geader content struct
 %
-%  Description::
-%    The contents of the header are coded in a struct that is the input 
-%    parameter and has the following self-explaining fields:
+% Notes::
+% The contents of the header are coded in a struct that is the input 
+% parameter and has the following self-explaining fields:
+% Fieldname              Datatype
+% - funName              'string'
+% - shortDescription     'string'
+% - detailedDescription  {'line1','line2',...}
+% - inputs               {'input1: description','input2: description',...}
+% - outputs              {'output1: description','output2: description',...}
+% - examples             {'line1','line2',...}
+% - knownBugs            {'line1','line2',...}
+% - toDO                 {'line1','line2',...}
+% - references           {'line1','line2',...}
+% - authors              {'line1','line2',...}
+% - seeAlso              {'function1','function2',...}
 %
-%       Fieldname              Datatype
-%       - funName              'string'
-%       - shortDescription     'string'
-%       - detailedDescription  {'line1','line2',...}
-%       - inputs               {'input1: description','input2: description',...}
-%       - outputs              {'output1: description','output2: description',...}
-%       - examples             {'line1','line2',...}
-%       - knownBugs            {'line1','line2',...}
-%       - toDO                 {'line1','line2',...}
-%       - references           {'line1','line2',...}
-%       - authors              {'line1','line2',...}
-%       - seeAlso              {'function1','function2',...}
+% Example::
+% hStruct.funName = 'myFirstFunction';
+% hStruct.shortDescription = ['Just an example!'];
+% hStruct.calls = {'result = myFirstFunction(A,B)'};
+% constructheaderstring(hStruct)
 %
-%  Input::
-%       hStruct:  Header content struct
+% Authors::
+%  Jörn Malzahn   
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de   
 %
-%  Output::
-%       hFString: Formatted header string
-%
-%  Example::
-%       hStruct.funName = 'myFirstFunction';
-%       hStruct.shortDescription = ['Just an example!'];
-%       hStruct.calls = {'result = myFirstFunction(A,B)'};
-%       constructheaderstring(hStruct)
-%
-%  Authors::
-%        Jörn Malzahn   
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de   
-%
-%  See also replaceheader, sprintf.
+% See also replaceheader, sprintf.
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -58,6 +51,8 @@ function [hFString] = constructheaderstring(CGen,hStruct)
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [hFString] = constructheaderstring(CGen,hStruct)
  
 if isfield(hStruct,'funName') && isfield(hStruct,'shortDescription')
     hFString = [];

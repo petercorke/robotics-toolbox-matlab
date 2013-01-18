@@ -1,28 +1,21 @@
-function [ ] = finsertfront(CGen, fName,nText)
-%% FINSERTFRONT Insert a string at the beginning of a textfile.
-% =========================================================================
+%CodeGenerator.finsertfront Insert a string at the beginning of a textfile.
 %
-%   [ ] = finsertfront( CGen, fName,nText)
-%   [ ] = CGen.finsertfront( fName,nText)
+% CGen.finsertfront( FNAME,NTEXT)
+% FNAME is the full or relative path to the text file.
+% NTEXT is the string containing the text to be inserted at the beginning 
+% of the file.
 %
-%  Description::
-%    MatLab ships with functions for reading, overwriting and appending text
-%    to files. This function is used to insert text at the beginning of a
-%    text file.
+% Notes::
+%  MatLab ships with functions for reading, overwriting and appending text
+%  to files. This function is used to insert text at the beginning of a
+%  text file.
 %
-%  Input::
-%       fName:     Full or relative path to the text file.
-%       nText:     String containing the text to be inserted at the beginning 
-%                  of the file.
-%
-%  Authors::
-%        Jörn Malzahn   
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de     
+% Authors::
+%  Jörn Malzahn   
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de     
 %
 %  See also ffindreplace.
-%
-
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -42,6 +35,8 @@ function [ ] = finsertfront(CGen, fName,nText)
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [ ] = finsertfront(CGen, fName,nText)
  
 %% analyse the file
 fid = fopen(fName,'r'); % open the file

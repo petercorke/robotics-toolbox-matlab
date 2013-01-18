@@ -1,13 +1,11 @@
-function [] = createmconstructor(CGen)
-%% CREATEMCONSTRUCTOR Creates the constructor of the specialized robot class collecting the generated m-function code.
+%CodeGenerator.createmconstructor Creates the constructor of the specialized robot class collecting the generated m-function code.
 %
-%  Authors::
-%        Jörn Malzahn   
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de     
+% Authors::
+%  Jörn Malzahn   
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de     
 %
-%  See also genfkine, genmfunfkine.
-%
+% See also genfkine, genmfunfkine.
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -27,6 +25,8 @@ function [] = createmconstructor(CGen)
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [] = createmconstructor(CGen)
  
 objdir = CGen.robjpath;
 robname = CGen.getrobfname;

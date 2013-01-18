@@ -1,25 +1,20 @@
-function [ ] = ffindreplace(CGen, fName, oText, nText, varargin)
-%% FFINDREPLACE Find and replace all occurrences of string in a file.
+%CodeGenerator.ffindreplace Find and replace all occurrences of string in a file.
 %
-%   [ ] = ffindreplace(CGen, fName, oText, nText, varargin)
-%   [ ] = CGen.ffindreplace(fName, oText, nText, varargin)
+%   CGen.ffindreplace(fName, oText, nText, varargin)
+%   FNAME is the absolute or relative path to the file to replace the text in.
+%   OTEXT is the text passage to replace.
+%   NTEXT is the new text.
 %
-%  Description::
-%    The function opens and sweeps the text file fName. All occurrences of
-%    oText are replaced by nText.
+% Notes::
+% The function opens and sweeps the text file FNAME. All occurrences of
+% OTEXT are replaced by NTEXT.
 %
-%  Input::
-%    fName:             Name of the file to replace the text in.
-%    oText:             Text passage to replace.
-%    nText:             New text replacement.
+% Authors::
+% Jörn Malzahn   
+% 2012 RST, Technische Universität Dortmund, Germany
+% http://www.rst.e-technik.tu-dortmund.de   
 %
-%  Authors::
-%        Jörn Malzahn   
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de   
-%
-%  See also finsertfront.
-
+% See also finsertfront.
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -39,6 +34,8 @@ function [ ] = ffindreplace(CGen, fName, oText, nText, varargin)
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [ ] = ffindreplace(CGen, fName, oText, nText, varargin)
  
 fid = fopen(fName,'r'); % open the file
 
