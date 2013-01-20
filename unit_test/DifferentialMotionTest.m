@@ -24,14 +24,14 @@ function delta2tr_test
 function eul2jac_test
     % unit testing eul2jac with variable (0.1, 0.2, 0.3)
     assertElementsAlmostEqual(eul2jac(0.1, 0.2, 0.3),...
-        [0.1898   -0.2955         0
-         0.0587    0.9553         0
-         0.9801         0    1.0000],'absolute',1e-4);
+    [    0   -0.0998    0.1977
+         0    0.9950    0.0198
+    1.0000         0    0.9801],'absolute',1e-4);
     % unit testing eul2jac with variable ([.1, .2, .3; .4, .5, .6])
     assertElementsAlmostEqual(eul2jac([.1, .2, .3; .4, .5, .6]),...
-        [0.3817   -0.1987         0
-         0.0774    0.9801         0
-         0.9211         0    1.0000],'absolute',1e-4);
+        [     0   -0.0998    0.3875
+         0    0.9950    0.0389
+    1.0000         0    0.9211],'absolute',1e-4);
     % unit testing eul2jac with variable (0.1, 0.2, 0.3)
     assertElementsAlmostEqual(eul2jac(0, 0, 0),...
         [0     0     0
