@@ -50,12 +50,11 @@ classdef RangeBearingSensor < Sensor
 
     properties
         W           % measurment covariance
-        interval    % measurement return subsample factor
         r_range     % range limits
         theta_range % angle limits
 
-        fail
         randstream  % random stream just for Sensors
+        
     end
 
     properties (SetAccess = private)
@@ -88,16 +87,14 @@ classdef RangeBearingSensor < Sensor
 
 
             % call the superclass constructor
-            s = s@Sensor(robot, map);
+            s = s@Sensor(robot, map, varargin{:});
 
             s.randstream = RandStream.create('mt19937ar');
 
             opt.range = [];
             opt.thrange = [];
-            opt.skip = 1;
-            opt.fail = [];
 
-            opt = tb_optparse(opt, varargin);
+            [opt,args] = tb_optparse(opt, varargin);
 
             s.W = W;
             if ~isempty(opt.range)
@@ -114,8 +111,7 @@ classdef RangeBearingSensor < Sensor
                     s.theta_range = opt.thrange;
                 end
             end
-            s.fail = opt.fail;
-            s.interval = opt.skip;
+
             s.count = 0;
         end
 
@@ -193,7 +189,7 @@ classdef RangeBearingSensor < Sensor
             if s.verbose
                 fprintf('Sensor:: feature %d: %.1f %.1f\n', k, z);
             end
-            if ~isempty(z)
+            if ~isempty(z) & s.animate
                 s.plot(jf);
             end
         end
@@ -238,7 +234,7 @@ classdef RangeBearingSensor < Sensor
             % Vectorized code:
 
             dx = xf(1,:) - xv(:,1); dy = xf(2,:) - xv(:,2);
-            z = [sqrt(dx.^2 + dy.^2); atan2(dy, dx)-xv(:,3) ]';   % range & bearing measurement
+            z = [sqrt(dx.^2 + dy.^2) atan2(dy, dx)-xv(:,3) ];   % range & bearing measurement
             % add noise with covariance W
             z = z + s.randstream.randn(size(z)) * sqrt(s.W);
         end
