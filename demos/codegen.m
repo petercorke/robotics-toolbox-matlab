@@ -187,5 +187,5 @@ properties CodeGenerator
 rmpath(cGen.basepath)
 %%
 % and purge everything.
-cGen.purge
+cGen.purge(1)
 snapnow
