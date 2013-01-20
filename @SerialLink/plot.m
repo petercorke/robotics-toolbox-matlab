@@ -264,6 +264,7 @@ function retval = plot(robot, tg, varargin)
     while true
         for p=1:np      % for each point on path
             robot.animate(tg(p,:), handles);
+            %drawnow
             
             if ~isempty(opt.movie)
                 % write the frame to the movie folder
@@ -273,6 +274,7 @@ function retval = plot(robot, tg, varargin)
             
             if opt.delay > 0
                 pause(opt.delay);
+                drawnow
             end
         end
         if ~opt.loop
@@ -311,6 +313,7 @@ function o = plot_options(robot, optin)
     o.magscale = 1;
     o.name = true;
     o.delay = 0.1;
+    o.fps = [];
     o.raise = true;
     o.cylinder = [0 0 0.7];
     o.workspace = [];
@@ -351,6 +354,10 @@ function o = plot_options(robot, optin)
         reach = min(abs(o.workspace));
     end
     o.mag = o.magscale * reach/10;
+    
+    if ~isempty(o.fps)
+        o.delay = 1/o.fps;
+    end
     
 end
 
