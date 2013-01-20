@@ -41,10 +41,15 @@ classdef Sensor < handle
     properties
         robot
         map
-
+        
         verbose
         
         ls
+        animate     % animate sensor measurements
+        interval    % measurement return subsample factor
+        fail
+        
+        
     end
 
     methods
@@ -57,19 +62,43 @@ classdef Sensor < handle
         % S = Sensor(VEHICLE, MAP, R) is an instance of the Sensor object mounted
         % on a vehicle represented by the object VEHICLE and observing features in the
         % world represented by the object MAP.
+        
+            opt.skip = 1;
+            opt.animate = false;
+            opt.fail =  [];
+            opt.ls = 'r-';
+
+            opt = tb_optparse(opt, varargin);
+            
+            s.interval = opt.skip;
+            s.animate = opt.animate;
+            
             s.robot = robot;
             s.map = map;
             s.verbose = false;
+            s.fail = opt.fail;
+            s.ls = opt.ls;
+
         end
         
         function plot(s, jf)
-            if ~isempty(s.ls)
-                xi = s.map.map(:,jf);
-                h = plot([s.robot.x(1), xi(1)], [s.robot.x(2), xi(2)], s.ls);
-                pause(0.3);
-                delete(h);
-                drawnow
+            if isempty(s.ls)
+                return;
             end
+            
+            h = findobj(gca, 'tag', 'sensor');
+            if isempty(h)
+                % no sensor line, create one
+                h = plot(0, 0, s.ls, 'tag', 'sensor');
+            end
+            
+            % there is a sensor line animate it
+            
+            xi = s.map.map(:,jf);
+            set(h, 'XData', [s.robot.x(1), xi(1)], 'YData', [s.robot.x(2), xi(2)]);
+            %pause(0.1);
+            %delete(h);
+            drawnow
         end
 
         function display(s)
