@@ -66,9 +66,14 @@
 
 function varargout = rne(robot, varargin)
 
-    if robot.mdh == 0
-        [varargout{1:nargout}] = rne_dh(robot, varargin{:});
+    if exist('frne') && ~robot.issym()
+        % use the MEX-file implementation
+        [varargout{1:nargout}] = frne(robot, varargin{:});
     else
-        [varargout{1:nargout}] = rne_mdh(robot, varargin{:});
+        % use the M-file implementation
+        if robot.mdh == 0
+            [varargout{1:nargout}] = rne_dh(robot, varargin{:});
+        else
+            [varargout{1:nargout}] = rne_mdh(robot, varargin{:});
+        end
     end
-

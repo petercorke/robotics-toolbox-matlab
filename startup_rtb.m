@@ -7,6 +7,7 @@ fprintf('- Robotics Toolbox for Matlab (release %.1f)\n', release)
 tbpath = fileparts(which('Link'));
 addpath( fullfile(tbpath, 'demos') );
 addpath( fullfile(tbpath, 'examples') );
+addpath( fullfile(tbpath, 'mex') );
 javaaddpath( fullfile(tbpath, 'DH.jar') );
 %currentversion = urlread('http://www.petercorke.com/RTB/currentversion.php');
 currentversion = '0';
