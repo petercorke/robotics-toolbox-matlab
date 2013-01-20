@@ -221,7 +221,8 @@ classdef EKF < handle
         % .innov innovation
         % .S     
         % .K     Kalman gain matrix
-        history         
+        history
+        dim          % robot workspace dimensions
     end
 
     methods
@@ -241,7 +242,10 @@ classdef EKF < handle
             % Options::
             % 'verbose'      Be verbose.
             % 'nohistory'    Don't keep history.
-            % 'joseph'       Use Joseph form for covariance.
+            % 'joseph'       Use Joseph form for covariance
+            % 'dim',D        Dimension of the robot's workspace.  Scalar D is DxD,
+            %                2-vector D(1)xD(2), 4-vector is D(1)<x<D(2), D(3)<y<D(4).
+            % 
             %
             % Notes::
             % - If MAP is [] then it will be estimated.
@@ -250,17 +254,19 @@ classdef EKF < handle
             % - If V_EST and P0 are finite the filter will estimate the
             %   vehicle pose and the landmark positions (map).
             % - EKF subclasses Handle, so it is a reference object.
+            % - Dimensions of workspace are normally taken from the map if given.
             %
             % See also Vehicle, Sensor, RangeBearingSensor, Map.
 
             opt.history = true;
             opt.joseph = true;
-
+            opt.dim = [];
+            
             [opt,args] = tb_optparse(opt, varargin);
             if length(args) == 3
                 [sensor, W_est, map] = deal(args{:});
             else
-                sensor = []; W_est = []; map = [];
+                sensor = []; W_est = []; map = NaN;
             end
 
             ekf.verbose = opt.verbose;
@@ -268,6 +274,7 @@ classdef EKF < handle
             ekf.joseph = opt.joseph;
             ekf.P0 = P0;
             ekf.map = map;
+            ekf.dim = opt.dim;
             
             ekf.sensor = [];
             ekf.robot = robot;
@@ -302,11 +309,14 @@ classdef EKF < handle
                 ekf.estVehicle = true;
                 
             end
-            if ~isempty(ekf.map)
+            if isempty(ekf.map)
+                % no map given, we have to estimate it
                 ekf.estMap = true;
                 ekf.features = NaN*zeros(2, ekf.sensor.map.nfeatures);
-            else
+            elseif isnan(ekf.map)
                 ekf.estMap = false;
+            else
+                error('RTB:EKF:badarg', 'shouldnt happen')
             end
 
             
@@ -315,8 +325,11 @@ classdef EKF < handle
         function run(ekf, n, varargin)
         %EKF.run Run the filter
         %
-        % E.run(N) runs the filter for N time steps and shows an animation
+        % E.run(N, OPTIONS) runs the filter for N time steps and shows an animation
         % of the vehicle moving.
+        %
+        % Options::
+        % 'plot'     Plot an animation of the vehicle moving
         %
         % Notes::
         % - All previously estimated states and estimation history are initially
@@ -327,17 +340,33 @@ classdef EKF < handle
             
             ekf.init();
             
-            if ~isempty(ekf.sensor)
-                ekf.sensor.map.plot();
+            if opt.plot
+                if ~isempty(ekf.sensor)
+                    ekf.sensor.map.plot();
+                elseif ~isempty(ekf.dim)
+                    switch length(ekf.dim)
+                        case 1
+                            d = ekf.dim;
+                            axis([-d d -d d]);
+                        case 2
+                            w = ekf.dim(1), h = ekf.dim(2);
+                            axis([-w w -h h]);
+                        case 4
+                            axis(ekf.dim);
+                    end
+                else
+                    opt.plot = false;
+                end
             end
-            a = axis;
-            a(5:6) = [-pi pi];
-            axis(a)
-            zlabel('heading (rad)');
 
-            ekf.robot.plot();
-
+            % simulation loop
             for k=1:n
+                
+                if opt.plot
+                    ekf.robot.plot();
+                    drawnow
+                end
+                
                 ekf.step(opt);
             end
         end
@@ -455,16 +484,14 @@ classdef EKF < handle
             end
         end
         
-        function out = plot_map(ekf, interval, varargin)
+        function out = plot_map(ekf, covar, varargin)
         %EKF.plot_map Plot landmarks
         %
-        % E.plot_map(I) overlay the current plot with the estimated landmark 
-        % position (a +-marker) and a covariance ellipses for I points along
-        % the path.
+        % E.plot_map() overlay the current plot with the estimated landmark 
+        % position (a +-marker) and a covariance ellipses.
         %
-        % E.plot_map() as above but I=20.
         %
-        % E.plot_map(I, LS) as above but pass line style arguments
+        % E.plot_map(LS) as above but pass line style arguments
         % LS to plot_ellipse.
         %
         % P = E.plot_map() returns the estimated landmark locations (2xN)
@@ -474,9 +501,11 @@ classdef EKF < handle
         % See also plot_ellipse.
 
         % TODO:  some option to plot map evolution, layered ellipses
-            if nargin < 2 || isempty(interval)
-                interval = round(length(ekf.history)/20);
+
+            if nargin < 2
+                covar = 1;
             end
+            
             xy = [];
             for i=1:numcols(ekf.features)
                 n = ekf.features(1,i);
@@ -494,8 +523,9 @@ classdef EKF < handle
                 P = ekf.P_est(n:n+1,n:n+1);
                 % TODO reinstate the interval feature
                 %plot_ellipse(xf, P, interval, 0, [], varargin{:});
-                plot_ellipse(P, xf, varargin{:});
+                plot_ellipse(covar^2*P, xf, varargin{:});
                 plot(xf(1), xf(2), '+')
+                
                 xy = [xy xf];
             end
             
@@ -695,6 +725,7 @@ classdef EKF < handle
             if ~isempty(ekf.sensor)
                 % read the sensor
                 [z,js] = ekf.sensor.reading();
+                                
                 % if isnan(i) then the sensor has not returned a reading
                 % at this time interval
                 sensorReading = ~isnan(js);
@@ -802,10 +833,6 @@ classdef EKF < handle
             ekf.x_est = x_est;
             ekf.P_est = P_est;
             
-            if opt.plot
-                ekf.robot.plot();
-                drawnow
-            end
             
             % record time history
             if ekf.keepHistory
