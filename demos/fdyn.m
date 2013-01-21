@@ -26,6 +26,7 @@
 % Consider a Puma 560 at rest in the zero angle pose, with zero applied joint 
 % torques. The joint acceleration would be given by
 
+mdl_puma560
 p560.accel(qz, zeros(1,6), zeros(1,6))
 
 % To be useful for simulation this function must be integrated.  fdyn() uses the
