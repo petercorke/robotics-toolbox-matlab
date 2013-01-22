@@ -41,13 +41,12 @@ function genslblockinertia(CGen)
 %% Open or create block library
 bdclose('all')                                                              % avoid problems with previously loaded libraries
 load_system('simulink');
-if exist([CGen.slibpath,'.mdl']) == 2                                  % Open existing block library if it already exists
-    open_system(CGen.slibpath)
-else
+if ~(exist([CGen.slibpath,'.mdl']) == 2)                                  % Open existing block library if it already exists
     new_system(CGen.slib,'Library', 'ErrorIfShadowed');                      % Create new block library if none exists
     open_system(CGen.slib);
     save_system(CGen.slib,CGen.slibpath);
 end
+open_system(CGen.slibpath);
 set_param(CGen.slib,'lock','off');
 
 q = CGen.rob.gencoords;
@@ -57,10 +56,12 @@ CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the robot inertia mat
 nJoints = CGen.rob.n;
 
 CGen.logmsg([datestr(now),'\t\t... enclosing subsystem ']);
-InertiaBlock = [CGen.slib,'/inertia'];
-if ~isempty(find_system(CGen.slib,'Name','inertia'))                    % Delete previously generated inertia matrix block
-    delete_block(InertiaBlock)
-end
+symname = 'inertia';
+InertiaBlock = [CGen.slib,'/',symname];
+    if ~isempty(find_system(CGen.slib,'SearchDepth',1,'Name',symname))                    % Delete previously generated inertia matrix block
+        delete_block(InertiaBlock);
+        save_system;
+    end
 % Subsystem in which individual rows are concatenated
 add_block('built-in/SubSystem',InertiaBlock);                               % Add new inertia matrix block
 add_block('Simulink/Math Operations/Matrix Concatenate'...
@@ -136,11 +137,13 @@ CGen.logmsg([datestr(now),'\tInertia matrix block complete\n']);
 CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the inverse robot inertia matrix\n']);
 CGen.logmsg([datestr(now),'\t\t... enclosing subsystem ']);
 % block address
-invInertiaBlock = [CGen.slib,'/invinertia'];
+symname = 'invinertia';
+invInertiaBlock = [CGen.slib,'/',symname];
 % remove any existing blocks
-if ~isempty(find_system(CGen.slib,'Name','invinertia'))
-    delete_block(invInertiaBlock)
-end
+    if ~isempty(find_system(CGen.slib,'SearchDepth',1,'Name',symname))                    % Delete previously generated block
+        delete_block(invInertiaBlock);
+        save_system;
+    end
 add_block('built-in/SubSystem',invInertiaBlock);
 CGen.logmsg('\t%s\n',' done!');
 

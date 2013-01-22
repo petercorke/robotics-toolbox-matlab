@@ -42,14 +42,16 @@ function [ output_args ] = genslblockinvdyn( CGen )
 %% Open or create block library
 bdclose('all')                                                              % avoid problems with previously loaded libraries
 load_system('simulink');
-if exist([CGen.slibpath,'.mdl']) == 2                                  % Open existing block library if it already exists
-    open_system(CGen.slibpath)
-else
+if ~(exist([CGen.slibpath,'.mdl']) == 2)                                  % Open existing block library if it already exists
     new_system(CGen.slib,'Library', 'ErrorIfShadowed');                      % Create new block library if none exists
     open_system(CGen.slib);
     save_system(CGen.slib,CGen.slibpath);
 end
+checkexistanceofblocks(CGen);
+open_system(CGen.slibpath);
 set_param(CGen.slib,'lock','off');
+
+
 
 %% Generate Inertia Block
 CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the inverse robot dynamics:\n']);
@@ -107,5 +109,33 @@ distributeblocks(CGen.slib);
 set_param(CGen.slib,'lock','on');
 save_system(CGen.slib,CGen.slibpath);
 close_system(CGen.slib);
+
+end
+
+function [] = checkexistanceofblocks(CGen)
+open_system(CGen.slibpath);
+if isempty(find_system(CGen.slib,'SearchDepth',1,'Name','inertia'))
+    CGen.logmsg('\t\t%s\n','Inertia block not found! Generating:');
+    CGen.genslblockinertia;
+    open_system(CGen.slibpath);
+end
+
+if isempty(find_system(CGen.slib,'SearchDepth',1,'Name','coriolis'))
+    CGen.logmsg('\t\t%s\n','Coriolis block not found! Generating:');
+    CGen.genslblockcoriolis;
+    open_system(CGen.slibpath);
+end
+
+if isempty(find_system(CGen.slib,'SearchDepth',1,'Name','gravload'))
+    CGen.logmsg('\t\t%s\n','Gravload block not found! Generating:');
+    CGen.genslblockgravload;
+    open_system(CGen.slibpath);
+end
+
+if isempty(find_system(CGen.slib,'SearchDepth',1,'Name','friction'))
+    CGen.logmsg('\t\t%s\n','Friction block not found! Generating:');
+    CGen.genslblockfriction;
+    open_system(CGen.slibpath);
+end
 
 end

@@ -41,13 +41,12 @@ function [ ] = genslblockcoriolis( CGen )
 %% Open or create block library
 bdclose('all')                                                              % avoid problems with previously loaded libraries
 load_system('simulink');
-if exist([CGen.slibpath,'.mdl']) == 2                                  % Open existing block library if it already exists
-    open_system(CGen.slibpath)
-else
+if ~(exist([CGen.slibpath,'.mdl']) == 2)                                  % Open existing block library if it already exists
     new_system(CGen.slib,'Library', 'ErrorIfShadowed');                      % Create new block library if none exists
     open_system(CGen.slib);
     save_system(CGen.slib,CGen.slibpath);
 end
+open_system(CGen.slibpath);
 set_param(CGen.slib,'lock','off');
 
 [q,qd] = CGen.rob.gencoords;
@@ -55,12 +54,15 @@ set_param(CGen.slib,'lock','off');
 %% Generate Coriolis Block
 CGen.logmsg([datestr(now),'\tGenerating Simulink Block for the robot Coriolis matrix\n']);
 nJoints = CGen.rob.n;
+symname = 'coriolis';
 
 CGen.logmsg([datestr(now),'\t\t... enclosing subsystem ']);
-CoriolisBlock = [CGen.slib,'/coriolis'];
-if ~isempty(find_system(CGen.slib,'Name','coriolis'))                    % Delete previously generated inertia matrix block
+CoriolisBlock = [CGen.slib,'/',symname];
+if ~isempty(find_system(CGen.slib,'SearchDepth',1,'Name',symname))                    % Delete previously generated block
     delete_block(CoriolisBlock)
+    save_system;
 end
+
 % Subsystem in which individual rows are concatenated
 add_block('built-in/SubSystem',CoriolisBlock);                               % Add new inertia matrix block
 add_block('Simulink/Math Operations/Matrix Concatenate'...

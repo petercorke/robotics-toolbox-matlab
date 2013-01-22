@@ -44,6 +44,7 @@ if ~exist(fullfile(CGen.robjpath,[CGen.getrobfname,'.m']),'file')
     CGen.createmconstructor;
     CGen.logmsg('\t%s\n',' done!');
 end
+checkexistanceofmfunctions(CGen);
 
 %%
 
@@ -90,6 +91,29 @@ CGen.logmsg('\t%s\n',' done!');
 
 end
 
+function [] = checkexistanceofmfunctions(CGen)
+
+if ~(exist(fullfile(CGen.robjpath,'inertia.m'),'file') == 2) || ~(exist(fullfile(CGen.robjpath,'Iqdd.m'),'file') == 2)
+    CGen.logmsg('\t\t%s\n','Inertia m-function not found! Generating:');
+    CGen.genmfuninertia;
+end
+
+if ~(exist(fullfile(CGen.robjpath,'coriolis.m'),'file') == 2)
+    CGen.logmsg('\t\t%s\n','Coriolis m-function not found! Generating:');
+    CGen.genmfuncoriolis;
+end
+
+if ~(exist(fullfile(CGen.robjpath,'gravload.m'),'file') == 2)
+    CGen.logmsg('\t\t%s\n','Gravload m-function not found! Generating:');
+    CGen.genmfungravload;
+end
+
+if ~(exist(fullfile(CGen.robjpath,'friction.m'),'file') == 2)
+    CGen.logmsg('\t\t%s\n','Friction m-function not found! Generating:');
+    CGen.genmfunfriction;
+end
+
+end
 function hStruct = createHeaderStructIqdd(rob,fName)
 [~,hStruct.funName] = fileparts(fName);
 hStruct.shortDescription = ['Vector of computed inertial forces/torques for ',rob.name];

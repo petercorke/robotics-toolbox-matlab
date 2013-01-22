@@ -39,13 +39,12 @@ function genslblockfkine(CGen)
 %% Open or create block library
 bdclose('all')                                                              % avoid problems with previously loaded libraries
 load_system('simulink');
-if exist([CGen.slibpath,'.mdl']) == 2                                  % Open existing block library if it already exists
-    open_system(CGen.slibpath)
-else
+if ~(exist([CGen.slibpath,'.mdl']) == 2)                                  % Open existing block library if it already exists
     new_system(CGen.slib,'Library', 'ErrorIfShadowed');                      % Create new block library if none exists
     open_system(CGen.slib);
     save_system(CGen.slib,CGen.slibpath);
 end
+open_system(CGen.slibpath);
 set_param(CGen.slib,'lock','off');
 
 q = CGen.rob.gencoords;
@@ -62,7 +61,7 @@ else
 end
 
 blockaddress = [CGen.slib,'/',symname];          % treat intermediate transformations separately
-if doesblockexist(CGen.slib,symname)
+if ~isempty(find_system(CGen.slib,'SearchDepth',1,'Name',symname))                    % Delete previously generated block
     delete_block(blockaddress);
     save_system;
 end
