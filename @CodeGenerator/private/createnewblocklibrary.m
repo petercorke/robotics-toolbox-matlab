@@ -11,7 +11,7 @@ function [] = createnewblocklibrary(CGen)
 % See also SerialLink, Link.
 
 % Copyright (C) 1993-2012, by Peter I. Corke
-% Copyright (C) 1912-2013, by Joern Malzahn
+% Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
 %
@@ -29,6 +29,10 @@ function [] = createnewblocklibrary(CGen)
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+%
+% The code generation module emerged during the work on a project funded by
+% the German Research Foundation (DFG, BE1569/7-1). The authors gratefully 
+% acknowledge the financial support.
 
 warning off;
 CGen.rmpath;

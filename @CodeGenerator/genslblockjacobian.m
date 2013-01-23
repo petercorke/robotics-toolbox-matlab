@@ -9,13 +9,14 @@
 % cGen.basepath
 %
 % Authors::
-%  Jörn Malzahn
-%  2012 RST, Technische Universität Dortmund, Germany
+%  Joern Malzahn
+%  2012 RST, Technische Universitaet Dortmund, Germany
 %  http://www.rst.e-technik.tu-dortmund.de
 %
 % See also CodeGenerator, genjacobian
 
 % Copyright (C) 1993-2012, by Peter I. Corke
+% Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
 %
@@ -30,9 +31,13 @@
 % GNU Lesser General Public License for more details.
 %
 % You should have received a copy of the GNU Leser General Public License
-% along with RTB. If not, see <http://www.gnu.org/licenses/>.
+% along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+%
+% The code generation module emerged during the work on a project funded by
+% the German Research Foundation (DFG, BE1569/7-1). The authors gratefully 
+% acknowledge the financial support.
 
 function genslblockjacobian(CGen)
  
