@@ -27,30 +27,35 @@
 % constructheaderstring(hStruct)
 %
 % Authors::
-%  Jörn Malzahn   
-%  2012 RST, Technische Universität Dortmund, Germany
+%  Joern Malzahn   
+%  2012 RST, Technische Universitaet Dortmund, Germany
 %  http://www.rst.e-technik.tu-dortmund.de   
 %
 % See also replaceheader, sprintf.
 
 % Copyright (C) 1993-2012, by Peter I. Corke
+% Copyright (C) 2012, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+%
+% The code generation module emerged during the work on a project funded by
+% the German Research Foundation (DFG, BE1569/7-1). The authors gratefully 
+% acknowledge the financial support.
 
 function [hFString] = constructheaderstring(CGen,hStruct)
  
@@ -198,21 +203,4 @@ hFString = [hFString, sprintf('%s \n', '%   ')];
 hFString = [hFString, sprintf('%s \n', '   ')];
 
 %% Copyright note
-hFString = [hFString, sprintf('%s \n', '% Copyright (C) 1993-2012, by Peter I. Corke')];
-hFString = [hFString, sprintf('%s \n', '%')];
-hFString = [hFString, sprintf('%s \n', '% This file has been generated with The Robotics Toolbox for Matlab (RTB).')];
-hFString = [hFString, sprintf('%s \n', '%')];
-hFString = [hFString, sprintf('%s \n', '% RTB is free software: you can redistribute it and/or modify')];
-hFString = [hFString, sprintf('%s \n', '% it under the terms of the GNU Lesser General Public License as published by')];
-hFString = [hFString, sprintf('%s \n', '% the Free Software Foundation, either version 3 of the License, or')];
-hFString = [hFString, sprintf('%s \n', '% (at your option) any later version.')];
-hFString = [hFString, sprintf('%s \n', '% ')];
-hFString = [hFString, sprintf('%s \n', '% RTB is distributed in the hope that it will be useful,')];
-hFString = [hFString, sprintf('%s \n', '% but WITHOUT ANY WARRANTY; without even the implied warranty of')];
-hFString = [hFString, sprintf('%s \n', '% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the')];
-hFString = [hFString, sprintf('%s \n', '% GNU Lesser General Public License for more details.')];
-hFString = [hFString, sprintf('%s \n', '% ')];
-hFString = [hFString, sprintf('%s \n', '% You should have received a copy of the GNU Leser General Public License')];
-hFString = [hFString, sprintf('%s \n', '% along with RTB.  If not, see <http://www.gnu.org/licenses/>.')];
-hFString = [hFString, sprintf('%s \n', '%')];
-hFString = [hFString, sprintf('%s \n', '% http://www.petercorke.com');];
+hFString = [hFString,CGen.generatecopyrightnote];

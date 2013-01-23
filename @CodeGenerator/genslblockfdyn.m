@@ -42,10 +42,8 @@ function [] = genslblockfdyn(CGen)
 %% Open or create block library
 bdclose('all')                                                              % avoid problems with previously loaded libraries
 load_system('simulink');
-if ~(exist([CGen.slibpath,'.mdl']) == 2)                                  % Open existing block library if it already exists
-    new_system(CGen.slib,'Library', 'ErrorIfShadowed');                      % Create new block library if none exists
-    open_system(CGen.slib);
-    save_system(CGen.slib,CGen.slibpath);
+if ~(exist([CGen.slibpath,'.mdl']) == 2)                                  % Create new block library if none exists
+ CGen.createnewblocklibrary;
 end
 checkexistanceofblocks(CGen);
 open_system(CGen.slibpath);

@@ -228,7 +228,20 @@ classdef CodeGenerator
                 CGen.saveresult = true;
             end
         end
-
+        function [] = addpath(CGen)
+        %CodeGenerator.addpath
+        %
+        % Adds the generated m-functions and block library to the search path.
+        addpath(CGen.basepath);
+        end
+        
+        function [] = rmpath(CGen)
+        %CodeGenerator.addpath
+        %
+        % Removes the generated m-functions and block library from the search path.
+        rmpath(CGen.basepath);
+        end
+        
         function [] = purge(CGen,varargin)
         %CodeGenerator.purge
         %
@@ -250,6 +263,12 @@ classdef CodeGenerator
             end
             
             if dopurge
+                bdclose all
+                
+                warning off;
+                CGen.rmpath;
+                warning on;
+                
                 rmdir(CGen.basepath,'s')
                 if ~isempty(CGen.logfile) && exist(CGen.logfile,'file')
                     delete(CGen.logfile);
