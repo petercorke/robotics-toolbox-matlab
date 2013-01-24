@@ -1,21 +1,20 @@
-%CODEGENERATOR.GENSLBLOCKGRAVLOAD Generates Simulink blocks for the vector of gravitational load forces/torques.
+%CODEGENERATOR.GENSLBLOCKGRAVLOAD Generate Simulink block for gravitational load
 %
-% cGen.genslblockgravload()
+% cGen.genslblockgravload() generates a robot-specific Simulink block to compute
+% gravitational load.
 %
 % Notes::
 % - Is called by CodeGenerator.gengravload if cGen has active flag genslblock
-% - The Simulink blocks are generated and stored in a
-% robot specific block library cGen.slib in the directory
-% cGen.basepath
+% - The Simulink blocks are generated and stored in a robot specific block 
+%   library cGen.slib in the directory cGen.basepath.
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
 % See also CodeGenerator, gengravload
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

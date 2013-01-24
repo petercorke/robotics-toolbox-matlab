@@ -1,21 +1,20 @@
-%CODEGENERATOR.GENSLBLOCKJACOBIAN Generates Simulink blocks for the robot jacobians.
+%CODEGENERATOR.GENSLBLOCKJACOBIAN Generate Simulink block for robot Jacobians
 %
-% cGen.genslblockjacobian()
+% cGen.genslblockjacobian() generates a robot-specific Simulink block to compute
+% robot Jacobians (world and tool frame).
 %
 % Notes::
 % - Is called by CodeGenerator.genjacobian if cGen has active flag genslblock
-% - The Simulink blocks are generated and stored in a
-% robot specific block library cGen.slib in the directory
-% cGen.basepath
+% - The Simulink blocks are generated and stored in a robot specific block 
+%   library cGen.slib in the directory cGen.basepath.
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, genjacobian
+% See also CodeGenerator, genjacobian.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

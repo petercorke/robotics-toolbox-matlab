@@ -1,43 +1,76 @@
-%CODEGENERATOR Class for code generation from symbolic SerialLink objects.
+%CODEGENERATOR Class for code generation
 %
-% Objects of the CodeGenerator class enable the automated robot specific
-% model code generation for SerialLink robot objects.
+% Objects of the CodeGenerator class automatcally generate robot specific
+% code, as either M-functions or real-time capable SerialLink blocks.
 %
-% Currently the generation supports:
-% - mat-files with symbolic robot specific model expressions
-% - m-functions with symbolic robot specific model code
+% The various methods return symbolic expressions for robot kinematic and
+% dynamic functions, and optionally support side effects such as:
+% - M-functions with symbolic robot specific model code
 % - real-time capable robot specific Simulink blocks
+% - mat-files with symbolic robot specific model expressions
 %
+% Example::
+%
+%        % load robot model
+%        mdl_twolink
+%
+%        cg = CodeGenerator(twolink);
+%        cg.geneverything();
+%
+%        % a new class has been automatically generated in the robot directory.
+%        addpath robot
+%
+%        tl = @robot();
+%        % this class is a subclass of SerialLink, and thus polymorphic with
+%        % SerialLink but its methods have been overloaded with robot-specific code,
+%        % for example
+%        T = tl.fkine([0.2 0.3]);
+%        % uses concise symbolic expressions rather than the generalized A-matrix
+%        % approach
+%
+%        % The Simulink block library containing robot-specific blocks can be
+%        % opened by
+%        open robot/robotslib.slx
+%        % and the blocks dragged into your own models.
 %
 % Methods::
 %
-%  getrobfname     get robot name and remove any blanks
-%  savesym         save symbolic expression to disk
-%  genfkine        generate forward kinematics code
-%  genjacobian     generate jacobian code
+%  gencoriolis     generate Coriolis/centripetal code
 %  genfdyn         generate forward dynamics code
+%  genfkine        generate forward kinematics code
+%  genfriction     generate joint frictionc code
+%  gengravload     generarte gravity load code
+%  geninertia      general inertia matrix code
 %  geninvdyn       generate forward dynamics code
+%  genjacobian     generate Jacobian code
 %  geneverything   generate code for all of the above
 %
 % Properties (read/write)::
 %
 %  basepath       basic working directory of the code generator
-%  robjpath       subdirectory for specialized matlab functions
+%  robjpath       subdirectory for specialized MATLAB functions
 %  sympath        subdirectory for symbolic expressions
-%  slib           filename of the simulink library
-%  slibpath       subdirectory for the simulink library
-%  verbose        print code generation progress on console (bool)
-%  saveresult     save symbolic expressions to .mat-files (bool)
+%  slib           filename of the Simulink library
+%  slibpath       subdirectory for the Simulink library
+%  verbose        print code generation progress on console (logical)
+%  saveresult     save symbolic expressions to .mat-files (logical)
 %  logfile        print modeling progress to specified text file (string)
-%  genmfun        generate executable M-functions (bool)
-%  genslblock     generate Embedded Matlab Function blocks (bool)
+%  genmfun        generate executable M-functions (logical)
+%  genslblock     generate Embedded MATLAB Function blocks (logical)
 %
 % Object properties (read only)::
 %  rob            SerialLink object to generate code for (1x1).
 %
-% Authors::
+% Notes::
+%  - Requires the MATLAB Symbolic Toolbox
+%  - For robots with > 3 joints the symbolic expressions are massively
+%    complex, they are slow and you may run out of memory.
+%  - As much as possible the symbolic calculations are down row-wise to
+%    reduce the computation/memory burden.
+%
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
 % See also SerialLink, Link.
@@ -94,30 +127,34 @@ classdef CodeGenerator
         % object ROB.
         %
         % cGen = CodeGenerator(ROB, OPTIONS) as above but with options described below.
-        %   cGen = CodeGenerator(...,'par1', val1, 'par2', val2,... )
-        %   cGen = CodeGenerator(rob,'optionSet')
         %
         % Options::
         %
-        %  The following option sets can be passed as an optional parameter:
+        % The following option sets can be passed as an optional parameter:
         %
-        %  'default'                set the options verbose, saveResult, genMFun, genSLBlock
-        %  'debug'                  set the options verbose, saveResult, genMFun, genSLBlock and create a logfile named 'robModel.log' in the working directory
-        %  'silent'                 set the options saveResult, genMFun, genSLBlock
-        %  'disk'                   set the options verbose and saveResult
-        %  'workspace'              set the option verbose, just outputs symbolic expressions to workspace
-        %  'mfun'                   set the options verbose, saveResult, genMFun
-        %  'slblock'                set the options verbose, saveResult, genSLBlock
+        %  'default'     set the options: verbose, saveResult, genMFun, genSLBlock
+        %  'debug'       set the options: verbose, saveResult, genMFun, genSLBlock 
+        %                and create a logfile named 'robModel.log' in the working directory
+        %  'silent'      set the options: saveResult, genMFun, genSLBlock
+        %  'disk'        set the options: verbose, saveResult
+        %  'workspace'   set the option: verbose; just outputs symbolic expressions to workspace
+        %  'mfun'        set the options: verbose, saveResult, genMFun
+        %  'slblock'     set the options: verbose, saveResult, genSLBlock
         %
-        %  If 'optionSet' is ommitted, then 'default' is used. The options control the code generation and user information: 
+        % If 'optionSet' is ommitted, then 'default' is used. The options control the code generation and user information: 
         %
-        %  'verbose', flag          write code generation progress to command window
-        %  'saveResult, flag        save results to hard disk (always enabled, when genMFun and genSLBlock are set)
-        %  'logFile', logfile       write code generation progress to specified logfile
-        %  'genMFun', flag          generate robot specific m-functions
-        %  'genSLBlock', flag       generate real-time capable robot specific Simulink blocks
+        %  'verbose'           write code generation progress to command window
+        %  'saveResult         save results to hard disk (always enabled, when genMFun and genSLBlock are set)
+        %  'logFile',logfile   write code generation progress to specified logfile
+        %  'genMFun'           generate robot specific m-functions
+        %  'genSLBlock'        generate real-time capable robot specific Simulink blocks
         % 
         %  Any option may also be modified individually as optional parameter value pairs.
+        %
+        % Author::
+        %  Joern Malzahn
+        %  2012 RST, Technische Universitaet Dortmund, Germany.
+        %  http://www.rst.e-technik.tu-dortmund.de
 
             if ~isa(rob,'SerialLink')
                 error('CodeGenerator:wrongConstructorInput','The input variable %s must be a SerialLink object.',inputname(1));
@@ -234,24 +271,47 @@ classdef CodeGenerator
             end
         end
         function [] = addpath(CGen)
-        %CodeGenerator.addpath
+        %CodeGenerator.addpath Adds generated code to search path
         %
-        % Adds the generated m-functions and block library to the search path.
+        % cGen.addpath() adds the generated m-functions and block library to the 
+        % MATLAB function search path.
+        %
+        % Author::
+        %  Joern Malzahn
+        %  2012 RST, Technische Universitaet Dortmund, Germany.
+        %  http://www.rst.e-technik.tu-dortmund.de
+        %
+        % See also addpath.
         addpath(CGen.basepath);
         end
         
         function [] = rmpath(CGen)
-        %CodeGenerator.addpath
+        %CodeGenerator.rmpath Removes generated code from search path
         %
-        % Removes the generated m-functions and block library from the search path.
+        % cGen.rmpath() removes generated m-functions and block library from the 
+        % MATLAB function search path.
+        %
+        % Author::
+        %  Joern Malzahn
+        %  2012 RST, Technische Universitaet Dortmund, Germany.
+        %  http://www.rst.e-technik.tu-dortmund.de
+        %
+        % See also rmpath.
         rmpath(CGen.basepath);
         end
         
         function [] = purge(CGen,varargin)
-        %CodeGenerator.purge
+        %CodeGenerator.purge  Cleanup generated files
         %
-        % cGen.purge    displays a question dialog to make sure the user really wants to delete all generated files
-        % cGen.purge(1) skips the question dialog and deletes all generated files
+        % cGen.purge() deletes all generated files, first displays a question dialog to 
+        % make sure the user really wants to delete all generated files.
+        %
+        % cGen.purge(1) as above but skips the question dialog.
+        %
+        % Author::
+        %  Joern Malzahn
+        %  2012 RST, Technische Universitaet Dortmund, Germany.
+        %  http://www.rst.e-technik.tu-dortmund.de
             dopurge = 0;
             
             if exist(CGen.basepath,'dir')

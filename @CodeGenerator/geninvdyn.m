@@ -1,12 +1,12 @@
-%CODEGENERATOR.GENINVDYN Generates code for the inverse dynamics.
+%CODEGENERATOR.GENINVDYN Generate code for inverse dynamics
 %
-% TAU = cGen.geninvdyn() (1xN) is the symbolic vector of joint forces/torques
+% TAU = cGen.geninvdyn() is the symbolic vector (1xN) of joint forces/torques.
 %
 % Notes::
 % - The inverse dynamics vector is composed of the previously computed inertia matrix
 %   coriolis matrix, vector of gravitational load and joint friction for speedup.
 %   The generated code recombines these components to output the final vector.
-% - Behaviour depends on the cGen flags:
+% - Side effects of execution depends on the cGen flags:
 %   - saveresult: the symbolic expressions are saved to
 %     disk in the directory specified by cGen.sympath
 %   - genmfun: ready to use m-functions are generated and
@@ -15,14 +15,13 @@
 %     robot specific block library cGen.slib in the directory
 %     cGen.basepath
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, genfdyn, genfkine
+% See also CodeGenerator, genfdyn, genfkine.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

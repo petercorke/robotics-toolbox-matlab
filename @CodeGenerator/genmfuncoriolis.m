@@ -1,22 +1,22 @@
-%CODEGENERATOR.GENMFUNCORIOLIS Generates M-functions for the Coriolis matrix.
+%CODEGENERATOR.GENMFUNCORIOLIS Generate M-functions for Coriolis matrix
 %
-% cGen.genmfuncoriolis()
+% cGen.genmfuncoriolis() generates a robot-specific M-function to compute
+% the Coriolis matrix.
 %
 % Notes::
 % - Is called by CodeGenerator.gencoriolis if cGen has active flag genmfun
 % - The Coriolis matrix is stored row by row to avoid memory issues.
 % - The generated M-function recombines the individual M-functions for each row.
-% - Access to generated functions is provided via 
-% subclass of SerialLink stored in cGen.robjpath
+% - Access to generated function is provided via subclass of SerialLink 
+%   whose class definition is stored in cGen.robjpath.
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, gencoriolis, geninertia
+% See also CodeGenerator, gencoriolis, geninertia.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

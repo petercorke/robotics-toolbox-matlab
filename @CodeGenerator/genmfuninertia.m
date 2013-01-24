@@ -1,22 +1,22 @@
-%CODEGENERATION.GENMFUNINERTIA Generates M-functions for the robot inertia matrix
+%CODEGENERATION.GENMFUNINERTIA Generate M-function for robot inertia matrix
 %
-% cGen.genmfuninertia()
+% cGen.genmfuninertia() generates a robot-specific M-function to compute
+% robot inertia matrix.
 %
 % Notes::
 % - Is called by CodeGenerator.geninertia if cGen has active flag genmfun
 % - The inertia matrix is stored row by row to avoid memory issues.
 % - The generated M-function recombines the individual M-functions for each row.
-% - Access to generated functions is provided via 
-% subclass of SerialLink stored in cGen.robjpath
+% - Access to generated function is provided via subclass of SerialLink 
+%   whose class definition is stored in cGen.robjpath.
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, gencoriolis
+% See also CodeGenerator, gencoriolis.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

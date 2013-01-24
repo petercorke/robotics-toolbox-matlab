@@ -1,21 +1,21 @@
-%CODEGENERATOR.GENSLBLOCKFKINE Generates Simulink blocks for the forward kinematics
+%CODEGENERATOR.GENSLBLOCKFKINE Generate Simulink block for forward kinematics
 %
-% cGen.genslblockfkine()
+% cGen.genslblockfkine() generates a robot-specific Simulink block to compute
+% forward kinematics.
 %
 % Notes::
-% - Is called by CodeGenerator.genfkine if cGen has active flag genslblock
-% - The Simulink blocks are generated and stored in a
-% robot specific block library cGen.slib in the directory
-% cGen.basepath
+% - Is called by CodeGenerator.genfkine if cGen has active flag genslblock.
+% - The Simulink blocks are generated and stored in a robot specific block 
+%   library cGen.slib in the directory cGen.basepath.
+% - Blocks are created for intermediate transforms T0, T1 etc. as well.
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, genfkine
+% See also CodeGenerator, genfkine.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

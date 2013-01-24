@@ -1,11 +1,10 @@
-%CODEGENERATOR.GENFRICTION Generates code for the friction model.
+%CODEGENERATOR.GENFRICTION Generate code for joint friction
 %
-% F = cGen.genfriction() is the symbolic (1xN) vector of joint friction
+% F = cGen.genfriction() is the symbolic vector (1xN) of joint friction
+% forces.
 %
 % Notes::
-% - The coriolis matrix is stored row by row to avoid memory issues.
-%   The generated code recombines these rows to output the full matrix.
-% - Behaviour depends on the cGen flags:
+% - Side effects of execution depends on the cGen flags:
 %   - saveresult: the symbolic expressions are saved to
 %     disk in the directory specified by cGen.sympath
 %   - genmfun: ready to use m-functions are generated and
@@ -14,14 +13,13 @@
 %     robot specific block library cGen.slib in the directory
 %     cGen.basepath
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, geninvdyn, genfdyn
+% See also CodeGenerator, geninvdyn, genfdyn.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

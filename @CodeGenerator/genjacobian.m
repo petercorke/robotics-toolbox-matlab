@@ -1,13 +1,14 @@
-%CODEGENERATOR.GENJACOBIAN Generates code for the robot jacobians
+%CODEGENERATOR.GENJACOBIAN Generate code for robot Jacobians
 %
-% [J0, Jn] = cGen.genjacobian()
-% J0 is the symbolic expression for the (6xN) Jacobian matrix 
-% expressed in the base coordinate frame
-% Jn is the symbolic expression for the (6xN) Jacobian matrix 
-% expressed in the end-effector frame
+% J0 = cGen.genjacobian() is the symbolic expression for the Jacobian 
+% matrix (6xN) expressed in the base coordinate frame.
+%
+% [J0, Jn] = cGen.genjacobian() as above but also returns the symbolic 
+% expression for the Jacobian matrix (6xN) expressed in the end-effector 
+% frame.
 %
 % Notes::
-% - Behaviour depends on the cGen flags:
+% - Side effects of execution depends on the cGen flags:
 %   - saveresult: the symbolic expressions are saved to
 %     disk in the directory specified by cGen.sympath
 %   - genmfun: ready to use m-functions are generated and
@@ -16,14 +17,13 @@
 %     robot specific block library cGen.slib in the directory
 %     cGen.basepath
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, geninvdyn, genjacobian
+% See also CodeGenerator, genfkine.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

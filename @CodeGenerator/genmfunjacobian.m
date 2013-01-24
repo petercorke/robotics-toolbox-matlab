@@ -1,20 +1,20 @@
-%CODEGENERATOR.GENMFUNJACOBIAN Generates M-functions for the robot jacobians.
+%CODEGENERATOR.GENMFUNJACOBIAN Generate M-functions for robot Jacobian
 %
-% cGen.genmfunjacobian()
+% cGen.genmfunjacobian() generates a robot-specific M-function to compute
+% robot Jacobian.
 %
 % Notes::
 % - Is called only if cGen has active flag genmfun
-% - Access to generated functions is provided via 
-% subclass of SerialLink stored in cGen.robjpath
+% - Access to generated function is provided via subclass of SerialLink 
+%   whose class definition is stored in cGen.robjpath.
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, gencoriolis
+% See also CodeGenerator, gencoriolis.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

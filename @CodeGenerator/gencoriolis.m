@@ -1,4 +1,4 @@
-%CODEGENERATOR.GENCORIOLIS Generate code for Coriolis forces
+%CODEGENERATOR.GENCORIOLIS Generate code for Coriolis force
 %
 % coriolis = cGen.gencoriolis() is a symbolic matrix (NxN) of centrifugal and Coriolis
 % forces/torques.
@@ -6,7 +6,7 @@
 % Notes::
 % - The Coriolis matrix is stored row by row to avoid memory issues.
 %   The generated code recombines these rows to output the full matrix.
-% - Behaviour depends on the cGen flags:
+% - Side effects of execution depends on the cGen flags:
 %   - saveresult: the symbolic expressions are saved to
 %     disk in the directory specified by cGen.sympath
 %   - genmfun: ready to use m-functions are generated and
@@ -15,14 +15,13 @@
 %     robot specific block library cGen.slib in the directory
 %     cGen.basepath
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, geninertia, genfkine
+% See also CodeGenerator, geninertia, genfkine.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

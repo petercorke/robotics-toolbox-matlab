@@ -1,23 +1,24 @@
-%CODEGENERATOR.GENMFUNFDYN Generates M-functions for the forward dynamics
+%CODEGENERATOR.GENMFUNFDYN Generate M-function for forward dynamics
 %
-% cGen.genmfunfdyn()
+% cGen.genmfunfdyn() generates a robot-specific M-function to compute
+% the forward dynamics.
 %
 % Notes::
 % - Is called by CodeGenerator.genfdyn if cGen has active flag genmfun
 % - The generated M-function is composed of previously generated M-functions
-% for the inertia matrix, coriolis matrix, vector of gravitational load and joint friction vector.
-% This function recombines these components to compute the forward dynamics.
-% - Access to generated functions is provided via 
-% subclass of SerialLink stored in cGen.robjpath
+%   for the inertia matrix, coriolis matrix, vector of gravitational load and 
+%   joint friction vector.  This function recombines these components to compute 
+%   the forward dynamics.
+% - Access to generated function is provided via subclass of SerialLink 
+%   whose class definition is stored in cGen.robjpath.
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, geninvdyn
+% See also CodeGenerator, geninvdyn.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

@@ -1,13 +1,13 @@
-%CODEGENERATOR.GENFKINE Generates code for forward kinematics.
+%CODEGENERATOR.GENFKINE Generate code for forward kinematics
 %
-% [T, ALLT] = cGen.genfkine()
-%  T is the symbolic expression (4x4) for the pose of the robot end-effector 
-%       as a homogeneous transformation
-%  ALLT are the symbolic expressions (4x4xN) for the poses of the individual robot joints 
-%       as a homogeneous transformation
+% T = cGen.genfkine() generates a symbolic homogeneous transform matrix (4x4) representing
+% the pose of the robot end-effector in terms of the symbolic joint coordinates q1, q2, ...
+%
+% [T, ALLT] = cGen.genfkine() as above but also generates symbolic homogeneous transform 
+% matrices (4x4xN) for the poses of the individual robot joints.
 %
 % Notes::
-% - Behaviour depends on the cGen flags:
+% - Side effects of execution depends on the cGen flags:
 %   - saveresult: the symbolic expressions are saved to
 %     disk in the directory specified by cGen.sympath
 %   - genmfun: ready to use m-functions are generated and
@@ -16,14 +16,13 @@
 %     robot specific block library cGen.slib in the directory
 %     cGen.basepath
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, geninvdyn, genjacobian
+% See also CodeGenerator, geninvdyn, genjacobian.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

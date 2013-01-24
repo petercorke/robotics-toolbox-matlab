@@ -1,23 +1,22 @@
-%CODEGENERATOR.GENSLBLOCKCORIOLIS Generates Simulink blocks for the Coriolis matrix
+%CODEGENERATOR.GENSLBLOCKCORIOLIS Generat Simulink block for Coriolis matrix
 %
-% cGen.genslblockcoriolis()
+% cGen.genslblockcoriolis() generates a robot-specific Simulink block to compute
+% Coriolis/centripetal matrix.
 %
 % Notes::
 % - Is called by CodeGenerator.gencoriolis if cGen has active flag genslblock
 % - The Coriolis matrix is stored row by row to avoid memory issues.
 % - The Simulink block recombines the the individual blocks for each row.
-% - The Simulink blocks are generated and stored in a
-% robot specific block library cGen.slib in the directory
-% cGen.basepath
+% - Access to generated function is provided via subclass of SerialLink 
+%   whose class definition is stored in cGen.robjpath.
 %
-% Authors::
+% Author::
 %  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, gencoriolis
+% See also CodeGenerator, gencoriolis.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
