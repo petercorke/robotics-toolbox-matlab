@@ -35,6 +35,8 @@
 %
 % http://www.petercorke.com
 
+% Modifications by Joern Malzahn to support CodeGenerator functionality
+
 function [t allt] = fkine(robot, q)
 %
 % evaluate fkine for each point on a trajectory of
