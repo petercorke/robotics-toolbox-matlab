@@ -26,7 +26,8 @@
 % 'view',V           Set plot view parameters V=[az el] angles, or 'auto' 
 %                    for view toward origin of coordinate frame
 % 'arrow'            Use arrows rather than line segments for the axes
-% 'width', w         Width of arrow tips
+% 'width', w         Width of arrow tips (default 1)
+% 'thick',t          Thickness of lines (default 0.5)
 % '3d'               Plot in 3D using anaglyph graphics
 % 'anaglyph',A       Specify anaglyph colors for '3d' as 2 characters for 
 %                    left and right (default colors 'rc'):
@@ -118,6 +119,7 @@ function hout = trplot(T, varargin)
     opt.anaglyph = 'rc';
     opt.d_3d = false;
     opt.dispar = 0.1;
+    opt.thick = 0.5;
 
     opt = tb_optparse(opt, varargin);
 
@@ -210,7 +212,9 @@ function hout = trplot(T, varargin)
         end
     else
         for i=1:3
-            plot2([mstart(i,1:3); mend(i,1:3)], 'Color', opt.color, 'Parent', hg);
+            plot2([mstart(i,1:3); mend(i,1:3)], 'Color', opt.color, ...
+                'LineWidth', opt.thick, ...
+                'Parent', hg);
         end
     end
     
