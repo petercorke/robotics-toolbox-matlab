@@ -1,5 +1,5 @@
 %% This is for testing the Utility functions in the robotics Toolbox
-function test_suite = TestRobotToolboxUtility
+function test_suite = UtilityTest
   initTestSuite;
 %% Utility
 %    about                      - summary of object size and type
@@ -235,37 +235,3 @@ function trprint_test
     trprint(a, 'angvec', 'radian', 'fmt', '%g');
     trprint(a, 'angvec', 'radian', 'fmt', '%g', 'label', 'bob');
 
-function rtdemo_test
-
-    if exist('rtbdemo', 'file') == 2
-        tbpath = fileparts(which('tr2eul'));
-        demopath = fullfile(tbpath, 'demos');
-        addpath( demopath );
-    else
-        error('cant find demos folder');
-    end
-
-    % run through all the demos
-    braitnav
-    bugnav
-    codegen
-    drivepose
-    dstarnav
-    fdyn
-    fkine
-    graphics
-    idyn
-    ikine
-    jacob
-    particlefilt
-    prmnav
-    quadrotor
-    robot
-    rotation
-    slam
-    symbolic
-    traj
-    trans
-    ztorque
-
-    close all
