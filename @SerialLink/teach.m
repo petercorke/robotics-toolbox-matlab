@@ -92,11 +92,11 @@ function handle = teach(r, varargin)
         q = opt.q0;
     end
 
-    % set up scale factor
+    % set up scale factor, from actual limits in radians/metres to display units
     qscale = ones(r.n,1);
     for i=1:r.n
         L=r.links(i);
-        if opt.degrees && L.revolute
+        if opt.degrees && L.isrevolute
             qscale(i) = 180/pi;
         end
     end
@@ -141,9 +141,9 @@ function handle = teach(r, varargin)
         handles.slider(i) = uicontrol(fig, 'Style', 'slider', ...
             'Units', 'pixels', ...
             'Position', [width*0.1 height*(n-i)+40 width*0.7 height*0.4], ...
-            'Min', qscale(i)*qlim(i,1), ...
-            'Max', qscale(i)*qlim(i,2), ...
-            'Value', qscale(i)*q(i), ...
+            'Min', qlim(i,1), ...
+            'Max', qlim(i,2), ...
+            'Value', q(i), ...
             'Tag', sprintf('Slider%d', i));
 
         % text box showing slider value, also editable
@@ -154,6 +154,7 @@ function handle = teach(r, varargin)
             'Tag', sprintf('Edit%d', i));
     end
 
+    set(handles.slider(1))
 
         
     % robot name text box
@@ -294,7 +295,9 @@ function handle = teach(r, varargin)
         
         % slider
         set(handles.slider(i), ...
-             'Callback', @(src,event)teach_callback(src, r.name, i, handles));
+            'Interruptible', 'off', ...
+            'BusyAction', 'queue', ...
+            'Callback', @(src,event)teach_callback(src, r.name, i, handles));
 
         % if findjobj exists use it, since it lets us get continous callbacks while
         % a slider moves
@@ -361,6 +364,7 @@ function teach_callback(src, name, j, handles)
         %set(r, 'UserData', robot);
         
         robot.plot(q);   % plot it
+        drawnow
     end
 
     % compute the robot tool pose
@@ -416,4 +420,6 @@ function sliderCallbackFunc(src, h, name, joint, handles)
         end
     end
     busy = false;
+
+
 end
