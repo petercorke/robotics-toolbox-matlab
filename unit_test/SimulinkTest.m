@@ -92,9 +92,9 @@ function flexlink_test
 	close all
 
 function quadcopter_test
-    sim('sl_quadcopter');
+    sim('sl_quadrotor');
 	close all
 
 function quadcopter_vs_test
-    sim('sl_quadcopter_vs');
+    sim('sl_quadrotor_vs');
 	close all
