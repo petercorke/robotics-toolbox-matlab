@@ -1,4 +1,4 @@
-function test_suite = TestLocalizationClasses
+function test_suite = LocnTest
   initTestSuite;
 
 function Vehicle_test
@@ -83,6 +83,8 @@ function Mapping_test
 
     ekf = EKF(veh, [], [], sensor, W, []);
     ekf.run(1000);
+    
+    assertEqual(numcols(ekf.features), 20);
 
     clf
     map.plot()
@@ -108,6 +110,8 @@ function SLAM_test
     ekf = EKF(veh, V, P0, sensor, W, []);
     ekf.verbose = false;
     ekf.run(1000);
+
+    assertEqual(numcols(ekf.features), 20);
 
     clf
     map.plot()
