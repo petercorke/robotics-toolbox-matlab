@@ -14,6 +14,8 @@ tStruct.cGen = CodeGenerator(tStruct.rob,'default','logfile','myLog.txt');
 function teardown(tStruct)
 if ~isempty(strfind(path,tStruct.cGen.basepath))
     rmpath(tStruct.cGen.basepath)
+    rmdir(tStruct.cGen.basepath, 's')
+    delete('myLog.txt');
 end
 
 function genfkine_test(tStruct)
