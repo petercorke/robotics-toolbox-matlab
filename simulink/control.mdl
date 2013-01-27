@@ -1,6 +1,6 @@
 Library {
   Name			  "control"
-  Version		  7.7
+  Version		  8.0
   MdlSubVersion		  0
   SavedCharacterEncoding  "ISO-8859-1"
   LibraryType		  "BlockLibrary"
@@ -8,16 +8,56 @@ Library {
   ScopeRefreshTime	  0.035000
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
+  FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
+  Object {
+    $PropName		    "BdWindowsInfo"
+    $ObjectID		    1
+    $ClassName		    "Simulink.BDWindowsInfo"
+    Object {
+      $PropName		      "WindowsInfo"
+      $ObjectID		      2
+      $ClassName	      "Simulink.WindowInfo"
+      IsActive		      [1]
+      Location		      [1125.0, 50.0, 1156.0, 860.0]
+      Object {
+	$PropName		"ModelBrowserInfo"
+	$ObjectID		3
+	$ClassName		"Simulink.ModelBrowserInfo"
+	Visible			[0]
+	DockPosition		"Left"
+	Width			[50]
+	Height			[50]
+	Filter			[10]
+      }
+      Object {
+	$PropName		"ExplorerBarInfo"
+	$ObjectID		4
+	$ClassName		"Simulink.ExplorerBarInfo"
+	Visible			[1]
+      }
+      Object {
+	$PropName		"EditorsInfo"
+	$ObjectID		5
+	$ClassName		"Simulink.EditorInfo"
+	IsActive		[1]
+	ViewObjType		"SimulinkTopLevel"
+	LoadSaveID		"0"
+	Extents			[1122.0, 698.0]
+	ZoomFactor		[1.0]
+	Offset			[0.0, 0.0]
+      }
+    }
+  }
   Created		  "Sun Apr  4 19:58:29 2010"
   Creator		  "corkep"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sat Sep 10 11:10:32 2011"
-  RTWModifiedTimeStamp	  237553771
-  ModelVersionFormat	  "1.%<AutoIncrement:13>"
+  LastModifiedDate	  "Sun Jan 27 11:35:19 2013"
+  RTWModifiedTimeStamp	  281187294
+  ModelVersionFormat	  "1.%<AutoIncrement:18>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -25,6 +65,7 @@ Library {
   WideLines		  off
   ShowLineDimensions	  off
   ShowPortDataTypes	  off
+  ShowDesignRanges	  off
   ShowLoopsOnError	  on
   IgnoreBidirectionalLines off
   ShowStorageClass	  off
@@ -84,14 +125,14 @@ Library {
     Type		    "Handle"
     Dimension		    1
     Simulink.ConfigSet {
-      $ObjectID		      1
-      Version		      "1.11.0"
+      $ObjectID		      6
+      Version		      "1.12.1"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
-	  $ObjectID		  2
-	  Version		  "1.11.0"
+	  $ObjectID		  7
+	  Version		  "1.12.1"
 	  StartTime		  "0.0"
 	  StopTime		  "10.0"
 	  AbsTol		  "auto"
@@ -109,6 +150,7 @@ Library {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
+	  EnableConcurrentExecution off
 	  ConcurrentTasks	  off
 	  Solver		  "ode45"
 	  SolverName		  "ode45"
@@ -124,8 +166,8 @@ Library {
 	  InsertRTBMode		  "Whenever possible"
 	}
 	Simulink.DataIOCC {
-	  $ObjectID		  3
-	  Version		  "1.11.0"
+	  $ObjectID		  8
+	  Version		  "1.12.1"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -156,8 +198,8 @@ Library {
 	  Refine		  "1"
 	}
 	Simulink.OptimizationCC {
-	  $ObjectID		  4
-	  Version		  "1.11.0"
+	  $ObjectID		  9
+	  Version		  "1.12.1"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    7
@@ -175,6 +217,7 @@ Library {
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
 	  UseIntDivNetSlope	  off
+	  UseFloatMulNetSlope	  off
 	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
@@ -207,11 +250,11 @@ Library {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
-	  AccelParallelForEachSubsystem	on
+	  ParallelExecutionInRapidAccelerator on
 	}
 	Simulink.DebuggingCC {
-	  $ObjectID		  5
-	  Version		  "1.11.0"
+	  $ObjectID		  10
+	  Version		  "1.12.1"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -260,12 +303,13 @@ Library {
 	  UnnecessaryDatatypeConvMsg "none"
 	  VectorMatrixConversionMsg "none"
 	  InvalidFcnCallConnMsg	  "error"
-	  FcnCallInpInsideContextMsg "Use local settings"
+	  FcnCallInpInsideContextMsg "UseLocalSettings"
 	  SignalLabelMismatchMsg  "none"
 	  UnconnectedInputMsg	  "warning"
 	  UnconnectedOutputMsg	  "warning"
 	  UnconnectedLineMsg	  "warning"
 	  SFcnCompatibilityMsg	  "none"
+	  FrameProcessingCompatibilityMsg "warning"
 	  UniqueDataStoreMsg	  "none"
 	  BusObjectLabelMismatch  "warning"
 	  RootOutportRequireBusObject "warning"
@@ -294,10 +338,13 @@ Library {
 	  SFInvalidInputDataAccessInChartInitDiag "warning"
 	  SFNoUnconditionalDefaultTransitionDiag "warning"
 	  SFTransitionOutsideNaturalParentDiag "warning"
+	  SFUnconditionalTransitionShadowingDiag "warning"
+	  SFUndirectedBroadcastEventsDiag "warning"
+	  SFTransitionActionBeforeConditionDiag	"warning"
 	}
 	Simulink.HardwareCC {
-	  $ObjectID		  6
-	  Version		  "1.11.0"
+	  $ObjectID		  11
+	  Version		  "1.12.1"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -333,8 +380,8 @@ Library {
 	  ProdEqTarget		  on
 	}
 	Simulink.ModelReferenceCC {
-	  $ObjectID		  7
-	  Version		  "1.11.0"
+	  $ObjectID		  12
+	  Version		  "1.12.1"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -348,8 +395,8 @@ Library {
 	  SupportModelReferenceSimTargetCustomCode off
 	}
 	Simulink.SFSimCC {
-	  $ObjectID		  8
-	  Version		  "1.11.0"
+	  $ObjectID		  13
+	  Version		  "1.12.1"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -363,8 +410,8 @@ Library {
 	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
-	  $ObjectID		  9
-	  Version		  "1.11.0"
+	  $ObjectID		  14
+	  Version		  "1.12.1"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -380,6 +427,7 @@ Library {
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
 	  GenerateMakefile	  on
+	  PackageGeneratedCodeAndArtifacts off
 	  TemplateMakefile	  "grt_default_tmf"
 	  GenerateReport	  off
 	  SaveLog		  off
@@ -396,6 +444,13 @@ Library {
 	  RTWUseSimCustomCode	  off
 	  IncludeHyperlinkInReport off
 	  LaunchReport		  off
+	  PortableWordSizes	  off
+	  GenerateErtSFunction	  off
+	  CreateSILPILBlock	  "None"
+	  CodeExecutionProfiling  off
+	  CodeExecutionProfileVariable "executionProfile"
+	  CodeProfilingSaveOptions "SummaryOnly"
+	  CodeProfilingInstrumentation off
 	  TargetLang		  "C"
 	  IncludeBusHierarchyInRTWFileBlockHierarchyMap	off
 	  IncludeERTFirstTime	  off
@@ -405,8 +460,9 @@ Library {
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
-	  GenerateSLWebview	  off
+	  GenerateWebview	  off
 	  GenerateCodeMetricsReport off
+	  GenerateCodeReplacementReport	off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -414,8 +470,8 @@ Library {
 	    Type		    "Handle"
 	    Dimension		    2
 	    Simulink.CodeAppCC {
-	      $ObjectID		      10
-	      Version		      "1.11.0"
+	      $ObjectID		      15
+	      Version		      "1.12.1"
 	      Array {
 		Type			"Cell"
 		Dimension		19
@@ -449,6 +505,7 @@ Library {
 	      PreserveName	      off
 	      PreserveNameWithParent  off
 	      ShowEliminatedStatement off
+	      OperatorAnnotations     off
 	      IncAutoGenComments      off
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
@@ -471,14 +528,15 @@ Library {
 	      SimulinkBlockComments   on
 	      MATLABSourceComments    off
 	      EnableCustomComments    off
+	      InternalIdentifier      "Classic"
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
 	      UseSimReservedNames     off
 	    }
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
-	      $ObjectID		      11
-	      Version		      "1.11.0"
+	      $ObjectID		      16
+	      Version		      "1.12.1"
 	      Array {
 		Type			"Cell"
 		Dimension		16
@@ -503,12 +561,9 @@ Library {
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
-	      TargetFunctionLibrary   "ANSI_C"
+	      CodeReplacementLibrary  "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
-	      FunctionExecutionProfile off
-	      CodeExecutionProfiling  off
-	      ERTCodeCoverageTool     "None"
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
 	      GenerateFullHeader      on
@@ -518,6 +573,7 @@ Library {
 	      ModelReferenceCompliant on
 	      ParMdlRefBuildCompliant on
 	      CompOptLevelCompliant   on
+	      ConcurrentExecutionCompliant on
 	      IncludeMdlTerminateFcn  on
 	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
@@ -538,10 +594,10 @@ Library {
 	      SupportVariableSizeSignals off
 	      EnableShiftOperators    on
 	      ParenthesesLevel	      "Nominal"
-	      PortableWordSizes	      off
 	      ModelStepFunctionPrototypeControlCompliant off
 	      CPPClassGenCompliant    off
 	      AutosarCompliant	      off
+	      GRTInterface	      on
 	      UseMalloc		      off
 	      ExtMode		      off
 	      ExtModeStaticAlloc      off
@@ -567,6 +623,7 @@ Library {
     }
     PropName		    "ConfigurationSets"
   }
+  ExplicitPartitioning	  off
   BlockDefaults {
     ForegroundColor	    "black"
     BackgroundColor	    "white"
@@ -598,7 +655,43 @@ Library {
     FontWeight		    "normal"
     FontAngle		    "normal"
   }
+  MaskDefaults {
+    SelfModifiable	    "off"
+    IconFrame		    "on"
+    IconOpaque		    "on"
+    RunInitForIconRedraw    "off"
+    IconRotate		    "none"
+    PortRotate		    "default"
+    IconUnits		    "autoscale"
+  }
+  MaskParameterDefaults {
+    Evaluate		    "on"
+    Tunable		    "on"
+    NeverSave		    "off"
+    Internal		    "off"
+    ReadOnly		    "off"
+    Enabled		    "on"
+    Visible		    "on"
+    ToolTip		    "on"
+  }
   BlockParameterDefaults {
+    Block {
+      BlockType		      Delay
+      DelayLengthSource	      "Dialog"
+      DelayLength	      "2"
+      DelayLengthUpperLimit   "100"
+      InitialConditionSource  "Dialog"
+      InitialCondition	      "0.0"
+      ExternalReset	      "None"
+      PreventDirectFeedthrough off
+      DiagnosticForOutOfRangeDelayLength "None"
+      RemoveProtectionDelayLength off
+      InputProcessing	      "Elements as channels (sample based)"
+      UseCircularBuffer	      off
+      SampleTime	      "-1"
+      StateMustResolveToSignalObject off
+      CodeGenStateStorageClass "Auto"
+    }
     Block {
       BlockType		      Gain
       Gain		      "1"
@@ -698,6 +791,7 @@ Library {
       DataTypeOverride	      "UseLocalSettings"
       DataTypeOverrideAppliesTo	"AllNumericTypes"
       MinMaxOverflowLogging   "UseLocalSettings"
+      SFBlockType	      "NONE"
       Variant		      off
       GeneratePreprocessorConditionals off
     }
@@ -728,7 +822,7 @@ Library {
   }
   System {
     Name		    "control"
-    Location		    [190, 152, 770, 412]
+    Location		    [1125, 50, 2281, 910]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -742,14 +836,16 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "77"
+    SIDHighWatermark	    "191"
     Block {
       BlockType		      SubSystem
       Name		      "vloop"
       SID		      "24"
-      Ports		      [2, 3]
-      Position		      [110, 65, 160, 165]
+      Ports		      [2, 4]
+      Position		      [110, 67, 160, 168]
+      ZOrder		      -9
       DropShadow	      on
+      LibraryVersion	      "*1.13"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
       RTWSystemCode	      "Auto"
@@ -757,63 +853,115 @@ Library {
       Opaque		      off
       RequestExecContextInheritance off
       MaskHideContents	      off
-      MaskPromptString	      "Inertia (J)|Viscous friction coefficient (B)|Motor torque constant|Torque limit (tau_max"
-      ")|Proportional gain (Kv)|Integral gain (Ki)|Sample interval (T)"
-      MaskStyleString	      "edit,edit,edit,edit,edit,edit,edit"
-      MaskVariables	      "J=@1;B=@2;Km=@3;tau_max=@4;Kv=@5;Ki=@6;T=@7;"
-      MaskTunableValueString  "on,on,on,on,on,on,on"
-      MaskCallbackString      "||||||"
-      MaskEnableString	      "on,on,on,on,on,on,on"
-      MaskVisibilityString    "on,on,on,on,on,on,on"
-      MaskToolTipString	      "on,on,on,on,on,on,on"
-      MaskIconFrame	      on
-      MaskIconOpaque	      on
-      MaskIconRotate	      "none"
-      MaskPortRotate	      "default"
-      MaskIconUnits	      "autoscale"
-      MaskValueString	      "372e-6|817e-6|0.228|0.9|1|0|0.001"
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		17
+	$ClassName		"Simulink.Mask"
+	Array {
+	  Type			  "Simulink.MaskParameter"
+	  Dimension		  7
+	  Object {
+	    $ObjectID		    18
+	    Type		    "edit"
+	    Name		    "J"
+	    Prompt		    "Inertia (J)"
+	    Value		    "372e-6"
+	  }
+	  Object {
+	    $ObjectID		    19
+	    Type		    "edit"
+	    Name		    "B"
+	    Prompt		    "Viscous friction coefficient (B)"
+	    Value		    "817e-6"
+	  }
+	  Object {
+	    $ObjectID		    20
+	    Type		    "edit"
+	    Name		    "Km"
+	    Prompt		    "Motor torque constant"
+	    Value		    "0.228"
+	  }
+	  Object {
+	    $ObjectID		    21
+	    Type		    "edit"
+	    Name		    "tau_max"
+	    Prompt		    "Torque limit (tau_max)"
+	    Value		    "0.9"
+	  }
+	  Object {
+	    $ObjectID		    22
+	    Type		    "edit"
+	    Name		    "Kv"
+	    Prompt		    "Proportional gain (Kv)"
+	    Value		    "1"
+	  }
+	  Object {
+	    $ObjectID		    23
+	    Type		    "edit"
+	    Name		    "Ki"
+	    Prompt		    "Integral gain (Ki)"
+	    Value		    "5"
+	  }
+	  Object {
+	    $ObjectID		    24
+	    Type		    "edit"
+	    Name		    "T"
+	    Prompt		    "Sample interval (T)"
+	    Value		    "0.001"
+	  }
+	  PropName		  "Parameters"
+	}
+      }
       System {
 	Name			"vloop"
-	Location		[954, 539, 1757, 827]
-	Open			on
+	Location		[1199, 44, 2042, 510]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
-	PaperOrientation	"portrait"
+	PaperOrientation	"landscape"
 	PaperPositionMode	"auto"
-	PaperType		"A4"
-	PaperUnits		"centimeters"
-	TiledPaperMargins	[1.270000, 1.270000, 1.270000, 1.270000]
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
 	Block {
 	  BlockType		  Inport
 	  Name			  "qd*"
-	  SID			  "25"
+	  SID			  "175"
 	  Position		  [25, 113, 55, 127]
+	  ZOrder		  -1
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  Inport
 	  Name			  "tau_d"
-	  SID			  "26"
+	  SID			  "176"
 	  Position		  [435, 33, 465, 47]
+	  ZOrder		  -2
 	  Port			  "2"
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  Integrator
 	  Name			  "Integrator"
-	  SID			  "28"
-	  Ports			  [1, 1]
-	  Position		  [225, 150, 255, 180]
+	  SID			  "177"
+	  Ports			  [2, 1]
+	  Position		  [225, 152, 255, 183]
+	  ZOrder		  -3
+	  ExternalReset		  "level"
+	  LimitOutput		  on
+	  UpperSaturationLimit	  "1"
+	  LowerSaturationLimit	  "-1"
 	}
 	Block {
 	  BlockType		  Gain
 	  Name			  "Ki"
-	  SID			  "27"
+	  SID			  "178"
 	  Position		  [295, 150, 325, 180]
+	  ZOrder		  -4
 	  Gain			  "Ki"
 	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
 	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
@@ -822,8 +970,9 @@ Library {
 	Block {
 	  BlockType		  Gain
 	  Name			  "Km"
-	  SID			  "29"
+	  SID			  "179"
 	  Position		  [400, 105, 430, 135]
+	  ZOrder		  -5
 	  ForegroundColor	  "blue"
 	  Gain			  "Km"
 	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
@@ -833,8 +982,9 @@ Library {
 	Block {
 	  BlockType		  Gain
 	  Name			  "Kv"
-	  SID			  "30"
+	  SID			  "180"
 	  Position		  [295, 105, 325, 135]
+	  ZOrder		  -6
 	  Gain			  "Kv"
 	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
 	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
@@ -843,9 +993,10 @@ Library {
 	Block {
 	  BlockType		  Sum
 	  Name			  "Sum"
-	  SID			  "31"
+	  SID			  "181"
 	  Ports			  [2, 1]
 	  Position		  [100, 110, 120, 130]
+	  ZOrder		  -7
 	  ShowName		  off
 	  IconShape		  "round"
 	  Inputs		  "|+-"
@@ -856,9 +1007,10 @@ Library {
 	Block {
 	  BlockType		  Sum
 	  Name			  "Sum1"
-	  SID			  "32"
+	  SID			  "182"
 	  Ports			  [2, 1]
 	  Position		  [530, 110, 550, 130]
+	  ZOrder		  -8
 	  ForegroundColor	  "blue"
 	  ShowName		  off
 	  IconShape		  "round"
@@ -870,9 +1022,10 @@ Library {
 	Block {
 	  BlockType		  Sum
 	  Name			  "Sum2"
-	  SID			  "33"
+	  SID			  "183"
 	  Ports			  [2, 1]
 	  Position		  [350, 110, 370, 130]
+	  ZOrder		  -9
 	  ShowName		  off
 	  IconShape		  "round"
 	  Inputs		  "|++"
@@ -881,26 +1034,25 @@ Library {
 	  SaturateOnIntegerOverflow off
 	}
 	Block {
-	  BlockType		  Reference
+	  BlockType		  Delay
 	  Name			  "control\ntime"
-	  SID			  "34"
+	  SID			  "184"
 	  Ports			  [1, 1]
 	  Position		  [160, 103, 185, 137]
-	  LibraryVersion	  "1.236"
+	  ZOrder		  -10
 	  UserDataPersistent	  on
 	  UserData		  "DataTag0"
-	  SourceBlock		  "simulink/Discrete/Integer Delay"
-	  SourceType		  "Integer Delay"
-	  NumDelays		  "1"
+	  InputPortMap		  "u0"
+	  DelayLength		  "1"
 	  InputProcessing	  "Inherited"
-	  vinit			  "0.0"
-	  samptime		  "T"
+	  SampleTime		  "T"
 	}
 	Block {
 	  BlockType		  TransferFcn
 	  Name			  "motor"
-	  SID			  "35"
+	  SID			  "185"
 	  Position		  [580, 101, 645, 139]
+	  ZOrder		  -11
 	  ForegroundColor	  "blue"
 	  Denominator		  "[J B]"
 	  ContinuousStateAttributes "'qd'"
@@ -914,9 +1066,10 @@ Library {
 	Block {
 	  BlockType		  Saturate
 	  Name			  "torque\nlimit"
-	  SID			  "36"
+	  SID			  "186"
 	  Ports			  [1, 1]
 	  Position		  [450, 105, 480, 135]
+	  ZOrder		  -12
 	  ForegroundColor	  "blue"
 	  InputPortMap		  "u0"
 	  UpperLimit		  "tau_max"
@@ -925,24 +1078,36 @@ Library {
 	Block {
 	  BlockType		  Outport
 	  Name			  "qd"
-	  SID			  "37"
+	  SID			  "187"
 	  Position		  [720, 113, 750, 127]
+	  ZOrder		  -13
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  Outport
 	  Name			  "qd error"
-	  SID			  "38"
+	  SID			  "188"
 	  Position		  [150, 33, 180, 47]
+	  ZOrder		  -14
 	  Port			  "2"
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  Outport
 	  Name			  "tau"
-	  SID			  "39"
+	  SID			  "189"
 	  Position		  [720, 193, 750, 207]
+	  ZOrder		  -15
 	  Port			  "3"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "integral"
+	  SID			  "190"
+	  Position		  [720, 253, 750, 267]
+	  ZOrder		  -16
+	  Port			  "4"
 	  IconDisplay		  "Port number"
 	}
 	Line {
@@ -955,8 +1120,16 @@ Library {
 	Line {
 	  SrcBlock		  "Integrator"
 	  SrcPort		  1
-	  DstBlock		  "Ki"
-	  DstPort		  1
+	  Points		  [0, -5; 10, 0]
+	  Branch {
+	    Points		    [0, 95]
+	    DstBlock		    "integral"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Ki"
+	    DstPort		    1
+	  }
 	}
 	Line {
 	  SrcBlock		  "Kv"
@@ -1054,6 +1227,7 @@ Library {
 	  DstPort		  1
 	}
 	Annotation {
+	  SID			  "191"
 	  Name			  "tau_m"
 	  Position		  [505, 116]
 	  ForegroundColor	  "blue"
@@ -1066,6 +1240,7 @@ Library {
       SID		      "41"
       Ports		      [3, 3]
       Position		      [265, 65, 315, 165]
+      ZOrder		      -2
       DropShadow	      on
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -1074,25 +1249,69 @@ Library {
       Opaque		      off
       RequestExecContextInheritance off
       MaskHideContents	      off
-      MaskPromptString	      "Inertia (J)|Viscous friction coefficient (B)|Motor torque constant|Torque limit (tau_max"
-      ")|Proportional gain (Kv)|Integral gain (Ki)|Sample interval (T)"
-      MaskStyleString	      "edit,edit,edit,edit,edit,edit,edit"
-      MaskVariables	      "J=@1;B=@2;Km=@3;tau_max=@4;Kv=@5;Ki=@6;T=@7;"
-      MaskTunableValueString  "on,on,on,on,on,on,on"
-      MaskCallbackString      "||||||"
-      MaskEnableString	      "on,on,on,on,on,on,on"
-      MaskVisibilityString    "on,on,on,on,on,on,on"
-      MaskToolTipString	      "on,on,on,on,on,on,on"
-      MaskIconFrame	      on
-      MaskIconOpaque	      on
-      MaskIconRotate	      "none"
-      MaskPortRotate	      "default"
-      MaskIconUnits	      "autoscale"
-      MaskValueString	      "372e-6|817e-6|0.228|0.9|1|0|0.001"
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		25
+	$ClassName		"Simulink.Mask"
+	Array {
+	  Type			  "Simulink.MaskParameter"
+	  Dimension		  7
+	  Object {
+	    $ObjectID		    26
+	    Type		    "edit"
+	    Name		    "J"
+	    Prompt		    "Inertia (J)"
+	    Value		    "372e-6"
+	  }
+	  Object {
+	    $ObjectID		    27
+	    Type		    "edit"
+	    Name		    "B"
+	    Prompt		    "Viscous friction coefficient (B)"
+	    Value		    "817e-6"
+	  }
+	  Object {
+	    $ObjectID		    28
+	    Type		    "edit"
+	    Name		    "Km"
+	    Prompt		    "Motor torque constant"
+	    Value		    "0.228"
+	  }
+	  Object {
+	    $ObjectID		    29
+	    Type		    "edit"
+	    Name		    "tau_max"
+	    Prompt		    "Torque limit (tau_max)"
+	    Value		    "0.9"
+	  }
+	  Object {
+	    $ObjectID		    30
+	    Type		    "edit"
+	    Name		    "Kv"
+	    Prompt		    "Proportional gain (Kv)"
+	    Value		    "1"
+	  }
+	  Object {
+	    $ObjectID		    31
+	    Type		    "edit"
+	    Name		    "Ki"
+	    Prompt		    "Integral gain (Ki)"
+	    Value		    "0"
+	  }
+	  Object {
+	    $ObjectID		    32
+	    Type		    "edit"
+	    Name		    "T"
+	    Prompt		    "Sample interval (T)"
+	    Value		    "0.001"
+	  }
+	  PropName		  "Parameters"
+	}
+      }
       System {
 	Name			"vloop_ff"
-	Location		[287, 418, 1147, 707]
-	Open			on
+	Location		[229, 359, 1129, 826]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1109,6 +1328,7 @@ Library {
 	  Name			  "qd*"
 	  SID			  "42"
 	  Position		  [25, 113, 55, 127]
+	  ZOrder		  -1
 	  IconDisplay		  "Port number"
 	}
 	Block {
@@ -1116,6 +1336,7 @@ Library {
 	  Name			  "tau_d"
 	  SID			  "43"
 	  Position		  [480, 33, 510, 47]
+	  ZOrder		  -2
 	  Port			  "2"
 	  IconDisplay		  "Port number"
 	}
@@ -1124,6 +1345,7 @@ Library {
 	  Name			  "tau_ff"
 	  SID			  "59"
 	  Position		  [25, 203, 55, 217]
+	  ZOrder		  -3
 	  ForegroundColor	  "red"
 	  Port			  "3"
 	  IconDisplay		  "Port number"
@@ -1134,12 +1356,14 @@ Library {
 	  SID			  "45"
 	  Ports			  [1, 1]
 	  Position		  [225, 150, 255, 180]
+	  ZOrder		  -4
 	}
 	Block {
 	  BlockType		  Gain
 	  Name			  "Kff"
 	  SID			  "58"
 	  Position		  [295, 194, 345, 226]
+	  ZOrder		  -5
 	  ForegroundColor	  "red"
 	  Gain			  "1/Km"
 	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
@@ -1151,6 +1375,7 @@ Library {
 	  Name			  "Ki"
 	  SID			  "44"
 	  Position		  [295, 150, 325, 180]
+	  ZOrder		  -6
 	  Gain			  "Ki"
 	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
 	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
@@ -1161,6 +1386,7 @@ Library {
 	  Name			  "Km"
 	  SID			  "46"
 	  Position		  [445, 105, 475, 135]
+	  ZOrder		  -7
 	  ForegroundColor	  "blue"
 	  Gain			  "Km"
 	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
@@ -1172,6 +1398,7 @@ Library {
 	  Name			  "Kv"
 	  SID			  "47"
 	  Position		  [295, 105, 325, 135]
+	  ZOrder		  -8
 	  Gain			  "Kv"
 	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
 	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
@@ -1183,6 +1410,7 @@ Library {
 	  SID			  "48"
 	  Ports			  [2, 1]
 	  Position		  [100, 110, 120, 130]
+	  ZOrder		  -9
 	  ShowName		  off
 	  IconShape		  "round"
 	  Inputs		  "|+-"
@@ -1196,6 +1424,7 @@ Library {
 	  SID			  "49"
 	  Ports			  [2, 1]
 	  Position		  [575, 110, 595, 130]
+	  ZOrder		  -10
 	  ForegroundColor	  "blue"
 	  ShowName		  off
 	  IconShape		  "round"
@@ -1210,6 +1439,7 @@ Library {
 	  SID			  "50"
 	  Ports			  [2, 1]
 	  Position		  [350, 110, 370, 130]
+	  ZOrder		  -11
 	  ShowName		  off
 	  IconShape		  "round"
 	  Inputs		  "|++"
@@ -1223,6 +1453,7 @@ Library {
 	  SID			  "57"
 	  Ports			  [2, 1]
 	  Position		  [395, 110, 415, 130]
+	  ZOrder		  -12
 	  ForegroundColor	  "red"
 	  ShowName		  off
 	  IconShape		  "round"
@@ -1232,26 +1463,25 @@ Library {
 	  SaturateOnIntegerOverflow off
 	}
 	Block {
-	  BlockType		  Reference
+	  BlockType		  Delay
 	  Name			  "control\ntime"
 	  SID			  "51"
 	  Ports			  [1, 1]
 	  Position		  [160, 103, 185, 137]
-	  LibraryVersion	  "1.236"
+	  ZOrder		  -13
 	  UserDataPersistent	  on
 	  UserData		  "DataTag1"
-	  SourceBlock		  "simulink/Discrete/Integer Delay"
-	  SourceType		  "Integer Delay"
-	  NumDelays		  "1"
+	  InputPortMap		  "u0"
+	  DelayLength		  "1"
 	  InputProcessing	  "Inherited"
-	  vinit			  "0.0"
-	  samptime		  "T"
+	  SampleTime		  "T"
 	}
 	Block {
 	  BlockType		  TransferFcn
 	  Name			  "motor"
 	  SID			  "52"
 	  Position		  [625, 101, 690, 139]
+	  ZOrder		  -14
 	  ForegroundColor	  "blue"
 	  Denominator		  "[J B]"
 	  ContinuousStateAttributes "'qd'"
@@ -1268,6 +1498,7 @@ Library {
 	  SID			  "53"
 	  Ports			  [1, 1]
 	  Position		  [495, 105, 525, 135]
+	  ZOrder		  -15
 	  ForegroundColor	  "blue"
 	  InputPortMap		  "u0"
 	  UpperLimit		  "tau_max"
@@ -1278,6 +1509,7 @@ Library {
 	  Name			  "qd"
 	  SID			  "54"
 	  Position		  [765, 113, 795, 127]
+	  ZOrder		  -16
 	  IconDisplay		  "Port number"
 	}
 	Block {
@@ -1285,6 +1517,7 @@ Library {
 	  Name			  "qd error"
 	  SID			  "55"
 	  Position		  [150, 33, 180, 47]
+	  ZOrder		  -17
 	  Port			  "2"
 	  IconDisplay		  "Port number"
 	}
@@ -1293,6 +1526,7 @@ Library {
 	  Name			  "tau"
 	  SID			  "56"
 	  Position		  [765, 193, 795, 207]
+	  ZOrder		  -18
 	  Port			  "3"
 	  IconDisplay		  "Port number"
 	}
@@ -1424,41 +1658,578 @@ Library {
 	  DstPort		  1
 	}
 	Annotation {
+	  SID			  "79"
 	  Name			  "tau_m"
 	  Position		  [550, 116]
 	  ForegroundColor	  "blue"
 	}
 	Annotation {
+	  SID			  "80"
 	  Name			  "feedforward path"
 	  Position		  [182, 222]
 	  ForegroundColor	  "red"
 	}
 	Annotation {
+	  SID			  "81"
 	  Name			  "feedback path"
 	  Position		  [297, 262]
 	}
       }
     }
+    Block {
+      BlockType		      SubSystem
+      Name		      "vloop_voltage"
+      SID		      "163"
+      Ports		      [2, 4]
+      Position		      [405, 70, 465, 175]
+      ZOrder		      -3
+      DropShadow	      on
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		33
+	$ClassName		"Simulink.Mask"
+	Array {
+	  Type			  "Simulink.MaskParameter"
+	  Dimension		  10
+	  Object {
+	    $ObjectID		    34
+	    Type		    "edit"
+	    Name		    "J"
+	    Prompt		    "Inertia (K)"
+	    Value		    "372e-6"
+	  }
+	  Object {
+	    $ObjectID		    35
+	    Type		    "edit"
+	    Name		    "B"
+	    Prompt		    "Viscous friction coefficient (B)"
+	    Value		    "817e-6"
+	  }
+	  Object {
+	    $ObjectID		    36
+	    Type		    "edit"
+	    Name		    "Km"
+	    Prompt		    "Motor torque constant"
+	    Value		    "0.228"
+	  }
+	  Object {
+	    $ObjectID		    37
+	    Type		    "edit"
+	    Name		    "tau_max"
+	    Prompt		    "Voltage limit (tau_max)"
+	    Value		    "20"
+	  }
+	  Object {
+	    $ObjectID		    38
+	    Type		    "edit"
+	    Name		    "Rm"
+	    Prompt		    "Motor resistance (Rm)"
+	    Value		    "0.1"
+	  }
+	  Object {
+	    $ObjectID		    39
+	    Type		    "edit"
+	    Name		    "Lm"
+	    Prompt		    "Motor inductance (Lm)"
+	    Value		    "0.1"
+	  }
+	  Object {
+	    $ObjectID		    40
+	    Type		    "edit"
+	    Name		    "Ka"
+	    Prompt		    "Amplifier gain (Ka)"
+	    Value		    "10"
+	  }
+	  Object {
+	    $ObjectID		    41
+	    Type		    "edit"
+	    Name		    "Kv"
+	    Prompt		    "Proportional gain (Kv)"
+	    Value		    "1"
+	  }
+	  Object {
+	    $ObjectID		    42
+	    Type		    "edit"
+	    Name		    "Ki"
+	    Prompt		    "Integral gain (Ki)"
+	    Value		    "1"
+	  }
+	  Object {
+	    $ObjectID		    43
+	    Type		    "edit"
+	    Name		    "T"
+	    Prompt		    "Sample interval (T)"
+	    Value		    "0.001"
+	    Evaluate		    "off"
+	  }
+	  PropName		  "Parameters"
+	}
+      }
+      System {
+	Name			"vloop_voltage"
+	Location		[978, 480, 2096, 933]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "qd*"
+	  SID			  "165"
+	  Position		  [25, 108, 55, 122]
+	  ZOrder		  -1
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "tau_d"
+	  SID			  "166"
+	  Position		  [690, 28, 720, 42]
+	  ZOrder		  -2
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Gain"
+	  SID			  "171"
+	  Position		  [725, 100, 755, 130]
+	  ZOrder		  -8
+	  ShowName		  off
+	  Gain			  "Km"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	  Port {
+	    PortNumber		    1
+	    Name		    "tau"
+	    RTWStorageClass	    "Auto"
+	    DataLoggingNameMode	    "SignalName"
+	  }
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Gain1"
+	  SID			  "172"
+	  Position		  [740, 180, 770, 210]
+	  ZOrder		  -8
+	  BlockMirror		  on
+	  ShowName		  off
+	  Gain			  "Km"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	  Port {
+	    PortNumber		    1
+	    Name		    "back EMF"
+	    RTWStorageClass	    "Auto"
+	    DataLoggingNameMode	    "SignalName"
+	  }
+	}
+	Block {
+	  BlockType		  Integrator
+	  Name			  "Integrator"
+	  SID			  "149"
+	  Ports			  [1, 1]
+	  Position		  [225, 145, 255, 175]
+	  ZOrder		  -10
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Ki"
+	  SID			  "150"
+	  Position		  [295, 145, 325, 175]
+	  ZOrder		  -11
+	  Gain			  "Ki"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Kv"
+	  SID			  "152"
+	  Position		  [295, 100, 325, 130]
+	  ZOrder		  -12
+	  Gain			  "Kv"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  TransferFcn
+	  Name			  "Motor\nimpedance"
+	  SID			  "170"
+	  Position		  [610, 97, 670, 133]
+	  ZOrder		  -9
+	  Denominator		  "[Lm Rm]"
+	  Port {
+	    PortNumber		    1
+	    Name		    "motor\ncurrent"
+	    RTWStorageClass	    "Auto"
+	    DataLoggingNameMode	    "SignalName"
+	  }
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum"
+	  SID			  "153"
+	  Ports			  [2, 1]
+	  Position		  [100, 105, 120, 125]
+	  ZOrder		  -14
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "|+-"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum1"
+	  SID			  "154"
+	  Ports			  [2, 1]
+	  Position		  [810, 105, 830, 125]
+	  ZOrder		  -15
+	  ForegroundColor	  "blue"
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "-+|"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum2"
+	  SID			  "155"
+	  Ports			  [2, 1]
+	  Position		  [350, 105, 370, 125]
+	  ZOrder		  -16
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "|++"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum3"
+	  SID			  "173"
+	  Ports			  [2, 1]
+	  Position		  [540, 105, 560, 125]
+	  ZOrder		  -18
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "|+-"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	  Port {
+	    PortNumber		    1
+	    Name		    "nett\nvoltage"
+	    RTWStorageClass	    "Auto"
+	    DataLoggingNameMode	    "SignalName"
+	  }
+	}
+	Block {
+	  BlockType		  Delay
+	  Name			  "control\ntime"
+	  SID			  "156"
+	  Ports			  [1, 1]
+	  Position		  [160, 98, 185, 132]
+	  ZOrder		  -19
+	  UserDataPersistent	  on
+	  UserData		  "DataTag2"
+	  InputPortMap		  "u0"
+	  DelayLength		  "1"
+	  InputProcessing	  "Inherited"
+	  SampleTime		  "T"
+	}
+	Block {
+	  BlockType		  TransferFcn
+	  Name			  "motor"
+	  SID			  "157"
+	  Position		  [855, 96, 920, 134]
+	  ZOrder		  -20
+	  ForegroundColor	  "blue"
+	  Denominator		  "[J B]"
+	  ContinuousStateAttributes "'qd'"
+	  Port {
+	    PortNumber		    1
+	    Name		    "qd"
+	    RTWStorageClass	    "Auto"
+	    DataLoggingNameMode	    "SignalName"
+	  }
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "voltage\namplifier\ngain"
+	  SID			  "151"
+	  Position		  [405, 100, 435, 130]
+	  ZOrder		  -21
+	  ForegroundColor	  "blue"
+	  Gain			  "Ka"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Saturate
+	  Name			  "voltage\nlimit"
+	  SID			  "158"
+	  Ports			  [1, 1]
+	  Position		  [460, 100, 490, 130]
+	  ZOrder		  -22
+	  ForegroundColor	  "blue"
+	  InputPortMap		  "u0"
+	  UpperLimit		  "v_max"
+	  LowerLimit		  "-v_max"
+	  Port {
+	    PortNumber		    1
+	    Name		    "applied\nvoltage"
+	    RTWStorageClass	    "Auto"
+	    DataLoggingNameMode	    "SignalName"
+	  }
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "qd error"
+	  SID			  "164"
+	  Position		  [150, 28, 180, 42]
+	  ZOrder		  -23
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "qd"
+	  SID			  "167"
+	  Position		  [990, 108, 1020, 122]
+	  ZOrder		  -24
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "tau"
+	  SID			  "168"
+	  Position		  [990, 163, 1020, 177]
+	  ZOrder		  -25
+	  Port			  "3"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "integral"
+	  SID			  "174"
+	  Position		  [385, 188, 415, 202]
+	  ZOrder		  -26
+	  Port			  "4"
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "Sum1"
+	  SrcPort		  1
+	  DstBlock		  "motor"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Sum"
+	  SrcPort		  1
+	  Points		  [5, 0]
+	  Branch {
+	    DstBlock		    "control\ntime"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, -80]
+	    DstBlock		    "qd error"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  Name			  "qd"
+	  Labels		  [0, 0]
+	  SrcBlock		  "motor"
+	  SrcPort		  1
+	  Points		  [25, 0]
+	  Branch {
+	    DstBlock		    "qd"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, 80]
+	    Branch {
+	      Points		      [0, 40; -840, 0]
+	      DstBlock		      "Sum"
+	      DstPort		      2
+	    }
+	    Branch {
+	      DstBlock		      "Gain1"
+	      DstPort		      1
+	    }
+	  }
+	}
+	Line {
+	  SrcBlock		  "tau_d"
+	  SrcPort		  1
+	  Points		  [95, 0]
+	  DstBlock		  "Sum1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "control\ntime"
+	  SrcPort		  1
+	  Points		  [20, 0]
+	  Branch {
+	    DstBlock		    "Kv"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Integrator"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  Labels		  [0, 0]
+	  SrcBlock		  "qd*"
+	  SrcPort		  1
+	  DstBlock		  "Sum"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Sum2"
+	  SrcPort		  1
+	  DstBlock		  "voltage\namplifier\ngain"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Kv"
+	  SrcPort		  1
+	  DstBlock		  "Sum2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Integrator"
+	  SrcPort		  1
+	  DstBlock		  "Ki"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Ki"
+	  SrcPort		  1
+	  Points		  [30, 0]
+	  Branch {
+	    DstBlock		    "Sum2"
+	    DstPort		    2
+	  }
+	  Branch {
+	    Points		    [10, 0]
+	    DstBlock		    "integral"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "voltage\namplifier\ngain"
+	  SrcPort		  1
+	  DstBlock		  "voltage\nlimit"
+	  DstPort		  1
+	}
+	Line {
+	  Name			  "applied\nvoltage"
+	  Labels		  [0, 0]
+	  SrcBlock		  "voltage\nlimit"
+	  SrcPort		  1
+	  DstBlock		  "Sum3"
+	  DstPort		  1
+	}
+	Line {
+	  Name			  "nett\nvoltage"
+	  Labels		  [-1, 0]
+	  SrcBlock		  "Sum3"
+	  SrcPort		  1
+	  DstBlock		  "Motor\nimpedance"
+	  DstPort		  1
+	}
+	Line {
+	  Name			  "motor\ncurrent"
+	  Labels		  [-1, 0]
+	  SrcBlock		  "Motor\nimpedance"
+	  SrcPort		  1
+	  DstBlock		  "Gain"
+	  DstPort		  1
+	}
+	Line {
+	  Name			  "tau"
+	  Labels		  [0, 0]
+	  SrcBlock		  "Gain"
+	  SrcPort		  1
+	  Points		  [30, 0]
+	  Branch {
+	    DstBlock		    "Sum1"
+	    DstPort		    2
+	  }
+	  Branch {
+	    Points		    [0, 55]
+	    DstBlock		    "tau"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  Name			  "back EMF"
+	  Labels		  [0, 0]
+	  SrcBlock		  "Gain1"
+	  SrcPort		  1
+	  Points		  [-185, 0]
+	  DstBlock		  "Sum3"
+	  DstPort		  2
+	}
+      }
+    }
     Annotation {
+      SID		      "82"
       Position		      [131, 168]
     }
     Annotation {
+      SID		      "83"
       Position		      [131, 168]
     }
     Annotation {
+      SID		      "84"
       Position		      [131, 168]
     }
   }
 }
 MatData {
-  NumRecords		  2
+  NumRecords		  3
+  DataRecord {
+    Tag			    DataTag0
+    Data		    "  %)30     .    B     8    (     @         %    \"     $    !     0         %  0 $P    $    3    :&%S26"
+    "YH97)I=&5D3W!T:6]N        #@   #     &    \"     D\"        !0    @    !     0    $          @ !  $    "
+  }
   DataRecord {
     Tag			    DataTag1
     Data		    "  %)30     .    B     8    (     @         %    \"     $    !     0         %  0 $P    $    3    :&%S26"
     "YH97)I=&5D3W!T:6]N        #@   #     &    \"     D\"        !0    @    !     0    $          @ !  $    "
   }
   DataRecord {
-    Tag			    DataTag0
+    Tag			    DataTag2
     Data		    "  %)30     .    B     8    (     @         %    \"     $    !     0         %  0 $P    $    3    :&%S26"
     "YH97)I=&5D3W!T:6]N        #@   #     &    \"     D\"        !0    @    !     0    $          @ !  $    "
   }

@@ -19,7 +19,7 @@ Library {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [976.0, 55.0, 563.0, 616.0]
+      Location		      [618.0, 490.0, 563.0, 616.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -28,7 +28,7 @@ Library {
 	DockPosition		"Left"
 	Width			[50]
 	Height			[50]
-	Filter			[8]
+	Filter			[9]
       }
       Object {
 	$PropName		"ExplorerBarInfo"
@@ -41,11 +41,11 @@ Library {
 	$ObjectID		5
 	$ClassName		"Simulink.EditorInfo"
 	IsActive		[1]
-	ViewObjType		"SimulinkSubsys"
-	LoadSaveID		"249:58"
+	ViewObjType		"SimulinkTopLevel"
+	LoadSaveID		"0"
 	Extents			[529.0, 454.0]
 	ZoomFactor		[1.0]
-	Offset			[0.0, 0.0]
+	Offset			[0.0, -5.0]
       }
     }
   }
@@ -55,9 +55,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Jan 21 21:43:38 2013"
-  RTWModifiedTimeStamp	  280705392
-  ModelVersionFormat	  "1.%<AutoIncrement:56>"
+  LastModifiedDate	  "Sun Jan 27 11:27:27 2013"
+  RTWModifiedTimeStamp	  281186779
+  ModelVersionFormat	  "1.%<AutoIncrement:57>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -916,8 +916,8 @@ Library {
   }
   System {
     Name		    "roblocks"
-    Location		    [702, 44, 1051, 645]
-    Open		    off
+    Location		    [618, 490, 1181, 1106]
+    Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    212
     ScreenColor		    "white"
@@ -2643,7 +2643,7 @@ Library {
       }
       System {
 	Name			"Kinematics"
-	Location		[976, 55, 1393, 663]
+	Location		[618, 490, 1181, 1106]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -2846,8 +2846,9 @@ Library {
 	  SID			  "249:250"
 	  Ports			  [1, 1]
 	  Position		  [290, 83, 340, 147]
-	  ZOrder		  -3
+	  ZOrder		  3
 	  BackgroundColor	  "red"
+	  LibraryVersion	  "1.56"
 	  MinAlgLoopOccurrences	  off
 	  PropExecContextOutsideSubsystem off
 	  RTWSystemCode		  "Auto"
@@ -2862,25 +2863,27 @@ Library {
 	    Description		    "Generalized numerical inverse kinematics"
 	    Help		    "Compute joint coordinates for robot given end-effector pose.\n\n\n<b>Parameters::</b>\n \nRobot (Seria"
 	    "lLink class)  The N-axis robot object for computing forward kinematics.\nInitial q  (1xN)          Initial joint "
-	    "coordinates for solution\nMask vector (1x6)         Mask vector for underactuated manipulators.\n\n<b>Inputs::</b"
-	    ">\n \nT (4x4) the pose of the end effector as a homogeneous transformation\n\n \n<b>Outputs::</b>\n\nq (1xN) join"
-	    "t coordinates\n \n<b>Notes::</b>\n \n- A wrapper for the Toolbox method ikine().\n"
+	    "coordinates for solution\nMask vector (1x6)         Mask vector for underactuated manipulators.\nPseudo inverse ("
+	    "logical)  Enable option 'pinv'\nOptions                   Option value list to be passed to ikine()\n\n<b>Inputs:"
+	    ":</b>\n \nT (4x4) the pose of the end effector as a homogeneous transformation\n\n \n<b>Outputs::</b>\n\nq (1xN) "
+	    "joint coordinates\n \n<b>Notes::</b>\n \n- A wrapper for the Toolbox method ikine().\n"
+	    Initialization	    "opt = options;\nif pinv\n    opt = [opt 'pinv'];\nend\ndisp(opt)\n"
 	    Array {
 	      Type		      "Simulink.MaskParameter"
-	      Dimension		      3
+	      Dimension		      5
 	      Object {
 		$ObjectID		39
 		Type			"edit"
 		Name			"robot"
 		Prompt			"Robot object"
-		Value			"0"
+		Value			"p560"
 	      }
 	      Object {
 		$ObjectID		40
 		Type			"edit"
 		Name			"q0"
 		Prompt			"Initial q"
-		Value			"0"
+		Value			"qz"
 	      }
 	      Object {
 		$ObjectID		41
@@ -2889,19 +2892,35 @@ Library {
 		Prompt			"Mask vector"
 		Value			"[1 1 1 1 1 1]"
 	      }
+	      Object {
+		$ObjectID		42
+		Type			"checkbox"
+		Name			"pinv"
+		Prompt			"Pseudo-inverse (pinv)"
+		Value			"off"
+		Callback		"\n"
+	      }
+	      Object {
+		$ObjectID		43
+		Type			"edit"
+		Name			"options"
+		Prompt			"Options (cell array)"
+		Value			"{}"
+		Tunable			"off"
+	      }
 	      PropName		      "Parameters"
 	    }
 	  }
 	  System {
 	    Name		    "ikine"
-	    Location		    [1523, 483, 1793, 743]
+	    Location		    [885, 595, 1448, 1211]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
 	    PaperOrientation	    "landscape"
 	    PaperPositionMode	    "auto"
-	    PaperType		    "A4"
+	    PaperType		    "usletter"
 	    PaperUnits		    "inches"
 	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
 	    TiledPageScale	    1
@@ -2922,7 +2941,7 @@ Library {
 	      Ports		      [1, 1]
 	      Position		      [80, 25, 150, 55]
 	      ZOrder		      -2
-	      MATLABFcn		      "robot.ikine(u, q0, m)"
+	      MATLABFcn		      "robot.ikine(u, q0, M, opt{:})"
 	    }
 	    Block {
 	      BlockType		      Outport
@@ -2964,7 +2983,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    42
+	    $ObjectID		    44
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Inverse kinematics for 6-axis spherical robot"
 	    Help		    "Compute joint coordinates for robot given end-effector pose.\n\n\n<b>Parameters::</b>\n \nRobot (Seria"
@@ -2976,14 +2995,14 @@ Library {
 	      Type		      "Simulink.MaskParameter"
 	      Dimension		      2
 	      Object {
-		$ObjectID		43
+		$ObjectID		45
 		Type			"edit"
 		Name			"robot"
 		Prompt			"Robot object"
 		Value			"p560"
 	      }
 	      Object {
-		$ObjectID		44
+		$ObjectID		46
 		Type			"edit"
 		Name			"conf"
 		Prompt			"Configuration string"
@@ -3064,7 +3083,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    45
+	    $ObjectID		    47
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Robot Jacobian in world coordinates"
 	    Help		    "Jacobian matrix relating joint coordinate rates to end-effector spatial\nvelocity expressed in the wor"
@@ -3079,7 +3098,7 @@ Library {
 	    IconUnits		    "normalized"
 	    Object {
 	      $PropName		      "Parameters"
-	      $ObjectID		      46
+	      $ObjectID		      48
 	      $ClassName	      "Simulink.MaskParameter"
 	      Type		      "edit"
 	      Name		      "robot"
@@ -3163,7 +3182,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    47
+	    $ObjectID		    49
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Robot Jacobian in end-effector coordinates"
 	    Help		    "Jacobian matrix relating joint coordinate rates to end-effector spatial\nvelocity expressed in the end"
@@ -3178,7 +3197,7 @@ Library {
 	    IconUnits		    "normalized"
 	    Object {
 	      $PropName		      "Parameters"
-	      $ObjectID		      48
+	      $ObjectID		      50
 	      $ClassName	      "Simulink.MaskParameter"
 	      Type		      "edit"
 	      Name		      "robot"
@@ -3263,7 +3282,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    49
+	    $ObjectID		    51
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Integrate spatial velocity"
 	    Help		    "Integrate spatial velocity to update pose represented as a homogeneous\ntransformation.\n\n<b>Paramete"
@@ -3274,14 +3293,14 @@ Library {
 	      Type		      "Simulink.MaskParameter"
 	      Dimension		      2
 	      Object {
-		$ObjectID		50
+		$ObjectID		52
 		Type			"edit"
 		Name			"T0"
 		Prompt			"Initial pose (hom transform)"
 		Value			"transl(0,0,1)*trotz(1.5)"
 	      }
 	      Object {
-		$ObjectID		51
+		$ObjectID		53
 		Type			"edit"
 		Name			"dt"
 		Prompt			"Sample interval (s)"
@@ -3292,8 +3311,8 @@ Library {
 	  }
 	  System {
 	    Name		    "pose integral"
-	    Location		    [976, 55, 1539, 671]
-	    Open		    on
+	    Location		    [877, 322, 1440, 938]
+	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -3421,7 +3440,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    52
+	    $ObjectID		    54
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Compute differential motion "
 	    Help		    "Compute the differential motion (as a 6-vector) between two poses given as\nhomogeneous transformation"
@@ -3433,7 +3452,7 @@ Library {
 	    IconUnits		    "normalized"
 	    Object {
 	      $PropName		      "Parameters"
-	      $ObjectID		      53
+	      $ObjectID		      55
 	      $ClassName	      "Simulink.MaskParameter"
 	      Type		      "edit"
 	      Name		      "robot"
@@ -3615,7 +3634,7 @@ Library {
       MaskHideContents	      off
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		54
+	$ObjectID		56
 	$ClassName		"Simulink.Mask"
 	Display			"color('darkBlue')\ndisp('Robot Graphics')"
 	IconUnits		"pixels"
@@ -3654,7 +3673,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    55
+	    $ObjectID		    57
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Animate quadrotor."
 	    Help		    "This block graphically displays a quadrotor (flying robot).\n\nA new figure is created and A graphical"
@@ -3663,7 +3682,7 @@ Library {
 	    "f the model are currently fixed in the code and cannot\n  be set via a parameter."
 	    Object {
 	      $PropName		      "Parameters"
-	      $ObjectID		      56
+	      $ObjectID		      58
 	      $ClassName	      "Simulink.MaskParameter"
 	      Type		      "edit"
 	      Name		      "x"
@@ -3750,7 +3769,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    57
+	    $ObjectID		    59
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Graphical robot display."
 	    Help		    "This block graphically displays the passed SerialLink class object.\n\nA new figure is created and the"
@@ -3765,7 +3784,7 @@ Library {
 	      Type		      "Simulink.MaskParameter"
 	      Dimension		      3
 	      Object {
-		$ObjectID		58
+		$ObjectID		60
 		Type			"edit"
 		Name			"robot"
 		Prompt			"Robot object"
@@ -3774,14 +3793,14 @@ Library {
 		Callback		"\n"
 	      }
 	      Object {
-		$ObjectID		59
+		$ObjectID		61
 		Type			"edit"
 		Name			"fps"
 		Prompt			"Update rate (fps)"
 		Value			"25"
 	      }
 	      Object {
-		$ObjectID		60
+		$ObjectID		62
 		Type			"checkbox"
 		Name			"holdplot"
 		Prompt			"Hold"
@@ -3871,7 +3890,7 @@ Library {
       MaskHideContents	      off
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		61
+	$ObjectID		63
 	$ClassName		"Simulink.Mask"
 	Display			"color('darkBlue')\ndisp('Trajectory')"
       }
@@ -3907,7 +3926,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    62
+	    $ObjectID		    64
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Generate circular trajectory"
 	    Help		    "Generate circular trajectory in the xy-plane and centred at the origin.\n\n<b>Parameters::</b>\n\nradi"
@@ -3918,14 +3937,14 @@ Library {
 	      Type		      "Simulink.MaskParameter"
 	      Dimension		      2
 	      Object {
-		$ObjectID		63
+		$ObjectID		65
 		Type			"edit"
 		Name			"radius"
 		Prompt			"Radius"
 		Value			"1"
 	      }
 	      Object {
-		$ObjectID		64
+		$ObjectID		66
 		Type			"edit"
 		Name			"freq"
 		Prompt			"Frequency (rev/s)"
@@ -4098,7 +4117,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    65
+	    $ObjectID		    67
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Difference of angles"
 	    Help		    "A difference block for angles and the result is guaranteed to be in the\ninterval [-pi +pi).\n\n<b>Not"
@@ -4211,7 +4230,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    66
+	    $ObjectID		    68
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Joint interpolated trajectory."
 	    Help		    "Generate quintic polynomial to move from initial to final joint angles as specified.  Initial and fina"
@@ -4230,28 +4249,28 @@ Library {
 	      Type		      "Simulink.MaskParameter"
 	      Dimension		      4
 	      Object {
-		$ObjectID		67
+		$ObjectID		69
 		Type			"edit"
 		Name			"q0"
 		Prompt			"q0"
 		Value			"[0 0 0 0 0 0]"
 	      }
 	      Object {
-		$ObjectID		68
+		$ObjectID		70
 		Type			"edit"
 		Name			"qf"
 		Prompt			"qf"
 		Value			"[pi/4 pi/2 -pi/2 0 0 0]"
 	      }
 	      Object {
-		$ObjectID		69
+		$ObjectID		71
 		Type			"edit"
 		Name			"tmax"
 		Prompt			"tmax (s)"
 		Value			"10"
 	      }
 	      Object {
-		$ObjectID		70
+		$ObjectID		72
 		Type			"edit"
 		Name			"ts"
 		Prompt			"ts (s)"
@@ -4402,7 +4421,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    71
+	    $ObjectID		    73
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Scalar trajectory."
 	    Help		    "Generate linear segment with polynomial blend to move from initial to final\n joint angles as specifie"
@@ -4418,21 +4437,21 @@ Library {
 	      Type		      "Simulink.MaskParameter"
 	      Dimension		      3
 	      Object {
-		$ObjectID		72
+		$ObjectID		74
 		Type			"edit"
 		Name			"q0"
 		Prompt			"q0"
 		Value			"0"
 	      }
 	      Object {
-		$ObjectID		73
+		$ObjectID		75
 		Type			"edit"
 		Name			"qf"
 		Prompt			"qf"
 		Value			"0"
 	      }
 	      Object {
-		$ObjectID		74
+		$ObjectID		76
 		Type			"edit"
 		Name			"tmax"
 		Prompt			"tmax"
@@ -4598,7 +4617,7 @@ Library {
       MaskHideContents	      off
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		75
+	$ObjectID		77
 	$ClassName		"Simulink.Mask"
 	Display			"color('darkBlue')\ndisp('Transform')"
       }
@@ -4634,7 +4653,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    76
+	    $ObjectID		    78
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Inverse of homogeneous transformation"
 	    Help		    "Inverse of homogeneous transformation\n \n \n<b>Inputs::</b>\n \nT (4x4) Incoming homogeneous transfor"
@@ -4716,7 +4735,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    77
+	    $ObjectID		    79
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Post-multiply incoming transform by a constant transformation"
 	    Help		    "Post-multiply homogeneous transform signal by a constant transform.\n \n<b>Parameters::</b>\n \nTP (4x"
@@ -4724,7 +4743,7 @@ Library {
 	    "uts::</b>\n \nT (4x4) Outgoing homogeneous transformation is T1*TP\n\n\n"
 	    Object {
 	      $PropName		      "Parameters"
-	      $ObjectID		      78
+	      $ObjectID		      80
 	      $ClassName	      "Simulink.MaskParameter"
 	      Type		      "edit"
 	      Name		      "T2"
@@ -4823,7 +4842,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    79
+	    $ObjectID		    81
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Pre-multiply homogeneous transform by constant transform."
 	    Help		    "Pre-multiply homogeneous transform signal by a constant transform.\n \n<b>Parameters::</b>\n \nTP (4x4"
@@ -4831,7 +4850,7 @@ Library {
 	    "s::</b>\n \nT (4x4) Outgoing homogeneous transformation is TP*T2\n\n\n"
 	    Object {
 	      $PropName		      "Parameters"
-	      $ObjectID		      80
+	      $ObjectID		      82
 	      $ClassName	      "Simulink.MaskParameter"
 	      Type		      "edit"
 	      Name		      "T"
@@ -4950,7 +4969,7 @@ Library {
       MaskHideContents	      off
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		81
+	$ObjectID		83
 	$ClassName		"Simulink.Mask"
 	Display			"color('darkBlue')\ndisp('Transform Conversion')"
       }
@@ -4987,7 +5006,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    82
+	    $ObjectID		    84
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Convert transform to Euler angles."
 	    Help		    "Convert homogeneous transformation to Euler angles.\n \n \n<b>Inputs::</b>\n \nT (4x4) the attitude as"
@@ -5118,7 +5137,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    83
+	    $ObjectID		    85
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Convert transform to roll/pitch/yaw angles."
 	    Help		    "Convert homogeneous transformation to roll/pitch/yaw angles.\n \n \n<b>Inputs::</b>\n\nT (4x4) the att"
@@ -5249,7 +5268,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    84
+	    $ObjectID		    86
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Convert transform to xyz scalars"
 	    Help		    "Convert homogeneous transformation to position scalars.\n\n\n<b>Inputs::</b>\n\nT (4x4) a translation "
@@ -5379,7 +5398,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    85
+	    $ObjectID		    87
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Convert Euler angles to transform."
 	    Help		    "Convert Euler angles to homogeneous transformation.\n \n \n<b>Inputs::</b>\n \nphi (1x1) first Euler a"
@@ -5511,7 +5530,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    86
+	    $ObjectID		    88
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Convert roll/pitch/yaw angles to transform."
 	    Help		    "Convert roll/pitch/yaw angles to homogeneous transformation.\n \n \n<b>Inputs::</b>\n \nroll (1x1) rol"
@@ -5643,7 +5662,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    87
+	    $ObjectID		    89
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Convert xyz scalars to transform."
 	    Help		    "Convert position scalars to a homogeneous transformation.\n\n\n<b>Inputs::</b>\n\nx (1x1) x-coordinate"
@@ -5812,7 +5831,7 @@ Library {
       MaskHideContents	      off
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		88
+	$ObjectID		90
 	$ClassName		"Simulink.Mask"
 	Display			"color('Black')\ndisp('Vision')"
       }
@@ -5849,7 +5868,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    89
+	    $ObjectID		    91
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Pose estimation"
 	    Help		    "Estimate pose of an object based on known 3D points with respect to object\ncoordinate frame, a camera"
@@ -5862,14 +5881,14 @@ Library {
 	      Type		      "Simulink.MaskParameter"
 	      Dimension		      2
 	      Object {
-		$ObjectID		90
+		$ObjectID		92
 		Type			"edit"
 		Name			"cam"
 		Prompt			"Camera"
 		Value			"0"
 	      }
 	      Object {
-		$ObjectID		91
+		$ObjectID		93
 		Type			"edit"
 		Name			"P"
 		Prompt			"Points (3xN)"
@@ -5955,7 +5974,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    92
+	    $ObjectID		    94
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Camera model"
 	    Help		    "A generalized camera model that projects a set of world points to the image\nplane.\n\n\n<b>Parameters"
@@ -5967,14 +5986,14 @@ Library {
 	      Type		      "Simulink.MaskParameter"
 	      Dimension		      2
 	      Object {
-		$ObjectID		93
+		$ObjectID		95
 		Type			"edit"
 		Name			"cam"
 		Prompt			"Camera"
 		Value			""
 	      }
 	      Object {
-		$ObjectID		94
+		$ObjectID		96
 		Type			"edit"
 		Name			"points"
 		Prompt			"Points (3xN)"
@@ -6060,7 +6079,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    95
+	    $ObjectID		    97
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Camera model for moving object"
 	    Help		    "A generalized camera model that projects a set of world points to the image\nplane.\n\n\n<b>Parameters"
@@ -6074,14 +6093,14 @@ Library {
 	      Type		      "Simulink.MaskParameter"
 	      Dimension		      2
 	      Object {
-		$ObjectID		96
+		$ObjectID		98
 		Type			"edit"
 		Name			"cam"
 		Prompt			"Camera"
 		Value			"0"
 	      }
 	      Object {
-		$ObjectID		97
+		$ObjectID		99
 		Type			"edit"
 		Name			"points"
 		Prompt			"Points (3xN)"
@@ -6200,7 +6219,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    98
+	    $ObjectID		    100
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Image Jacobian"
 	    Help		    "Jacobian matrix relating image plane point velocity to camera spatial\nvelocity expressed in the world"
@@ -6213,14 +6232,14 @@ Library {
 	      Type		      "Simulink.MaskParameter"
 	      Dimension		      2
 	      Object {
-		$ObjectID		99
+		$ObjectID		101
 		Type			"edit"
 		Name			"cam"
 		Prompt			"Camera"
 		Value			""
 	      }
 	      Object {
-		$ObjectID		100
+		$ObjectID		102
 		Type			"edit"
 		Name			"z"
 		Prompt			"Assumed depth (m)"
@@ -6304,7 +6323,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    101
+	    $ObjectID		    103
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Inverse image Jacobian"
 	    Help		    "Computes camera velocity based on the inverse image Jacobian and image \nplane error.\n\n\n<b>Inputs::"
@@ -6456,7 +6475,7 @@ Library {
 	  MaskHideContents	  off
 	  Object {
 	    $PropName		    "MaskObject"
-	    $ObjectID		    102
+	    $ObjectID		    104
 	    $ClassName		    "Simulink.Mask"
 	    Description		    "Inverse image Jacobian"
 	    Help		    "Computes camera velocity based on the pseudo-inverse of the image Jacobian \nand image plane error for"
