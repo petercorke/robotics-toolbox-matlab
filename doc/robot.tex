@@ -54,7 +54,7 @@ Discussion group & \url{http://groups.google.com.au/group/robotics-tool-box}
 \end{tabular}
 \vspace*{\fill}
 \hrule
-Copyright \textcopyright 2012 Peter Corke\\
+Copyright \textcopyright 2013 Peter Corke\\
 peter.i.corke$@$gmail.com\\
 \url{http://www.petercorke.com}
 \newpage
@@ -65,7 +65,7 @@ peter.i.corke$@$gmail.com\\
 
 \pagestyle{headings}        % Gives page headings at top of page
 \lfoot{Robotics Toolbox \release\ for \Mlab}
-\rfoot{Copyright \copyright Peter Corke 2012}
+\rfoot{Copyright \copyright Peter Corke 2013}
 
 \newpage
 \setcounter{section}{0}
@@ -147,7 +147,7 @@ Compared to release 8 and earlier:
 \item skew no longer accepts a skew symmetric matrix as an argument and returns a 3-vector, this functionality is provided by the new function vex.
 \item tr2diff and diff2tr are now called tr2delta and delta2tr
 \item ctraj with a scalar argument now spaces the points according to a trapezoidal velocity profile (see lspb). To obtain even spacing provide a uniformly spaced vector as the third argument, eg. linspace(0, 1, N).
-\item The RPY functions tr2rpy and rpy2tr assume that the roll, pitch, yaw rotations are about the X, Y, Z axes which is consistent with common conventions for vehicles (planes, ships, ground vehicles). For some applications (eg. cameras) it useful to consider the rotations about the Z, Y, Z axes, and this behaviour can be obtained by using the option 'zyx' with these functions (note this is the pre release 8 behaviour).
+\item The RPY functions tr2rpy and rpy2tr assume that the roll, pitch, yaw rotations are about the X, Y, Z axes which is consistent with common conventions for vehicles (planes, ships, ground vehicles). For some applications (eg. cameras) it useful to consider the rotations about the Z, Y, X axes, and this behaviour can be obtained by using the option 'zyx' with these functions (note this is the pre release 8 behaviour).
 \item Many functions now accept MATLAB style arguments given as trailing strings, or string-value pairs.  These are parsed by the internal
 function \texttt{tb\_optparse}.
 \end{itemize}
@@ -235,21 +235,48 @@ page at
 \url{http://www.petercorke.com}
 \end{quote}
 
-The files are available in zip
-format (.zip).  The web page requests some information from you
-such as your country, type of organization and application.
-This is just a means for me to gauge interest and to help convince my
-bosses (and myself) that this is a worthwhile activity.
+The web page requests some information from you
+regarding such as your country, type of organization and application.
+This is just a means for me to gauge interest and to remind myself
+that this is a worthwhile activity.
 
+The file is available in zip format (.zip).  Download it and unzip it.
+Files all unpack to the correct parts of a hiearchy of directories (folders)
+headed by \texttt{rvctools}.
+
+If you already have the Machine Vision Toolbox installed then download
+the zip file to the directory above the existing \texttt{rvctools} directory,
+and then unzip it.
+The files from this zip archive will properly interleave with the Machine
+Vision Toolbox files.
+
+Ensure that the folder \texttt{rvctools} is on your \Mlab\ search
+path.  You can do this by issuing the \texttt{addpath} command at 
+the \Mlab\ prompt.
+Then issue the command \texttt{startup\_rvc} and it will add a number
+of paths to your \Mlab\ search path.
+You need to setup the path every time you start \Mlab\ but you can 
+automate this by setting up environment variables, editing your 
+\texttt{startup.m} script by pressing the ``Update Toolbox Path
+Cache" button under \Mlab\ General preferences.
+
+A menu-driven demonstration can be invoked by the function {\tt rtdemo}.
+
+\subsection{Documentation}
 The file {\tt robot.pdf} is a manual that describes all functions in the Toolbox.
 It is auto-generated from the comments in the \Mlab\ code and is fully hyperlinked:
 to external web sites, the table of content to functions, and the ``See also'' functions
 to each other.
 
-A menu-driven demonstration can be invoked by the function {\tt rtdemo}.
+The same documentation is available online in
+alphabetical order at \url{http://www.petercorke.com/RTB/r9/html/index_alpha.html}
+or by category at \url{http://www.petercorke.com/RTB/r9/html/index.html}.
+Documentation is also available via the \Mlab\ help browser, ``Robotics
+Toolbox" appears under the Contents.
+
 
 \section{MATLAB version issues}
-The Toolbox has been tested under R2011a.
+The Toolbox has been tested under R2012a.
 
 \section{Use in teaching}
 This is definitely encouraged!
@@ -261,25 +288,20 @@ If you plan to distribute paper copies of the PDF manual then every copy must in
 If the Toolbox helps you in your endeavours then I'd appreciate you citing the Toolbox when you publish.
 The details are
 \begin{verbatim}
-@ARTICLE{Corke96b,
-        AUTHOR             = {P.I. Corke},
-        JOURNAL            = {IEEE Robotics and Automation Magazine},
-        MONTH              = mar,
-        NUMBER             = {1},
-        PAGES              = {24-32},
-        TITLE              = {A Robotics Toolbox for {MATLAB}},
-        VOLUME             = {3},
-        YEAR               = {1996}
-}
+@book{Corke11a,
+    Author = {Peter I. Corke},
+    Date-Added = {2011-01-12 08:19:32 +1000},
+    Date-Modified = {2012-07-29 20:07:27 +1000},
+    Note = {ISBN 978-3-642-20143-1},
+    Publisher = {Springer},
+    Title = {Robotics, Vision \& Control: Fundamental Algorithms in {MATLAB}},
+    Year = {2011}}
 \end{verbatim}
 or
 \begin{quote}
-``\textit{A robotics toolbox for MATLAB}'',\\
-P.ÊCorke,\\
-IEEE Robotics and Automation Magazine, \\
-vol.Ê3, pp.Ê24Ð32, Sept. 1996.
+P.I. Corke, Robotics, Vision \& Control: Fundamental Algorithms in MATLAB. Springer, 2011. ISBN 978-3-642-20143-1.
 \end{quote}
-which is also given in electronic form in the README file.
+which is also given in electronic form in the CITATION file.
 
 \section{Support}
 There is no support!  This software is made freely available in the hope that you find it useful in solving whatever problems
@@ -290,7 +312,7 @@ I am very happy to accept contributions for inclusion in future versions of the
 toolbox, and you will be suitably acknowledged.
 
 \textbf{I can guarantee that I will not respond to any requests for help with assignments or homework, no matter
-how urgent or important they might be to you.  That's what you your teachers, tutors, lecturers and professors are paid to do.}
+how urgent or important they might be to you.  That's what your teachers, tutors, lecturers and professors are paid to do.}
 
 You might instead like to communicate with other users via 
 the Google Group called ``Robotics and Machine Vision Toolbox'' 
