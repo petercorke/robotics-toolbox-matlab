@@ -31,7 +31,7 @@
 %  2012 RST, Technische Universitaet Dortmund, Germany
 %  http://www.rst.e-technik.tu-dortmund.de   
 %
-% See also replaceheader, sprintf.
+% See also CodeGenerator.replaceheader, sprintf.
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012, by Joern Malzahn

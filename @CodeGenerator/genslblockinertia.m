@@ -15,7 +15,7 @@
 %  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, geninertia.
+% See also CodeGenerator.CodeGenerator, CodeGenerator.geninertia.
 
 % Copyright (C) 2012-2013, by Joern Malzahn
 %

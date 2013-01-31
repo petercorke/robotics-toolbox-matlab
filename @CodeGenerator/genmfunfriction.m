@@ -13,7 +13,7 @@
 %  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, gengravload.
+% See also CodeGenerator.CodeGenerator, CodeGenerator.gengravload.
 
 % Copyright (C) 2012-2013, by Joern Malzahn
 %

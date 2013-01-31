@@ -21,7 +21,7 @@
 %  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
-% See also CodeGenerator, geninvdyn, genjacobian.
+% See also CodeGenerator.CodeGenerator, CodeGenerator.geninvdyn, CodeGenerator.genjacobian.
 
 % Copyright (C) 2012-2013, by Joern Malzahn
 %

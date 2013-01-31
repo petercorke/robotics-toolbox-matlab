@@ -29,7 +29,7 @@
 %  2012 RST, Technische Universitaet Dortmund, Germany
 %  http://www.rst.e-technik.tu-dortmund.de    
 %
-% See also matlabFunction, constructheaderstring.
+% See also matlabFunction, CodeGenerator.constructheaderstring.
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
