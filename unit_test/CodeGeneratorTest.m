@@ -4,10 +4,10 @@ initTestSuite;
 
 function [tStruct] = setup
 tStruct = struct;
-mdl_puma560_3;
-tStruct.rob = p560.nofriction;
-% mdl_twolink
-% tStruct.rob = twolink;
+% mdl_puma560_3;
+% tStruct.rob = p560;
+mdl_twolink
+tStruct.rob = twolink;
 
 tStruct.cGen = CodeGenerator(tStruct.rob,'default','logfile','myLog.txt');
 

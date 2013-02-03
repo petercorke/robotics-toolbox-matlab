@@ -43,7 +43,7 @@ function genslblockjacobian(CGen)
 %% Open or create block library
 bdclose('all')                                                              % avoid problems with previously loaded libraries
 load_system('simulink');
-if ~(exist([CGen.slibpath,'.mdl']) == 2)                                  % Create new block library if none exists
+if ~(exist([CGen.slibpath,simulinkext]) == 2)                                  % Create new block library if none exists
  CGen.createnewblocklibrary;
 end
 open_system(CGen.slibpath);
