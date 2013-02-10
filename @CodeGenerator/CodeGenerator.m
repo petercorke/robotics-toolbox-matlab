@@ -229,6 +229,7 @@ classdef CodeGenerator
             robName = CGen.rob.name;
             blanks = isspace(robName)==1;
             robName(blanks)= [];
+            robName(robName=='/') = [];
         end
 
         function savesym(CGen,sym2save, symname, fname)
