@@ -159,7 +159,7 @@ classdef CodeGenerator
             if ~isa(rob,'SerialLink')
                 error('CodeGenerator:wrongConstructorInput','The input variable %s must be a SerialLink object.',inputname(1));
             end
-            rob = rob.nofriction;
+            
             if ~issym(rob)
                 CGen.rob = rob.sym;
             else
