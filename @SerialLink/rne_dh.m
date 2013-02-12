@@ -88,7 +88,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
     for p=1:np
         q = Q(p,:).';
         qd = Qd(p,:).';
-        qdd = Qdd(p,:)';
+        qdd = Qdd(p,:).';
     
         Fm = [];
         Nm = [];

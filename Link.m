@@ -303,7 +303,7 @@ classdef Link < handle
                         
                         % it's a legacy DYN matrix
                         l.m = dh(6);
-                        l.r = dh(7:9)';     % a column vector
+                        l.r = dh(7:9).';     % a column vector
                         v = dh(10:15);
                         l.I = [ v(1) v(4) v(6)
                             v(4) v(2) v(5)
@@ -445,7 +445,7 @@ classdef Link < handle
             if length(v) ~= 3
                 error('RTB:Link:badarg', 'COG must be a 3-vector');
             end
-            l.r = v(:)';
+            l.r = v(:).';
         end % set.r()
         
         function set.Tc(l, v)
