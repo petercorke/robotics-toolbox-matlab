@@ -12,8 +12,6 @@
 %
 % Notes::
 % - If no output arguments are specified the result is displayed.
-% - This algorithm is from Paul 1981, other solutions are possible using
-%   eigenvectors or Rodriguez formula.
 %
 % See also ANGVEC2R, ANGVEC2TR.
 
@@ -35,7 +33,7 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function [theta, v] = tr2angvec(R)
+function [theta_, v_] = tr2angvec(R)
 
     if ~isrot(R)
         R = t2r(R);
@@ -52,53 +50,16 @@ function [theta, v] = tr2angvec(R)
         return
     end
     
-	qs = sqrt(trace(R)+1)/2.0;
-    qs = min(qs, 1);
-        
-	kx = R(3,2) - R(2,3);	% Oz - Ay
-	ky = R(1,3) - R(3,1);	% Ax - Nz
-	kz = R(2,1) - R(1,2);	% Ny - Ox
-
-	if (R(1,1) >= R(2,2)) && (R(1,1) >= R(3,3)) 
-		kx1 = R(1,1) - R(2,2) - R(3,3) + 1;	% Nx - Oy - Az + 1
-		ky1 = R(2,1) + R(1,2);			% Ny + Ox
-		kz1 = R(3,1) + R(1,3);			% Nz + Ax
-		add = (kx >= 0);
-	elseif (R(2,2) >= R(3,3))
-		kx1 = R(2,1) + R(1,2);			% Ny + Ox
-		ky1 = R(2,2) - R(1,1) - R(3,3) + 1;	% Oy - Nx - Az + 1
-		kz1 = R(3,2) + R(2,3);			% Oz + Ay
-		add = (ky >= 0);
-	else
-		kx1 = R(3,1) + R(1,3);			% Nz + Ax
-		ky1 = R(3,2) + R(2,3);			% Oz + Ay
-		kz1 = R(3,3) - R(1,1) - R(2,2) + 1;	% Az - Nx - Oy + 1
-		add = (kz >= 0);
-	end
-
-	if add
-		kx = kx + kx1;
-		ky = ky + ky1;
-		kz = kz + kz1;
-	else
-		kx = kx - kx1;
-		ky = ky - ky1;
-		kz = kz - kz1;
-	end
-	n = norm([kx ky kz]);
-    if n < eps
-        % for zero rotation case set arbitrary rotation axis and zero angle
-        v = [1 0 0];
-        theta = 0;
-    else
-        theta = 2*acos(qs);
-        v = [kx ky kz] /n;          % unit vector
-        if theta > pi
-            theta = pi - theta;
-            v = -v;
-        end
-    end
+    e = 0.5*vex(R - R');  % this is skew symmetric
+    theta = asin( norm(e) ); % the norm gives the angle
+    v = unit(e);  % the vector gives the length
 
     if nargout == 0
+        % if no output arguments display the angle and vector
         fprintf('Rotation: %f rad x [%f %f %f]\n', theta, v(1), v(2), v(3));
+    elseif nargout == 1
+        theta_ = theta;
+    elseif nargout == 2
+        theta_ = theta;
+        v_ = v;
     end
