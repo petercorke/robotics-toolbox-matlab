@@ -51,8 +51,17 @@ function [theta_, v_] = tr2angvec(R)
     end
     
     e = 0.5*vex(R - R');  % this is skew symmetric
-    theta = asin( norm(e) ); % the norm gives the angle
-    v = unit(e);  % the vector gives the length
+    ne = norm(e);
+    
+    if ne < eps
+        theta = 0;
+        v = [0 0 0];
+    else
+        theta = asin( norm(e) ); % the norm gives the angle
+        v = unit(e);  % the vector gives the length
+    end
+    
+
 
     if nargout == 0
         % if no output arguments display the angle and vector
