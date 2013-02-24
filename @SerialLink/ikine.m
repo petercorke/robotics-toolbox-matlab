@@ -26,11 +26,11 @@
 % from the previous time step.
 %
 % Options::
-% 'pinv'         use pseudo-inverse instead of Jacobian transpose
+% 'pinv'         use pseudo-inverse instead of Jacobian transpose (default)
 % 'ilimit',L     set the maximum iteration count (default 1000)
 % 'tol',T        set the tolerance on error norm (default 1e-6)
 % 'alpha',A      set step size gain (default 1)
-% 'novarstep'    disable variable step size
+% 'varstep'      enable variable step size if pinv is false
 % 'verbose'      show number of iterations for each point
 % 'verbose=2'    show state at each iteration
 % 'plot'         plot iteration state versus time
@@ -42,7 +42,7 @@
 %   between speed of convergence and divergence.
 % - Some experimentation might be required to find the right values of 
 %   tol, ilimit and alpha.
-% - The pinv option sometimes leads to much faster convergence.
+% - The pinv option leads to much faster convergence (default)
 % - The tolerance is computed on the norm of the error between current
 %   and desired tool pose.  This norm is computed from distances
 %   and angles without any kind of weighting.
@@ -54,12 +54,13 @@
 % - Such a solution is completely general, though much less efficient 
 %   than specific inverse kinematic solutions derived symbolically, like
 %   ikine6s or ikine3.
-% - This approach allows a solution to obtained at a singularity, but 
+% - This approach allows a solution to be obtained at a singularity, but 
 %   the joint angles within the null space are arbitrarily assigned.
 % - Joint offsets, if defined, are added to the inverse kinematics to 
 %   generate Q.
+% - Joint limits are not considered in this solution.
 %
-% See also SerialLink.fkine, tr2delta, SerialLink.jacob0, SerialLink.ikine6s.
+% See also SerialLink.fkine, SerialLink.ikinem, tr22angvec, SerialLink.jacob0, SerialLink.ikine6s.
  
 
 % Copyright (C) 1993-2011, by Peter I. Corke
@@ -87,8 +88,8 @@ function [qt,histout] = ikine(robot, tr, varargin)
     opt.tol = 1e-6;
     opt.alpha = 1;
     opt.plot = false;
-    opt.pinv = false;
-    opt.varstep = true;
+    opt.pinv = true;
+    opt.varstep = false;
 
     [opt,args] = tb_optparse(opt, varargin);
 
@@ -111,14 +112,14 @@ function [qt,histout] = ikine(robot, tr, varargin)
         m = args{2};
         m = m(:);
         if numel(m) ~= 6
-            error('Mask matrix should have 6 elements');
+            error('RTB:ikine:badarg', 'Mask matrix should have 6 elements');
         end
-        if numel(find(m)) ~= robot.n 
-            error('Mask matrix must have same number of 1s as robot DOF')
+        if numel(find(m)) > robot.n 
+            error('RTB:ikine:badarg', 'Number of robot DOF must be >= the same number of 1s in the mask matrix')
         end
     else
         if n < 6
-            error('For a manipulator with fewer than 6DOF a mask matrix argument must be specified');
+            error('RTB:ikine:badarg', 'For a manipulator with fewer than 6DOF a mask matrix argument must be specified');
         end
         m = ones(6, 1);
     end
@@ -141,6 +142,8 @@ function [qt,histout] = ikine(robot, tr, varargin)
 
     history = [];
     failed = false;
+    e = zeros(6,1);
+    
     for i=1:npoints
         T = tr(:,:,i);
 
@@ -163,7 +166,13 @@ function [qt,histout] = ikine(robot, tr, varargin)
             end
 
             % compute the error
-            e = tr2delta( robot.fkine(q'), T);
+            Tq = robot.fkine(q');
+            
+            e(1:3) = transl(T - Tq);
+            Rq = t2r(Tq);
+            [th,n] = tr2angvec(t2r(T)*Rq');
+            e(4:6) = th*n;
+
 
             % optionally adjust the step size
             if opt.varstep
@@ -204,7 +213,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
 
             % diagnostic stuff
             if opt.verbose > 1
-                fprintf('%d:%d: |e| = %f\n', i, count, nm);
+                fprintf('%d/%d: |e| = %f\n', i, count, nm);
                 fprintf('       e  = '); disp(e');
                 fprintf('       dq = '); disp(dq');
             end
