@@ -1,4 +1,4 @@
-%RTDEMO 	Robot toolbox demonstrations
+%RTBDEMO 	Robot toolbox demonstrations
 %
 % Displays popup menu of toolbox demonstration scripts that illustrate:
 %   - homogeneous transformations
@@ -41,6 +41,13 @@ if exist('rtbdemo', 'file') == 2
     demopath = fullfile(tbpath, 'demos');
 end
 
+opts = {'path', demopath};
+
+% uncomment the next line to allow demos to run without needing to press
+% enter key at each step
+%opts = {'path', demopath, 'delay', 0.5};
+    
+
 fprintf('------------------------------------------------------------\n');
 fprintf('Many of these demos print tutorial text and MATLAB commmands in the console window.\n');
 fprintf('Read the text and press <enter> to move on to the next command\n');
@@ -70,10 +77,6 @@ while 1
         'Mobile/SLAM', ...
         'Mobile/Particle filter', ...
         'Exit');
-    
-    opts = {'path', demopath};
-        opts = {'path', demopath, 'delay', 0.5};
-
     
     switch selection
         case 1
