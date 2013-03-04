@@ -33,7 +33,7 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function [theta_, v_] = tr2angvec(R)
+function [theta_, n_] = tr2angvec(R)
 
     if ~isrot(R)
         R = t2r(R);
@@ -42,33 +42,46 @@ function [theta_, v_] = tr2angvec(R)
     if size(R,3) > 1
         theta = zeros(size(R,3),1);
         v = zeros(size(R,3),3);
-        for i=1:size(R,3)
-            [t,a] = tr2angvec(R(:,:,i));
-            theta(i) = t;
-            v(i,:) = a;
+    end
+    
+    for i=1:size(R,3)
+        
+        % There are a few ways to do this:
+        %
+        % 1.
+        %
+        % e = 0.5*vex(R - R');  % R-R' is skew symmetric
+        % theta = asin(norm(e));
+        % n = unit(e);
+        %
+        %  but this fails for rotations > pi/2
+        %
+        % 2.
+        %
+        % e = vex(logm(R));
+        % theta = norm(e);
+        % n = unit(e);
+        %
+        %  elegant, but 40x slower than using eig
+        %
+        % 3.
+        %
+        % Use eigenvectors, get angle from trace which is defined over -pi to
+        % pi.  Don't use eigenvalues since they only give angles -pi/2 to pi/2.
+        
+        [v,d] = eig(R(:,:,i));
+        n(i,:) = v(:,3);      % last eigenvector correspond to rotation axis
+        theta(i) = acos( (trace(R(:,:,i))-1)/2 );
+        
+        if nargout == 0
+            % if no output arguments display the angle and vector
+            fprintf('Rotation: %f rad x [%f %f %f]\n', theta(i), n(i,1), n(i,2), n(i,3));
         end
-        return
     end
     
-    e = 0.5*vex(R - R');  % this is skew symmetric
-    ne = norm(e);
-    
-    if ne < eps
-        theta = 0;
-        v = [0 0 0];
-    else
-        theta = asin( norm(e) ); % the norm gives the angle
-        v = unit(e);  % the vector gives the length
-    end
-    
-
-
-    if nargout == 0
-        % if no output arguments display the angle and vector
-        fprintf('Rotation: %f rad x [%f %f %f]\n', theta, v(1), v(2), v(3));
-    elseif nargout == 1
+    if nargout == 1
         theta_ = theta;
     elseif nargout == 2
         theta_ = theta;
-        v_ = v;
+        n_ = n;
     end
