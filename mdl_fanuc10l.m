@@ -38,6 +38,7 @@
 %Fanuc AM120iB/10L robot
 
 %            theta    d      a    alpha
+clear L
 L(1) = Link([0        0     0.15  -pi/2   0  ]);
 L(2) = Link([0        0     0.77   pi     0  ]);
 L(3) = Link([0        0     0.1   -pi/2   0  ]);

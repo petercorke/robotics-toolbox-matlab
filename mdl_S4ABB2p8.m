@@ -38,6 +38,7 @@
 %S4 ABB 2.8 robot
 
 %            theta    d      a    alpha
+clear L
 L(1) = Link([ 0      0.9    0.188  -pi/2   0]);
 L(2) = Link([ 0      0      0.95    0      0]);
 L(3) = Link([ 0      0      0.225  -pi/2   0]);

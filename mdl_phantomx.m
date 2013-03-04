@@ -18,6 +18,7 @@
 %
 % - http://www.trossenrobotics.com/productdocs/assemblyguides/phantomx-basic-robot-arm.html
 
+clear L
 L(1) = Revolute('d', 40, 'alpha', -pi/2);
 L(2) = Revolute('a', -105, 'alpha', pi, 'offset', pi/2);
 L(3) = Revolute('a', -105);

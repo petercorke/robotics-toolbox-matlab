@@ -45,6 +45,7 @@ twolink_dh = [
 a1 = 1;
 a2 = 1;
 %   theta d a alpha
+clear L
 L(1) = Link([ 0     0   a1  0], 'standard');
 L(2) = Link([ 0     0   a2  0], 'standard');
 L(1).m = 1;
