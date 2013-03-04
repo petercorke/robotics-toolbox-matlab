@@ -42,8 +42,7 @@ build:
 
 
 	# remove all SVN files from rvctools and below
-	find rvctools -name .svn -exec rm {} \;
-	#\rm -rf `find . -name .svn`
+	find rvctools -name .svn -type d | xargs rm -rf
 
 doco:
 	-\rm -rf tmpdoc
