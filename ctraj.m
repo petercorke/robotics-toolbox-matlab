@@ -10,6 +10,9 @@
 % fractional distance  along the path, and these values are in the range [0 1].
 % The i'th point corresponds to a distance S(i) along the path.
 %
+% Notes::
+% - If T0 or T1 is equal to [] it is taken to be the identity matrix.
+%
 % See also LSPB, MSTRAJ, TRINTERP, Quaternion.interp, TRANSL.
 
 
@@ -32,6 +35,13 @@
 
 function traj = ctraj(T0, T1, t)
 
+    if isempty(T0)
+        T0 = eye(4,4);
+    end
+    if isempty(T1)
+        T1 = eye(4,4);
+    end
+    
     if ~ishomog(T0) || ~ishomog(T1)
         error('arguments must be homogeneous transformations');
     end
