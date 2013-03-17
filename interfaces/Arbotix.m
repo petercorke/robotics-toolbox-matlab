@@ -215,17 +215,21 @@ classdef Arbotix < handle
             %
             % P = ARB.GETPOS(ID) is the position (0-1023) of servo ID.
             %
-            % P = ARB.GETPOS() is a vector (1xN) of positions of servos 1 to N.
+            % P = ARB.GETPOS([]) is a vector (1xN) of positions of servos 1 to N.
             %
             % Notes::
             % - N is defined at construction time by the 'nservos' option.
             
             arb.flush();
             
-            if nargin == 2
+            if nargin < 2
+                id = [];
+            end
+            
+            if ~isempty(id)
                 retval = arb.readdata(id, Arbotix.ADDR_POS, 2);
                 p = Arbotix.e2a( retval.params*[1; 256] );
-            elseif nargin < 2
+            else
                 if isempty(arb.nservos)
                     error('RTB:Arbotix:notspec', 'Number of servos not specified');
                 end
