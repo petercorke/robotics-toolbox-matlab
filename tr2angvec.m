@@ -70,7 +70,11 @@ function [theta_, n_] = tr2angvec(R)
         % pi.  Don't use eigenvalues since they only give angles -pi/2 to pi/2.
         
         [v,d] = eig(R(:,:,i));
-        n(i,:) = v(:,3);      % last eigenvector correspond to rotation axis
+
+        k = find( abs(diag(d)-1) < 10*eps );
+        
+        n(i,:) = v(:,k);      % last eigenvector correspond to rotation axis
+
         theta(i) = acos( (trace(R(:,:,i))-1)/2 );
         
         if nargout == 0
