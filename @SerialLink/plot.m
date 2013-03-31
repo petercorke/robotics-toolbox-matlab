@@ -115,6 +115,8 @@
 %   that holds graphical handles and the handle of the robot object.
 % - The graphical state holds the last joint configuration which can be retrieved
 %   using q = robot.plot().
+% - The size of the plot volume is determined by a heuristic for an all-revolute
+%   robot.  If a prismatic joint is present the 'workspace' option is required.
 %
 % See also plotbotopt, SerialLink.animate, SerialLink.fkine.
 
@@ -224,32 +226,37 @@ function retval = plot(robot, tg, varargin)
     % get handle of any existing graphical robot of same name
     handles = findobj('Tag', robot.name);
 
-    if isempty(handles) || isempty( get(gcf, 'Children'))
-        % no robot of this name exists
-
-        % create one
-        newplot();
-        handle = create_new_robot(robot, opt);
-
+    if isempty(handles)
+        % no robot of this name exists in any figure, create one
+                
+        if ishold
+            % hold is on, add the robot to this figure
+            
+            if isempty( findobj(gca, 'Tag', robot.name))
+                % if no robot of this name in current axes, create one
+                handle = create_new_robot(robot, opt);
+            else
+                handle = findobj(gca, 'Tag', robot.name);
+            end
+            
+        else
+            % hold not on, create a robot in this or new plot
+            
+            newplot();
+            handle = create_new_robot(robot, opt);
+            
+        end
+        
         % tag one of the graphical handles with the robot name and hang
         % the handle structure off it
         set(handle.links, 'Tag', robot.name);
         set(handle.links, 'UserData', handle);
-
+        
         handles = handle.links;
     end
-
-    if ishold && isempty( findobj(gca, 'Tag', robot.name))
-        % if hold is on and no robot of this name in current axes
-        h = create_new_robot(robot, opt);
-
-        % tag one of the graphical handles with the robot name and hang
-        % the handle structure off it
-        set(handle.links, 'Tag', robot.name);
-        set(handle.links, 'UserData', handle);
-
-        handles = handle.links;
-    end
+    
+            
+%         if isempty( get(gcf, 'Children'))
     
     if opt.raise
         % note this is a very time consuming operation
@@ -344,6 +351,9 @@ function o = plot_options(robot, optin)
         % simple heuristic to figure the maximum reach of the robot
         %
         L = robot.links;
+        if any(L.isprismatic)
+            error('Prismatic joint(s) present: requires the ''workspace'' option');
+        end
         reach = 0;
         for i=1:robot.n
             reach = reach + abs(L(i).a) + abs(L(i).d);
@@ -400,8 +410,7 @@ function h = create_new_robot(robot, opt)
     % handles not provided, create graphics
     %disp('in creat_new_robot')
     if ~ishold
-        % if current figure has hold on, then draw robot here
-        % otherwise, create a new figure
+        % if hold is off, set the axis dimensions
         axis(opt.workspace);
     end
     xlabel('X')
