@@ -528,7 +528,7 @@ classdef Link < handle
             %
             % See also Link.isprismatic.
             
-            v = L.sigma == 0;
+            v = [L.sigma] == 0;
         end
         
         function v = isprismatic(L)
@@ -537,7 +537,7 @@ classdef Link < handle
             % L.isprismatic() is true (1) if joint is prismatic.
             %
             % See also Link.isrevolute.
-            v = L.sigma == 1;
+            v = [L.sigma] == 1;
         end
         
         
