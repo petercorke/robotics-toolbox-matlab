@@ -264,29 +264,30 @@ classdef Quaternion
 
             q1 = double(Q1);
             q2 = double(Q2);
+            
 
-            theta = acos(q1*q2');
+            cosTheta = q1*q2';
+            % take shortest path along the great circle, patch by Gauthier Gras
+            if cosTheta < 0
+                q1 = - q1;
+                cosTheta = - cosTheta;
+            end;
+            
+            theta = acos(cosTheta);
             count = 1;
 
             % clip values of r
             r(r<0) = 0;
             r(r>1) = 1;
+           
             
-            if length(r) == 1
+            q(length(r)) = Quaternion();  % preallocate space for Quaternion vector
+            
+            for i=1:length(r)
                 if theta == 0
-                    q = Q1;
+                    q(i) = Q1;
                 else
-                    q = Quaternion( (sin((1-r)*theta) * q1 + sin(r*theta) * q2) / sin(theta) );
-                end
-            else
-                for R=r(:)'
-                    if theta == 0
-                        qq = Q1;
-                    else
-                        qq = Quaternion( (sin((1-R)*theta) * q1 + sin(R*theta) * q2) / sin(theta) );
-                    end
-                    q(count) = qq;
-                    count = count + 1;
+                    q(i) = Quaternion( (sin((1-r(i))*theta) * q1 + sin(r(i)*theta) * q2) / sin(theta) );
                 end
             end
         end
