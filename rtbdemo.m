@@ -37,7 +37,7 @@ delete( get(0, 'Children') );
 
 % find the path to the demos
 if exist('rtbdemo', 'file') == 2
-    tbpath = fileparts(which('tr2eul'));
+    tbpath = fileparts(which('rtbdemo'));
     demopath = fullfile(tbpath, 'demos');
 end
 
@@ -54,73 +54,41 @@ fprintf('Read the text and press <enter> to move on to the next command\n');
 fprintf('At the end of the tutorial/demo you can choose the next one from the graphical menu.\n');
 fprintf('------------------------------------------------------------\n');
 
-while 1
-    selection = menu('Robot Toolbox demonstrations', ...
-        'General/Rotations', ...
-        'General/Transformations', ...
-        'General/Trajectory', ...
-        'Arm/Robots', ...
-        'Arm/Animation', ...
-        'Arm/Forward kinematics', ...
-        'Arm/Inverse kinematics', ...
-        'Arm/Jacobians', ...
-        'Arm/Inverse dynamics', ...
-        'Arm/Forward dynamics', ...
-        'Arm/Symbolic', ...
-        'Arm/Code generation', ...
-        'Mobile/driving to a pose', ...
-        'Mobile/quadrotor', ...
-        'Mobile/Braitenberg', ...
-        'Mobile/Bug', ...
-        'Mobile/D*', ...
-        'Mobile/PRM', ...
-        'Mobile/SLAM', ...
-        'Mobile/Particle filter', ...
-        'Exit');
+demos = {
+    'General/Rotations', 'rotation';
+    'General/Transformations', 'trans';
+    'General/JoystickTransform', 'joytest';
+    'General/Trajectory', 'traj';
+    'Arm/Robots', 'robot';
+    'Arm/Animation', 'graphics';
+    'Arm/Forward kinematics', 'fkine';
+    'Arm/Inverse kinematics', 'ikine';
+    'Arm/Jacobians', 'jacob';
+    'Arm/Inverse dynamics', 'idyn';
+    'Arm/Forward dynamics', 'fdyn';
+    'Arm/Symbolic', 'symbolic';
+    'Arm/Code generation', 'codegen';
+    'Mobile/driving to a pose', 'drivepose';
+    'Mobile/quadrotor', 'quadrotor';
+    'Mobile/Braitenberg', 'braitnav';
+    'Mobile/Bug', 'bugnav';
+    'Mobile/D*', 'dstarnav';
+    'Mobile/PRM', 'prmnav';
+    'Mobile/SLAM', 'slam';
+    'Mobile/Particle filter', 'particlefilt';
+    'Exit', '';
+    };
+
+while true
+    selection = menu('Robot Toolbox demonstrations', demos{:,1});
     
-    switch selection
-        case 1
-            runscript('rotation', opts{:})
-        case 2
-            runscript('trans', opts{:})
-        case 3
-            runscript('traj', opts{:})
-        case 4
-            runscript('robot', opts{:})
-        case 5
-            runscript('fkine', opts{:})
-        case 6
-            runscript('graphics', opts{:})
-        case 7
-            runscript('ikine', opts{:})
-        case 8
-            runscript('jacob', opts{:})
-        case 9
-            runscript('idyn', opts{:})
-        case 10
-            runscript('fdyn', opts{:})
-        case 11
-            runscript('symbolic', opts{:})
-        case 12
-            runscript('codegen', opts{:})
-        case 13
-            runscript('drivepose', opts{:})
-        case 14
-            runscript('quadrotor', opts{:})
-        case 15
-            runscript('braitnav', opts{:})
-        case 16
-            runscript('bugnav', opts{:})
-        case 17
-            runscript('dstarnav', opts{:})
-        case 18
-            runscript('prmnav', opts{:})
-        case 19
-            runscript('slam', opts{:})
-        case 20
-            runscript('particlefilt', opts{:})
-        case 21
-            delete( get(0, 'Children') );
-            break;
+    if strcmp(demos{selection,1}, 'Exit')
+        % quit now
+        delete( get(0, 'Children') );
+        break;
+    else
+        % run the appropriate script
+        script = demos{selection,2}
+        runscript(script, opts{:})
     end
 end
