@@ -35,11 +35,21 @@
 #define	BUTTON_OUT	plhs[1]
 
 // Persistent data between calls
-SDL_Joystick *joy;  // SDL joystick object pointer
-double *joydata;    // joystick data
-int njoy;           // number of joystick axes
-double *buttondata; // button data
-int nbutton;        // number of buttons
+SDL_Joystick *joy;   // SDL joystick object pointer
+double  *joydata;    // joystick data
+int     njoy;        // number of joystick axes
+double  *buttondata; // button data
+int     nbutton;     // number of buttons
+
+static void
+cleanup(void)
+{
+    // free allocated arrays
+    if (joydata)
+        free(joydata);
+    if (buttondata)
+        free(buttondata);
+}
 
 void
 mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -80,6 +90,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             // allocate storage
             joydata = (double *)calloc(njoy, sizeof(double));
             buttondata = (double *)calloc(nbutton, sizeof(double));
+
+            mexAtExit(cleanup);
           }
           else
             mexErrMsgTxt("Couldn't open Joystick 0\n");
@@ -87,8 +99,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
 
     // process all events in the queue and update global data
+    SDL_Event event;
     while (SDL_PollEvent(&event) ) {
-        SDL_Event event;
 
         switch (event.type) {
         case SDL_JOYAXISMOTION:
