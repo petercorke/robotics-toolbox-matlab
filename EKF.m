@@ -313,7 +313,7 @@ classdef EKF < handle
                 % no map given, we have to estimate it
                 ekf.estMap = true;
                 ekf.features = NaN*zeros(2, ekf.sensor.map.nfeatures);
-            elseif isnan(ekf.map)
+            elseif isa(ekf.map, 'Map')
                 ekf.estMap = false;
             else
                 error('RTB:EKF:badarg', 'shouldnt happen')
