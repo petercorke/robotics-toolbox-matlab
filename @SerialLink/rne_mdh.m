@@ -68,7 +68,11 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 		end
 	end
 	
-	tau = zeros(np,n);
+    if isa(Q, 'sym')
+        tau(np, n) = sym();
+    else
+        tau = zeros(np,n);
+    end
 
 	for p=1:np
 		q = Q(p,:).';
