@@ -105,4 +105,12 @@ typedef struct _robot {
     Link    *links;     /* the links */
 } Robot;
 
+void newton_euler (
+	Robot	*robot,		/*!< robot object  */
+	double	*tau,		/*!< returned joint torques */
+	double	*qd,		/*!< joint velocities */
+	double	*qdd,		/*!< joint accelerations */
+	double	*fext,		/*!< external force on manipulator tip */
+	int	stride		/*!< indexing stride for qd, qdd */
+);
 #endif

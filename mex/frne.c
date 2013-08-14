@@ -429,6 +429,7 @@ mstruct_get_element(mxArray *m, int j, char *field)
         return e;
     else {
         error("No such field as %s", field);
+        return NULL;
     }
 }
 
