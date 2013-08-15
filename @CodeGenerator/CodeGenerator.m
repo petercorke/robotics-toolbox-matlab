@@ -41,7 +41,7 @@
 %  genfriction     generate joint frictionc code
 %  gengravload     generarte gravity load code
 %  geninertia      general inertia matrix code
-%  geninvdyn       generate forward dynamics code
+%  geninvdyn       generate inverse dynamics code
 %  genjacobian     generate Jacobian code
 %  geneverything   generate code for all of the above
 %
