@@ -71,16 +71,30 @@ function [theta_, n_] = tr2angvec(R)
         
         [v,d] = eig(R(:,:,i));
 
-        k = find( abs(diag(d)-1) < 10*eps );
-        
-        n(i,:) = v(:,k);      % last eigenvector correspond to rotation axis
+        k = find( abs(real(diag(d))-1) < 20*eps );
 
-        theta(i) = acos( (trace(R(:,:,i))-1)/2 );
+                
+        if isempty(k)
+            error('matrix not orthonormal rotation matrix');
+        end
+        k = k(end);
+        
+        % get the direction, eigenvector corresponding to real eigenvalue
+        n(i,:) = v(:,k);
+
+        % rotation comes from the trace
+        ac = (trace(R(:,:,i)) - 1) / 2;
+        ac = max( min(ac, 1), -1);  % clip it to robustly handle slight non-orthonormality
+        theta(i) = acos( ac );
         
         if nargout == 0
             % if no output arguments display the angle and vector
             fprintf('Rotation: %f rad x [%f %f %f]\n', theta(i), n(i,1), n(i,2), n(i,3));
         end
+    end
+    
+    if ~isreal(theta) || ~isreal(n)
+        error('complex');
     end
     
     if nargout == 1
