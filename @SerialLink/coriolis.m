@@ -112,9 +112,12 @@ function C = coriolis(robot, q, qd)
             QD(j) = 1;
             QD(k) = 1;
             tau = robot2.rne(q, QD, zeros(size(q)), [0 0 0]');
-            C(:,k) = C(:,k) + (tau.' - Csq(:,k) - Csq(:,j)) * qd(j);
+            C(:,k) = C(:,k) + (tau.' - Csq(:,k) - Csq(:,j)) * qd(j)/2;
+            C(:,j) = C(:,j) + (tau.' - Csq(:,k) - Csq(:,j)) * qd(k)/2;
+
         end
     end
+
     C = C + Csq * diag(qd);
     
     if isa(q, 'sym')
