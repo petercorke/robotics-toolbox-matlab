@@ -26,6 +26,8 @@
 %  dot       derivative of quaternion with angular velocity w
 %  R         equivalent 3x3 rotation matrix
 %  T         equivalent 4x4 homogeneous transform matrix
+%  double    quaternion elements as 4-vector
+%  inner     inner product of two quaternions
 %
 % Arithmetic operators are overloaded::
 %  q1==q2    test for quaternion equality
@@ -241,9 +243,23 @@ classdef Quaternion
         % - This is the Euclidean norm of the quaternion written as a 4-vector.
         % - A unit-quaternion has a norm of one.
         %
-        % See also Quaternion.unit.
+        % See also Quaternion.inner, Quaternion.unit.
 
             n = norm(double(q));
+        end
+
+        function n = inner(q1, q2)
+        %Quaternion.inner Quaternion inner product
+        %
+        % V = Q1.inner(Q2) is the inner (dot) product of two vectors (1x4),
+        % comprising the elements of Q1 and Q2 respectively.
+        %
+        % Notes::
+        % - Q1.inner(Q1) is the same as Q1.norm().
+        %
+        % See also Quaternion.norm.
+
+            n = double(q1)*double(q2)';
         end
 
         function q = interp(Q1, Q2, r)
@@ -612,6 +628,10 @@ classdef Quaternion
         end
 
         function qd = dot(q, omega)
+        %Quaternion.dot Quaternion derivative
+        %
+        % QD = Q.dot(omega) is the rate of change of a frame with attitude Q and
+        % angular velocity OMEGA (1x3) expressed as a quaternion.
             E = q.s*eye(3,3) - skew(q.v);
             omega = omega(:);
             qd = Quaternion([-0.5*q.v*omega; 0.5*E*omega]);
