@@ -20,6 +20,7 @@
 % plotSensor         Plots a sensor readings over time
 %
 % outputStop         Stops motor at a layer, NOS and brake
+% outputStopAll		 Stops all the motors
 % outputPower        Sets motor output power at a layer, NOS and speed
 % outputStart        Starts motor at a layer, NOS and speed
 % outputStepSpeed    Moves a motor to set position with layer, NOS, speed, ramp up angle, constant angle, ramp down angle and brake
@@ -300,7 +301,7 @@ classdef Brick < handle
             % the brick with one upload command.
             %
             % Example::
-            %           cmd.playThreeTones();
+            %           b.playThreeTones();
             
             cmd = Command();
             cmd.addHeaderDirect(42,0,0);
@@ -345,7 +346,7 @@ classdef Brick < handle
             % Brick.inputDeviceSymbol Get the input device symbol
             %
             % Brick.inputDeviceSymbol(layer,no) returns the symbol used for
-            % the device in it's current mode.
+            % the device in its current mode.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0).
@@ -370,7 +371,7 @@ classdef Brick < handle
             % Brick.inputDeviceClrAll Clear the sensors
             %
             % Brick.inputDeviceClrAll(layer) clears the sensors connected
-            % to layetr.
+            % to layer.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0).
@@ -588,7 +589,7 @@ classdef Brick < handle
            % - NOS is a bit field representing output 1 to 4 (0x01, 0x02, 0x04, 0x08).
            %
            % Example::
-           %            outputClrCount(0,Device.MotorA)
+           %            b.outputClrCount(0,Device.MotorA)
            
            cmd = Command();
            cmd.addHeaderDirect(42,0,0);
@@ -772,7 +773,7 @@ classdef Brick < handle
             %
             % Brick.threeToneByteCode() generates the byte code for the
             % play three tone function. This is an example of how byte code
-            % can be generated as an rbf value
+            % can be generated as an rbf file which can be uploaded to the brick.
             %
             % Notes::
             % - filename is the name of the file to store the byte code in
