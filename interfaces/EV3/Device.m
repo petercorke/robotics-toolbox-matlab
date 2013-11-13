@@ -1,3 +1,8 @@
+%Device Device enumeration for the brick
+%
+% Notes::
+% - Collection of enumeration constants used for the brick
+
 classdef Device < uint8
     enumeration
          % motor definitions (found in c_output.c => NOS DATA8)

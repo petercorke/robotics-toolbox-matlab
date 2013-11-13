@@ -1,4 +1,8 @@
-% referenced from bytecodes.h lines 1584-1606
+%Primitives Primitives enumeration for the brick
+%
+% Notes::
+% - Primitives can be found in the EV3 documentation and source code
+% (bytecodes.h 1584-1606)
 
 classdef Primitives < uint8
     enumeration
