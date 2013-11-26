@@ -34,7 +34,7 @@
 classdef UIDrawSubCodes < uint8
     enumeration
          Update(0)
-		 Clean (1)
+         Clean (1)
          Pixel (2)
          Line (3)
          Circle (4)

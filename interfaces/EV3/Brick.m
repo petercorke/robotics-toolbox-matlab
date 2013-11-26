@@ -20,9 +20,10 @@
 % plotSensor         Plots a sensor readings over time
 %
 % outputStop         Stops motor at a layer, NOS and brake
-% outputStopAll		 Stops all the motors
+% outputStopAll      Stops all the motors
 % outputPower        Sets motor output power at a layer, NOS and speed
 % outputStart        Starts motor at a layer, NOS and speed
+% outputTest         Return the state of the motor at a layer and NOS
 % outputStepSpeed    Moves a motor to set position with layer, NOS, speed, ramp up angle, constant angle, ramp down angle and brake
 % outputClrCount     Clears a motor tachometer at a  layer and NOS
 % outputGetCount     Returns the tachometer at a layer and NOS
@@ -178,6 +179,7 @@ classdef Brick < handle
             %           b.send(cmd)
             
             % send the message through the brickIO write function
+            
             brick.conn.write(cmd.msg);
             if brick.debug > 0
                fprintf('sent:    [ ');
@@ -198,6 +200,7 @@ classdef Brick < handle
             %           rmsg = b.receive()
  
             % read the message through the brickIO read function
+            
             rmsg = brick.conn.read();
             if brick.debug > 0
                fprintf('received:    [ ');
@@ -553,8 +556,33 @@ classdef Brick < handle
             brick.send(cmd);
         end
         
+        function state = outputTest(brick,layer,nos)
+            % Brick.outputTest Test a motor
+            %
+            % Brick.outputTest(layer,nos) test a motor state at a layer and
+            % NOS.
+            %
+            % Notes::
+            % - layer is the usb chain layer (usually 0).
+            % - NOS is a bit field representing output 1 to 4 (0x01, 0x02, 0x04, 0x08).
+            % - state is 0 when ready and 1 when busy.
+            %
+            % Example::
+            %           state = b.outputTest(0,Device.MotorA)
+          
+            cmd = Command();
+            cmd.addHeaderDirectReply(42,1,0);
+            cmd.opOUTPUT_TEST(layer,nos,0);
+            cmd.addLength();
+            brick.send(cmd);
+            % receive the command
+            msg = brick.receive()';
+            % motor state is the final byte
+            state = msg(end);
+        end
+        
         function outputStepSpeed(brick,layer,nos,speed,step1,step2,step3,brake)
-            % 
+            % Brick.outputStepSpeed Output a step speed 
             %
             % Brick.outputStepSpeed(layer,nos,speed,step1,step2,step3,brake)
             % moves a motor to set position with layer, NOS, speed, ramp up
@@ -579,23 +607,23 @@ classdef Brick < handle
         end
         
         function outputClrCount(brick,layer,nos)
-           % Brick.outputClrCount Clear output count
-           % 
-           % Brick.outputClrCount(layer,nos) clears a motor tachometer at a
-           % layer and NOS.
-           %
-           % Notes::
-           % - layer is the usb chain layer (usually 0).
-           % - NOS is a bit field representing output 1 to 4 (0x01, 0x02, 0x04, 0x08).
-           %
-           % Example::
-           %            b.outputClrCount(0,Device.MotorA)
-           
-           cmd = Command();
-           cmd.addHeaderDirect(42,0,0);
-           cmd.opOUTPUT_CLR_COUNT(layer,nos);
-           cmd.addLength();
-           brick.send(cmd);
+            % Brick.outputClrCount Clear output count
+            % 
+            % Brick.outputClrCount(layer,nos) clears a motor tachometer at a
+            % layer and NOS.
+            %
+            % Notes::
+            % - layer is the usb chain layer (usually 0).
+            % - NOS is a bit field representing output 1 to 4 (0x01, 0x02, 0x04, 0x08).
+            %
+            % Example::
+            %            b.outputClrCount(0,Device.MotorA)
+            
+            cmd = Command();
+            cmd.addHeaderDirect(42,0,0);
+            cmd.opOUTPUT_CLR_COUNT(layer,nos);
+            cmd.addLength();
+            brick.send(cmd);
         end
         
         function tacho = outputGetCount(brick,layer,nos)

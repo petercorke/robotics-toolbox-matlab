@@ -9,6 +9,6 @@ classdef UIWriteSubCodes < uint8
     enumeration
          PutString(8)
          InitRun (25)
-		 Led (27)
+         Led (27)
     end
 end

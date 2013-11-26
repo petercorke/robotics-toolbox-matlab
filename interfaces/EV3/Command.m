@@ -10,7 +10,7 @@
 % addHeaderDirectReply      Add a direct header with reply to the command object
 % addLength                 Add the length of the msg to the front of the command object
 % addSystemCommand          Add a system command to the command object
-% addDirectCommand			Add a direct command to the command object
+% addDirectCommand          Add a direct command to the command object
 %
 % clear                     Clear the command msg
 % display                   Display the command msg (decimal)
@@ -87,26 +87,27 @@
 % opINPUT_DEVICE_CLR_ALL    Add a INPUT_DEVICE opcide with a CLR_ALL subcode to the command object
 % opINPUT_DEVICE_GET_NAME   Add a INPUT_DEVICE opcode with a GET_NAME subcode to the command object.
 %
-% opINPUT_READ              Add a opINPUT opcode with a READ subcode to the command object
-% opINPUT_READY             Add a opINPUT opcode with a READY subcode to the command object
-% opINPUT_READSI            Add a opINPUT opcode with a READSI subcode to the command object
+% opINPUT_READ              Add a opINPUT_READ opcode to the command object
+% opINPUT_READY             Add a opINPUT_READY opcode to the command object
+% opINPUT_READSI            Add a opINPUT_READSI opcode to the command object
 %
-% opOUTPUT_SET_TYPE         Add a opOUTPUT opcode with a SET_TYPE subcode to the command object
-% opOUTPUT_RESET            Add a opOUTPUT opcode with a RESET subcode to the command object
-% opOUTPUT_STOP             Add a opOUTPUT opcode with a STOP subcode to the command object
-% opOUTPUT_SPEED            Add a opOUTPUT opcode with a SPEED subcode to the command object
-% opOUTPUT_POWER            Add a opOUTPUT opcode with a POWER subcode to the command object
-% opOUTPUT_START            Add a opOUTPUT opcode with a START subcode to the command object
-% opOUTPUT_POLARITY         Add a opOUTPUT opcode with a POLARITY subcode to the command object
-% opOUTPUT_READ             Add a opOUTPUT opcode with a READ subcode to the command object
-% opOUTPUT_READY            Add a opOUTPUT opcode with a READY subcode to the command object
-% opOUTPUT_STEP_POWER       Add a opOUTPUT opcode with a STEP_POWER subcode to the command object
-% opOUTPUT_STEP_SPEED       Add a opOUTPUT opcode with a STEP_SPEED subcode to the command object
-% opOUTPUT_TIME_SPEED       Add a opOUTPUT opcode with a TIME_SPEED subcode to the command object
-% opOUTPUT_STEP_SYNC        Add a opOUTPUT opcode with a STEP_SYNC subcode to the command object
-% opOUTPUT_TIME_SYNC        Add a opOUTPUT opcode with a TIME_SYNC subcode to the command object
-% opOUTPUT_CLR_COUNT        Add a opOUTPUT opcode with a CLR_COUNT subcode to the command object
-% opOUTPUT_GET_COUNT        Add a opOUTPUT opcode with a GET_COUNT subcode to the command object
+% opOUTPUT_SET_TYPE         Add a opOUTPUT_SET_TYPE opcode to the command object
+% opOUTPUT_RESET            Add a opOUTPUT_RESET opcode to the command object
+% opOUTPUT_STOP             Add a opOUTPUT_STOP opcode to the command object
+% opOUTPUT_SPEED            Add a opOUTPUT_SPEED opcode to the command object
+% opOUTPUT_POWER            Add a opOUTPUT_POWER opcode to the command object
+% opOUTPUT_START            Add a opOUTPUT_START opcode to the command object
+% opOUTPUT_POLARITY         Add a opOUTPUT_POLARITY opcode to the command object
+% opOUTPUT_READ             Add a opOUTPUT_READ opcode to the command object
+% opOUTPUT_TEST             Add a opOUTPUT_TEST opcode to the command object
+% opOUTPUT_READY            Add a opOUTPUT_READY opcode to the command object
+% opOUTPUT_STEP_POWER       Add a opOUTPUT_STEP_POWER opcode to the command object
+% opOUTPUT_STEP_SPEED       Add a opOUTPUT_STEP_SPEED opcode to the command object
+% opOUTPUT_TIME_SPEED       Add a opOUTPUT_TIME_SPEED opcode to the command object
+% opOUTPUT_STEP_SYNC        Add a opOUTPUT_STEP_SYNC opcode to the command object
+% opOUTPUT_TIME_SYNC        Add a opOUTPUT_TIME_SYNC opcode to the command object
+% opOUTPUT_CLR_COUNT        Add a opOUTPUT_CLR_COUNT opcode to the command object
+% opOUTPUT_GET_COUNT        Add a opOUTPUT_GET_COUNT opcode to the command object
 %
 % BEGIN_DOWNLOAD            Add a BEGIN_DOWNLOAD system command to the command object
 % CONTINUE_DOWNLOAD         Add a CONTINUE_DOWNLOAD system command to the command object
@@ -122,7 +123,7 @@
 % description of the commands.
 %
 % Example::
-%					cmd = Command();
+%                   cmd = Command();
 %                   cmd.addHeaderDirect(42,0,0);
 %                   cmd.opSOUND_TONE(volume,frequency,duration);
 %                   cmd.addLength();
@@ -130,7 +131,7 @@
 classdef Command < handle
 
     % Communications format (c_com.h):
-    %
+    % /*
     %       System Command Bytes:
     %   ,------,------,------,------,------,------,------,------,
     %   |Byte 0|Byte 1|Byte 2|Byte 3|Byte 4|Byte 5|      |Byte n|
@@ -254,7 +255,7 @@ classdef Command < handle
     %                                                     /*
     % 
     %   Byte 5 - n: Response buffer (global variable values)
-    %
+    %                                                     */
     
     properties
         msg
@@ -262,138 +263,138 @@ classdef Command < handle
 
     methods
         function cmd = Command(varargin)
-			% Command.cmd Create an empty command
-			%
-			% c = Command(OPTIONS) is an object that represents an EV3 command
+            % Command.cmd Create an empty command
+            %
+            % c = Command(OPTIONS) is an object that represents an EV3 command
             %
             % Example::
             %           c = Command();
-			
+            
             cmd.msg = uint8([]);
         end
-		
-	    function delete(cmd)
-			% Command.delete Clear command
-			%
-			% delete(c) clears the command
-			
+            
+        function delete(cmd)
+            % Command.delete Clear command
+            %
+            % delete(c) clears the command
+            
             cmd.msg = '';
         end
         
         function addHeaderSystem(cmd,counter)
-		   % Command.addHeaderSystem Add a system header with no reply
-		   %
-		   % Commad.addHeaderSystem(counter) adds a system command header
-           % with no reply (0x81).
-           %
-           % Notes::
-           % - counter is a decimal number used as a message counter
-           %
-           % Example::
-           %            cmd.addHeaderSystem(42)
-		   
+            % Command.addHeaderSystem Add a system header with no reply
+            %
+            % Commad.addHeaderSystem(counter) adds a system command header
+            % with no reply (0x81).
+            %
+            % Notes::
+            % - counter is a decimal number used as a message counter
+            %
+            % Example::
+            %            cmd.addHeaderSystem(42)
+            
            cmd.msg = [cmd.msg typecast(uint16(counter), 'uint8'), uint8(129)];
         end
         
         function addHeaderSystemReply(cmd,counter)
-		   % Command.addHeaderSystemReply Add a system header with reply
-		   %
-		   % Command.addHeaderSystemReply(counter) adds a system command 
-           % header with reply (0x01).
-           %
-           % Notes::
-           % - counter is a decimal number used as a message counter
-           %
-           % Example::
-           %            cmd.addHeaderSystemReply(42)
-		   
+            % Command.addHeaderSystemReply Add a system header with reply
+            %
+            % Command.addHeaderSystemReply(counter) adds a system command 
+            % header with reply (0x01).
+            %
+            % Notes::
+            % - counter is a decimal number used as a message counter
+            %
+            % Example::
+            %            cmd.addHeaderSystemReply(42)
+            
            cmd.msg = [cmd.msg typecast(uint16(counter), 'uint8'), uint8(1)];
         end
         
         function addHeaderDirect(cmd,counter,nGV,nLV)
-		   % Command.addHeaderDirect Add a direct header with no reply
-		   %
-		   % Command.addHeaderDirect(counter,GV,LV) Adds a direct command 
-           % header with no reply (0x80).
-           %
-           % Notes::
-           % - counter is a decimal number used as a message counter
-           % - nGV is the number of 1 byte global variables needed.
-           % - nLV is the number of 1 byte local variables needed.
-           % - If you needed a global float varible then GV = 4.
-           % - If you nedded a local uint16 variable then LV = 2.
-           %
-           % Example::
-           %            cmd.addHeaderDirect(42,0,0)
-		   
+            % Command.addHeaderDirect Add a direct header with no reply
+            %
+            % Command.addHeaderDirect(counter,GV,LV) Adds a direct command 
+            % header with no reply (0x80).
+            %
+            % Notes::
+            % - counter is a decimal number used as a message counter
+            % - nGV is the number of 1 byte global variables needed.
+            % - nLV is the number of 1 byte local variables needed.
+            % - If you needed a global float varible then GV = 4.
+            % - If you nedded a local uint16 variable then LV = 2.
+            %
+            % Example::
+            %            cmd.addHeaderDirect(42,0,0)
+            
            cmd.msg = [cmd.msg typecast(uint16(counter), 'uint8'), uint8(128), typecast(bitor(bitshift(uint16(nLV),10),uint16(nGV)), 'uint8')];
         end
         
         function addHeaderDirectReply(cmd,counter,nG,nL)
-		   % Command.addHeaderDirectReply Add a direct header with reply
-		   %
-		   % Command.addHeaderDirect(counter,GV,LV) Adds a direct command 
-           % header with reply (0x00).
-           %
-           % Notes::
-           % - counter is a decimal number used as a message counter
-           % - nGV is the number of 1 byte global variables needed.
-           % - nLV is the number of 1 byte local variables needed.
-           % - If you needed a global float varible then GV = 4.
-           % - If you nedded a local uint16 variable then LV = 2.
-           % 
-           % Example::
-           %            cmd.addHeaderDirectReply(42,0,0)
-		   
+            % Command.addHeaderDirectReply Add a direct header with reply
+            %
+            % Command.addHeaderDirect(counter,GV,LV) Adds a direct command 
+            % header with reply (0x00).
+            %
+            % Notes::
+            % - counter is a decimal number used as a message counter
+            % - nGV is the number of 1 byte global variables needed.
+            % - nLV is the number of 1 byte local variables needed.
+            % - If you needed a global float varible then GV = 4.
+            % - If you nedded a local uint16 variable then LV = 2.
+            % 
+            % Example::
+            %            cmd.addHeaderDirectReply(42,0,0)
+            
            cmd.msg = [cmd.msg typecast( uint16(counter), 'uint8'), uint8(0), typecast( bitor(bitshift(uint16(nL),10),uint16(nG)), 'uint8')];
         end
         
         function addLength(cmd)
-		   % Command.addLength Add command length
-		   %
-		   % Command.addLength() adds the command message length to the 
-           % start of command object message.
-           % 
-           % Example::
-           %            cmd.addLength()
-		   
+            % Command.addLength Add command length
+            %
+            % Command.addLength() adds the command message length to the 
+            % start of command object message.
+            % 
+            % Example::
+            %            cmd.addLength()
+            
            cmd.msg = [typecast( uint16(length(cmd.msg)), 'uint8') cmd.msg]; 
         end
         
         function addSystemCommand(cmd,v)
-		   % Command.addSystemCommand Add a system command
-		   %
-		   % Command.addSystemCommand(v) adds a system command to the
-		   % command object.
-           %
-		   % Notes::
-		   % - v is the system commands which can be found in c_com.h
-           % 
-           % Example::
-           %            cmd.addSystemCommand(SystemCommands.BeginDownload)
-		   
+            % Command.addSystemCommand Add a system command
+            %
+            % Command.addSystemCommand(v) adds a system command to the
+            % command object.
+            %
+            % Notes::
+            % - v is the system commands which can be found in c_com.h
+            % 
+            % Example::
+            %            cmd.addSystemCommand(SystemCommands.BeginDownload)
+            
            cmd.msg = [cmd.msg uint8(v)]; 
         end
         
         function addDirectCommand(cmd,v)
-		   % Command.addDirectCommand Add a direct command
-		   %
-		   % Command.addDirectCommand(v) adds a direct command to the
-		   % command object.
-           %
-		   % Notes::
-		   % - v is the direct commands opcode can be found in ByteCodes.m
-           %
-           % Example::
-           %            cmd.addDirectCommand(SoundSubCodes.Tone)
-		   
+            % Command.addDirectCommand Add a direct command
+            %
+            % Command.addDirectCommand(v) adds a direct command to the
+            % command object.
+            %
+            % Notes::
+            % - v is the direct commands opcode can be found in ByteCodes.m
+            %
+            % Example::
+            %            cmd.addDirectCommand(SoundSubCodes.Tone)
+            
            cmd.msg = [cmd.msg uint8(v)]; 
         end
         
         function clear(cmd)
-		    % Command.clear Clear command
-			%
-			% Commad.clear clears the message
+            % Command.clear Clear command
+            %
+            % Commad.clear clears the message
             %
             % Example::
             %           cmd.clear()
@@ -450,8 +451,8 @@ classdef Command < handle
         end 
         
         function LC0(cmd,v)
-		    % Command.LC0 Add a local constant 0 
-			%
+            % Command.LC0 Add a local constant 0 
+            %
             % Command.LC0(v) adds a local constant 0 to the command object.
             %
             % Notes::
@@ -466,8 +467,8 @@ classdef Command < handle
         end
         
         function LC1(cmd,v)
-		    % Command.LC1 Add a local constant 1
-			%
+            % Command.LC1 Add a local constant 1
+            %
             % Command.LC1(v) adds a local constant 1 to the command object.
             %
             % Notes::
@@ -498,8 +499,8 @@ classdef Command < handle
         end
         
         function LC4(cmd,v)
-		    % Command.LC4 Add a local constant 4
-			%
+            % Command.LC4 Add a local constant 4
+            %
             % Command.LC4(v) adds a local constant 4 to the command object.
             %
             % Notes::
@@ -529,7 +530,7 @@ classdef Command < handle
         end
         
         function GV0(cmd,i)
-		    % Command.GV0 Add a global constant 0
+            % Command.GV0 Add a global constant 0
             %
             % Command.GV0(i) adds a global variable 0 to the command
             % object.
@@ -537,7 +538,7 @@ classdef Command < handle
             % Notes::
             % - i is the number of 1 byte global variables needed.
             % - Global constant 0 is defined as ((i & PRIMPAR_INDEX) | PRIMPAR_SHORT | PRIMPAR_VARIABEL | PRIMPAR_GLOBAL)
-			%
+            %
             % Example::
             %           cmd.GV0(4)
             
@@ -545,14 +546,14 @@ classdef Command < handle
         end
         
         function LCS(cmd)
-		    % Command.LCS Add a local constant string
+            % Command.LCS Add a local constant string
             %
             % Command.LCS() adds a local constant string to the command
             % object.
             %
             % Notes::
             % - Local constant string is defined as (PRIMPAR_LONG | PRIMPAR_STRING)
-			%
+            %
             % Example::
             %           cmd.LCS()
             
@@ -1534,8 +1535,8 @@ classdef Command < handle
         function opINPUT_READ(cmd,layer,no,type,mode,pct)
             % Command.opINPUT_READ Add a opINPUT_READ
             %
-            % Command.opINPUT_READ(layer,no,type,mode,pct) adds a opINPUT 
-            % opcode with a READ subcode to the command object.
+            % Command.opINPUT_READ(layer,no,type,mode,pct) adds a opINPUT_READ 
+            % opcode to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1561,8 +1562,8 @@ classdef Command < handle
         function opINPUT_READY(cmd,layer,no)
             % Command.opINPUT_READY Add a opINPUT_READY
             %
-            % Command.opINPUT_READY(layer,no) adds a opINPUT opcode with a
-            % READY subcode to the command object. 
+            % Command.opINPUT_READY(layer,no) adds a opINPUT_READY opcode
+            % to the command object. 
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1580,8 +1581,8 @@ classdef Command < handle
         function opINPUT_READSI(cmd,layer,no,type,mode,si)
             % Command.opINPUT_READSI Add a opINPUT_READSI
             %
-            % Command.opINPUT_READSI(layer,no,type,mode,si) adds a opINPUT 
-            % opcode with a READSI subcode to the command object.
+            % Command.opINPUT_READSI(layer,no,type,mode,si) adds a opINPUT_READSI  
+            % opcode to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1607,8 +1608,8 @@ classdef Command < handle
         function opOUTPUT_SET_TYPE(cmd,layer,nos,type)
             % Command.opOUTPUT_SET_TYPE Add a opOUTPUT_SET_TYPE
             %
-            % Command.opOUTPUT_SET_TYPE(layer,nos,type) adds a opOUTPUT
-            % opcode with a SET_TYPE subcode to the command object.
+            % Command.opOUTPUT_SET_TYPE(layer,nos,type) adds a opOUTPUT_SET_TYPE
+            % opcode to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1628,8 +1629,8 @@ classdef Command < handle
         function opOUTPUT_RESET(cmd,layer,nos)
             % Command.opOUTPUT_RESET Add a opOUTPUT_RESET
             %
-            % Command.opOUTPUT_RESET(layer,nos) adds a opOUTPUT opcode with 
-            % a RESET subcode to the command object.
+            % Command.opOUTPUT_RESET(layer,nos) adds a opOUTPUT_RESET opcode 
+            % to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1647,8 +1648,8 @@ classdef Command < handle
         function opOUTPUT_STOP(cmd,layer,nos,brake)
             % Command.opOUTPUT_STOP Add a opOUTPUT_STOP
             %
-            % Command.opOUTPUT_STOP(layer,nos,brake) adds a opOUTPUT opcode 
-            % with a STOP subcode to the command object.
+            % Command.opOUTPUT_STOP(layer,nos,brake) adds a opOUTPUT_STOP opcode 
+            % to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1667,8 +1668,8 @@ classdef Command < handle
         function opOUTPUT_SPEED(cmd,layer,nos,speed)
             % Command.opOUTPUT_SPEED Add a opOUTPUT_SPEED
             %
-            % Command.opOUTPUT_SPEED(layer,nos,speed) adds a opOUTPUT opcode 
-            % with a SPEED subcode to the command object.
+            % Command.opOUTPUT_SPEED(layer,nos,speed) adds a opOUTPUT_SPEED opcode 
+            % to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1688,8 +1689,8 @@ classdef Command < handle
         function opOUTPUT_POWER(cmd,layer,nos,power)
             % Command.opOUTPUT_POWER Add a opOUTPUT_POWER
             %
-            % Command.opOUTPUT_POWER(layer,nos,speed) adds a opOUTPUT opcode 
-            % with a POWER subcode to the command object.
+            % Command.opOUTPUT_POWER(layer,nos,speed) adds a opOUTPUT_POWER opcode 
+            % to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1709,8 +1710,8 @@ classdef Command < handle
         function opOUTPUT_START(cmd,layer,nos)
             % Command.opOUTPUT_START Add a opOUTPUT_START
             %
-            % Command.opOUTPUT_START(layer,nos) adds a opOUTPUT opcode 
-            % with a START subcode to the command object.
+            % Command.opOUTPUT_START(layer,nos) adds a opOUTPUT_START opcode 
+            % to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1728,8 +1729,8 @@ classdef Command < handle
         function opOUTPUT_POLARITY(cmd,layer,nos,pol)
             % Command.opOUTPUT_POLARITY Add a opOUTPUT_POLARITY
             %
-            % Command.opOUTPUT_POLARITY(layer,nos,pol) adds a opOUTPUT opcode 
-            % with a POLARITY subcode to the command object.
+            % Command.opOUTPUT_POLARITY(layer,nos,pol) adds a opOUTPUT_POLARITY opcode 
+            % to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1751,15 +1752,15 @@ classdef Command < handle
         function opOUTPUT_READ(cmd,layer,nos,speed,tacho)
             % Command.opOUTPUT_READ Add a opOUTPUT_READ
             %
-            % Command.opOUTPUT_READ(layer,nos,speed,tacho) adds a opOUTPUT opcode 
-            % with a READ subcode to the command object.
+            % Command.opOUTPUT_READ(layer,nos,speed,tacho) adds a opOUTPUT_READ opcode 
+            % to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
             % - NOS is a bit field representing output 1 to 4 (0x01, 0x02, 0x04, 0x08)
             % - speed is the returned speed with [+-0..100%] range (DATA8)
             % - tacho is the number of tacho pulses (DATA32)
-            % - opOUTPUT_READY,LC0(layer),LC0(nos),GV0(speed),GV0(tacho)
+            % - opOUTPUT_READ,LC0(layer),LC0(nos),GV0(speed),GV0(tacho)
             %
             % Example::
             %           cmd.opOUTPUT_READ(0,Device.MotorA,0,1)
@@ -1771,11 +1772,33 @@ classdef Command < handle
             cmd.GV0(tacho);
         end 
         
+        function opOUTPUT_TEST(cmd,layer,nos,value)
+            % Command.opOUTPUT_TEST Add a opOUTPUT_TEST
+            %
+            % Command.opOUTPUT_READ(layer,nos) adds a opOUTPUT_TEST opcode 
+            % to the command object.
+            %
+            % Notes::
+            % - layer is the usb chain layer (usually 0)
+            % - NOS is a bit field representing output 1 to 4 (0x01, 0x02, 0x04, 0x08)
+            % - value is the global variable index for the return state where (0 = ready) or (1 = busy)
+            % - value is DATA8
+            % - opOUTPUT_TEST,LC0(layer),LC0(nos),GV0(value)
+            %
+            % Example::
+            %           cmd.opOUTPUT_TEST(0,Device.MotorA,0)
+            
+            cmd.addDirectCommand(ByteCodes.OutputTest);
+            cmd.LC0(layer);
+            cmd.LC0(nos);
+            cmd.GV0(value);
+        end
+        
         function opOUTPUT_READY(cmd,layer,nos)
             % Command.opOUTPUT_READY Add a opOUTPUT_READY
             %
-            % Command.opOUTPUT_READY(layer,nos) adds a opOUTPUT opcode with 
-            % a READY subcode to the command object.
+            % Command.opOUTPUT_READY(layer,nos) adds a opOUTPUT_READY opcode with 
+            % to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1794,8 +1817,7 @@ classdef Command < handle
             % Command.opOUTPUT_STEP_POWER Add a opOUTPUT_STEP_POWER
             %
             % Command.opOUTPUT_STEP_POWER(layer,nos,power,step1,step2,step3,brake) 
-            % adds a opOUTPUT opcode with a STEP_POWER subcode to the
-            % command object. 
+            % adds a opOUTPUT_STEP_POWER opcode to the command object. 
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1824,8 +1846,7 @@ classdef Command < handle
             % Command.opOUTPUT_STEP_SPEED Add a opOUTPUT_STEP_SPEED
             % 
             % Command.opOUTPUT_STEP_SPEED(layer,nos,speed,step1,step2,step3,brake) 
-            % adds a opOUTPUT opcode with a STEP_SPEED subcode to the
-            % command object.
+            % adds a opOUTPUT_STEP_SPEED opcode to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1854,8 +1875,7 @@ classdef Command < handle
             % Command.opOUTPUT_TIME_SPEED Add a opOUTPUT_TIME_SPEED
             %
             % Command.opOUTPUT_TIME_SPEED(layer,nos,speed,step1,step2,step3,brake) 
-            % adds a opOUTPUT opcode with a TIME_SPEED subcode to the
-            % command object. 
+            % adds a opOUTPUT_TIME_SPEED opcode to the command object. 
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1884,8 +1904,7 @@ classdef Command < handle
             % Command.opOUTPUT_STEP_SYNC Add a opOUTPUT_STEP_SYNC
             %
             % Command.opOUTPUT_STEP_SYNC(layer,nos,speed,turn,step,brake) 
-            % adds a opOUTPUT opcode with a STEP_SYNC subcode to the
-            % command object. 
+            % adds a opOUTPUT_STEP_SYNC opcode to the command object. 
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1912,8 +1931,7 @@ classdef Command < handle
             % Command.opOUTPUT_TIME_SYNC Add a opOUTPUT_TIME_SYNC
             %
             % Command.opOUTPUT_TIME_SYNC(layer,nos,speed,turn,time,brake) 
-            % adds a opOUTPUT opcode with a TIME_SYNC subcode to the
-            % command object. 
+            % adds a opOUTPUT_TIME_SYNC opcode to the command object. 
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1939,8 +1957,8 @@ classdef Command < handle
         function opOUTPUT_CLR_COUNT(cmd,layer,nos)
             % Command.opOUTPUT_CLR_COUNT Add a opOUTPUT_CLR_COUNT
             %
-            % Command.opOUTPUT_TIME_SYNC(layer,nos) adds a opOUTPUT opcode 
-            % with a CLR_COUNT subcode to the command object. 
+            % Command.opOUTPUT_TIME_SYNC(layer,nos) adds a opOUTPUT_CLR_COUNT opcode 
+            % to the command object. 
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1958,8 +1976,8 @@ classdef Command < handle
         function opOUTPUT_GET_COUNT(cmd,layer,nos,tacho)
             % Command.opOUTPUT_GET_COUNT Add a opOUTPUT_GET_COUNT
             %
-            % Command.opOUTPUT_GET_COUNT(layer,nos,tacho) adds a opOUTPUT
-            % opcode with a GET_COUNT subcode to the command object. 
+            % Command.opOUTPUT_GET_COUNT(layer,nos,tacho) adds a opOUTPUT_GET_COUNT
+            % to the command object. 
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -2018,20 +2036,20 @@ classdef Command < handle
         end
         
         function BEGIN_UPLOAD(cmd,filelength,filename)
-           % Command.BEGIN_UPLOAD Add a BEGIN_UPLOAD
-           %
-           % Command.BEGIN_UPLOAD(filelength,filename) adds a BEGIN_UPLOAD
-           % system command to the command object. Upload is from brick to
-           % PC.
-           %
-           % Notes::
-           % - filelength is the max buffer size used for file upload
-           % - filename is the file to be uploaded from brick to PC
-           % relative to '/home/root/lms2012/sys' directory
-           % - ss (BEGIN_UPLOAD) llll (filelength/bytes to read) nn..(filename including path)
-           %
-           % Example::
-           %            cmd.BEGIN_UPLOAD(100,'../apps/tst/tst.rbf')
+            % Command.BEGIN_UPLOAD Add a BEGIN_UPLOAD
+            %
+            % Command.BEGIN_UPLOAD(filelength,filename) adds a BEGIN_UPLOAD
+            % system command to the command object. Upload is from brick to
+            % PC.
+            %
+            % Notes::
+            % - filelength is the max buffer size used for file upload
+            % - filename is the file to be uploaded from brick to PC
+            % relative to '/home/root/lms2012/sys' directory
+            % - ss (BEGIN_UPLOAD) llll (filelength/bytes to read) nn..(filename including path)
+            %
+            % Example::
+            %            cmd.BEGIN_UPLOAD(100,'../apps/tst/tst.rbf')
            
            cmd.addSystemCommand(SystemCommands.BeginUpload);
            cmd.addArray(typecast(uint16(filelength),'uint8'));

@@ -6,7 +6,7 @@
 classdef Device < uint8
     enumeration
          % motor definitions (found in c_output.c => NOS DATA8)
-		 MotorA (1)
+         MotorA (1)
          MotorB (2)
          MotorC (4)
          MotorD (8)

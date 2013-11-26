@@ -6,8 +6,8 @@
 
 classdef SystemCommands < uint8
     enumeration
-		 BeginDownload (146)
-  		 ContinueDownload (147)
+         BeginDownload (146)
+         ContinueDownload (147)
          BeginUpload (148)
          ContinueUpload (149)
          BeginGetFile (150)
