@@ -68,6 +68,8 @@
 % opUI_DRAW_TOPLINE         Add a opUI_DRAW opcode with a TOPLINE subcode to the command object
 % opUI_DRAW_FILLWINDOW      Add a opUI_DRAW opcode with a FILLWINDOW subcode to the command object
 % opUI_DRAW_FILLCIRCLE      Add a opUI_DRAW opcode with a FILLCIRCLE subcode to the command object
+% opUI_DRAW_STORE           Add a opUI_DRAW opcode with a STORE subcode to the command object
+% opUI_DRAW_RESTORE         Add a opUI_DRAW opcode with a RESTORE subcode to the command object
 %
 % opTIMER_WAIT              Add a opTIMER opcode with a WAIT subcode to the command object
 % opTIMER_READY             Add a opTIMER opcode with a READY subcode to the command object
@@ -108,6 +110,9 @@
 % opOUTPUT_TIME_SYNC        Add a opOUTPUT_TIME_SYNC opcode to the command object
 % opOUTPUT_CLR_COUNT        Add a opOUTPUT_CLR_COUNT opcode to the command object
 % opOUTPUT_GET_COUNT        Add a opOUTPUT_GET_COUNT opcode to the command object
+%
+% opCOMGET_SET_BRICKNAME    Add a opCOMGET opcode with a GET_BRICKNAME subcode to the command object
+% opCOMSET_SET_BRICKNAME    Add a opCOMSET opcode with a SET_BRICKNAME subcode to the command object
 %
 % BEGIN_DOWNLOAD            Add a BEGIN_DOWNLOAD system command to the command object
 % CONTINUE_DOWNLOAD         Add a CONTINUE_DOWNLOAD system command to the command object
@@ -705,21 +710,20 @@ classdef Command < handle
         end
         
         function addFileSize(cmd)
-           % Command.addFileSize Add file size
-           % 
-           % Command.addFileSize() adds the file size to the command
-           % object.
-           %
-           % Notes::
-           % - With bytecode compiling using "Old header", the file size is 
-           % inserted at byte number 5 which corresponds to the two bytes 
-           % after 'L','E','G','O'
-           %
-           % Example::
-           %            cmd.addFileSize
-           
-           
-           cmd.msg(5:6) = typecast(uint16(length(cmd.msg)),'uint8');            
+            % Command.addFileSize Add file size
+            % 
+            % Command.addFileSize() adds the file size to the command
+            % object.
+            %
+            % Notes::
+            % - With bytecode compiling using "Old header", the file size is 
+            % inserted at byte number 5 which corresponds to the two bytes 
+            % after 'L','E','G','O'
+            %
+            % Example::
+            %            cmd.addFileSize
+            
+            cmd.msg(5:6) = typecast(uint16(length(cmd.msg)),'uint8');            
         end
         
         function VMTHREADHeader(cmd,OffsetToInstructions,LocalBytes)
@@ -925,7 +929,7 @@ classdef Command < handle
             %           cmd.opUI_WRITE_INIT_RUN()
             
             cmd.addDirectCommand(ByteCodes.UIWrite);
-            cmd.LC0(UIWriteSubCodes.PutString);
+            cmd.LC0(UIWriteSubCodes.InitRun);
         end
         
         function opUI_WRITE_LED(cmd,pattern)
@@ -1086,7 +1090,7 @@ classdef Command < handle
             % - index is the value to write at an index
             % - figures is the total number of figured inclusive decimal point
             % - decimals is the number of decimals
-            % - opUI_DRAW,LC0(8),LC0(color),LC2(x),LC2(y),LV0(index),LC0(figures),LC0(decimals)
+            % - opUI_DRAW,LC0(8),LC0(color),LC2(x),LC2(y),GV0(index),LC0(figures),LC0(decimals)
             %
             % Example::
             %           cmd.opUI_DRAW_VALUE(vmCodes.vmFGColor,0,0,0,3,2)
@@ -1097,7 +1101,7 @@ classdef Command < handle
             cmd.LC0(color);
             cmd.LC2(x);
             cmd.LC2(y);
-            cmd.LV0(index);
+            cmd.GV0(index);
             cmd.LC0(figures);
             cmd.LC0(decimals);
         end
@@ -1195,7 +1199,7 @@ classdef Command < handle
         function opUI_DRAW_TOPLINE(cmd,enable)
             % Command.opUI_DRAW_TOPLINE Add a opUI_DRAW_TOPLINE
             %
-            % COmmand.opUI_DRAW_TOPLINE(enable) adds a opUI_DRAW opcode
+            % Command.opUI_DRAW_TOPLINE(enable) adds a opUI_DRAW opcode
             % with a TOPLINE subcode to the command object.
             %
             % Notes::
@@ -1256,10 +1260,46 @@ classdef Command < handle
             cmd.LC2(r);
         end
         
+        function opUI_DRAW_STORE(cmd,no)
+            % Command.opUI_DRAW_STORE Add a opUI_DRAW_STORE
+            %
+            % Command.opUI_DRAW_STORE(no) adds a UI_DRAW opcode with a
+            % STORE subcode to the command object. 
+            %
+            % Notes::
+            % - no is the level number to store the UI screen
+            % - opUI_DRAW,LC0(25),LC0(no)
+            %
+            % Example::
+            %           cmd.opUI_DRAW_STORE(1)
+            
+            cmd.addDirectCommand(ByteCodes.UIDraw);
+            cmd.LC0(UIDrawSubCodes.Store);
+            cmd.LC0(no);
+        end
+        
+        function opUI_DRAW_RESTORE(cmd,no)
+            % Command.opUI_DRAW_RESTORE Add a opUI_DRAW_RESTORE
+            %
+            % Command.opUI_DRAW_RESTORE(no) adds a UI_DRAW opcode with a
+            % RESTORE subcode to the command object. 
+            %
+            % Notes::
+            % - no is the level number to store the UI screen (0 is saved screen before run)
+            % - opUI_DRAW,LC0(26),LC0(no)
+            %
+            % Example::
+            %           cmd.opUI_DRAW_RESTORE(1)
+            
+            cmd.addDirectCommand(ByteCodes.UIDraw);
+            cmd.LC0(UIDrawSubCodes.Restore);
+            cmd.LC0(no);
+        end
+        
         function opTIMER_WAIT(cmd,time,timer)
             % Command.opTIMER_WAIT Add a opTIMER_WAIT
             %
-            % Command.opTIMER_WAIT(time,timer) adda s opTIMER opcode with a
+            % Command.opTIMER_WAIT(time,timer) adds a opTIMER opcode with a
             % WAIT subcode to the command object.
             %
             % Notes::
@@ -1983,7 +2023,7 @@ classdef Command < handle
             % - layer is the usb chain layer (usually 0)
             % - NOS is a bit field representing output 1 to 4 (0x01, 0x02, 0x04, 0x08)
             % - tacho is the returned tacho pulse count (DATA32)
-            % - opOUTPUT_GET_COUNT,LCO(layer),LC0(NOS),GV0(tacho)
+            % - opOUTPUT_GET_COUNT,LC0(layer),LC0(NOS),GV0(tacho)
             %
             % Example::
             %           cmd.opOUTPUT_GET_COUNT(0,Device.MotorA,4)
@@ -1993,6 +2033,44 @@ classdef Command < handle
             cmd.LC0(nos);
             cmd.GV0(tacho);
         end
+        
+        function opCOMGET_GET_BRICKNAME(cmd,length,name)
+            % Command.opCOMGET_GET_BRICKNAME Add a opCOMGET_GET_BRICKNAME
+            %
+            % Command.opCOMGET_GET_BRICKNAME(length,name) adds a opCOMGET
+            % with a GET_BRICKNAME subcode to the command object. 
+            %
+            % Notes::
+            % - length is the max length of the returned string
+            % - name is first character in the returned brick name (DATA8)
+            % - opCOMGET_GET_BRICKNAME,LC0(13),LC0(length),GV0(name)
+            %
+            % Example::
+            %           cmd.opCOMGET_GET_BRICKNAME(10,0)
+ 
+            cmd.addDirectCommand(ByteCodes.COMGet);
+            cmd.LC0(COMGetSubCodes.GetBrickName);
+            cmd.LC0(length);
+            cmd.GV0(name);
+        end 
+        
+        function opCOMSET_SET_BRICKNAME(cmd,name)
+            % Command.opCOMSET_SET_BRICKNAME Add a opCOMSET_SET_BRICKNAME
+            %
+            % Command.opCOMSET_SET_BRICKNAME(name) adds a opCOMSET
+            % with a SET_BRICKNAME subcode to the command object. 
+            %
+            % Notes::
+            % - name is the brick name to be set
+            % - opCOMSET_SET_BRICKNAME,LC0(13),LCS,'E','V','3',0
+            %
+            % Example::
+            %           cmd.opCOMSET_SET_BRICKNAME('EV3')
+ 
+            cmd.addDirectCommand(ByteCodes.COMSet);
+            cmd.LC0(COMSetSubCodes.SetBrickName);
+            cmd.addLCSString(name);  
+        end 
     
         function BEGIN_DOWNLOAD(cmd,filelength,filename)
             % Command.BEGIN_DOWNLOAD Add a BEGIN_DOWNLOAD 

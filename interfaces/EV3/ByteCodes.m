@@ -64,7 +64,7 @@ classdef ByteCodes < uint8
 %       InputReadExt = 0x9e,
 %       InputWrite = 0x9f,
 %       
-%       %output
+%       %Output
 %       OutputGetType = 0xa0,
         OutputSetType (161) % = 0xa1,         
         OutputReset (162) % = 0xa2,           
@@ -93,8 +93,13 @@ classdef ByteCodes < uint8
 %        ArrayRead = 0xc3,
 %        ArrayAppend = 0xc4,
 %        MemoryUsage = 0xc5,
-%         FileName = 0xc6,
+%        FileName = 0xc6,
 %        
+
+         %Communications
+         COMGet (211) % = 0xD3,
+         COMSet (212) % = 0xD4, 
+
 %       %Mailbox
 %        MailboxOpen = 0xD8,
 %        MailboxWrite = 0xD9,

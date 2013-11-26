@@ -28,6 +28,11 @@
 % outputClrCount     Clears a motor tachometer at a  layer and NOS
 % outputGetCount     Returns the tachometer at a layer and NOS
 %
+% drawTest           Shows the drawing capabilities of the brick
+%
+% getBrickName       Return the name of the brick
+% setBrickName       Set the name of the brick
+%
 % fileUpload         Upload a file to the brick
 % fileDownload       Download a file from the brick
 % listFiles          List files on the brick from a directory  
@@ -652,7 +657,109 @@ classdef Brick < handle
             if brick.debug > 0
                 fprintf('Tacho: %d degrees\n', tacho);
             end
-        end       
+        end
+        
+        function drawTest(brick)
+            % Brick.drawTest Draw test shapes
+            %
+            % Brick.drawTest() shows the drawing capabilities of the brick.
+            %
+            % Example::
+            %           b.drawTest()
+            
+            cmd = Command();
+            cmd.addHeaderDirect(42,4,1);
+            % save the UI screen
+            cmd.opUI_DRAW_STORE(0);
+            % change the led pattern
+            cmd.opUI_WRITE_LED(Device.LedGreenFlash);
+            % clear the screen (top line still remains with remote cmds)
+            cmd.opUI_DRAW_FILLWINDOW(0,0,0);
+            % draw four pixels
+            cmd.opUI_DRAW_PIXEL(vmCodes.vmFGColor,12,15);
+            cmd.opUI_DRAW_PIXEL(vmCodes.vmFGColor,12,20);
+            cmd.opUI_DRAW_PIXEL(vmCodes.vmFGColor,18,15);
+            cmd.opUI_DRAW_PIXEL(vmCodes.vmFGColor,18,20);
+            % draw line
+            cmd.opUI_DRAW_LINE(vmCodes.vmFGColor,0,25,vmCodes.vmLCDWidth,25);
+            cmd.opUI_DRAW_LINE(vmCodes.vmFGColor,15,25,15,127);
+            % draw circle
+            cmd.opUI_DRAW_CIRCLE(1,40,40,10);
+            % draw rectangle
+            cmd.opUI_DRAW_RECT(vmCodes.vmFGColor,70,30,20,20);
+            % draw filled cricle
+            cmd.opUI_DRAW_FILLCIRCLE(vmCodes.vmFGColor,40,70,10);
+            % draw filled rectangle
+            cmd.opUI_DRAW_FILLRECT(vmCodes.vmFGColor,70,60,20,20);
+            % draw inverse rectangle
+            cmd.opUI_DRAW_INVERSERECT(30,90,60,20);
+            % change font
+            cmd.opUI_DRAW_SELECT_FONT(2);
+            % draw text
+            cmd.opUI_DRAW_TEXT(vmCodes.vmFGColor,100,40,'EV3');
+            % change font
+            cmd.opUI_DRAW_SELECT_FONT(1);
+            % reprint
+            cmd.opUI_DRAW_TEXT(vmCodes.vmFGColor,100,70,'EV3');
+            % change font
+            cmd.opUI_DRAW_SELECT_FONT(0);
+            % reprint
+            cmd.opUI_DRAW_TEXT(vmCodes.vmFGColor,100,90,'EV3');
+            % voltage string
+            cmd.opUI_DRAW_TEXT(vmCodes.vmFGColor,100,110,'v =');
+            % store voltage
+            cmd.opUI_READ_GET_VBATT(0);
+            % print the voltage value (global)
+            cmd.opUI_DRAW_VALUE(vmCodes.vmFGColor,130,110,0,5,3);
+            % update the window
+            cmd.opUI_DRAW_UPDATE;
+            % 5 second timer (so you can see the changing LED pattern)
+            cmd.opTIMER_WAIT(5000,0);
+            % wait for timer
+            cmd.opTIMER_READY(0);
+            % reset the LED
+            cmd.opUI_WRITE_LED(Device.LedGreen);
+            % return UI screen
+            cmd.opUI_DRAW_RESTORE(0);
+            % return
+            cmd.opUI_DRAW_UPDATE;
+            cmd.addLength();
+            brick.send(cmd)
+        end
+        
+        function name = getBrickName(brick)
+            % Brick.getBrickName Get brick name
+            %
+            % Brick.getBrickName() returns the name of the brick.
+            %
+            % Example::
+            %           name = b.getBrickName()
+          
+            cmd = Command();
+            cmd.addHeaderDirectReply(42,10,0);
+            cmd.opCOMGET_GET_BRICKNAME(10,0);
+            cmd.addLength();
+            brick.send(cmd);
+            % receive the command
+            msg = brick.receive()';
+            % return the brick name
+            name = sscanf(char(msg(6:end)),'%s');
+        end
+        
+        function setBrickName(brick,name)
+            % Brick.setBrickName Set brick name
+            %
+            % Brick.setBrickName(name) set the name of the brick.
+            %
+            % Example::
+            %           b.setBrickName('EV3')
+          
+            cmd = Command();
+            cmd.addHeaderDirectReply(42,0,0);
+            cmd.opCOMSET_SET_BRICKNAME(name);
+            cmd.addLength();
+            brick.send(cmd);
+        end
         
         function fileUpload(brick,filename,dest)
             % Brick.fileUpload Upload a file to the brick
