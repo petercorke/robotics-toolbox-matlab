@@ -83,6 +83,9 @@
 %
 % http://www.petercorke.com
 
+% TODO:
+% fix payload as per GG discussion
+
 classdef SerialLink < handle
 
     properties
@@ -100,6 +103,8 @@ classdef SerialLink < handle
         qteach
 
         fast_rne    % mex version of rne detected
+        
+        interface   % interface to a real robot platform
 
     end
 
@@ -205,16 +210,21 @@ classdef SerialLink < handle
                             newlinks(j) = copy(L.links(j));
                         end
                         r.links = newlinks;
+                        r.name = [L.name ' (copy)'];
+                        r.base = L.base;
+                        r.tool = L.tool;
                     else
                         % compound the robots in the vector
                         r = L(1);
                         for k=2:length(L)
                             r = r * L(k);
                         end
+                        r.base = L(1).base;
+                        r.tool = L(end).tool;
                     end
                 elseif isa(L, 'Link')
                     r.links = L;    % attach the links
-                elseif isa(L, 'double')
+                elseif numcols(L) >= 4 && (isa(L, 'double') || isa(L, 'sym'))
                     % legacy matrix
                     dh_dyn = L;
                     clear L
@@ -581,6 +591,30 @@ end % classdef
 
 % utility function
 function s = mat2str(m)
-    m(abs(m)<eps) = 0;
-    s = num2str(m);
+    if isa(m, 'sym')
+        % turn a symbolic matrix into a string (it shouldnt be so hard)
+        ss = []; colwidth = zeros(1, numrows(m));
+        for j=1:4
+            for i=1:4
+                ss{i,j} = char(m(i,j));
+                colwidth(j) = max( colwidth(j), length(ss{i,j}));
+            end
+        end
+        s = '';
+        for i=1:4
+            line = '';
+            for j=1:4
+                % append the element with a blank
+                line = [line ' ' ss{i,j}];
+                % pad it out to column width
+                for k=0:colwidth(j)-length(ss{i,j})
+                    line = [line ' '];
+                end
+            end
+            s = strvcat(s, line);
+        end
+    else
+        m(abs(m)<eps) = 0;
+        s = num2str(m);
+    end
 end

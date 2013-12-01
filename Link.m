@@ -677,18 +677,7 @@ classdef Link < handle
                 end
             end
             
-            function s = render(v, fmt)
-                if nargin < 2
-                    fmt = '%11.4g';
-                end
-                if isa(v, 'double')
-                    s = sprintf(fmt, v);
-                elseif isa(v, 'sym')
-                    s = char(v);
-                else
-                    error('RTB:Link:badarg', 'Link parameter must be numeric or symbolic');
-                end
-            end
+
         end % char()
         
         function dyn(links)
@@ -709,27 +698,32 @@ classdef Link < handle
                 end
                 fprintf('%s\n', l.char());
                 if ~isempty(l.m)
-                    fprintf('  m    = %f\n', l.m)
+                    fprintf('  m    = %s\n', render(l.m))
                 end
                 if ~isempty(l.r)
-                    fprintf('  r    = %f %f %f\n', l.r);
+                    s = render(l.r);
+                    fprintf('  r    = %s %s %s\n', s{:});
                 end
                 if ~isempty(l.I)
-                    fprintf('  I    = | %f %f %f |\n', l.I(1,:));
-                    fprintf('         | %f %f %f |\n', l.I(2,:));
-                    fprintf('         | %f %f %f |\n', l.I(3,:));
+                    s = render(l.I(1,:));
+                    fprintf('  I    = | %s %s %s |\n', s{:});
+                    s = render(l.I(2,:));
+                    fprintf('         | %s %s %s |\n', s{:});
+                    s = render(l.I(3,:));
+                    fprintf('         | %s %s %s |\n', s{:});
                 end
                 if ~isempty(l.Jm)
-                    fprintf('  Jm   = %f\n', l.Jm);
+                    fprintf('  Jm   = %s\n', render(l.Jm));
                 end
                 if ~isempty(l.B)
-                    fprintf('  Bm   = %f\n', l.B);
+                    fprintf('  Bm   = %s\n', render(l.B));
                 end
                 if ~isempty(l.Tc)
-                    fprintf('  Tc   = %f(+) %f(-)\n', l.Tc(1), l.Tc(2));
+                    fprintf('  Tc   = %s(+) %s(-)\n', ...
+                        render(l.Tc(1)), render(l.Tc(2)));
                 end
                 if ~isempty(l.G)
-                    fprintf('  G    = %f\n', l.G);
+                    fprintf('  G    = %s\n', render(l.G));
                 end
                 if ~isempty(l.qlim)
                     fprintf('  qlim = %f to %f\n', l.qlim(1), l.qlim(2));
@@ -807,4 +801,32 @@ classdef Link < handle
             
         end
     end % methods
+    
+
 end % class
+
+function s = render(v, fmt)
+    if nargin < 2
+        fmt = '%11.4g';
+    end
+    if length(v) == 1
+                if isa(v, 'double')
+            s = sprintf(fmt, v);
+        elseif isa(v, 'sym')
+            s = char(v);
+        else
+            error('RTB:Link:badarg', 'Link parameter must be numeric or symbolic');
+        end
+    else
+        
+    for i=1:length(v)
+        if isa(v, 'double')
+            s{i} = sprintf(fmt, v(i));
+        elseif isa(v, 'sym')
+            s{i} = char(v(i));
+        else
+            error('RTB:Link:badarg', 'Link parameter must be numeric or symbolic');
+        end
+    end
+    end
+end
