@@ -38,12 +38,12 @@
 
 clear L
 %            theta    d        a    alpha
-L(1) = Link([  0      0        0       0       0], 'mod');
-L(2) = Link([  0      0.2435   0      -pi/2    0], 'mod');
-L(3) = Link([  0     -0.0934   0.4318  0       0], 'mod');
-L(4) = Link([  0      0.4331  -0.0203  pi/2    0], 'mod');
-L(5) = Link([  0      0        0      -pi/2    0], 'mod');
-L(6) = Link([  0      0        0       pi/2    0], 'mod');
+L(1) = Link([  0      0        0       0       0], 'modified');
+L(2) = Link([  0      0.2435   0      -pi/2    0], 'modified');
+L(3) = Link([  0     -0.0934   0.4318  0       0], 'modified');
+L(4) = Link([  0      0.4331  -0.0203  pi/2    0], 'modified');
+L(5) = Link([  0      0        0      -pi/2    0], 'modified');
+L(6) = Link([  0      0        0       pi/2    0], 'modified');
 
 
 L(1).m = 0;
