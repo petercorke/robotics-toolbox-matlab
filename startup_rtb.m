@@ -18,4 +18,4 @@ if release ~= currentversion
         currentversion);
 end
 %}
-clear release currentversion
+clear release currentversion tbpath
