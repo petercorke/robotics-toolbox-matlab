@@ -653,7 +653,7 @@ classdef Brick < handle
             brick.send(cmd);
             % receive the command
             msg = brick.receive()';
-            tacho = typecast(uint8(msg(6:9)),'uint32');
+            tacho = typecast(uint8(msg(6:9)),'int32');
             if brick.debug > 0
                 fprintf('Tacho: %d degrees\n', tacho);
             end
