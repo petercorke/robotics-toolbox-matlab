@@ -288,7 +288,7 @@ classdef Arbotix < handle
                 
                 if nargin == 4
                     speed = varargin{3};
-                    arb.writedata2(jid, Arbotix.ADDR_SPEED, speed);
+                    arb.writedata2(id, Arbotix.ADDR_SPEED, speed);
                 end
             end
         end
