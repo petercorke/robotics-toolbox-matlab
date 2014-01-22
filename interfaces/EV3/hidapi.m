@@ -78,20 +78,23 @@ classdef hidapi < handle
                 hid.nReadBuffer = nReadBuffer;
                 hid.nWriteBuffer = nWriteBuffer;
             end
-            % check the operating system type and load slib accoridnginly
-            if (ispc == 1)
-                hid.slib = 'hidapi.dll';
-            else if (ismac == 1)
-                    hid.slib = 'hidapi.dylib';
-                 else if (isunix == 1)
-                        hid.slib = 'hidapi.so';
-                      end
-                 end
-            end
             % check if the library is loaded
             if ~libisloaded('hidapi')
-                % load the shared library
-                loadlibrary(hid.slib,hid.sheader);
+                % check the operating system type and load slib 
+                if (ispc == 1)
+                    hid.slib = 'hidapi';
+                    loadlibrary(hid.slib,@hidapi_proto)
+                else if (ismac == 1)
+                        hid.slib = 'hidapi.dylib';
+                        % load the shared library
+                        loadlibrary(hid.slib,hid.sheader);
+                     else if (isunix == 1)
+                            hid.slib = 'hidapi.so';
+                            % load the shared library
+                            loadlibrary(hid.slib,hid.sheader);
+                         end
+                    end
+                end
             end
             % remove the library extension
             hid.slib = 'hidapi';
