@@ -11,7 +11,7 @@
 % - The read function should return a uint8 datatype
 % - The write function should be given a uint8 datatype as a parameter
 
-classdef (Abstract) BrickIO
+classdef BrickIO
     properties (Abstract)
         % connection handle
         handle
