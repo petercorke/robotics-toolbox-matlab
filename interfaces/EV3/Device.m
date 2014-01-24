@@ -42,6 +42,7 @@ classdef Device < uint8
          Ultrasonic (30)
          USDistCM (0)
          USDistIN (1)
+		 USListen (2)
          % gyro sensor definitions (found in types.html)
          Gyro (32)
          GyroAng (0)
