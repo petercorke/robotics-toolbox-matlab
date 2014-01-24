@@ -396,9 +396,9 @@ classdef Brick < handle
         end
         
         function reading = inputReadSI(brick,layer,no,mode)
-            % Brick.inputReadSI(brick,layer,no,mode) Input read (SI)
+            % Brick.inputReadSI Input read in SI units
             % 
-            % reading = Brick.inputReadSI(brick,layer,no,mode) reads a 
+            % reading = Brick.inputReadSI(layer,no,mode) reads a 
             % connected sensor at a layer, NO and mode in SI units.
             %
             % Notes::
