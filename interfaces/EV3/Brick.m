@@ -18,6 +18,7 @@
 % inputDeviceClrAll  Clear all the sensor data at a layer
 % inputReadSI        Reads a connected sensor at a layer, NO, type and mode in SI units
 % plotSensor         Plots a sensor readings over time
+% displayColor       Displays the color from a color sensor
 %
 % outputStop         Stops motor at a layer, NOS and brake
 % outputStopAll      Stops all the motors
@@ -427,7 +428,7 @@ classdef Brick < handle
         function plotSensor(brick,layer,no,mode)
             % Brick.plotSensor plot the sensor output 
             %
-            % Brick.plotSensor(layer,no,type,mode) plots the sensor output
+            % Brick.plotSensor(layer,no,mode) plots the sensor output
             % to MATLAB. 
             %
             % Notes::
@@ -479,6 +480,50 @@ classdef Brick < handle
             end
         end
             
+        function displayColor(brick,layer,no)
+            % Brick.dispalyColor display sensor color 
+            %
+            % Brick.dispalyColor(layer,no) displays the color read from the
+            % color sensor in a MATLAB figure.
+            %
+            % Notes::
+            % - layer is the usb chain layer (usually 0).
+            % - NO is the output port number from [0..3] or sensor port
+            % number minus 1.
+            %
+            % Example::
+            %           b.displayColor(0,Device.Port1)
+            
+            % create figure
+            hfig = figure('name','EV3 Color Sensor');
+            % wait until the figure is closed
+            while(findobj('name','EV3 Color Sensor') == 1)
+                % read the color sensor in color detection mode
+                color = brick.inputReadSI(layer,no,Device.ColColor);
+                % change the figure background according to the color
+                switch color
+                    case Device.NoColor
+                        set(hfig,'Color',[0.8,0.8,0.8])
+                    case Device.BlackColor
+                        set(hfig,'Color',[0,0,0])
+                    case Device.BlueColor
+                        set(hfig,'Color',[0,0,1])
+                    case Device.GreenColor
+                        set(hfig,'Color',[0,1,0])
+                    case Device.YellowColor
+                        set(hfig,'Color',[1,1,0])
+                    case Device.RedColor
+                        set(hfig,'Color',[1,0,0])
+                    case Device.WhiteColor
+                        set(hfig,'Color',[1,1,1])
+                    case Device.BrownColor
+                        set(hfig,'Color',[0.6,0.3,0])
+                    otherwise
+                        set(hfig,'Color',[0.8,0.8,0.8])
+                end
+                drawnow
+            end
+        end
         
         function outputStop(brick,layer,nos,brake)
             % Brick.outputPower Stops a motor
