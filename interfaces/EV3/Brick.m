@@ -396,16 +396,16 @@ classdef Brick < handle
         end
         
         function reading = inputReadSI(brick,layer,no,mode)
-            % Brick.inputReadSI(brick,layer,no,type,mode) Input read (SI)
+            % Brick.inputReadSI(brick,layer,no,mode) Input read (SI)
             % 
-            % reading = Brick.inputReadSI(brick,layer,no,type,mode) reads a 
-            % connected sensor at a layer, NO, type and mode in SI units.
+            % reading = Brick.inputReadSI(brick,layer,no,mode) reads a 
+            % connected sensor at a layer, NO and mode in SI units.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0).
             % - NO is the output port number from [0..3] or sensor port
             % number minus 1.
-            % - mode is the sensor mode from types.html. (-1=dont' change)
+            % - mode is the sensor mode from types.html. (-1=don't change)
             % - returned reading is DATAF.
             %
             % Example::
