@@ -113,7 +113,7 @@ classdef Link < handle
             % 'I',I        link inertia matrix (3x1, 6x1 or 3x3)
             % 'r',R        link centre of gravity (3x1)
             % 'm',M        link mass (1x1)
-            % 'G',G        motor gear ratio (default 0)
+            % 'G',G        motor gear ratio (default 1)
             % 'B',B        joint friction, motor referenced (default 0)
             % 'Jm',J       motor inertia, motor referenced (default 0)
             % 'Tc',T       Coulomb friction, motor referenced (1x1 or 2x1), (default [0 0])
@@ -154,10 +154,19 @@ classdef Link < handle
             % since the kinematic convention is not specified it is assumed 'standard'.
             %
             % Using the old syntax
-            %        L3 = Link([ 0, 0.15005, 0.0203, -pi/2, 0], 'standard');
-            % the flag 'standard' is not strictly necessary but adds clarity.
+            %        L3 = Link([ 0, 0.15005, 0.0203, -pi/2], 'standard');
+            % the flag 'standard' is not strictly necessary but adds clarity.  Only 4 parameters
+            % are specified so sigma is assumed to be zero, ie. the joint is revolute.
             %
-            % For a modified Denavit-Hartenberg link
+            %        L3 = Link([ 0, 0.15005, 0.0203, -pi/2, 0], 'standard');
+            % the flag 'standard' is not strictly necessary but adds clarity.  5 parameters
+            % are specified and sigma is set to zero, ie. the joint is revolute.
+            %
+            %        L3 = Link([ 0, 0.15005, 0.0203, -pi/2, 1], 'standard');
+            % the flag 'standard' is not strictly necessary but adds clarity.  5 parameters
+            % are specified and sigma is set to one, ie. the joint is prismatic.
+            %
+            % For a modified Denavit-Hartenberg revolute joint
             %        L3 = Link([ 0, 0.15005, 0.0203, -pi/2, 0], 'modified');
             %
             % Notes::
@@ -199,7 +208,7 @@ classdef Link < handle
                 
                 % dynamic params with default (zero friction)
                 l.Jm = 0;
-                l.G = 0;
+                l.G = 1;
                 l.B = 0;
                 l.Tc = [0 0];
             elseif nargin == 1 && isa(varargin{1}, 'Link')
