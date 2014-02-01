@@ -122,6 +122,7 @@
 % CONTINUE_LIST_FILES       Add a CONTINUE_LIST_FILES system command to the command object
 % CREATE_DIR                Add a CREATE_DIR system command to the command object
 % DELETE_FILE               Add a DELETE_FILE system command to the command object
+% WRITEMAILBOX              Add a WRITEMAILBOX system command to the command object
 % 
 % Notes::
 % - Refer to the EV3 documentation or source code for a more detailed
@@ -2226,6 +2227,41 @@ classdef Command < handle
             cmd.addSystemCommand(SystemCommands.DeleteFile);
             cmd.addString(pathname);
         end
+        
+        function WRITEMAILBOX(cmd,title,type,msg)
+            % Command.WRITEMAILBOX Add a WRITEMAILBOX
+            %
+            % Command.WRITEMAILBOX(title,type,msg) adds a WRITEMAILBOX
+            % command to the command object. 
+            %
+            % Notes::
+            % - title is the message title sent from the brick
+            % - type is the sent message type being either 'text',
+            % 'numeric' or 'logic'
+            % - msg is the message to be sent
+            %
+            % Example::
+            %           cmd.WRITEMAILBOX('abc','text','hello!')
+ 
+            cmd.addSystemCommand(SystemCommands.WriteMailBox);
+            cmd.addValue(length(title)+1);
+            cmd.addString(title);
+            switch type
+                case 'text'
+                    cmd.addArray(typecast(uint16(length(msg)+1),'uint8'));
+                    cmd.addString(msg);
+                case 'numeric'
+                    cmd.addArray(typecast(uint16(4),'uint8'));
+                    cmd.addArray(typecast(single(msg),'uint8'));
+                case 'logic'
+                    cmd.addArray(typecast(uint16(1),'uint8'));
+                    if msg(1) >= 1
+                        msg(1) = 1;
+                    else msg(1) = 0;
+                    end
+                    cmd.addArray(typecast(uint8(msg),'uint8'));
+            end
+        end 
         
     end
 end

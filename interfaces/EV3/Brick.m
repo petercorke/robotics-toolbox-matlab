@@ -34,11 +34,14 @@
 % getBrickName       Return the name of the brick
 % setBrickName       Set the name of the brick
 %
+% readMailboxMsg     Read a mailbox message sent from the brick
+%
 % fileUpload         Upload a file to the brick
 % fileDownload       Download a file from the brick
 % listFiles          List files on the brick from a directory  
 % createDir          Create a directory on the brick
 % deleteFile         Delete a file from the brick
+% writeMailBox       Write a mailbox message to the brick
 %
 % threeToneByteCode  Generate the bytecode for the playThreeTone function 
 %
@@ -646,6 +649,7 @@ classdef Brick < handle
             % - step2 is the steps used for constant speed.
             % - step3 is the steps used for ramp down.
             % - brake is [0..1] (0=Coast,  1=Brake).
+            %
             % Example::
             %           b.outputStepSpeed(0,Device.MotorA,50,50,360,50,Device.Coast)
             
@@ -687,6 +691,7 @@ classdef Brick < handle
             % - NOS is output number [0x00..0x0F].
             % - The NOS here is different to the regular NOS, almost an
             % intermediary between NOS and NO.
+            % - tacho is the returned tachometer value.
             %
             % Example::
             %           tacho = b.outputGetCount(0,Device.MotorA)
@@ -794,7 +799,7 @@ classdef Brick < handle
         function setBrickName(brick,name)
             % Brick.setBrickName Set brick name
             %
-            % Brick.setBrickName(name) set the name of the brick.
+            % Brick.setBrickName(name) sets the name of the brick.
             %
             % Example::
             %           b.setBrickName('EV3')
@@ -804,6 +809,35 @@ classdef Brick < handle
             cmd.opCOMSET_SET_BRICKNAME(name);
             cmd.addLength();
             brick.send(cmd);
+        end
+        
+        function [title,msg] = readMailboxMsg(brick,type)
+            % Brick.readMailBoxMsg Read a mailbox message
+            %
+            % [title,msg] = Brick.readMailBoxMsg(type) reads a mailbox
+            % message sent from the brick.
+            %
+            % Notes::
+            % - type is the sent message type being either 'text',
+            % 'numeric' or 'logic'.
+            % - title is the message title sent from the brick.
+            % - msg is the message sent from the brick.
+            %
+            % Example::
+            %           [title,msg] = b.readMailboxMsg('text')
+            
+            mailmsg = brick.receive();
+            % extract message title (starts at pos 8, pos 7 is the size)
+            title = char(mailmsg(8:7+mailmsg(7)));
+            % parse message according to type
+            switch type
+                case 'text'
+                    msg = char(mailmsg(mailmsg(7)+10:end));
+                case 'numeric'
+                    msg = typecast(uint8(mailmsg(mailmsg(7)+10:end)),'single');
+                case 'logic'
+                    msg = mailmsg(mailmsg(7)+10:end);
+            end
         end
         
         function fileUpload(brick,filename,dest)
@@ -948,6 +982,28 @@ classdef Brick < handle
             rmsg = brick.receive();
         end
         
+        function writeMailBox(brick,title,type,msg)
+            % Brick.writeMailBox Write a mailbox message
+            %
+            % Brick.writeMailBox(title,type,msg) sends a mailbox message to
+            % the connected brick.
+            %
+            % Notes::
+            % - title is the message title sent to the brick.
+            % - type is the sent message type being either 'text',
+            % 'numeric', or 'logic'.
+            % - msg is the message to be sent to the brick.
+            %
+            % Example::
+            %           b.writeMailBox('abc','text','hello!')
+            
+            cmd = Command();
+            cmd.addHeaderSystem(16);
+            cmd.WRITEMAILBOX(title,type,msg);
+            cmd.addLength();
+            brick.send(cmd);
+        end
+            
         function threeToneByteCode(brick,filename)
             % Brick.threeToneByteCode Create three tone byte code
             %
