@@ -81,7 +81,7 @@ classdef hidapi < handle
             % disable the type not found for structure warning
             warning('off','MATLAB:loadlibrary:TypeNotFoundForStructure');
             % check if the library is loaded
-            if ~libisloaded('hidapi')
+            if ~libisloaded('hidapiusb')
                 % check the operating system type and load slib 
                 if (ispc == 1)
                     % check the bit version
