@@ -97,9 +97,9 @@ classdef Brick < handle
              % - For btBrickIO:
              %      b = Brick('ioType','bt','serPort','/dev/rfcomm0')
              % - For instrBrickIO (wifi)
-             %      b = Brick('ioType',instrwifi','wfAddr','192.168.1.104','wfPort',5555,'wfSN','0016533dbaf5')
+             %      b = Brick('ioType','instrwifi','wfAddr','192.168.1.104','wfPort',5555,'wfSN','0016533dbaf5')
              % - For instrBrickIO (bluetooth)
-             %      b = Brick('ioType',instrbt','btDevice','EV3','btChannel',1)
+             %      b = Brick('ioType','instrbt','btDevice','EV3','btChannel',1)
              
              % init the properties
              opt.debug = 0;
@@ -146,7 +146,7 @@ classdef Brick < handle
                 brick.wfAddr = opt.wfAddr;
                 brick.wfPort = opt.wfPort;
                 brick.wfSN = opt.wfSN;
-                brick.conn = instrBrickIO(brick.debug,brick.wfAddr,brick.wfPort,brick.wfSN);
+                brick.conn = instrBrickIO(brick.debug,'wf',brick.wfAddr,brick.wfPort,brick.wfSN);
                 connect = 1;
              end
              % instrumentation and control bluetooth 
@@ -155,7 +155,7 @@ classdef Brick < handle
                 brick.ioType = opt.ioType;
                 brick.btDevice = opt.btDevice;
                 brick.btChannel = opt.btChannel;
-                brick.conn = instrBrickIO(brick.debug,brick.btDevice,brick.btChannel);
+                brick.conn = instrBrickIO(brick.debug,'bt',brick.btDevice,brick.btChannel);
                 connect = 1;
              end
              % error
