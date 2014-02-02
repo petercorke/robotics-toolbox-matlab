@@ -114,6 +114,8 @@
 % opCOMGET_SET_BRICKNAME    Add a opCOMGET opcode with a GET_BRICKNAME subcode to the command object
 % opCOMSET_SET_BRICKNAME    Add a opCOMSET opcode with a SET_BRICKNAME subcode to the command object
 %
+% opMAILBOX_WRITE           Add a opMAILBOX_WRITE opcode to the command object
+%
 % BEGIN_DOWNLOAD            Add a BEGIN_DOWNLOAD system command to the command object
 % CONTINUE_DOWNLOAD         Add a CONTINUE_DOWNLOAD system command to the command object
 % BEGIN_UPLOAD              Add a BEGIN_UPLOAD system command to the command object
@@ -2071,7 +2073,48 @@ classdef Command < handle
             cmd.addDirectCommand(ByteCodes.COMSet);
             cmd.LC0(COMSetSubCodes.SetBrickName);
             cmd.addLCSString(name);  
-        end 
+        end
+        
+        function opMAILBOX_WRITE(cmd,brickname,boxname,type,msg)
+            % Command.opMAILBOX_WRITE Add a opMAILBOX_WRITE
+            %
+            % Command.opMAILBOX_WRITE(brickname,boxname,type,msg) adds a
+            % opMAILBOX_WRITE to the command object.
+            %
+            % Notes::
+            % - brickname is the name of remote device
+            % - boxname is the name of the receiving mailbox
+            % - type is the data type of the values being sent where DATA_8
+            % (0) is logic, DATA_F (3) is numeric and DATA_S (4) is text
+            % - msg is the message to be sent
+            % - opMAILBOX_WRITE,LCS,'T','5','0','0',0,0,LCS,'a','b','c',LC0(0),LC0(1),LC0(1)
+            %
+            % Example::
+            %           cmd.opMAILBOX_WRITE('T500','abc','logical',1)
+            
+            cmd.addDirectCommand(ByteCodes.MailboxWrite);
+            cmd.addLCSString(brickname);
+            % hardware transportation media (not used)
+            cmd.LC0(0);
+            cmd.addLCSString(boxname);
+            % type
+            switch type
+                case 'logic'
+                    cmd.LC0(0);
+                    cmd.LC0(1);
+                    cmd.LC0(msg);
+                case 'numeric'
+                    cmd.LC0(3);
+                    cmd.LC0(1);
+                    cmd.LC4(typecast(single(msg),'int32'));
+                case 'text'
+                    cmd.LC0(4);
+                    cmd.LC0(1);
+                    cmd.addLCSString(msg);
+                 otherwise
+                    fprintf('Error! Type must be ''text'', ''numeric'' or ''logic''.\n');
+            end
+        end
     
         function BEGIN_DOWNLOAD(cmd,filelength,filename)
             % Command.BEGIN_DOWNLOAD Add a BEGIN_DOWNLOAD 

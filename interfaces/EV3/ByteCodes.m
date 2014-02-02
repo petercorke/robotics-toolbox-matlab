@@ -33,8 +33,8 @@ classdef ByteCodes < uint8
         %VM
         Info (124) %= 0x7C,
         String (125) %= 0x7D,
-        MemoryWrite (126) %= 0x7E,
-        MemoryRead (127) %= 0x7F, 
+%        MemoryWrite = 0x7E,
+%        MemoryRead = 0x7F, 
         
         %UI
         UIFlush (128) %= 0x80,
@@ -101,11 +101,11 @@ classdef ByteCodes < uint8
          COMSet (212) % = 0xD4, 
 
 %       %Mailbox
-%        MailboxOpen = 0xD8,
-%        MailboxWrite = 0xD9,
-%        MailboxRead = 0xDA,
-%        MailboxTest = 0xDB,
-%        MailboxReady = 0xDC,
-%        MailboxClose = 0xDD,
+         MailboxOpen (216) % = 0xD8,
+         MailboxWrite (217) % = 0xD9,
+         MailboxRead (218) % = 0xDA,
+         MailboxTest (219) % = 0xDB,
+         MailboxReady (220) % = 0xDC,
+         MailboxClose (221) % = 0xDD,
     end
 end

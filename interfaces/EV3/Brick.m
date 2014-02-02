@@ -34,7 +34,7 @@
 % getBrickName       Return the name of the brick
 % setBrickName       Set the name of the brick
 %
-% readMailboxMsg     Read a mailbox message sent from the brick
+% mailBoxWrite       Write a mailbox message from the brick to another device
 %
 % fileUpload         Upload a file to the brick
 % fileDownload       Download a file from the brick
@@ -42,6 +42,7 @@
 % createDir          Create a directory on the brick
 % deleteFile         Delete a file from the brick
 % writeMailBox       Write a mailbox message to the brick
+% readMailBox        Read a mailbox message sent from the brick
 %
 % threeToneByteCode  Generate the bytecode for the playThreeTone function 
 %
@@ -811,35 +812,31 @@ classdef Brick < handle
             brick.send(cmd);
         end
         
-        function [title,msg] = readMailboxMsg(brick,type)
-            % Brick.readMailBoxMsg Read a mailbox message
+        function mailBoxWrite(brick,brickname,boxname,type,msg)
+            % Brick.mailBoxWrite Write a mailbox message
             %
-            % [title,msg] = Brick.readMailBoxMsg(type) reads a mailbox
-            % message sent from the brick.
+            % Brick.mailBoxWrite(brickname,boxname,type,msg) writes a
+            % mailbox message from the brick to a remote device.
             %
             % Notes::
+            % - brickname is the name of the remote device.
+            % - boxname is the name of the receiving mailbox.
             % - type is the sent message type being either 'text',
             % 'numeric' or 'logic'.
-            % - title is the message title sent from the brick.
-            % - msg is the message sent from the brick.
+            % - msg is the message to be sent.
             %
             % Example::
-            %           [title,msg] = b.readMailboxMsg('text')
+            %           b.mailBoxWrite('T500','abc','logic',1)
+            %           b.mailBoxWrite('T500','abc','numeric',4.24)
+            %           b.mailBoxWrite('T500','abc','text','hello!')
             
-            mailmsg = brick.receive();
-            % extract message title (starts at pos 8, pos 7 is the size)
-            title = char(mailmsg(8:7+mailmsg(7)));
-            % parse message according to type
-            switch type
-                case 'text'
-                    msg = char(mailmsg(mailmsg(7)+10:end));
-                case 'numeric'
-                    msg = typecast(uint8(mailmsg(mailmsg(7)+10:end)),'single');
-                case 'logic'
-                    msg = mailmsg(mailmsg(7)+10:end);
-            end
-        end
-        
+            cmd = Command();
+            cmd.addHeaderDirect(42,0,0);
+            cmd.opMAILBOX_WRITE(brickname,boxname,type,msg);
+            cmd.addLength();
+            brick.send(cmd);
+        end      
+
         function fileUpload(brick,filename,dest)
             % Brick.fileUpload Upload a file to the brick
             %
@@ -985,7 +982,7 @@ classdef Brick < handle
         function writeMailBox(brick,title,type,msg)
             % Brick.writeMailBox Write a mailbox message
             %
-            % Brick.writeMailBox(title,type,msg) sends a mailbox message to
+            % Brick.writeMailBox(title,type,msg) writes a mailbox message to
             % the connected brick.
             %
             % Notes::
@@ -1002,6 +999,38 @@ classdef Brick < handle
             cmd.WRITEMAILBOX(title,type,msg);
             cmd.addLength();
             brick.send(cmd);
+        end
+        
+        function [title,msg] = readMailBox(brick,type)
+            % Brick.readMailBox Read a mailbox message
+            %
+            % [title,msg] = Brick.readMailBox(type) reads a mailbox
+            % message sent from the brick.
+            %
+            % Notes::
+            % - type is the sent message type being either 'text',
+            % 'numeric' or 'logic'.
+            % - title is the message title sent from the brick.
+            % - msg is the message sent from the brick.
+            %
+            % Example::
+            %           [title,msg] = b.readMailBox('text')
+            
+            mailmsg = brick.receive();
+            % extract message title (starts at pos 8, pos 7 is the size)
+            title = char(mailmsg(8:7+mailmsg(7)));
+            % parse message according to type
+            switch type
+                case 'text'
+                    msg = char(mailmsg(mailmsg(7)+10:end));
+                case 'numeric'
+                    msg = typecast(uint8(mailmsg(mailmsg(7)+10:end)),'single');
+                case 'logic'
+                    msg = mailmsg(mailmsg(7)+10:end);
+                otherwise
+                    fprintf('Error! Type must be ''text'', ''numeric'' or ''logic''.\n');
+                    msg = '';
+            end
         end
             
         function threeToneByteCode(brick,filename)
