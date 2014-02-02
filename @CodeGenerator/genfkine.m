@@ -88,4 +88,16 @@ if CGen.genslblock
     
 end
 
+%% C-Code
+if CGen.genccode
+
+    genccodefkine(CGen);
+    
+end
+
+%% MEX
+if CGen.genmex
+
+    genmexfkine(CGen);
+    
 end

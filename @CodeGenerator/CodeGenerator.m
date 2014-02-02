@@ -114,6 +114,10 @@ classdef CodeGenerator
         logfile;
         genmfun;
         genslblock;
+        genccode;
+        ccodepath;
+        genmex;
+        compilemex;
     end
     properties (GetAccess = private)
         debug;        % just appears because of tb_optparse, so hide it from the user
@@ -178,7 +182,10 @@ classdef CodeGenerator
             CGen.genmfun = false;
             CGen.genslblock = false;
             CGen.debug = false;
-            
+            CGen.genccode = false;
+            CGen.ccodepath = fullfile(CGen.basepath,'ccode');
+            CGen.genmex = false;
+            CGen.compilemex = false;
             
             if nargin < 2
                 varargin{1} = 'default';
@@ -207,6 +214,14 @@ classdef CodeGenerator
                 case 'slblock'
                     CGen = tb_optparse(CGen,...
                         [{'verbose','saveresult','genslblock'},varargin(2:end)]);
+                case 'ccode'
+                    warning('RTB:CodeGenerator:ccode','C code generation is still experimental!')
+                    CGen = tb_optparse(CGen,...
+                        [{'verbose','saveresult','genmfun','logfile','robModel.log','genccode'},varargin(2:end)]);
+                case 'mex'
+                    warning('RTB:CodeGenerator:mex','MEX file generation is still experimental!')
+                    CGen = tb_optparse(CGen,...
+                        [{'verbose','saveresult','genmfun','logfile','robModel.log','genmex'},varargin(2:end)]);
                 otherwise
                     CGen = tb_optparse(CGen,varargin);
             end
