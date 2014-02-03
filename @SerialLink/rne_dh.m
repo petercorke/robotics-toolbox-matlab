@@ -79,7 +79,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
         end
     end
     
-    if isa(Q, 'sym')
+    if robot.issym
         tau(np, n) = sym();
     else
         tau = zeros(np,n);
@@ -92,7 +92,11 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
     
         Fm = [];
         Nm = [];
-        pstarm = [];
+        if robot.issym
+            pstarm = sym([]);
+        else
+            pstarm = [];
+        end
         Rm = [];
         w = zeros(3,1);
         wd = zeros(3,1);
