@@ -18,6 +18,7 @@
 %  jacob0        Jacobian matrix in world frame
 %  jacobn        Jacobian matrix in tool frame
 %  maniplty      manipulability
+%  A             link transforms
 %
 %  jtraj         a joint space trajectory
 %
@@ -390,6 +391,30 @@ classdef SerialLink < handle
                 if j ~= length(robot)
                     s = char(s, ' ');
                 end
+            end
+        end
+        
+        function T = A(r, joints, q)
+        %SerialLink.A Evaluate link transform matrices
+        %
+        % S = R.A(jlist, q) is a homogeneous transform (4x4) that results 
+        % from chaining the link transform matrices given in the list JLIST,
+        % and the joint variables are taken from the corresponding elements
+        % of Q.
+        %
+        % For example, the link transform for joint 4 is
+        %          robot.A(4, q)
+        %
+        % and for joints 3 through 6 is
+        %          robot.A([3 4 5 6], q)
+        %
+        % Notes::
+        % - base and tool transforms are not applied.
+        % - JLIST and Q must be the same length.
+            T = eye(4,4);
+            
+            for joint=joints
+                T = T * r.links(joint).A(q(joint));
             end
         end
 
