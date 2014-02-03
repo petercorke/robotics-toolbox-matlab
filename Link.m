@@ -74,6 +74,7 @@ classdef Link < handle
         mdh   % standard DH=0, MDH=1
         offset % joint coordinate offset
         name   % joint coordinate name
+        flip   % joint moves in opposite direction
         
         % dynamic parameters
         m  % dynamic: link mass
@@ -198,6 +199,7 @@ classdef Link < handle
                 l.sigma = 0;
                 l.mdh = 0;
                 l.offset = 0;
+                l.flip = false;
                 l.qlim = [];
                 
                 %% dynamic parameters
@@ -235,6 +237,7 @@ classdef Link < handle
                 opt.type = {'revolute', 'prismatic', 'fixed'};
                 opt.convention = {'standard', 'modified'};
                 opt.sym = false;
+                opt.flip = false;
                 
                 [opt,args] = tb_optparse(opt, varargin);
                 
@@ -265,6 +268,8 @@ classdef Link < handle
                     l.alpha = value( opt.alpha, opt);
                     
                     l.offset = value( opt.offset, opt);
+                    l.flip = value( opt.flip, opt);
+
                     l.qlim =   value( opt.qlim, opt);
                     
                     l.m = value( opt.m, opt);
@@ -293,6 +298,7 @@ classdef Link < handle
                     
                     l.sigma = 0;
                     l.offset = 0;
+                    l.flip = false;
                     l.mdh = 0;  % default to standard D&H
                     
                     % optionally set sigma and offset
@@ -562,7 +568,11 @@ classdef Link < handle
             % - For a prismatic joint the D parameter of the link is ignored, and Q used instead.
             % - The link offset parameter is added to Q before computation of the transformation matrix.
             sa = sin(L.alpha); ca = cos(L.alpha);
-            q = q + L.offset;
+            if L.flip
+                q = -q + L.offset;
+            else
+                q = q + L.offset;
+            end
             if L.sigma == 0
                 % revolute
                 st = sin(q); ct = cos(q);
