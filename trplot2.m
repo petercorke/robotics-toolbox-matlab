@@ -17,6 +17,7 @@
 % 'handle', h        Draw in the MATLAB axes specified by h
 % 'view',V           Set plot view parameters V=[az el] angles, or 'auto' 
 %                    for view toward origin of coordinate frame
+% 'length',s         Length of the coordinate frame arms (default 1)
 % 'arrow'            Use arrows rather than line segments for the axes
 % 'width', w         Width of arrow tips
 %
@@ -74,6 +75,7 @@ function hout = trplot2(T, varargin)
     opt.width = 1;
     opt.arrow = false;
     opt.handle = [];
+    opt.length = 1;
 
     opt = tb_optparse(opt, varargin);
 
@@ -111,9 +113,9 @@ function hout = trplot2(T, varargin)
     end
 
     % create unit vectors
-    o =  [0 0 1]'; o = o(1:2);
-    x1 = [1 0 1]'; x1 = x1(1:2);
-    y1 = [0 1 1]'; y1 = y1(1:2);
+    o =  opt.length*[0 0 1]'; o = o(1:2);
+    x1 = opt.length*[1 0 1]'; x1 = x1(1:2);
+    y1 = opt.length*[0 1 1]'; y1 = y1(1:2);
     
     % draw the axes
     
@@ -169,7 +171,6 @@ function hout = trplot2(T, varargin)
     if ~opt.axes
         set(gca, 'visible', 'off');
     end
-    grid on
     if ~ih
         hold off
     end
