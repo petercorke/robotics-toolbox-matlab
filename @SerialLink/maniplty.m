@@ -31,7 +31,7 @@
 % 'asada'       use Asada algorithm
 %
 % Notes::
-% - By default the measure includes rotational and translational dexterity, but
+% - The 'all' option includes rotational and translational dexterity, but
 %   this involves adding different units.  It can be more useful to look at the
 %   translational and rotational manipulability separately.
 %
