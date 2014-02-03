@@ -25,6 +25,7 @@
 % 'handle',H         Draw in the MATLAB axes specified by the axis handle H
 % 'view',V           Set plot view parameters V=[az el] angles, or 'auto' 
 %                    for view toward origin of coordinate frame
+% 'length',s         Length of the coordinate frame arms (default 1)
 % 'arrow'            Use arrows rather than line segments for the axes
 % 'width', w         Width of arrow tips (default 1)
 % 'thick',t          Thickness of lines (default 0.5)
@@ -37,6 +38,8 @@
 %                     'c'   cyan
 %                     'm'   magenta
 % 'dispar',D         Disparity for 3d display (default 0.1)
+% 'text'             Enable display of X,Y,Z labels on the frame
+% 'rgb'              Display X,Y,Z axes in colors red, green, blue respectively
 %
 % Examples::
 %
@@ -108,6 +111,7 @@ function hout = trplot(T, varargin)
     end
     
     opt.color = [];
+    opt.rgb = false;
     opt.axes = true;
     opt.axis = [];
     opt.frame = [];
@@ -120,6 +124,8 @@ function hout = trplot(T, varargin)
     opt.d_3d = false;
     opt.dispar = 0.1;
     opt.thick = 0.5;
+    opt.length = 1;
+    opt.text = true;
 
     opt = tb_optparse(opt, varargin);
 
@@ -194,25 +200,35 @@ function hout = trplot(T, varargin)
 
     % create unit vectors
     o =  [0 0 0]';
-    x1 = [1 0 0]';
-    y1 = [0 1 0]';
-    z1 = [0 0 1]';
+    x1 = opt.length*[1 0 0]';
+    y1 = opt.length*[0 1 0]';
+    z1 = opt.length*[0 0 1]';
     
     % draw the axes
     
     mstart = [o o o]';
     mend = [x1 y1 z1]';
 
+    if opt.rgb
+        axcolors = {'r', 'g', 'b'};
+    else
+        axcolors = { opt.color, opt.color, opt.color};
+    end
+    
     if opt.arrow
-        % draw the 3 arrows
-        S = [opt.color num2str(opt.width)];
-        ha = arrow3(mstart, mend, S);
-        for h=ha'
-            set(h, 'Parent', hg);
-        end
+%         % draw the 3 arrows
+%         S = [opt.color num2str(opt.width)];
+%         ha = arrow3(mstart, mend, S);
+%         for h=ha'
+%             set(h, 'Parent', hg);
+%         end
+          for i=1:3
+              ha = arrow3(mstart(i,1:3), mend(i,1:3), [axcolors{i} num2str(opt.width)]);
+              set(ha, 'Parent', hg);
+          end
     else
         for i=1:3
-            plot2([mstart(i,1:3); mend(i,1:3)], 'Color', opt.color, ...
+            plot2([mstart(i,1:3); mend(i,1:3)], 'Color', axcolors{i}, ...
                 'LineWidth', opt.thick, ...
                 'Parent', hg);
         end
@@ -225,15 +241,17 @@ function hout = trplot(T, varargin)
         fmt = sprintf('%%c_{%s}', opt.frame);
     end
     
-    % add the labels to each axis
-    h = text(x1(1), x1(2), x1(3), sprintf(fmt, 'X'), 'Parent', hg);
-    set(h, opt.text_opts{:});
-   
-    h = text(y1(1), y1(2), y1(3), sprintf(fmt, 'Y'), 'Parent', hg);
-    set(h, opt.text_opts{:});
-
-    h = text(z1(1), z1(2), z1(3), sprintf(fmt, 'Z'), 'Parent', hg);
-    set(h, opt.text_opts{:});
+    if opt.text
+        % add the labels to each axis
+        h = text(x1(1), x1(2), x1(3), sprintf(fmt, 'X'), 'Parent', hg);
+        set(h, opt.text_opts{:});
+        
+        h = text(y1(1), y1(2), y1(3), sprintf(fmt, 'Y'), 'Parent', hg);
+        set(h, opt.text_opts{:});
+        
+        h = text(z1(1), z1(2), z1(3), sprintf(fmt, 'Z'), 'Parent', hg);
+        set(h, opt.text_opts{:});
+    end
     
     % label the frame
     if ~isempty(opt.frame)
