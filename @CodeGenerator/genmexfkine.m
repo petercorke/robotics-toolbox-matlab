@@ -70,28 +70,12 @@ fprintf(fid,'%s\n%s\n\n',...
 % Generate C-function string
 funstr = ccodefunctionstring(tmpStruct.fkine,'output','T','vars',{Q},'funname',[CGen.rob.name,'_fkine']);
 fprintf(fid,'%s',sprintf(funstr));
-fprintf(fid,'\n\n\n');
-fprintf(fid,'%s\n','/* The gateway function */');
-fprintf(fid,'%s\n','void mexFunction( int nlhs, mxArray *plhs[],');
-fprintf(fid,'%s\n','        int nrhs, const mxArray *prhs[])');
-fprintf(fid,'%s\n\n','{');
-fprintf(fid,'%s\n','    /* variable declarations */');
-fprintf(fid,'%s\n','    double* Q;             /* 1xN input matrix */');
-fprintf(fid,'%s\n\n','    double* outMatrix;      /* output matrix */');
-    
-fprintf(fid,'%s\n','    /* get a pointer to the real data in the input matrix */');
-fprintf(fid,'%s\n','    Q = mxGetPr(prhs[0]);');
-    
-fprintf(fid,'%s\n','    /* create the output matrix */');
-fprintf(fid,'%s\n','    plhs[0] = mxCreateDoubleMatrix(4,4,mxREAL);');
-    
-fprintf(fid,'%s\n','    /* get a pointer to the real data in the output matrix */');
-fprintf(fid,'%s\n','    outMatrix = mxGetPr(plhs[0]);');
-    
-fprintf(fid,'%s\n','    /* call the computational routine */');
-fprintf(fid,'%s\n',['    ',CGen.rob.name,'_fkine(outMatrix,Q);']);
-    
-fprintf(fid,'%s\n','}');
+
+fprintf(fid,'\n');
+
+funstr = genmexgatewaystring(tmpStruct.fkine,'funname',[CGen.rob.name,'_fkine'], 'vars',{Q});
+
+fprintf(fid,'%s',sprintf(funstr));
 
 fclose(fid);
 
