@@ -1,14 +1,14 @@
 %TROTZ Rotation about Z axis
 %
 % T = TROTZ(THETA) is a homogeneous transformation (4x4) representing a rotation 
-% radians about the z-axis.
+% of THETA radians about the z-axis.
 %
 % T = TROTZ(THETA, 'deg') as above but THETA is in degrees.
 %
 % Notes::
 % - Translational component is zero.
 %
-% See also ROTZ, TROTX, TROTY.
+% See also ROTZ, TROTX, TROTY, TROT2.
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke

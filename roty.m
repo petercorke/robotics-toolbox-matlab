@@ -5,7 +5,7 @@
 %
 % R = ROTY(THETA, 'deg') as above but THETA is in degrees.
 %
-% See also ROTX, ROTZ, ANGVEC2R.
+% See also ROTX, ROTZ, ANGVEC2R, ROT2.
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke

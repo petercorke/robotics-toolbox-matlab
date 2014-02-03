@@ -1,14 +1,14 @@
 %TROTX Rotation about X axis
 %
 % T = TROTX(THETA) is a homogeneous transformation (4x4) representing a rotation 
-% radians about the x-axis.
+% of THETA radians about the x-axis.
 %
 % T = TROTX(THETA, 'deg') as above but THETA is in degrees.
 %
 % Notes::
 % - Translational component is zero.
 %
-% See also ROTX, TROTY, TROTZ.
+% See also ROTX, TROTY, TROTZ, TROT2.
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke
