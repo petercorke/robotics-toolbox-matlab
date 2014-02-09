@@ -12,6 +12,7 @@
 %
 % Reference::
 % - "DH Parameters of Mico" Version 1.0.1, August 05, 2013.
+%   Kinova
 %
 % Notes::
 % - Unlike most other mdl_xxx scripts this one is actually a function that
@@ -41,7 +42,7 @@ function mdl_mico()
     
     deg = pi/180;
     
-    % robot length values (metres)
+    % robot length values (metres)  page 4
     D1 = 0.2755;
     D2 = 0.2900;
     D3 = 0.1233;
@@ -60,26 +61,40 @@ function mdl_mico()
     d5b = sa/s2a*D4 + sa/s2a*D5;
     d6b = sa/s2a*D5 + D6;
     
-    % DH parameter table
-    %     theta d a alpha
-    dh = [0 D1   0  pi/2
-          0 0    D2 pi
-          0 -e2  0  pi/2
-          0 -d4b 0  2*aa
-          0 -d5b 0  2*aa
-          0 -d6b 0  pi];
-    
     
     % and build a serial link manipulator
     
-    robot = SerialLink(dh, 'name', 'Mico', ...
-        'manufacturer', 'Kinova'); 
+    % offsets from the table on page 4, "Mico" angles are the passed joint
+    % angles.  "DH Algo" are the result after adding the joint angle offset.
+
+    robot = SerialLink([
+        Revolute('alpha', pi/2,  'a', 0,  'd', D1,   'flip')
+        Revolute('alpha', pi,    'a', D2, 'd', 0,    'offset', -pi/2)
+        Revolute('alpha', pi/2,  'a', 0,  'd', -e2,  'offset', pi/2)
+        Revolute('alpha', 2*aa,  'a', 0,  'd', -d4b)
+        Revolute('alpha', 2*aa,  'a', 0,  'd', -d5b, 'offset', -pi)
+        Revolute('alpha', pi,    'a', 0,  'd', -d6b, 'offset', pi/2)
+        ], ...
+        'name', 'Mico', 'manufacturer', 'Kinova');
+    
+    %{
+        % MDH version, no test  yet
+    robot = SerialLink([
+        Revolute('alpha', 0,     'a', 0,  'd', D1,   'modified', 'flip')
+        Revolute('alpha', -pi/2, 'a', 0,  'd', 0,    'modified', 'offset', -pi/2)
+        Revolute('alpha', 0,     'a', D2, 'd', e2,  'modified',  'offset', pi/2)
+        Revolute('alpha', -pi/2, 'a', 0,  'd', d4b, 'modified')
+        Revolute('alpha', 2*aa,  'a', 0,  'd', d5b, 'modified',  'offset', -pi)
+        Revolute('alpha', 2*aa,  'a', 0,  'd', d6b, 'modified',  'offset', pi/2)
+        ], ...
+        'name', 'Mico', 'manufacturer', 'Kinova');
+    %}
     
     % place the variables into the global workspace
     if nargout == 0
         assignin('base', 'mico', robot);
-        assignin('base', 'qz', [0 0 0 0 0 0]); % zero angles
-        assignin('base', 'qr', -[180 270 90 180 180 0]*deg); % ready pose, arm up
+        assignin('base', 'qz', [0 0 0 0 0 0]); % zero angles, arm up
+        assignin('base', 'qr', [270 180 180 0 0 180]*deg); % vertical pose as per Fig 2
     end
 end
 
