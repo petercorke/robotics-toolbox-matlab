@@ -39,8 +39,8 @@ function [ outstring ] = generatecopyrightnote( CGen )
 outstring = [];
 
 %% Copyright note
-outstring = [outstring, sprintf('%s \n', '% Copyright (C) 1993-2013, by Peter I. Corke')];
-outstring = [outstring, sprintf('%s \n', '% Copyright (C) 2012-2013, by Joern Malzahn')];
+outstring = [outstring, sprintf('%s \n', ['% Copyright (C) 1993-',datestr(now,'yyyy'),', by Peter I. Corke'])];
+outstring = [outstring, sprintf('%s \n', ['% Copyright (C) 2012-',datestr(now,'yyyy'),', by Joern Malzahn'])];
 outstring = [outstring, sprintf('%s \n', '%')];
 outstring = [outstring, sprintf('%s \n', '% This file has been automatically generated with The Robotics Toolbox for Matlab (RTB).')];
 outstring = [outstring, sprintf('%s \n', '%')];

@@ -18,17 +18,23 @@
 %    variables. 
 %
 % Example::
-%
+% % Create symbolic variables
+% syms q1 q2 q3
+% 
+% Q = [q1 q2 q3];
+% % Create symbolic expression
+% myrot = rotz(q3)*roty(q2)*rotx(q1)
+% 
+% % Generate C-function string
+% [funstr] = genmexgatewaystring(myrot,'vars',{Q},'funname','rotate_xyz')
 %
 % Notes::
 %
 %
 % Author::
-%  Joern Malzahn
-%  2014 RST, Technische Universitaet Dortmund, Germany.
-%  http://www.rst.e-technik.tu-dortmund.de
+%  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
 %
-% See also ccode, matlabFunction.
+% See also ccode, ccodefunctionstring.
 
 % Copyright (C) 2012-2014, by Joern Malzahn
 %
@@ -82,7 +88,7 @@ end
 
 nIn = numel(opt.vars);
 
-%% write the function string
+%% begin to write the function string
 % gwstring = sprintf('\n\n\n');
 gwstring = sprintf('\n');
 
@@ -91,11 +97,10 @@ gwstring = [gwstring, sprintf('%s\n','void mexFunction( int nlhs, mxArray *plhs[
 gwstring = [gwstring, sprintf('%s\n','        int nrhs, const mxArray *prhs[])')];
 gwstring = [gwstring, sprintf('%s\n','{')];
 
-
-% variable declaration
-gwstring = [gwstring, sprintf('%s\n','    /* variable declarations */')];
+%% variable declaration
+gwstring = [gwstring, sprintf('\t%s\n','/* variable declarations */')];
 % output
-gwstring = [gwstring, sprintf('%s\n','    double* outMatrix;      /* output matrix */')];
+gwstring = [gwstring, sprintf('\t%s\n','double* outMatrix;      /* output matrix */')];
 
 % inputs
 for iIn = 1:nIn
@@ -105,29 +110,47 @@ for iIn = 1:nIn
 end
 
 gwstring = [gwstring, sprintf('%s\n',' ')]; % Empty line
-    
+
+%% argument checks
+% number of input arguments
+gwstring = [gwstring, sprintf('\t%s\n','/* check for proper number of arguments */')];
+gwstring = [gwstring, sprintf('\t%s%u%s\n','if(nrhs!=',nIn+1,') {')];
+gwstring = [gwstring, sprintf('\t\t%s%s%s\n','mexErrMsgIdAndTxt("',opt.funname,':nrhs",')];
+gwstring = [gwstring, sprintf('\t\t%s%u%s\n','                       "',nIn,' inputs required.");')];
+gwstring = [gwstring, sprintf('\t%s\n','}')];
+
+% dimensions of input arguments
+
+% number of output arguments
+gwstring = [gwstring, sprintf('\t%s%u%s\n','if(nlhs>',1,') {')];
+gwstring = [gwstring, sprintf('\t\t%s%s%s\n','mexErrMsgIdAndTxt("',opt.funname,':nlhs",')];
+gwstring = [gwstring, sprintf('\t\t%s\n','                       "Only single output allowed.");')];
+gwstring = [gwstring, sprintf('\t%s\n','}')];
+
+gwstring = [gwstring, sprintf('%s\n',' ')]; % Empty line
+
 %% pointer initialization for...
 % the output
-gwstring = [gwstring, sprintf('%s\n','    /* allocate memory for the output matrix */')];
-gwstring = [gwstring, sprintf('%s\n',['    plhs[0] = mxCreateDoubleMatrix(',num2str(size(f,1)),',',num2str(size(f,2)),', mxREAL);'])];
-gwstring = [gwstring, sprintf('%s\n','    /* get a pointer to the real data in the output matrix */')];
-gwstring = [gwstring, sprintf('%s\n','    outMatrix = mxGetPr(plhs[0]);')];
+gwstring = [gwstring, sprintf('\t%s\n','/* allocate memory for the output matrix */')];
+gwstring = [gwstring, sprintf('\t%s\n',['plhs[0] = mxCreateDoubleMatrix(',num2str(size(f,1)),',',num2str(size(f,2)),', mxREAL);'])];
+gwstring = [gwstring, sprintf('\t%s\n','/* get a pointer to the real data in the output matrix */')];
+gwstring = [gwstring, sprintf('\t%s\n','outMatrix = mxGetPr(plhs[0]);')];
 gwstring = [gwstring, sprintf('%s\n',' ')]; % Empty line
 
 % inputs
-gwstring = [gwstring, sprintf('%s\n','    /* get a pointers to the real data in the input matrices */')];
+gwstring = [gwstring, sprintf('\t%s\n','/* get a pointers to the real data in the input matrices */')];
 for iIn = 1:nIn
     tmpInName = ['input',num2str(iIn)];%opt.varsName{iIn};
     tmpIn = opt.vars{iIn};
     
-    gwstring = [gwstring, sprintf('%s\n',['    ',tmpInName,' = mxGetPr(prhs[',num2str(iIn),']);'])]; % first input argument is the robot object, thus count one-based here
+    gwstring = [gwstring, sprintf('\t%s\n',[tmpInName,' = mxGetPr(prhs[',num2str(iIn),']);'])]; % first input argument is the robot object, thus count one-based here
 end
 
 gwstring = [gwstring, sprintf('%s\n',' ')]; % Empty line
     
 %% call computational routine
-gwstring = [gwstring, sprintf('%s\n','    /* call the computational routine */')];
-gwstring = [gwstring, sprintf('%s',['    ',opt.funname,'(','outMatrix, '])];
+gwstring = [gwstring, sprintf('\t%s\n','/* call the computational routine */')];
+gwstring = [gwstring, sprintf('\t%s',[opt.funname,'(','outMatrix, '])];
 
 % comma separated list of input arguments
 for iIn = 1:nIn
@@ -145,6 +168,4 @@ end
 
 %% finalize
 gwstring = [gwstring, sprintf('%s\n','}')];
-
-
 

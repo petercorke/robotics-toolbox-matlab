@@ -27,14 +27,12 @@
 % constructheaderstring(hStruct)
 %
 % Authors::
-%  Joern Malzahn   
-%  2012 RST, Technische Universitaet Dortmund, Germany
-%  http://www.rst.e-technik.tu-dortmund.de   
+%  Joern Malzahn   (joern.malzahn@tu-dortmund.de) 
 %
 % See also CodeGenerator.replaceheader, sprintf.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
-% Copyright (C) 2012, by Joern Malzahn
+% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 2014, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
 %
