@@ -78,4 +78,18 @@ if CGen.genslblock
     CGen.genslblockjacobian;
 end
 
+% %% C-Code
+% if CGen.genccode
+% 
+%     CGen.genccodejacobian;
+%     
+% end
+
+%% MEX
+if CGen.genmex
+
+    CGen.genmexjacobian;
+    
+end
+
 end

@@ -77,4 +77,19 @@ if CGen.genslblock
     CGen.genslblockinertia;
 end
 
+% %% C-Code
+% if CGen.genccode
+% 
+%     CGen.genccodeinertia;
+%     
+% end
+
+%% MEX
+if CGen.genmex
+
+    CGen.genmexinertia;
+    
+end
+
+
 end

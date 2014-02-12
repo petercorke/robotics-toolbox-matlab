@@ -126,3 +126,10 @@ funstr = CGen.genmexgatewaystring(f,'funname',opt.funname, 'vars',opt.vars);
 fprintf(fid,'%s',sprintf(funstr));
 
 fclose(fid);
+
+% Compile the MEX file
+if CGen.verbose
+    mex(opt.funfilename,'-v','-outdir',CGen.robjpath)
+else
+    mex(opt.funfilename,'-outdir',CGen.robjpath)
+end

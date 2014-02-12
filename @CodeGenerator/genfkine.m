@@ -88,16 +88,16 @@ if CGen.genslblock
     
 end
 
-%% C-Code
-if CGen.genccode
-
-    genccodefkine(CGen);
-    
-end
+% %% C-Code
+% if CGen.genccode
+% 
+%     CGen.genccodefkine;
+%     
+% end
 
 %% MEX
 if CGen.genmex
 
-    genmexfkine(CGen);
+    CGen.genmexfkine;
     
 end

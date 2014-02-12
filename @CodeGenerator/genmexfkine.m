@@ -34,15 +34,8 @@
 
 function [] = genmexfkine(CGen)
 
-% %% Does robot class exist?
-% if ~exist(fullfile(CGen.robjpath,[CGen.getrobfname,'.m']),'file')
-%     CGen.logmsg([datestr(now),'\tCreating ',CGen.getrobfname,' m-constructor ']);
-%     CGen.createmconstructor;
-%     CGen.logmsg('\t%s\n',' done!');
-% end
-
 %% Forward kinematics up to tool center point
-CGen.logmsg([datestr(now),'\tGenerating forward kinematics mex-function up to the end-effector frame: ']);
+CGen.logmsg([datestr(now),'\tGenerating forward kinematics MEX-function up to the end-effector frame: ']);
 symname = 'fkine';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
@@ -56,19 +49,13 @@ funfilename = fullfile(CGen.robjpath,[symname,'.c']);
 Q = CGen.rob.gencoords;
 
 hStruct = createHeaderStructFkine(CGen.rob,symname); % create header
- 
+
 CGen.mexfunction(tmpStruct.(symname), 'funfilename',funfilename,'funname',[CGen.rob.name,'_',symname],'vars',{Q},'output','T','header',hStruct)
 
 CGen.logmsg('\t%s\n',' done!');
 
-if CGen.verbose
-    mex(funfilename,'-v','-outdir',CGen.robjpath)
-else
-    mex(funfilename,'-outdir',CGen.robjpath)
-end
-
 %% Individual joint forward kinematics
-CGen.logmsg([datestr(now),'\tGenerating forward kinematics mex-function up to joint: ']);
+CGen.logmsg([datestr(now),'\tGenerating forward kinematics MEX-function up to joint: ']);
 for iJoints=1:CGen.rob.n
     
     CGen.logmsg(' %i ',iJoints);
@@ -81,8 +68,8 @@ for iJoints=1:CGen.rob.n
     Q = CGen.rob.gencoords;
     
     hStruct = createHeaderStruct(CGen.rob,iJoints,symname); % create header
-
-    CGen.mexfunction(tmpStruct.(symname),'funfilename',funfilename,'funname',[CGen.rob.name,'_',symname],'vars',{Q},'output','T','header',hStruct)
+    
+    CGen.mexfunction(tmpStruct.(symname),'funfilename',funfilename,'funname',[CGen.rob.name,'_',symname],'vars',{Q},'output','T','header',hStruct);
     
 end
 CGen.logmsg('\t%s\n',' done!');
@@ -92,7 +79,7 @@ end
 %% Definition of the header contents for each generated file
 function hStruct = createHeaderStruct(rob,curBody,fname)
 [~,hStruct.funName] = fileparts(fname);
-hStruct.shortDescription = ['Mex version of the forward kinematics for the ',rob.name,' arm up to frame ',int2str(curBody),' of ',int2str(rob.n),'.'];
+hStruct.shortDescription = ['MEX version of the forward kinematics for the ',rob.name,' arm up to frame ',int2str(curBody),' of ',int2str(rob.n),'.'];
 hStruct.calls = {['T = ',hStruct.funName,'(rob,q)'],...
     ['T = rob.',hStruct.funName,'(q)']};
 hStruct.detailedDescription = {['Given a set of joint variables up to joint number ',int2str(curBody),' the function'],...
@@ -114,7 +101,7 @@ end
 %% Definition of the header contents for each generated file
 function hStruct = createHeaderStructFkine(rob,fname)
 [~,hStruct.funName] = fileparts(fname);
-hStruct.shortDescription = ['Mex version of the forward kinematics solution including tool transformation for the ',rob.name,' arm.'];
+hStruct.shortDescription = ['MEX version of the forward kinematics solution including tool transformation for the ',rob.name,' arm.'];
 hStruct.calls = {['T = ',hStruct.funName,'(rob,q)'],...
     ['T = rob.',hStruct.funName,'(q)']};
 hStruct.detailedDescription = {['Given a full set of joint variables the function'],...
