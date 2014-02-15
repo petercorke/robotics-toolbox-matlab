@@ -51,7 +51,8 @@ CGen.logmsg([datestr(now),'\tDeriving robot inertia matrix']);
 
 nJoints = CGen.rob.n;
 q = CGen.rob.gencoords;
-inertia = CGen.rob.inertia(q);
+tmpRob = CGen.rob.nofriction;
+inertia = tmpRob.inertia(q);
 
 CGen.logmsg('\t%s\n',' done!');
 
