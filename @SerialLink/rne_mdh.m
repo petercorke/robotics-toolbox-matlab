@@ -66,9 +66,9 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 		if nargin == 6
 			fext = a5;
 		end
-	end
+    end
 	
-    if isa(Q, 'sym')
+    if robot.issym || any([isa(Q,'sym'), isa(Qd,'sym'), isa(Qdd,'sym')])
         tau(np, n) = sym();
     else
         tau = zeros(np,n);
