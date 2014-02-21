@@ -59,7 +59,7 @@
 %
 % http://www.petercorke.com
 
-function [] = mexfunction(CGen, f, varargin )
+function [] = mexfunctionrowwise(CGen, f, varargin )
 
 %% Read parameters
 % option defaults
@@ -119,8 +119,6 @@ fprintf(fid,'%s\n%s\n\n',...
     '#include "mex.h"',...
     ['#include "',[opt.funname,'.h'],'"']);
 
-
-
 % Generate the mex gateway routine
 funstr = CGen.genmexgatewaystring(f,'funname',opt.funname, 'vars',opt.vars);
 fprintf(fid,'%s',sprintf(funstr));
@@ -130,8 +128,17 @@ fclose(fid);
 %% Compile the MEX file
 srcDir = fullfile(CGen.ccodepath,'src');
 hdrDir = fullfile(CGen.ccodepath,'include');
-if CGen.verbose
-    eval(['mex ',opt.funfilename, ' ',fullfile(srcDir,[opt.funname,'.c']),' -I',hdrDir, ' -v -outdir ',CGen.robjpath]);   
-else
-    eval(['mex ',opt.funfilename, ' ',fullfile(srcDir,[opt.funname,'.c']),' -I',hdrDir,' -outdir ',CGen.robjpath]);
+
+cfilelist = fullfile(srcDir,[opt.funname,'.c']);
+for kJoints = 1:CGen.rob.n
+    cfilelist = [cfilelist, ' ',fullfile(srcDir,[opt.funname,'_row_',num2str(kJoints),'.c'])];
 end
+
+if CGen.verbose
+    eval(['mex ',opt.funfilename, ' ',cfilelist,' -I',hdrDir, ' -v -outdir ',CGen.robjpath]);   
+else
+    eval(['mex ',opt.funfilename, ' ',cfilelist,' -I',hdrDir,' -outdir ',CGen.robjpath]);
+end
+
+CGen.logmsg('\t%s\n',' done!');
+

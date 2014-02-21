@@ -1,10 +1,10 @@
-%CODEGENERATOR.GENCCODEINERTIA Generate C-function for robot inertia matrix
+%CODEGENERATOR.GENCCODECORIOLIS Generate C-function for robot inertia matrix
 %
-% cGen.genccodeinertia() generates robot-specific C-functions to compute
-% the robot inertia matrix.
+% cGen.genccodecoriolis() generates robot-specific C-functions to compute
+% the robot coriolis matrix.
 %
 % Notes::
-% - Is called by CodeGenerator.geninertia if cGen has active flag genccode or
+% - Is called by CodeGenerator.gencoriolis if cGen has active flag genccode or
 %   genmex.
 % - The generated .c and .h files are generated in the directory specified
 %   by the ccodepath property of the CodeGenerator object.
@@ -12,7 +12,7 @@
 % Author::
 %  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
 %
-% See also CodeGenerator.CodeGenerator, CodeGenerator.geninertia, CodeGenerator.genmexinertia.
+% See also CodeGenerator.CodeGenerator, CodeGenerator.gencoriolis, CodeGenerator.genmexcoriolis.
 
 % Copyright (C) 2012-2014, by Joern Malzahn
 %
@@ -33,10 +33,10 @@
 %
 % http://www.petercorke.com
 
-function [] = genccodeinertia(CGen)
+function [] = genccodecoriolis(CGen)
 
 %%
-CGen.logmsg([datestr(now),'\tGenerating C-code for the robot inertia matrix row' ]);
+CGen.logmsg([datestr(now),'\tGenerating C-code for the robot coriolis matrix row' ]);
 
 
 % check for existance of C-code directories
@@ -50,19 +50,19 @@ if ~exist(hdrDir,'dir')
 end
 
 
-Q = CGen.rob.gencoords;
+[Q,QD] = CGen.rob.gencoords;
 nJoints = CGen.rob.n;
 
-%% Individual inertia matrix rows
+%% Individual coriolis matrix rows
 for kJoints = 1:nJoints
     CGen.logmsg(' %s ',num2str(kJoints));
-    symname = ['inertia_row_',num2str(kJoints)];
+    symname = ['coriolis_row_',num2str(kJoints)];
     fname = fullfile(CGen.sympath,[symname,'.mat']);
     
     if exist(fname,'file')
         tmpStruct = load(fname);
     else
-        error ('genmfuninertia:SymbolicsNotFound','Save symbolic expressions to disk first!')
+        error ('genmfuncoriolis:SymbolicsNotFound','Save symbolic expressions to disk first!')
     end
     
     funname = [CGen.rob.name,'_',symname];
@@ -78,7 +78,7 @@ for kJoints = 1:nJoints
     % Convert symbolic expression into C-code
     [funstr hstring] = ccodefunctionstring(tmpStruct.(symname),...
         'funname',funname,...
-        'vars',{Q},'output',['I_row_',num2str(kJoints)]);
+        'vars',{Q,QD},'output',['C_row_',num2str(kJoints)]);
     
     %% Generate C implementation file
     fid = fopen(fullfile(srcDir,funfilename),'w+');
@@ -117,15 +117,15 @@ end
 CGen.logmsg('\t%s\n',' done!');
 
 
-%% Full inertia matrix
-CGen.logmsg([datestr(now),'\tGenerating full inertia matrix C-code']);
+%% Full coriolis matrix
+CGen.logmsg([datestr(now),'\tGenerating full coriolis matrix C-code']);
 
-symname = 'inertia';
+symname = 'coriolis';
 
 funname = [CGen.rob.name,'_',symname];
 funfilename = [funname,'.c'];
 hfilename = [funname,'.h'];
-outname = 'I';
+outname = 'C';
 
 % Create the function description header
 hStruct = createHeaderStructFull(CGen.rob,symname); % create header
@@ -145,7 +145,7 @@ fprintf(fid,'%s\n\n',...
 
 [hstring] = ccodefunctionstring(sym(zeros(nJoints)),...
     'funname',funname,...
-    'vars',{Q},'output',outname,'flag',1);
+    'vars',{Q,QD},'output',outname,'flag',1);
 fprintf(fid,'%s{\n\n',hstring);
 
 fprintf(fid,'\t%s\n','/* allocate memory for individual rows */');
@@ -156,7 +156,7 @@ fprintf(fid,'%s\n',' '); % empty line
 
 fprintf(fid,'\t%s\n','/* call the row routines */');
 for kJoints = 1:nJoints
-    fprintf(fid,'\t%s_inertia_row_%d(row%d, input1);\n',CGen.rob.name,kJoints,kJoints);
+    fprintf(fid,'\t%s_coriolis_row_%d(row%d, input1, input2);\n',CGen.rob.name,kJoints,kJoints);
 end
 fprintf(fid,'%s\n',' '); % empty line\n
 
@@ -184,7 +184,7 @@ fprintf(fid,'%s\n%s\n\n',...
 fprintf(fid,'%s\n\n',...
     '#include "math.h"');
 for kJoints = 1:nJoints
-    rowstring = [CGen.rob.name,'_inertia_row_',num2str(kJoints)];
+    rowstring = [CGen.rob.name,'_coriolis_row_',num2str(kJoints)];
     fprintf(fid,'%s\n',...
         ['#include "',rowstring,'.h"']);
 end
@@ -206,16 +206,16 @@ end
 %% Definition of the header contents for each generated file
 function hStruct = createHeaderStructRow(rob,curJointIdx,fName)
 [~,hStruct.funName] = fileparts(fName);
-hStruct.shortDescription = ['Computation of the robot specific inertia matrix row for corresponding to joint ', num2str(curJointIdx), ' of ',num2str(rob.n),'.'];
-hStruct.calls = {['Irow = ',hStruct.funName,'(rob,q)'],...
-    ['Irow = rob.',hStruct.funName,'(q)']};
+hStruct.shortDescription = ['Computation of the robot specific coriolis matrix row for corresponding to joint ', num2str(curJointIdx), ' of ',num2str(rob.n),'.'];
+hStruct.calls = {['Crow = ',hStruct.funName,'(rob,q)'],...
+    ['Crow = rob.',hStruct.funName,'(q)']};
 hStruct.detailedDescription = {'Given a full set of joint variables this function computes the',...
-    ['inertia matrix row number ', num2str(curJointIdx),' of ',num2str(rob.n),' for ',rob.name,'.']};
+    ['coriolis matrix row number ', num2str(curJointIdx),' of ',num2str(rob.n),' for ',rob.name,'.']};
 hStruct.inputs = { ['rob: robot object of ', rob.name, ' specific class'],...
     ['q:  ',int2str(rob.n),'-element vector of generalized'],...
     '     coordinates',...
     'Angles have to be given in radians!'};
-hStruct.outputs = {['Irow:  [1x',int2str(rob.n),'] row of the robot inertia matrix']};
+hStruct.outputs = {['Crow:  [1x',int2str(rob.n),'] row of the robot coriolis matrix']};
 hStruct.references = {'1) Robot Modeling and Control - Spong, Hutchinson, Vidyasagar',...
     '2) Modelling and Control of Robot Manipulators - Sciavicco, Siciliano',...
     '3) Introduction to Robotics, Mechanics and Control - Craig',...
@@ -230,16 +230,16 @@ end
 
 function hStruct = createHeaderStructFull(rob,fname)
 [~,hStruct.funName] = fileparts(fname);
-hStruct.shortDescription = ['Inertia matrix for the ',rob.name,' arm.'];
-hStruct.calls = {['I = ',hStruct.funName,'(rob,q)'],...
-    ['I = rob.',hStruct.funName,'(q)']};
+hStruct.shortDescription = ['Coriolis matrix for the ',rob.name,' arm.'];
+hStruct.calls = {['C = ',hStruct.funName,'(rob,q)'],...
+    ['C = rob.',hStruct.funName,'(q)']};
 hStruct.detailedDescription = {'Given a full set of joint variables the function computes the',...
-    'inertia Matrix of the robot.'};
+    'coriolis Matrix of the robot.'};
 hStruct.inputs = { ['rob: robot object of ', rob.name, ' specific class'],...
     ['q:  ',int2str(rob.n),'-element vector of generalized'],...
     '     coordinates',...
     'Angles have to be given in radians!'};
-hStruct.outputs = {['I:  [',int2str(rob.n),'x',int2str(rob.n),'] inertia matrix']};
+hStruct.outputs = {['C:  [',int2str(rob.n),'x',int2str(rob.n),'] coriolis matrix']};
 hStruct.references = {'1) Robot Modeling and Control - Spong, Hutchinson, Vidyasagar',...
     '2) Modelling and Control of Robot Manipulators - Sciavicco, Siciliano',...
     '3) Introduction to Robotics, Mechanics and Control - Craig',...

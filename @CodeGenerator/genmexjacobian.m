@@ -49,7 +49,10 @@ end
 funfilename = fullfile(CGen.robjpath,[symname,'.c']);
 Q = CGen.rob.gencoords;
 
+% Function description header
 hStruct = createHeaderStructJacob0(CGen.rob,symname); % create header
+
+% Generate and compile MEX function 
 CGen.mexfunction(tmpStruct.(symname),'funfilename',funfilename,'funname',[CGen.rob.name,'_',symname],'vars',{Q},'output','J0','header',hStruct);
 
 CGen.logmsg('\t%s\n',' done!');
@@ -68,8 +71,10 @@ end
 funfilename = fullfile(CGen.robjpath,[symname,'.c']);
 Q = CGen.rob.gencoords;
 
+% Function description header
 hStruct = createHeaderStructJacobn(CGen.rob,symname); % create header
 
+% Generate and compile MEX function 
 CGen.mexfunction(tmpStruct.(symname),'funfilename',funfilename,'funname',[CGen.rob.name,'_',symname],'vars',{Q},'output','Jn','header',hStruct);
 
 CGen.logmsg('\t%s\n',' done!');

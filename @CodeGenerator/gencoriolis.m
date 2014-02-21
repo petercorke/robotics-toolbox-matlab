@@ -79,4 +79,15 @@ if CGen.genslblock
     CGen.genslblockcoriolis;
 end
 
+%% C-Code
+if CGen.genccode
+    CGen.genccodecoriolis;
+end
+
+% %% MEX
+% if CGen.genmex
+%     CGen.genmexinertia;
+% end
+
+
 end

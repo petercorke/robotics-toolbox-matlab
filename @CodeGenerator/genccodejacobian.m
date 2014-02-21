@@ -1,20 +1,18 @@
-%CODEGENERATOR.GENCCODEFKINE Generate C-function for forward kinematics
+%CODEGENERATOR.GENCCODEJACOBIAN Generate C-functions for robot jacobians
 %
-% cGen.genccodefkine() generates a robot-specific C-function to compute
-% forward kinematics.
+% cGen.genccodejacobian() generates a robot-specific C-function to compute
+% the jacobians with respect to the robot base as well as the end effector.
 %
 % Notes::
-% - Is called by CodeGenerator.genfkine if cGen has active flag genccode or
-%   genmex
-% - The generated .c and .h files are wirtten to the directory specified in
-%   the ccodepath property of the CodeGenerator object.
+% - Is called by CodeGenerator.genjacobian if cGen has active flag genccode or
+%   genmex.
+% - The generated .c and .h files are generated in the directory specified
+%   by the ccodepath property of the CodeGenerator object.
 %
 % Author::
-%  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany.
-%  http://www.rst.e-technik.tu-dortmund.de
+%  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
 %
-% See also CodeGenerator.CodeGenerator, CodeGenerator.genfkine, CodeGenerator.genmexfkine.
+% See also CodeGenerator.CodeGenerator, CodeGenerator.genccodefkine, CodeGenerator.genjacobian.
 
 % Copyright (C) 2012-2014, by Joern Malzahn
 %
@@ -51,7 +49,7 @@ end
 %% Jacobian w.r.t. the robot base
 CGen.logmsg([datestr(now),'\tGenerating jacobian C-code with respect to the robot base frame']);
 
-%% Prerequesites
+% Prerequesites
 % check for existance of C-code directories
 srcDir = fullfile(CGen.ccodepath,'src');
 hdrDir = fullfile(CGen.ccodepath,'include');
@@ -80,11 +78,14 @@ end
 
 %% Generate C implementation file
 fid = fopen(fullfile(srcDir,funfilename),'w+');
-% Header
+
+% Function description header
 fprintf(fid,'%s\n\n',hFString);
+
 % Includes
 fprintf(fid,'%s\n\n',...
     ['#include "', hfilename,'"']);
+
 % Function
 fprintf(fid,'%s\n\n',funstr);
 fclose(fid);
@@ -101,7 +102,7 @@ fprintf(fid,'%s\n%s\n\n',...
 fprintf(fid,'%s\n\n',...
     '#include "math.h"');
 
-% Function prototype
+% Function signature
 fprintf(fid,'%s\n\n',hstring);
 
 % Include guard
@@ -142,11 +143,14 @@ end
 
 %% Generate C implementation file
 fid = fopen(fullfile(srcDir,funfilename),'w+');
-% Header
+
+% Function description header
 fprintf(fid,'%s\n\n',hFString);
+
 % Includes
 fprintf(fid,'%s\n\n',...
     ['#include "', hfilename,'"']);
+
 % Function
 fprintf(fid,'%s\n\n',funstr);
 fclose(fid);
@@ -163,7 +167,7 @@ fprintf(fid,'%s\n%s\n\n',...
 fprintf(fid,'%s\n\n',...
     '#include "math.h"');
 
-% Function prototype
+% Function signature
 fprintf(fid,'%s\n\n',hstring);
 
 % Include guard
@@ -176,7 +180,7 @@ CGen.logmsg('\t%s\n',' done!');
 
 end
 
-%% Definition of the header contents for each generated file
+%% Definition of the function description header contents for each generated file
 function hStruct = createHeaderStructJacob0(rob,fname)
 [~,hStruct.funName] = fileparts(fname);
 hStruct.shortDescription = ['C code for the Jacobian with respect to the base coordinate frame of the ',rob.name,' arm.'];

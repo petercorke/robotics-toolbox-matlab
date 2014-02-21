@@ -1,4 +1,4 @@
-%CODEGENERATOR.GENCCODEFKINE Generate C-function for forward kinematics
+%CODEGENERATOR.GENCCODEFKINE Generate C-code for the forward kinematics
 %
 % cGen.genccodefkine() generates a robot-specific C-function to compute
 % forward kinematics.
@@ -10,9 +10,7 @@
 %   the ccodepath property of the CodeGenerator object.
 %
 % Author::
-%  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany.
-%  http://www.rst.e-technik.tu-dortmund.de
+%  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
 %
 % See also CodeGenerator.CodeGenerator, CodeGenerator.genfkine, CodeGenerator.genmexfkine.
 
@@ -82,11 +80,14 @@ end
 
 %% Generate C implementation file
 fid = fopen(fullfile(srcDir,funfilename),'w+');
+
 % Header
 fprintf(fid,'%s\n\n',hFString);
+
 % Includes
 fprintf(fid,'%s\n\n',...
     ['#include "', hfilename,'"']);
+
 % Function
 fprintf(fid,'%s\n\n',funstr);
 fclose(fid);
@@ -145,11 +146,14 @@ for iJoints=1:CGen.rob.n
     
     %% Generate C implementation file
     fid = fopen(fullfile(srcDir,funfilename),'w+');
+    
     % Description header
     fprintf(fid,'%s\n\n',hFString);
+    
     % Includes
     fprintf(fid,'%s\n\n',...
         ['#include "', hfilename,'"']);
+    
     % Function
     fprintf(fid,'%s\n\n',funstr);
     fclose(fid);
