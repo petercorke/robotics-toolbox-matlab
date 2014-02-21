@@ -83,21 +83,15 @@ end
 
 %% Embedded Matlab Function Simulink blocks
 if CGen.genslblock
-    
     genslblockfkine(CGen);
-    
 end
 
-% %% C-Code
-% if CGen.genccode
-% 
-%     CGen.genccodefkine;
-%     
-% end
+%% C-Code
+if CGen.genccode
+    CGen.genccodefkine;
+end
 
 %% MEX
 if CGen.genmex
-
     CGen.genmexfkine;
-    
 end

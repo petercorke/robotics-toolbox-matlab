@@ -101,25 +101,22 @@ for iArg = 1:2:nargin-2
     end
 end
 
-
-fid = fopen(opt.funfilename,'w+');
-
-% Create the header
+% Generate function description header
 if ~isempty(opt.hStruct)
     hFString = CGen.constructheaderstringc(opt.hStruct);
-    fprintf(fid,'%s\n',hFString);    
+else
+    hFString = [];
 end
 
+%% Generate C code
+fid = fopen(opt.funfilename,'w+');
+
+% Insert description header
+fprintf(fid,'%s\n',hFString);    
 % Includes
 fprintf(fid,'%s\n%s\n\n',...
-    '#include "math.h"',...
-    '#include "mex.h"');
-
-% Generate C-code for the actual computational routine
-funstr = ccodefunctionstring(f,'output',opt.output,'vars',opt.vars,'funname',opt.funname);
-fprintf(fid,'%s',sprintf(funstr));
-
-fprintf(fid,'\n');
+    '#include "mex.h"',...
+    ['#include "',[opt.funname,'.h'],'"']);
 
 % Generate the mex gateway routine
 funstr = CGen.genmexgatewaystring(f,'funname',opt.funname, 'vars',opt.vars);
@@ -127,9 +124,11 @@ fprintf(fid,'%s',sprintf(funstr));
 
 fclose(fid);
 
-% Compile the MEX file
+%% Compile the MEX file
+srcDir = fullfile(CGen.ccodepath,'src');
+hdrDir = fullfile(CGen.ccodepath,'include');
 if CGen.verbose
-    mex(opt.funfilename,'-v','-outdir',CGen.robjpath)
+    eval(['mex ',opt.funfilename, ' ',fullfile(srcDir,[opt.funname,'.c']),' -I',hdrDir, ' -v -outdir ',CGen.robjpath]);   
 else
-    mex(opt.funfilename,'-outdir',CGen.robjpath)
+    eval(['mex ',opt.funfilename, ' ',fullfile(srcDir,[opt.funname,'.c']),' -I',hdrDir,' -outdir ',CGen.robjpath]);
 end

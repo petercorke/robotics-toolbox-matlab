@@ -102,20 +102,21 @@
 classdef CodeGenerator
     properties (SetAccess = private)
         rob
+        ccodepath;
+        cppcodepath;
+        robjpath;
+        sympath;
+        slibpath;
     end
     properties
         basepath;
-        robjpath;
-        sympath;
         slib;
-        slibpath;
         verbose;
         saveresult;
         logfile;
         genmfun;
         genslblock;
         genccode;
-        ccodepath;
         genmex;
         compilemex;
     end
@@ -171,7 +172,7 @@ classdef CodeGenerator
             end
             
             % defaults
-            CGen.basepath = fullfile(pwd,CGen.getrobfname);
+            CGen.basepath = fullfile(CGen.getrobfname);
             CGen.robjpath = fullfile(CGen.basepath,['@',CGen.getrobfname]);
             CGen.sympath = fullfile(CGen.basepath,'symbolicexpressions');
             CGen.slib = [CGen.getrobfname,'slib'];
@@ -183,9 +184,10 @@ classdef CodeGenerator
             CGen.genslblock = false;
             CGen.debug = false;
             CGen.genccode = false;
-            CGen.ccodepath = fullfile(CGen.basepath,'ccode');
+            CGen.ccodepath = fullfile(CGen.basepath,'c');
+            CGen.cppcodepath = fullfile(CGen.basepath,'cpp');
             CGen.genmex = false;
-            CGen.compilemex = false;
+            CGen.compilemex = true;
             
             if nargin < 2
                 varargin{1} = 'default';
@@ -226,8 +228,12 @@ classdef CodeGenerator
                     CGen = tb_optparse(CGen,varargin);
             end
             
-            if any([CGen.genmfun, CGen.genslblock])
+            if any([CGen.genmfun, CGen.genslblock, CGen.genccode, CGen.genmex])
                 CGen.saveresult = true;
+            end
+            
+            if CGen.genmex
+                CGen.genccode = true;
             end
             
             if ~isempty(CGen.logfile)
