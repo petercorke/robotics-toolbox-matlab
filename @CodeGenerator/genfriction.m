@@ -72,4 +72,15 @@ if CGen.genslblock
     CGen.genslblockfriction;
 end
 
+%% C-Code
+if CGen.genccode
+    CGen.genccodefriction;
+end
+
+%% MEX
+if CGen.genmex
+    CGen.genmexfriction;
+end
+
+
 end

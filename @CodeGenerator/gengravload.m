@@ -49,7 +49,8 @@ function [G] = gengravload(CGen)
 CGen.logmsg([datestr(now),'\tDeriving gravitational load vector']);
 
 q = CGen.rob.gencoords;
-G = CGen.rob.gravload(q);
+tmpRob = CGen.rob.nofriction;
+G = tmpRob.gravload(q);
 
 CGen.logmsg('\t%s\n',' done!');
 
@@ -71,5 +72,16 @@ end
 if CGen.genslblock
     CGen.genslblockgravload;
 end
+
+%% C-Code
+if CGen.genccode
+    CGen.genccodegravload;
+end
+
+%% MEX
+if CGen.genmex
+    CGen.genmexgravload;
+end
+
 
 end

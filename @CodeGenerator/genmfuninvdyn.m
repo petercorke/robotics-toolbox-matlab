@@ -8,7 +8,7 @@
 % - The generated M-function is composed of previously generated M-functions
 %   for the inertia matrix, coriolis matrix, vector of gravitational load and 
 %   joint friction vector.  This function recombines these components to 
-%   compute the forward dynamics.
+%   compute the inverse dynamics.
 % - Access to generated function is provided via subclass of SerialLink 
 %   whose class definition is stored in cGen.robjpath.
 %
