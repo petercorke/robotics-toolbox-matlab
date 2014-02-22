@@ -135,7 +135,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
     end
 
     J0 = jacob0(robot, q);
-    J0 = J0(m, m);
+    J0 = J0(m, :);
     if cond(J0) > 100
         warning('RTB:ikine:singular', 'Initial joint angles results in near-singular configuration, this may slow convergence');
     end
@@ -143,6 +143,8 @@ function [qt,histout] = ikine(robot, tr, varargin)
     history = [];
     failed = false;
     e = zeros(6,1);
+    revolutes = [robot.links.sigma] == 0;
+
     
     for i=1:npoints
         T = tr(:,:,i);
@@ -161,7 +163,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
                 warning('ikine: iteration limit %d exceeded (row %d), final err %f', ...
                     opt.ilimit, i, nm);
                 failed = true;
-                q = NaN*ones(1,n);
+                %q = NaN*ones(1,n);
                 break
             end
 
@@ -171,6 +173,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
             e(1:3) = transl(T - Tq);
             Rq = t2r(Tq);
             [th,n] = tr2angvec(t2r(T)*Rq');
+            %th*n
             e(4:6) = th*n;
 
 
@@ -205,6 +208,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
             % compute change in joint angles to reduce the error, 
             % based on the square sub-Jacobian
             if opt.pinv
+                %pinv( J(m,:) )
                 dq = opt.alpha * pinv( J(m,:) ) * e(m);
             else
                 dq = J(m,:)' * e(m);
@@ -228,6 +232,14 @@ function [qt,histout] = ikine(robot, tr, varargin)
 
             % update the estimated solution
             q = q + dq';
+            
+            % wrap angles for revolute joints
+            k = (q > pi) & revolutes;
+            q(k) = q(k) - 2*pi;
+            
+            k = (q < -pi) & revolutes;
+            q(k) = q(k) + 2*pi;
+            
             nm = norm(e(m));
 
             if norm(e) > 1.5*norm(eprev)
