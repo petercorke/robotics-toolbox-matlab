@@ -63,8 +63,8 @@ rpy = tr2rpy(R)
 % We can investigate the effects of rotations about different axes
 % using this GUI based demonstration.  The menu buttons allow the rotation
 % axes to be varied
+%  *** close the window when you are done.
 tripleangle('rpy', 'wait')
-% close the window when you are done.
 
 % The final useful form is the quaternion which comprises 4 numbers.  We can create
 % a quaternion from an orthonormal matrix
