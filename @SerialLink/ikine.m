@@ -172,10 +172,9 @@ function [qt,histout] = ikine(robot, tr, varargin)
             
             e(1:3) = transl(T - Tq);
             Rq = t2r(Tq);
-            [th,n] = tr2angvec(t2r(T)*Rq');
-            %th*n
+            [th,n] = tr2angvec(Rq'*t2r(T));
             e(4:6) = th*n;
-
+            
 
             % optionally adjust the step size
             if opt.varstep
@@ -188,7 +187,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
                     save.e = e;
                     opt.alpha = opt.alpha * (2.0^(1.0/8));
                     if opt.verbose > 1
-                        fprintf('raise alpha to %f\n', opt.alpha);
+                        fprintf('step %d: raise alpha to %f\n', count, opt.alpha);
                     end
                 else
                     % rats!  error got worse,
@@ -197,7 +196,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
                     e = save.e;
                     opt.alpha = opt.alpha * 0.5;
                     if opt.verbose > 1
-                        fprintf('drop alpha to %f\n', opt.alpha);
+                        fprintf('step %d: drop alpha to %f\n', count, opt.alpha);
                     end
                 end
             end
@@ -243,7 +242,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
             nm = norm(e(m));
 
             if norm(e) > 1.5*norm(eprev)
-                warning('RTB:ikine:diverged', 'solution diverging, try reducing alpha');
+                warning('RTB:ikine:diverged', 'solution diverging at step %d, try reducing alpha', count);
             end
             eprev = e;
 
