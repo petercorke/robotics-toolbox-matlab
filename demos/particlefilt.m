@@ -92,4 +92,4 @@ pf.plot_xy('r');
 
 % The uncertainty of the estimate is related to the spread of the particles and
 % we can plot that
-plot(pf.std); xlabel('time step'); ylabel('standard deviation'); legend('x', 'y', '\theta'); grid       
+figure; plot(pf.std); xlabel('time step'); ylabel('standard deviation'); legend('x', 'y', '\theta'); grid       
