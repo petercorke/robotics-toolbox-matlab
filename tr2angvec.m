@@ -35,16 +35,23 @@
 
 function [theta_, n_] = tr2angvec(R)
 
+    % get the rotation submatrix(s)
     if ~isrot(R)
         R = t2r(R);
     end
+    
+    % check the determinant
+    if abs(det(R)-1) > 4*eps
+           error('matrix not orthonormal rotation matrix');
+    end
+        
 
     if size(R,3) > 1
         theta = zeros(size(R,3),1);
         v = zeros(size(R,3),3);
     end
     
-    for i=1:size(R,3)
+    for i=1:size(R,3)  % for each rotation matrix in the sequence
         
         % There are a few ways to do this:
         %
@@ -71,16 +78,30 @@ function [theta_, n_] = tr2angvec(R)
         
         [v,d] = eig(R(:,:,i));
 
-        k = find( abs(real(diag(d))-1) < 20*eps );
-
+        unit_evec = abs(real(diag(d))-1) < 20*eps;
+        
+        switch sum(unit_evec)
+            case 0
+                % no unit eigenvalues, matrix is not orthonormal
+                error('matrix not orthonormal rotation matrix');
                 
-        if isempty(k)
-            error('matrix not orthonormal rotation matrix');
+            case 1
+                % one unit eigenvalue, should always be this case
+                k = find(unit_evec);
+            otherwise
+                % for the case of a matrix very close to unity, the results
+                % become complex, with a conjugate pair of eigenvectors and one
+                % with zero complex part.
+                for k=1:3
+                    if isreal(v(:,k))
+                        break;
+                    end
+                end
         end
-        k = k(end);
+         
         
         % get the direction, eigenvector corresponding to real eigenvalue
-        n(i,:) = v(:,k);
+        n(i,:) = real(v(:,k));
 
         % rotation comes from the trace
         ac = (trace(R(:,:,i)) - 1) / 2;
