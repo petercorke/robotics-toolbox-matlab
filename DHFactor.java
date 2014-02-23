@@ -1,10 +1,14 @@
 import	java.io.*;
 import	java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import	java.lang.*;
 
 /**
  * A class to simplify symbolic transform expressions.
  * @author Peter I. Corke peter.i.corke@gmail.com
+ * 
+ * Major update 2/2014
  */
 
 /**
@@ -129,7 +133,11 @@ class Element {
 		else if ( (s1 == null) && (s2 != null) )
 			return new String(s2);
 		else {
-			return s1 + "+" + s2;
+			if (s2.charAt(0) == '-')
+				// handle the case where S2 begins with a negative sign
+				return s1 + s2;
+			else
+				return s1 + "+" + s2;
 		}
 	}
 
@@ -169,32 +177,6 @@ class Element {
 			throw new IllegalArgumentException("cant factorize " + e);
 		}
 	}
-    /*
-	public void add(Element e) {
-		if ((this.type != DH_STANDARD) && (this.type != DH_MODIFIED))
-			throw new IllegalArgumentException("wrong element type " + this);
-		
-		System.out.println("  adding: " + this + " += "  + e);
-		switch (e.type) {
-		case RZ:
-			this.theta = e.argString(); 
-            if (e.isjoint())
-                this.prismatic = 0;
-            break;
-		case TX:
-			this.A = e.argString(); break;
-		case TZ:
-			this.D = e.argString(); 
-            if (e.isjoint())
-                this.prismatic = 1;
-            break;
-		case RX:
-			this.alpha = e.argString(); break;
-		default:
-			throw new IllegalArgumentException("cant factorize " + e);
-		}
-	}
-    */
 
 
     // test if this particular element could be part of a DH term
@@ -249,8 +231,10 @@ class Element {
 		sum.var = symAdd(this.var, e.var);
 		sum.symconst = symAdd(this.symconst, e.symconst);
 		sum.constant = this.constant + e.constant;
+        /* hack
         if (Math.abs(sum.constant) > 90)
 			throw new IllegalArgumentException("rotation angle > 90");
+            */
 
 		/*
 		 * remove a null transform which can result from
@@ -263,7 +247,6 @@ class Element {
 			System.out.println("Merge: " + this + " " + e + " := " + sum);
 			return sum;
 		}
-
 	}
 
 	/**
@@ -470,7 +453,7 @@ class Element {
 	}
 
 	/*
-	 * Element contructors.  String is of the form:
+	 * Element constructors.  String is of the form:
 	 */
 	public Element(int type, int constant) {
 		this.type = type;
@@ -543,6 +526,8 @@ class Element {
                 default:
                     break;
                 }
+                if (s.charAt(0) == '+')
+                	s.delete(0, 1);
                 
             this.symconst = new String(s);
        }
@@ -558,8 +543,8 @@ class Element {
 	public Element(String s)
 				throws IllegalArgumentException {		// constructor
 		int		i;
-		String sType = s.substring(0,2);
-		String sRest = s.substring(2);
+		String sType = s.substring(0,2);  // Tx, Rx etc
+		String sRest = s.substring(2);    // the argument including brackets
 
 		if (!(sRest.endsWith(")") && sRest.startsWith("(")))
 			throw(new IllegalArgumentException("brackets"));
@@ -571,13 +556,24 @@ class Element {
 			throw(new IllegalArgumentException("bad transform name" + sType));
 		type = i;
 
-		sRest = sRest.substring(1, sRest.length()-1);
+
+		
+		sRest = sRest.substring(1, sRest.length()-1); // get the argument from between brackets
+		
+		// handle an optional minus sign
+		String negative = "";
+		
+		if (sRest.charAt(0) == '-') {
+			negative = "-";
+			sRest = sRest.substring(1);
+		}
+		
 		switch (sRest.charAt(0)) {
 		case 'q':
-			var = sRest;
+			var = negative + sRest;
 			break;
 		case 'L':
-			symconst = sRest;
+			symconst = negative + sRest;
 			break;
 		default:
 			try {
@@ -585,21 +581,10 @@ class Element {
 			}
 			catch(NumberFormatException e) {
 				System.err.println(e.getMessage());
-				throw(new IllegalArgumentException("bracket contents"));
+				throw(new IllegalArgumentException("bad argument in term " + s));
 			}
 		}
 	}
-
-	// class method to convert Element vector to string
-    /*
-	public static String toString(Element [] e) {
-		String 	s = "";
-
-		for (int i=0; i<e.length; i++)
-			s += e + " ";
-		return s;
-	}
-    */
 
     /*
      * Return a string representation of the parameters (argument)
@@ -616,13 +601,19 @@ class Element {
 		case TX:
 		case TY:
 		case TZ:
+			// Tx(L1-L3),  symconst
+			// Rz(q1+180), var+constant
+			// Tx(L2),     symconst
+			// Ry(90),     constant
 			if (var != null)
-				s += var;
+				s = var;
 			if (symconst != null) {
 				if (var != null)
-					s += "+";
+					if (symconst.charAt(0) != '-')
+						s += "+";
 				s += symconst;
 			}
+			// constants always displayed with a sign character
 			if (constant != 0)
 				s += (constant < 0 ? "" : "+") + constant;
 			break;
@@ -672,14 +663,6 @@ class Element {
 		s += ")";
 		return s;
 	}
-
-    /*
-    public String rotation() {
-    }
-
-    public String translation() {
-    }
-    */
 }
 
 /**********************************************************************
@@ -697,7 +680,8 @@ class Element {
  *	public ElementList() {	// constructor, use superclass
  *	public String toString() {
  */
-class ElementList extends ArrayList {
+@SuppressWarnings("serial")
+class ElementList extends ArrayList<Element> {
 
     /**
      * Attempt to group this and subsequent elements into a DH term
@@ -709,7 +693,6 @@ class ElementList extends ArrayList {
 
 		int	match, jvars;
 		int	i, j, f;
-		Element	e;
 		int	nfactors = 0;
 
 		for (i=0; i<this.size(); i++) {
@@ -718,9 +701,12 @@ class ElementList extends ArrayList {
 			for (f=0; f<4; f++) {
 				if (j >= this.size())
 					break;
-				e = (Element) this.get(j);
+                Element	e = this.get(j);
 				if ((f == 0) && (verbose > 0))
 					System.out.println("Starting at " + e);
+                Element ee = e;
+                ee.factorMatch(dhWhich, f, verbose);
+                e.factorMatch(dhWhich, f, verbose);
 				if (e.factorMatch(dhWhich, f, verbose)
 				) {
 					j++;	// move on to next element
@@ -747,7 +733,7 @@ class ElementList extends ArrayList {
 			Element dh = new Element(dhWhich);
 
 			for (j=start; j<end; j++) {
-				dh.add( (Element) this.get(i) );
+				dh.add( this.get(i) );
 				this.remove(i);
 			}
 			this.add(i, dh);
@@ -769,7 +755,7 @@ class ElementList extends ArrayList {
 		boolean	crossed;
 
 		for (i=0; i<(this.size()-1); i++) {
-			e = (Element) this.get(i);
+			e = this.get(i);
 			if (e.isjoint())
 				continue;
 			if (!e.istrans())
@@ -777,7 +763,7 @@ class ElementList extends ArrayList {
 			f = null;
 			crossed = false;
 			for (j=i+1; j<(this.size()-1); j++) {
-				f = (Element) this.get(j);
+				f = this.get(j);
 				if (f.istrans())
 					continue;
 				if (f.isrot() && (f.axis() == e.axis())) {
@@ -803,7 +789,6 @@ class ElementList extends ArrayList {
 	 * desired term ordering.
 	 */
 	public int swap(int dhWhich) {
-		Element	e;
 		int	total_changes = 0;
 		int	nchanges = 0;
 
@@ -811,8 +796,8 @@ class ElementList extends ArrayList {
 				nchanges = 0;
 
 				for (int i=0; i<(this.size()-1); i++) {
-					e = (Element) this.get(i);
-					if (e.swap( (Element) this.get(i+1), dhWhich)) {
+                    Element	e = this.get(i);
+					if (e.swap( this.get(i+1), dhWhich)) {
 						this.remove(i);
 						this.add(i+1, e);
 						nchanges++;
@@ -828,12 +813,11 @@ class ElementList extends ArrayList {
 	 * substitute all non Z joint transforms according to rules.
 	 */
 	public int substituteToZ() {
-		Element	e;
 		Element[] replacement;
 		int	nchanges = 0;
 
 		for (int i=0; i<this.size(); i++) {
-				e = (Element) this.get(i);
+                Element	e =  this.get(i);
 				if (!e.isjoint())
 					continue;
 				replacement = e.substituteToZ();
@@ -864,14 +848,14 @@ class ElementList extends ArrayList {
 		boolean jointYet = false;
 
 		for (int i=0; i<this.size(); i++) {
-				e = (Element) this.get(i);
+				e = this.get(i);
 				if (e.isjoint())
 					jointYet = true;
 				if (e.isjoint())
 					continue;
 				if ((i == 0) || !jointYet)	// leave initial const xform
 					continue;
-				prev = (Element) this.get(i-1);
+				prev = this.get(i-1);
 				//System.out.println("in ToZ2: " + e + " " + prev);
 				replacement = e.substituteToZ(prev);
 				if (replacement != null) {
@@ -895,20 +879,20 @@ class ElementList extends ArrayList {
 	 * substitute transforms according to rules.
 	 */
 	public int substituteY() {
-		Element	e, prev, next;
 		Element[] replacement;
 		int	nchanges = 0;
 		boolean	jointYet = false;
+        Element next;
 
 		for (int i=1; i<this.size(); i++) {
-				e = (Element) this.get(i);
+				Element e = this.get(i);
 				if (e.isjoint())
 					jointYet = true;
 				if ((i == 0) || !jointYet)	// leave initial const xform
 					continue;
-				prev = (Element) this.get(i-1);
+				Element prev = this.get(i-1);
 				if ((i+1) < this.size())
-					next = (Element) this.get(i+1);
+					next = this.get(i+1);
 				else
 					next = null;
 				replacement = e.substituteY(prev, next);
@@ -935,11 +919,10 @@ class ElementList extends ArrayList {
 	 */
 	public int merge() {
 		int nchanges = 0;
-		Element	e;
 
 		for (int i=0; i<(this.size()-1); i++) {
-			e = (Element) this.get(i);
-			e = e.merge( (Element) this.get(i+1));
+			Element e = this.get(i);
+			e = e.merge( this.get(i+1));
 			if (e == this.get(i))
 				continue;
 			this.remove(i);
@@ -995,9 +978,11 @@ class ElementList extends ArrayList {
 		} while ((nchanges > 0) && (nloops++ < 10));
 	}
 
-	public ElementList() {	// constructur, use superclass
+    /*
+	public ElementList() {	// constructor, use superclass
 		super();
 	}
+    */
 
 	public String toString() {
 		String	s = "";
@@ -1106,7 +1091,9 @@ public class DHFactor {
 
     // Matlab callable constructor
 	public DHFactor(String src) {
+			System.out.println("In DHFactor"); // debug
         results = parseString(src);
+			System.out.println("In DHFactor, parseString is done"); // debug
         if (!this.isValid())
             System.out.println("DHFactor: error: Incomplete factorization, no DH equivalent found");
     }
@@ -1142,7 +1129,7 @@ public class DHFactor {
         int     i;
 
         for (i=from; i<to; i++) {
-            Element e = (Element) results.get(i);
+            Element e = results.get(i);
 
             if (xform.length() > 0)
                 xform += "*";
@@ -1169,10 +1156,9 @@ public class DHFactor {
     public String dh() {
 		String	s = "[";
         String  theta, d;
-        Element e;
 
 		for (int i=0; i<results.size(); i++) {
-			e = (Element) results.get(i);
+			Element e = results.get(i);
             if (e.type == Element.DH_STANDARD) {
                 // build up the string: theta d a alpha
                 if (e.prismatic == 1) {
@@ -1206,7 +1192,7 @@ public class DHFactor {
         int iprev = -1;
 
 		for (int i=0; i<results.size(); i++) {
-			e = (Element) results.get(i);
+			e = results.get(i);
             if (e.type == Element.DH_STANDARD) {
                 if (iprev >= 0) {
                     // we've seen a DH factor before
@@ -1226,7 +1212,7 @@ public class DHFactor {
         Element e;
 
 		for (int i=0; i<results.size(); i++) {
-			e = (Element) results.get(i);
+			e = results.get(i);
             if (e.type == Element.DH_STANDARD) {
                     s += angle(e.offset)  + " ";
             };
@@ -1240,7 +1226,7 @@ public class DHFactor {
         int i;
 
         for (i=0; i<results.size(); i++) {
-            Element e = (Element)results.get(i);
+            Element e = results.get(i);
 
             if ( (e.type == Element.DH_STANDARD) || (e.type == Element.DH_MODIFIED) )
                 return el2matlab(0, i);
@@ -1254,7 +1240,7 @@ public class DHFactor {
         int i;
 
         for (i=results.size()-1; i>=0; i--) {
-            Element e = (Element)results.get(i);
+            Element e = results.get(i);
 
             if ( (e.type == Element.DH_STANDARD) || (e.type == Element.DH_MODIFIED) )
                 return el2matlab(i, results.size());
@@ -1304,15 +1290,36 @@ public class DHFactor {
         return null;
     }
 
+	public static ElementList parseStdin() {
+		BufferedReader	src;
+		String			buffer;
+
+		try {
+            // read the file and parse it
+            src = new BufferedReader(new InputStreamReader(System.in));
+            buffer = src.readLine();
+
+        return parseString(buffer);
+		}
+		catch (IOException e) {
+			System.err.println(e.getMessage());
+			System.exit(1);
+		}
+        return null;
+    }
+
 	public static ElementList parseString(String buffer) {
 		ElementList l = new ElementList();
 
 		try {
 			System.out.println(buffer);
-			StringTokenizer tokens = new StringTokenizer(buffer, " *.");
+			
+			// each token is [R|T][x|y|z](arg)
+			Pattern pattern = Pattern.compile("([RT][xyz]\\([^)]+\\))");
+			Matcher tokens = pattern.matcher(buffer);
 
-			while (tokens.hasMoreTokens())
-				l.add( new Element(tokens.nextToken()) );
+			while (tokens.find())
+				l.add( new Element(tokens.group(1)) );
 
 			System.out.println(l);
 
@@ -1336,15 +1343,14 @@ public class DHFactor {
     //   dhfactor < stdin
 	public static void main(String args[]) {
 
-        if (args.length > 0) {
+        if (args.length == 1) {
 
-            ElementList l  = parseFile(args[0]);
+            ElementList l  = parseString(args[0]);
             System.err.println( l );
             
         } else {
-            System.err.println("no file name specified\n");
-            Element.showRuleUsage();
-            System.exit(1);
+            ElementList l  = parseStdin();
+            System.err.println( l );
         }
     }
 }
