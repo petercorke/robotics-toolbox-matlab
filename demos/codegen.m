@@ -128,7 +128,7 @@ tic; Tz2 = specRob.fkine(qz); t2 = toc
 %%
 % We obtain the exact solution without floating point notation if we use
 % the symbolic expression as follows:
-tic; Tz1 = subs(symExp,'[q1, q2, q3]',qz); toc
+tic; Tz1 = subs(symExp, ['q1', 'q2', 'q3'],qz); toc
 %%
 % This is however more time consuming. Most probably we might use the
 % symbolic expressions for algorithm development, controller design, 
