@@ -1,6 +1,6 @@
 %CODEGENERATOR.GENMEXGRAVLOAD Generate C-MEX-function for gravitational load
 %
-% CGEN.GENMEXgravload() generates a robot-specific MEX-function to compute
+% CGEN.GENMEXGRAVLOAD() generates a robot-specific MEX-function to compute
 % gravitation load forces and torques.
 % 
 % Notes::
@@ -35,14 +35,14 @@
 function [] = genmexgravload(CGen)
 
 %% Forward kinematics up to tool center point
-CGen.logmsg([datestr(now),'\tGenerating forward kinematics MEX-function up to the end-effector frame: ']);
+CGen.logmsg([datestr(now),'\tGenerating gravload MEX-function: ']);
 symname = 'gravload';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
 if exist(fname,'file')
     tmpStruct = load(fname);
 else
-    error ('genmfungravload:SymbolicsNotFound','Save symbolic expressions to disk first!')
+    error ('genmexgravload:SymbolicsNotFound','Save symbolic expressions to disk first!')
 end
 
 funfilename = fullfile(CGen.robjpath,[symname,'.c']);

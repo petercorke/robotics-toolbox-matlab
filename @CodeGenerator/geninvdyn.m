@@ -139,4 +139,15 @@ if CGen.genslblock
     CGen.genslblockinvdyn;
 end
 
+%% C-Code
+if CGen.genccode
+    CGen.genccodeinvdyn;
+end
+
+%% MEX
+if CGen.genmex
+    CGen.genmexinvdyn;
+end
+
+
 end
