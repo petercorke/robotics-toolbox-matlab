@@ -1,0 +1,389 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\input{pic-common}
+\input{matlab}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\cfoot{\thepage}
+\rfoot{Copyright \copyright\ Peter Corke 2013}
+%\renewcommand{\chaptermark}[1]{\markboth{#1}{#1}} % remember chapter title
+%\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+
+
+\title{Using the Robotics Toolbox  with a real robot}
+\author{Peter Corke}
+\date{March 2013}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+\section{The robot}
+\begin{figure}[b]
+\centering
+\includegraphics[width=0.8\textwidth]{phantomx}
+\caption{The PhantomX robot sitting on my desk.  The world frame $\{\!0\!\}$ and the tool frame $\{\!t\!\}$
+are shown.
+Note I'm using a book over the back feet to keep it from
+toppling over.}
+\label{fig:phantomx}
+\end{figure}
+
+This document describes how to connect a real and relatively inexpensive hobby-class robot to the Robotics
+Toolbox\cite{Corke11a} for \Mlab.
+The Toolbox provides a convenient environment in which to learn about arm-type robots and experiment with 
+different types of robots (two link, six-link, underactuated and overactuated) and display the results graphically.
+However there is something to said in favour of the visceral excitement that comes from programming your own
+robot.
+
+This document describes how to connect the Toolbox, running in the MATLAB environment, to a real four-axis robot
+that you can purchase for less than USD 400.
+
+The robot we choose is the PhantomX Pincher AX-12 robot from \href{http://www.trossenrobotics.com/p/PhantomX-Pincher-Robot-Arm.aspx}{Trossen Robotics}.
+The robot is listed as having 5 degrees of freedom (DOF) but one of these is the gripper so from a kinematic perspective
+it has 4 DOF.  Having less than 6 DOF means that the tool cannot achieve an arbitrary tool orientation at every position
+that it can reach.
+
+The robot kit contains an ArbotiX controller which uses similiar hardware to the Arduino family of hobbyist embedded computers, a 16\MHz\ Atmega ATMEGA644P, and can be programmed using the Wiring language and programming environment which
+runs under Windows, Linux and MacOS.  We communicate with the controller using a USB interface which appears as
+a serial port to the host computer.
+The ArbotiX has  64k of flash ROM and 4k of RAM.
+
+\begin{table}
+\centering
+\begin{tabular}{|l|r|} \hline
+Property & Value \\ \hline
+Weight & 550\unit{g} \\ \hline
+Vertical reach & 350\unit{mm} \\ \hline
+Horizontal reach & 310\unit{mm} \\ \hline
+Lifting capacity at 150\unit{mm} & 100\unit{g} \\
+Lifting capacity at 200\unit{mm} & 70\unit{g} \\
+Lifting capacity at 250\unit{mm} & 40\unit{g} \\  \hline
+\end{tabular}
+\caption{Mechanical parameters of the PhantomX Pincher robot.}
+\label{tab:robot-params}
+\end{table}
+
+The actuators on the robot are \href{http://www.trossenrobotics.com/dynamixel-ax-12-robot-actuator.aspx}{Dynamixel AX-12 servos} which are like model aircraft servos on steroids.  They are mechanically
+powerful and fast rotary actuators with a 300\unit{deg} range of motion.  They contain an embedded microcontroller that performs the angle control function as well as supporting a packet-oriented communications interface over a 38,400\unit{baud}
+serial channel.  The Dynamixel servos can be daisy chained using a 3-wire bus that greatly reduces the amount of wiring
+required to build the robot.  Each servo on the bus is uniquely addressable.
+
+The Dyanmixel servos have a very high level of functionality much of which is not available since the ArbotiX controller 
+intermediates all communications between the host and the servos.
+
+The whole robot and controller is powered from a 12\unit{VDC} plug pack.  Its overall parameters are listed in
+Table \ref{tab:robot-params}.
+
+\section{Getting started}
+The first step is to connect the robot to a USB port on your computer and power it up.  An LED will light on the ArbotiX board underneath
+the robot but apart from that nothing else will happen, the robot will not move.
+It's useful at this point to note which serial port device your operating system has created to communicate with the ArbotiX.
+On  a Linux or MacOS system
+\begin{Code}
+$ ls /dev/tty*
+\end{Code}
+and for my computer I see a device that I haven't seen before called \var{/dev/tty.usbserial-A800JDPN}.
+
+\subsection{Flashing the Arbotix}
+Next you need to ensure that the correct software is installed on the ArbotiX.  You need to have the Arduino IDE installed on your computer and this can be downloaded from free from \href{http://arduino.cc}{arduino.cc}.  This web site has a great deal of information
+to help somebody starting out with Arduino.  To run Arduino you will also need to have Java installed.  Run Arduino and exit in order to create the default files.
+
+Arduino keeps extensions in a part of the filesystem that varies according to operating system.  Under MacOS it is in \texttt{\textasciitilde/Documents/Arduino}.  Download the \href{https://code.google.com/p/arbotix/}{arbotix-XXXX.zip} file from Trossen Robotics and copy its \texttt{arbotix} folder on top of  the  folder \texttt{Arduino}.  The other top level folder, \texttt{pypose}, contains a Python script to communicate with the \texttt{pypose} application loaded into the ArbotiX.  However we will use a \Mlab\ program to perform this role instead.
+
+Now run Arduino again,  and use the \texttt{Tools} menu options to set the serial port and the type of board, select Arbotix.
+Select \texttt{File/Sketchbook/pypose} to open the \texttt{pypose} application source code and then verify it and upload it.
+In Arduino all programs are referred to as sketches.
+The program will be loaded into flash program memory so this step need only be done once.
+
+
+\section{Driving the robot}
+
+\subsection{Make \Mlab\ talk to your robot}
+Connect the robot to your computer as above and start \Mlab.
+\begin{Code}
+>> arb = Arbotix('port', '/dev/tty.usbserial-A800JDPN', 'nservos', 5)
+arb = 
+Arbotix chain on serPort /dev/tty.usbserial-A800JDPN (open)
+ 5 servos in chain                                         
+ \end{Code}
+If the class \var{Arbotix} cannot be found then add \var{robot/interfaces} to your path.  The following command will
+do the trick
+\begin{Code}
+>> addpath(fullfile( fileparts(which('startup_rvc')), 'robot', 'interfaces'))
+\end{Code}
+If you already have a connection to the Arbotix open you will see a warning message and the class will destroy the old
+connection before creating a new one.
+
+Now you have a connection to the robot through the workspace class variable \var{arb}
+\begin{Code}
+>> about arb
+arb [Arbotix] : 1x1 (112 bytes)
+\end{Code}
+
+\subsection{Exercising the robot}
+Let's start with something innocuous, taking the temperature of the servo motors
+\begin{Code}
+>> arb.gettemp
+ans =
+    41    40    40    40    43
+\end{Code}
+which is the temperature of each servo motor in degrees Celsius.  They are a bit warmer than ambient!
+
+Now let's get the actual angle of joint 1, the waist joint
+\begin{Code}
+>> arb.getpos(1)
+ans =
+   -0.0869
+\end{Code}
+which is the angle in radians.  Of course, for your robot you will most likely get a different answer.  You can get the joint
+angle for the other joints in a similar way.
+We can get all the joint angles simultaneously\footnote{Actually the method has to ask each servo in turn for its
+joint angle, but at the \Mlab\ level we can consider it instantaneous.}
+\begin{Code}
+>> q = arb.getpos([])
+q =
+   -0.0818    0.4500    0.7159   -0.1125         0
+\end{Code}
+where we consider the empty vector \var{[]} to be the wildcard meaning all joints.
+
+Now let's try a cautious motion, we'll move the gripper to its current position
+\begin{Code}
+arb.setpos(5, q(5))
+\end{Code}
+and nothing happens.  Let's change the gripper angle
+\begin{Code}
+arb.setpos(5, q(5)+0.5)
+\end{Code}
+and we hear a noise and see the gripper fingers move slightly.
+
+Now let's move the whole robot to its current location
+\begin{Code}
+arb.setpos(q)
+\end{Code}
+and the gripper moves back to its original location.
+
+Enough with caution, let's move all joints by a small amount
+\begin{Code}
+arb.setpos(q + 0.1 * [1 1 1 1 0]);
+\end{Code}
+all joints moved.
+Make sure that you have the robot sitting squarely on the desk, perhaps with a heavy book across the back feet so
+that it doesn't topple over.
+This simple move command simply tells the servos to move a new position, and they go as fast as they can.
+We can set the speed to something more sedate
+\begin{Code}
+arb.setpos(q, 3 * [1 1 1 1 1]);
+\end{Code}
+which moves back to the original pose but with all joints set to a velocity of 3 encoder units per second\footnote{The Dynamixel servos have an encoder value that varies from 0 to 1023 corresponding to -150 to 150\unit{deg} of rotation.}.
+The \var{setpos()} and \var{getpos()} methods make the conversion from encoder counts to angles.
+
+The robot is quite rigid since the Dynamixel servos are doing their job very well.  We can relax the robot by
+\begin{Code}
+>> arb.relax()
+\end{Code}
+which puts all the servos into a zero torque mode and we move the joints by hand.  The only force we feel is due to 
+the friction in the Dynamixel gearbox.
+Change the configuration of the robot and then check the new joint angles
+\begin{Code}
+>> q = arb.getpos()
+q =
+    0.0102    0.5573    1.1505   -0.5829    0.0051
+\end{Code}
+We can disable the relaxed mode by
+\begin{Code}
+>> arb.relax([], false)
+\end{Code}
+which causes the Dynamixels to start servoing to whatever joint angle they currently have.
+
+\section{Robot kinematics}
+We can create a kinematic model of the PhantomX robot by
+\begin{Code}
+>> mdl_phantomx
+\end{Code}
+which creates the workspace variables \var{px} (the robot) and \var{qz} which are the zero joint angles.
+Although the robot has five servo motors, since one is the gripper, this robot has only four joints
+\begin{Code}
+>> px
+px = 
+PhantomX (4 axis, RRRR, stdDH)                       
+                                                     
++---+-----------+-----------+-----------+-----------+
+| j |     theta |         d |         a |     alpha |
++---+-----------+-----------+-----------+-----------+
+|  1|         q1|         40|          0|     -1.571|
+|  2|         q2|          0|       -105|      3.142|
+|  3|         q3|          0|       -105|          0|
+|  4|         q4|          0|       -105|          0|
++---+-----------+-----------+-----------+-----------+
+                                                     
+grav =    0  base = 1  0  0  0   tool =   0  0 -1  0 
+          0         0  1  0  0           -1  0  0  0 
+       9.81         0  0  1  0            0  1  0  0 
+                    0  0  0  1            0  0  0  1
+\end{Code}
+The physical robot has it's base coordinate frame as shown in Figure \ref{fig:phantomx}.
+Something about tool transform
+
+Let's plot the robot in its zero angle pose
+\begin{Code}
+>> px.plot(qz)
+\end{Code}
+and we see it is standing straight up.
+We can drive the graphical robot around using the virtual teach pendant
+\begin{Code}
+>> px.teach()
+\end{Code}
+and manipulating the sliders causes the graphical robot to move.  Note the coordinate frames of the world and 
+of the tool.
+
+We can also plot the pose of the actual robot, earlier we read the joint angles, so
+\begin{Code}
+>> px.plot(q)
+\end{Code}
+should reflect the pose of your physical robot.
+
+                    
+\subsection{Forward kinematics}
+The pose of the end-effector can be determined using forward kinematics, so for the actual pose of the physical robot
+that is
+\begin{Code}
+>> px.fkine(q(1:4))
+ans =
+   -0.9999    0.0102   -0.0102   -4.2268
+   -0.0102   -0.9999   -0.0001   -0.0432
+   -0.0102   -0.0000    0.9999  321.1689
+         0         0         0    1.0000
+\end{Code}
+Note that the translational component has units of millimetres, and that we had to explicitly specify \var{q(1:4)} since the 
+robot has four joints but \var{q} has five servo motor positions.
+The end-effector pose can be expressed more concisely as
+\begin{Code}
+>> trprint(ans)
+t = (-4.22678,-0.0432268,321.169), RPY = (0.00599222,-0.585907,-179.414) deg
+\end{Code}
+
+
+\subsection{Inverse kinematics}
+When the robot is reaching down to lift an object the z-axis of its end-effector is pointing downward, that is, in the
+negative world z-direction.  It's x-axis will be pointing in the same direction as the world x-axis.
+We can create a pose by
+\begin{Code}
+>> T=transl(150, 80, 0)*trotx(pi)
+T =
+    1.0000         0         0  150.0000
+         0   -1.0000   -0.0000   80.0000
+         0    0.0000   -1.0000         0
+         0         0         0    1.0000
+\end{Code}
+which has its orientation consistent with that of the end-effector trying to reach an object.
+
+Now we will compute the joint angles required to achieve this end-effector configuration.  The robot is underactuated
+so we need to specify a mask matrix to indicate the DOF that we care about.  We will choose: x, y, z and the orientation of
+z.
+\begin{Code}
+>> q=px.ikine(T, qz, [1 1 1  0 0 1])
+Warning: Initial joint angles results in near-singular configuration, this may slow convergence 
+> In SerialLink.ikine at 140 
+Warning: solution diverging, try reducing alpha 
+> In SerialLink.ikine at 234 
+Warning: solution diverging, try reducing alpha 
+> In SerialLink.ikine at 234 
+Warning: ikine: iteration limit 1000 exceeded (row 1), final err 2.389275 
+> In SerialLink.ikine at 161 
+
+q =
+   -8.9349   -8.7578   -8.5723  -10.5647
+\end{Code}
+As a quick sanity check we will perform the forward kinematics for these joint angles
+\begin{Code}
+>> px.fkine(q)
+ans =
+   -0.5101   -0.4705    0.7200  150.0066
+   -0.2720    0.8824    0.3839   79.9876
+   -0.8160    0.0000   -0.5781   -0.0000
+         0         0         0    1.0000
+\end{Code}
+and we see that the translational components are very close, accurate to three significant figures.     The orientation
+is clearly quite different but as already discussed a robot with only four joints cannot achieve an arbitrary orientation
+at every point in its workspace.
+      
+We receive quite a few warning messages and the joint angles are well outside the range $-\pi$ to $\pi$.  However
+we did start with a very naive estimate of the joint angles to achieve this end-effector pose.
+A more sensible initial pose might be
+\begin{Code}
+>> qn = [0 0.6 -1 -1.2];
+\end{Code}
+which can be found by using the graphical teach pendant to position the robot into the approximate pose.
+Now the inverse kinematics  has fewer warnings
+\begin{Code}
+>> q=px.ikine(T, qn, [1 1 1  0 0 1])
+Warning: Initial joint angles results in near-singular configuration, this may slow convergence 
+> In SerialLink.ikine at 140 
+Warning: ikine: iteration limit 1000 exceeded (row 1), final err 0.489862 
+> In SerialLink.ikine at 161 
+
+q =
+    0.4900    0.6236   -1.1427   -1.3211
+\end{Code}
+and gives a result with the joint angles within the range $-\pi$ to $\pi$.
+
+
+\section{A RobotArm object}
+So far we've been using two objects to represent our robot: \var{px} is the standard Toolbox kinematic model that
+performs kinematics, plotting, teaching and so on, and \var{arb} is an interface to the real robot.
+We can combine them into a single more useful object
+\begin{Code}
+>> arm = RobotArm(px, arb)
+\end{Code}
+The new object
+\begin{Code}
+>> about arm
+arm [RobotArm] : 1x1 (112 bytes)
+\end{Code}
+is a subclass of the \var{SerialLink} class so it inherits all its methods.  However it now has a link to the real robot
+and some additional methods.
+
+Let's start with
+\begin{Code}
+>> arm.mirror()
+\end{Code}
+which puts the arm into the relaxed mode mentioned earlier, but continually reads the joint angles and reflects them to a graphical version of the robot.  As you move the physical robot you can see it moving on the screen.
+The joint angles can be obtained with
+\begin{Code}
+>> q = arm.getq()
+\end{Code}
+
+The gripper servo is treated separately from motor servos.  We can close the gripper
+\begin{Code}
+>> arm.gripper(0);
+\end{Code}
+or fully open it
+\begin{Code}
+>> arm.gripper(1);
+\end{Code}
+The argument is a floating point number between 0 (fully closed) and 1 (fully open).
+
+
+We can move smoothly to a pose by
+\begin{Code}
+>> arm.jmove(qz, 5)
+\end{Code}
+which will move the robot to the desired joint configuration in 5 seconds.  The actually trajectory used is computed using
+the Toolbox function \var{jtraj()}.
+
+ALSO CMOVE
+
+\bibliographystyle{ieeetr}
+\bibliography{strings,publist}
+
+
+\end{document}  

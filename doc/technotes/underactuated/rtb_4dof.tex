@@ -1,0 +1,211 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\input{pic-common}
+\input{matlab}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\cfoot{\thepage}
+\rfoot{Copyright \copyright\ Peter Corke 2014}
+%\renewcommand{\chaptermark}[1]{\markboth{#1}{#1}} % remember chapter title
+%\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+
+
+\title{{\Huge 4 is harder than 6:}\\ Inverse kinematics for underactuated robots}
+\author{Peter Corke}
+\date{February 2014}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+Many low-cost hobby class robots, such as shown in Figure \ref{fig:phantomx} have only 4 joints (degrees of freedom). 
+This document describes how to determine inverse kinematics for such a robot using the Robotics
+Toolbox\cite{Corke11a} for \Mlab.
+
+Underactuation complicates the process of finding an inverse kinematic solution, and it frustrates those who are new to robotics ---
+those who just want to run the code and get an answer.
+For a robot with 6 joints it's quite straightforward, but underactuation 
+requires some careful thought about the problem that you are trying to solve --- you can't just blindly use
+the tools.
+
+
+
+	\begin{figure}[b]
+	\centering
+	\includegraphics[width=0.8\textwidth]{phantomx}
+	\caption{The PhantomX robot sitting on my desk.  The world frame $\{\!0\!\}$ and the tool frame $\{\!t\!\}$
+	are shown.
+	Note I'm using a book over the back feet to keep it from
+	toppling over.}
+	\label{fig:phantomx}
+	\end{figure}
+
+
+We will consider the problem in two parts.  First the problem of moving the robot tool to a particular position.  Second, moving the tool
+to a particular position and tool orientation.
+
+\section{Moving to a position}
+We start by loading a model of a 4DOF robot, in this case the PhantomX as shown in Figure \ref{fig:phantomx}.
+\begin{Code}
+>> mdl_phantomx
+\end{Code}
+and then plot it for default, all zero, joint angles
+\begin{Code}
+>> px.plot(qz)
+\end{Code}
+and we see that the robot is pointing straight upwards.
+We can use the sliders in the teach pendant function
+\begin{Code}
+>> px.teach
+\end{Code}
+to move the robot to the sort of pose that might be used for picking up an object as shown in Figure \ref{fig:nominal-pose}.
+
+	\begin{figure}
+	\centering
+	\includegraphics[width=0.8\textwidth]{nominal.eps}
+	\caption{The PhantomX robot in a pose that might be useful for grabbing an object off the table top.  Here the joint angles
+	are $(1.12, 0.441, -1.69, -0.770)\unit{rad}$.}
+	\label{fig:nominal-pose}
+	\end{figure}
+
+Now we will define the position we want the tool tip to move to
+\begin{Code}
+>> Td = transl([100 80 -70])
+\end{Code}
+and then compute the numerical inverse kinematics
+\begin{Code}
+>> q = px.ikine(Td, qz, [1 1 1 0 0 0])
+Warning: Initial joint angles results in near-singular configuration, this may slow convergence 
+> In SerialLink.ikine at 140 
+
+q =
+    0.6747    2.6132    1.9831   -2.3849
+\end{Code}
+Note that we have specified a mask value of $(1, 1, 1, 0, 0, 0)$ which indicates that we only care about errors in the x-, y- and z-directions,
+rotational errors are to be ignored.
+The error message simply indicates that the Jacobian, required at each iteration, is singular for the initial set of joint angles.
+\begin{Code}
+>> px.plot(q)
+\end{Code}
+which is shown in Figure \ref{fig:poses}(a).
+While this looks rather awkward the tool position is indeed what we requested
+\begin{Code}
+>> px.fkine(q)
+ans =
+    0.7746    0.6247    0.0986  100.0000
+    0.6197   -0.7809    0.0789   80.0000
+    0.1263   -0.0000   -0.9920  -70.0000
+         0         0         0    1.0000
+\end{Code}
+as indicated by the top three values in the rightmost column.
+
+Inverse kinematics is, in general, not uniquely defined.  There are several arm configurations that will give the same tool position.  The numerical
+method has just chosen the awkward one.
+In the less awkward configuration we chose earlier using the teach pendant we see that $q_3$ was negative.
+With a bit of trial and error, guided by the configuration we achieved using the teach pendant, we find that
+\begin{Code}
+>> q = px.ikine(Td, [0.5 1 -1 -0.5], [1 1 1 0 0 0])
+q =
+    0.6747    0.8000   -1.6280   -0.8665
+>> px.plot(q)
+\end{Code}
+ gives a reasonable looking solution, as shown in Figure \ref{fig:poses}(b).
+
+	\begin{figure}
+	\centering
+	\begin{tabular}{cc}
+	\includegraphics[width=0.45\textwidth]{pose1.eps} & \includegraphics[width=0.45\textwidth]{pose2.eps} \\
+	(a) & (b) 
+	\end{tabular}
+	\caption{Two solutions for the tool tip position $(100, 80, -70)$.}
+	\label{fig:poses}
+	\end{figure}
+	\section{Moving to a pose}
+
+Looking from above as shown in Figure \ref{fig:ortho}(a) we can see that the arm is a straight line and its angle is a function only
+of $q_1$, the waist joint.  The effective length of the line is a function of $q_2$, $q_3$ and $q_4$.  The height of the tool tip, 
+as shown in Figure \ref{fig:ortho}, is also a function  of $q_2$, $q_3$ and $q_4$.
+So while there is only one possible value of $q_1$, there are infinite number of values of $q_2$, $q_3$ and $q_4$ --- it is a 3-bar linkage
+pinned at each end.
+Each particular choice of $q_2$, $q_3$ and $q_4$ results in a different orientation of the tool's z-direction --- this is an unconstrained degree
+of freedom.
+
+	\begin{figure}
+	\centering
+	\begin{tabular}{cc}
+	\includegraphics[width=0.45\textwidth]{above.eps} & \includegraphics[width=0.45\textwidth]{side.eps} \\
+	(a) & (b) 
+	\end{tabular}
+	\caption{Two views of the robot at tool tip position $(100, 80, -70)$.}
+	\label{fig:ortho}
+	\end{figure}
+	
+	
+\section{Moving to a pose}
+Now we want to control the orientation of the tool as well.
+The construction of the robot only allows us to control the tool z-direction.  The only way we could change the tool x- or y-direction would
+be to rotate $q_1$ but this would violate the position requirement.  
+For an underactuated robot arm it is critically important to understand what the mechanism can and cannot do, particularly when we are talking
+about controlling pose.
+
+The first step is to specify the desired pose.  If we look at the value we set above
+\begin{Code}
+>> Td
+Td =
+     1     0     0   100
+     0     1     0    80
+     0     0     1   -70
+     0     0     0     1
+\end{Code}
+we see that the rotation part is an identity matrix, which has desired tool z-direction pointing upward in the world z-direction, as defined by the
+third column.  This is impossible for the robot to achieve, to be reaching down towards the table top with its finger tips pointing upwards, as
+well as being non-useful for picking up an object on the table.
+We need to set the orientation part of the desired tool pose and we do that by
+\begin{Code}
+>> Td = transl([100 80 -70])*oa2tr([0 -1 0], [0 0 -1])
+Td =
+     1     0     0   100
+     0    -1     0    80
+     0     0    -1   -70
+     0     0     0     1
+
+\end{Code}
+which postmultiplies by a rotational transform that has its z-axis in the negative world z-direction (downward) and its y-axis in the negative world y-direction.	The third column now indicates negative world z-direction.
+
+The only remaining degree of freedom is evident when we look at the robot side on, the tool z-axis is not pointing quite downward.
+In order to change things so that it is, we must rotate the end-effector frame 
+
+\begin{Code}
+>> q = px.ikine(Td, [0.5 1 -1 -0.5], [1 1 1 1 0 0])
+Warning: Initial joint angles results in near-singular configuration, this may slow convergence 
+> In SerialLink.ikine at 140 
+
+q =
+
+    0.6747    0.6954   -1.8288   -0.6174
+
+>> px.fkine(q)
+
+ans =
+
+    0.7809    0.6247    0.0000  100.0000
+    0.6247   -0.7809    0.0000   80.0000
+    0.0000   -0.0000   -1.0000  -70.0000
+         0         0         0    1.0000
+>> px.plot(q)
+\end{Code}
+
+
+\bibliographystyle{ieeetr}
+\bibliography{strings,publist}
+
+
+\end{document}  

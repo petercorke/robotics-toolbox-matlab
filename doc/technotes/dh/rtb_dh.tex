@@ -1,0 +1,401 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+%\usepackage[table,dvipsnames]{xcolor}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{array}
+\usepackage{subcaption}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\cfoot{\thepage}
+\rfoot{Copyright \copyright\ Peter Corke 2014}
+\lhead{}
+
+\input{rvc-notation}
+\setlength{\parindent}{0cm}
+\usepackage{mathtools}
+
+\numberwithin{equation}{section}
+
+
+\title{Denavit-Hartenberg notation for common robots}
+\author{Peter Corke}
+\date{March 2014}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+Denavit-Hartenberg parameters remain one of the most confusing topics for those new to the study of robotics.
+This note discusses some common robot configurations and the meaning of their various Denavit-Hartenberg parameters.
+Consistent diagrams and tables of Denavit-Hartenberg parameters are used to illustrate the main points.
+
+Fundamentally we wish to describe the pose of each link in the chain relative to the pose of the preceding link.
+We would expect this to comprise \textbf{six parameters}, one of which is the joint variable --- the parameter of the joint that connects the two links.
+However the Denavit-Hartenberg formalism\cite[Ch.~7]{Corke11a} has only \textbf{four parameters} to describe the spatial relationship between successive link
+coordinate frames, and this is achieved by introducing two constraints\cite[p.~78]{Spong06} to the placement of those frames:
+\begin{enumerate}
+\item The axis $x_j$ is perpendicular to the axis $z_{j-1}$.
+\item The axis $x_j$ intersects the axis $z_{j-1}$.
+\end{enumerate}
+The result is that link frames are sometimes constrained to be placed in locations that seem non-obvious, perhaps not even on the physical link
+itself.
+The choices of coordinates frames are also not unique, different people will derive different, but correct, coordinate frame assignments\cite{Spong06}.  These variants will however always lead to the same expression for the pose of the end-effector with respect to the base.
+
+In robot kinematics it is common to partition the joints into two sets
+\begin{equation}
+\mat{T}_E = \mat{T}_p(q_1 \cdots q_3) \mat{T}_o(q_4 \cdots q_6) \label{eq:1}
+\end{equation}
+The first transform, a function of the  first three joints, controls the pose of the coordinate frame $\cframe{P}$ and its responsible for setting the position
+of the end-effector frame $\cframe{E}$.
+The second transform, a function of the last three joints, controls the orientation of the end-effector frame $\cframe{E}$ with respect to frame
+$\cframe{P}$.  This transform is a pure rotation, and on modern robots is implemented by  a \textbf{spherical wrist} mechanism that provides an arbitrary orientation with zero translation --- the origin of the frames
+$\cframe{P}$ and $\cframe{E}$ are coincident 
+This  approach allows us to decouple position and orientation of the end-effector $\cframe{E}$. 
+
+The orientation of frame $\cframe{P}$ is a function of the first three joints, but we use those degrees of freedom to control position, not orientation.  Thus the orientation of $\cframe{P}$ is a consequence of the position we are trying to achieve.  The job of the wrist it provide a rotation from
+$\cframe{P}$ to $\cframe{E}$ as required by the task.  The wrist will be discussed in more
+detail in Section \ref{sec:wrist}.
+
+
+\subsection*{Notation}
+The coincident origin of the frames
+$\cframe{P}$ and $\cframe{E}$ are  indicated by a large black dot in the figures that follow.  This is the centre of the wrist and the position
+of the end-effector.
+The x-, y- and z-axes of the base and $\cframe{P}$ are denoted by the colored
+arrows that are red, blue and green respectively.  Joint rotation axes are denoted by dashed lines.
+
+For tables of Denavit-Hartenberg parameters rows are colored blue if they contribute to wrist position, and peach if they
+contribute to wrist orientation.  White cells are related to base or tool transforms.
+
+\tableofcontents
+\pagebreak
+%=================
+\section{Anthropomorphic arm with no shoulder offset}
+
+	\begin{figure}[h]
+	\centering
+	\begin{subfigure}[b]{0.6\textwidth}
+		\includegraphics[width=\textwidth]{rob1}
+		\caption{Plan and side elevation}
+		\label{fig:rob1}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.3\textwidth}
+		\begin{tabular}{|c|c|c|c|c|} \hline
+			$j$ & $\bf \theta_j$ & $\bf d_j$ & $\bf a_j$ & $\bf \alpha_j$ \\ \hline
+			\rowcolor{SkyBlue}1 &  $q_1$ & \cellcolor{White} 0 &  0& $-\pi/2$ \\
+			\rowcolor{SkyBlue}2 &  $q_2$ & 0& $l_1$& 0 \\
+			\rowcolor{SkyBlue}3 & $q_3$ & 0 &$l_2$  & $\pi/2$ \\
+			\rowcolor{Peach}4 &  $q_4$ & 0 & 0 & $-\pi/2$ \\
+			\rowcolor{Peach}5&  $q_5$ & 0 & 0 & $\pi/2$ \\
+			\cellcolor{Peach}6 &  \cellcolor{Peach} $q_6$ &0  &0  & 0 \\ \hline
+		\end{tabular}
+		\caption{Denavit-Hartenberg parameters}
+		\label{fig:dh1}
+	\end{subfigure}
+
+	\caption{Simple anthropomorphic robot with no shoulder offset.  }
+	\end{figure}
+
+Almost all robot arms are anthropomorphic, human like, and they have:
+\begin{enumerate}
+\item a waist rotation around a vertical axis, 
+\item a shoulder rotation about a horizontal axis, 
+\item an elbow rotation about a horizontal axis,
+\item and a 3-axis wrist joint at the end.
+\end{enumerate}
+
+A plan and side elevation of such a robot, not including the wrist, is shown in Figure \ref{fig:rob1} with the joint angles $q_1=q_2=q_3 =0$.
+The coordinate
+frame directions of the base and the endpoint are shown as colored arrows.
+
+The Denavit-Hartenberg parameters of this robot are given in Figure \ref{fig:dh1} where the blue color is associated with the first three joints (wrist position), and the peach color is associated with the last three joints (the wrist).
+The joint variables $q_1 \cdots q_6$ appear in the first column, the $\theta$ column, since this robot has all revolute joints.
+
+This robot has only two significant dimensions, the lengths of the upper and lower arm which are denoted $l_1$ and $l_2$ respectively.  They appear in the $a$ column.  All other $a_j$ and $d_j$ values are zero.
+
+The pose of $\cframe{P}$ is given by
+\[
+\mat{T}_p = \mat{R}_z(q_1) \mat{R}_x(-\frac{\pi}{2}) \mat{R}_z(q_2)  \mat{T}_x(l_1) \mat{R}_z(q_3) \mat{T}_x(l_2) \mat{R}_x(\frac{\pi}{2})
+\]
+From inspection of Figure \ref{fig:rob1} we could directly write\cite{Corke07a} a  simpler sequence of transforms
+\[
+\mat{T}_p = \mat{R}_z(q_1)y \mat{R}_y(q_2)  \mat{T}_x(l_1) \mat{R}_y(q_3) \mat{T}_x(l_2) 
+\]
+which uses only 5, rather than 7, elementary transforms --- the extra complexity in the first sequence is due to the constraints introduced by the 
+Denavit-Hartenberg formalism.
+
+\subsection{Base transform}
+The origin of the robot's coordinate system is at the intersection of joints 1 and 2, a point typically inside the shoulder mechanism.
+The value of $d_1$ is typically set to zero, but most real robots are mounted on some kind of pedestal above the floor.
+This parameter could be used to set the height of the $q_2$ axis at some arbitrary height $h$ above the
+ground plane, as shown in Figure  \ref{fig:rob1}.
+
+If the robot is at some arbitrary pose with respect to a world coordinate system then we can rewrite \eq{eq:1} as
+\[
+\mat{T}_E = \mat{T}_b \mat{T}_p(q_1 \cdots q_3) \mat{T}_o(q_4 \cdots q_6) 
+\]
+where $\mat{T}_b$ is the robot's base transform.
+
+\pagebreak
+%=================
+\section{Anthropomorphic arms with a shoulder offset}
+\subsection{General case}
+
+	\begin{figure}[h]
+	\centering
+	\begin{subfigure}[b]{0.6\textwidth}
+		\includegraphics[width=\textwidth]{rob2}
+		\caption{Plan and side elevation}
+		\label{fig:rob2}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.3\textwidth}
+		\begin{tabular}{|c|c|c|c|c|} \hline
+			$j$ & $\bf \theta_j$ & $\bf d_j$ & $\bf a_j$ & $\bf \alpha_j$ \\ \hline
+			\rowcolor{SkyBlue}1 &  $q_1$ & \cellcolor{White} 0 &  $o_1$& $-\pi/2$ \\
+			\rowcolor{SkyBlue}2 & $q_2$ & $o_2$ & $l_1$& 0 \\
+			\rowcolor{SkyBlue}3 &  $q_3$ & $o_3$ &$l_2$  & $\pi/2$ \\
+			\rowcolor{Peach}4 & $q_4$ & 0 & 0 & $-\pi/2$ \\
+			\rowcolor{Peach}5 &  $q_5$ & 0 & 0 & $\pi/2$ \\
+			\cellcolor{Peach} 6 & \cellcolor{Peach} $q_6$ & 0 &0  & 0 \\ \hline
+		\end{tabular}
+		\caption{Denavit-Hartenberg parameters}
+		\label{fig:dh2}
+	\end{subfigure}
+	\caption{Simple anthropomorphic robot with a shoulder offset.}
+	\end{figure}
+
+
+Many robots have the arm assembly horizontally to one side of the base x-axis, as shown in Figure \ref{fig:rob2}.  
+Examples include the PUMA 560 and most of
+the Fanuc and ABB arms.
+Such robots have a left and right-handed working configuration\cite[Sec~7.4.4]{Corke11a} --- the configuration shown in Figure \ref{fig:rob2} is left handed.  However by
+changing joints 1 and 2 by $180\deg$ the arm will be in a right-handed configuration.
+
+This robot has two significant dimensions, the lengths of the upper and lower arm which are denoted $l_1$ and $l_2$ respectively as before.
+It also has three offsets denoted $o_1$, $o_2$ and $o_2$ respectively.  
+Either or both of $o_2$ and $o_2$ will cause the
+end frame to be displaced in the $\cframe{P}$ y-direction.  One introduces the shift at the shoulder, the other at the elbow.
+The choice of how the offset is partitioned depends on where you choose to physically place the coordinate frames --- it makes no difference to the end-point position.
+
+Offset $o_1$ is less common and is typically zero.  As shown in the diagram it implies that the rotational axes of joints 1 and 2 do not 
+intersect.
+
+The pose of $\cframe{P}$ is given by
+\[
+\mat{T}_p = \mat{R}_z(q_1) \mat{T}_x(o_1) \mat{R}_x(-\frac{\pi}{2}) \mat{R}_z(q_2)  \mat{T}_z(o_2) \mat{T}_x(l_1) \mat{R}_z(q_3) \mat{T}_z(o_3) \mat{T}_x(l_2) \mat{R}_x(\frac{\pi}{2})
+\]
+
+\pagebreak
+
+
+%=================
+\subsection{PUMA 560 robot}\label{sec:puma560}
+
+	\begin{figure}[h]
+	\centering
+	\begin{subfigure}[b]{0.6\textwidth}
+		\centering
+		\includegraphics[width=0.8\textwidth]{rob3}
+		\caption{Plan and side elevation}
+	\label{fig:rob3} 
+	\end{subfigure}
+	\begin{subfigure}[b]{0.3\textwidth}
+		\begin{tabular}{|c|c|c|c|c|} \hline
+			$j$ & $\bf \theta_j$ & $\bf d_j$ & $\bf a_j$ & $\bf \alpha_j$ \\ \hline
+			\rowcolor{SkyBlue}1 &  $q_1$ & \cellcolor{White} 0 &  0 & $+\pi/2$ \\
+			\rowcolor{SkyBlue}2 &  $q_2$ & $o_1$ & $l_1$& 0 \\
+			\rowcolor{SkyBlue}3 & $q_3$ & $o_2$ &$o_3$  & $-\pi/2$ \\
+			\rowcolor{Peach}4 &  $q_4$ & \cellcolor{SkyBlue} $l_2$  & 0 & $\pi/2$ \\
+			\rowcolor{Peach}5 &$q_5$ & 0 & 0 & $-\pi/2$ \\
+			\cellcolor{Peach} 6 & \cellcolor{Peach} $q_6$ &0  &0  & 0 \\ \hline
+		\end{tabular}
+		\caption{Denavit-Hartenberg parameters}
+		\label{fig:dh3}
+	\end{subfigure}
+	\caption{PUMA 560 anthropomorphic robot with a shoulder offset.}
+	\end{figure}
+
+The classical PUMA 560 robot is a special case of the above, but there are some important differences:
+\begin{itemize}
+\item $\alpha_1$ and $\alpha_3$ have opposite signs to the models discussed above, and this changes the direction of the
+rotational axes for joints 2 and 3, the dashed arrows are reversed.
+\item the robot has a very clear shoulder offset and in the Denavit-Harteberg parameters it can be expressed using the
+$o_1$ and $o_2$ offsets described above.   However in most models $o_1=0$ and the offset is lumped into the elbow joint rather than the shoulder.
+\item there is an oddity in the mechanical design, an elbow offset --- the centre lines of the upper and lower arms do not intersect.
+In the side elevation this is shown in exagerated fashion by the offset $o_3$.  This offset is described by $a_3$ which we used previously to express the lower arm length $l_2$.
+
+At this point we've run out of parameters in the first three joints, so we need to pull a rather unintuitive trick.
+We consider the upper arm pointing vertically for the case where $q_3=0$, and 
+ we use one of the joint 4 (wrist) parameters $d_4$ to represent the lower arm length $l_2$.
+ 
+ The parameters of the PUMA 560 robot are shown in Figure \ref{fig:dh3} and the color coding now clearly shows that the wrist position and orientation is not clearly split between the first and last
+three joints.
+ \end{itemize}
+
+The pose of $\cframe{P}$ is more complex in this case, we must take into account the first \textbf{four} joints
+\[
+\mat[0]{T}_4 = \mat{R}_z(q_1) \mat{R}_x(\frac{\pi}{2}) \mat{R}_z(q_2)  \mat{T}_z(o_1) \mat{T}_x(l_1) \mat{R}_z(q_3) \mat{T}_z(o_2) \mat{T}_x(o_3) \mat{R}_x(-\frac{\pi}{2})  \mat{R}_z(q_4)  \underbracket{\mat{T}_z(l_2)} \mat{R}_x(-\frac{\pi}{2}) 
+\]
+The indicated term for lower-arm length term can be moved one place to the left since translation along z is invariant to rotation about z
+\[
+\mat[0]{T}_4 = \mat{R}_z(q_1) \mat{R}_x(\frac{\pi}{2}) \mat{R}_z(q_2)  \mat{T}_z(o_1) \mat{T}_x(l_1) \mat{R}_z(q_3) \mat{T}_z(o_2) \mat{T}_x(o_3) \mat{R}_x(-\frac{\pi}{2})   \mat{T}_z(l_2)  \underbracket{\mat{R}_z(q_4) \mat{R}_x(-\frac{\pi}{2})}
+\]
+The last two terms affect only orientation, not position, allowing us to write a transform expression for the position of $\cframe{P}$
+\[
+\mat{T}_p = \mat{R}_z(q_1) \mat{R}_x(\frac{\pi}{2}) \mat{R}_z(q_2)  \mat{T}_z(o_1) \mat{T}_x(l_1) \mat{R}_z(q_3) \mat{T}_z(o_2) \mat{T}_x(o_3) \mat{R}_x(-\frac{\pi}{2})   \mat{T}_z(l_2)
+\]
+
+\pagebreak
+
+%=================
+\subsection{Shoulder offset and prismatic joint}
+
+	\begin{figure}[h]
+	\centering
+	\begin{subfigure}[b]{0.6\textwidth}
+	\centering
+		\includegraphics[width=0.4\textwidth]{rob4}
+		\caption{Plan and side elevation}
+	\label{fig:rob4} 
+	\end{subfigure}
+	\begin{subfigure}[b]{0.3\textwidth}
+		\begin{tabular}{|c|c|c|c|c|} \hline
+			$j$ & $\bf \theta_j$ & $\bf d_j$ & $\bf a_j$ & $\bf \alpha_j$ \\ \hline
+			\rowcolor{SkyBlue}1 &  $q_1$ & \cellcolor{White} 0 &  0 & $-\pi/2$ \\
+			\rowcolor{SkyBlue}2 &  $q_2$ & $o_1$ & 0& $+\pi/2$ \\
+			\rowcolor{SkyBlue}3 & $-\pi/2$ & $q_3$ & 0  & 0 \\
+			\rowcolor{Peach}4 &  $q_4$ & 0  & 0 & $-\pi/2$  \\
+			\rowcolor{Peach}5 &$q_5$ & 0 & 0 & $+\pi/2$ \\
+			\cellcolor{Peach} 6 & \cellcolor{Peach} $q_6$ & 0 & 0 & 0 \\ \hline
+		\end{tabular}
+		\caption{Denavit-Hartenberg parameters}
+		\label{fig:dh4}
+	\end{subfigure}
+	\caption{Stanford  robot with a shoulder offset and prismatic joint.}
+	\end{figure}
+
+The Stanford arm is a not really an anthropomorphic arm.  It has a waist and a shoulder like the other robots that we have discussed, but the
+length of the arm is variable --- it has a  sliding, or prismatic, third joint.  There is also shoulder offset which is
+handled by the offset parameter $o_1$.
+
+The Denavit-Hartenberg formalism requires that the prismatic extension must be in the z-direction, it is the $d_3$ parameter so in this case
+$d_3 = q_3$.
+Therefore we are required to draw the arm in a vertical configuration.
+There is a, somewhat arbitrary, rotation $\theta_3 = -\pi/2$, which makes the y-axis of $\cframe{P}$ point to the right --- in all the other robot models
+we consider it is the x-axis that points to the right.
+
+The pose of $\cframe{P}$ is given by
+\[
+\mat{T}_p = \mat{R}_z(q_1) \mat{R}_x(-\frac{\pi}{2}) \mat{R}_z(q_2)  \mat{T}_z(o_1)  \mat{R}_z(-\frac{\pi}{2}) \mat{T}_z(q_3)
+\]
+
+%=================
+\section{Spherical wrist}\label{sec:wrist}
+Recapping from the introduction, it is common in robot kinematics  to partition the joints into two sets as given by \eq{eq:1}
+\[
+\mat{T}_E = \mat{T}_p(q_1 \cdots q_3) \mat{T}_o(q_4 \cdots q_6) 
+\]
+The first transform, a function of the  first three joints, controls the pose of the coordinate frame $\cframe{P}$ and its responsible for setting the position
+of the end-effector frame $\cframe{E}$.
+The second transform, a function of the last three joints, controls the orientation of the end-effector frame $\cframe{E}$ with respect to frame
+$\cframe{P}$.  This transform is a pure rotation, and on modern robots is implemented by  a \textbf{spherical wrist} mechanism that provides an arbitrary orientation with zero translation --- the origin of the frames
+$\cframe{P}$ and $\cframe{E}$ are coincident 
+This  approach allows us to decouple position and orientation of the end-effector $\cframe{E}$. 
+
+The orientation of frame $\cframe{P}$ is a function of the first three joints, but we use those degrees of freedom to control position, not orientation.  Thus the orientation of $\cframe{P}$ is a consequence of the position we are trying to achieve.  The job of the wrist it provide a rotation from
+$\cframe{P}$ to $\cframe{E}$ as required by the task.  
+
+The robot's wrist assembly is attached to to frame $\cframe{P}$, indicated by the black dot on the diagrams above.
+The wrist mechanism is typically a three degree
+of freedom mechanism (the last three joints of the robot) which allows an arbitrary orientation to be achieved.
+
+The common Denavit-Hartenberg parameters a spherical wrist are shown in peach color
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|} \hline
+$j$ & $\bf \theta_j$ & $\bf d_j$ & $\bf a_j$ & $\bf \alpha_j$ \\ \hline
+\rowcolor{Peach}4 & $q_4$ & 0 & 0 & $-\pi/2$ \\
+\rowcolor{Peach}5 &  $q_5$ & 0 & 0 & $\pi/2$ \\
+\cellcolor{Peach} 6 & \cellcolor{Peach} $q_6$ & 0 &0  & 0 \\ \hline
+\end{tabular}
+\end{center}
+
+Critical aspects of a spherical wrist are:
+\begin{itemize}
+\item $\alpha_4$ and $\alpha_5$ have magnitudes of $\pi/2$ but opposite signs.  For some kinematic models they are $-\pi/2, +\pi/2$ respectively, 
+in others they are $+\pi/2, -\pi/2$ respectively.
+\item All the length parameters $d_j$ and $a_j$ are zero, to ensure pure rotation.
+
+The PUMA 560 is a special case.  Because the z-axis of the $\cframe{3}$ frame points into the wrist mechanism, we can rearrange the
+transform string so that the translation due to $d_4$ comes before the $q_4$ rotation (see Section \ref{sec:puma560}).  In this case, and this case only, $d_4$ can be
+non-zero.
+\end{itemize}
+
+For the case  $\alpha_4=-\pi/2$ and $\alpha_5=+\pi/2$ we can write a string of elementary transformations
+\[
+\mat{T}_w = \mat{R}_z(q_4) \underbracket{\mat{R}_x(-\frac{\pi}{2})  \mat{R}_z(q_5)  \mat{R}_x(\frac{\pi}{2})}  \mat{R}_z(q_6)
+\]
+which is a sequence of pure rotations, so the overall transform is a pure rotation --- there is no translation.
+The indicated term  can be simplified as
+\[
+\mat{R}_x(-\frac{\pi}{2})  \mat{R}_z(q_5)  \mat{R}_x(\frac{\pi}{2}) = \mat{R_y}(q_5)
+\]
+which gives the wrist rotation as
+\[
+\mat{T}_w = \mat{R}_z(q_4) \mat{R_y}(q_5)  \mat{R}_z(q_6)
+\]
+which is the ZYZ Euler angle sequence.  The wrist mechanism is a physical instantiation of the Euler angle sequence.
+
+For the case  $\alpha_4=+\pi/2$ and $\alpha_5=-\pi/2$ we can write a string of elementary transformations
+\begin{align}
+\mat{T}_w &= \mat{R}_z(q_4) \underbracket{\mat{R}_x(\frac{\pi}{2})  \mat{R}_z(q_5)  \mat{R}_x(-\frac{\pi}{2})}_{\mat{R_y}(q_5)}  \mat{R}_z(q_6) \\
+&= \mat{R}_z(q_4) \mat{R_y}(-q_5)  \mat{R}_z(q_6)
+\end{align}
+which is also a ZYZ Euler angle sequence but with the middle angle negated.
+
+\subsection{Tool transform}
+The coordinate frame of the end-effector $\cframe{E}$  is in the centre of the wrist assembly --- physically inside the mechanism.  Typically a robot carries a tool, the end of which
+is at some fixed pose with respect to the  frame $\cframe{E}$.  
+
+The tip of the tool is often referred to as the Tool Centre Point (TCP).
+There are two ways in which the tool offset can be specified.
+\begin{enumerate}
+\item
+There are three parameters in the last row of the Denavit-Hartenberg parameter table that we have previously shown in white.
+If we assign parameters to them
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|} \hline
+$j$ & $\bf \theta_j$ & $\bf d_j$ & $\bf a_j$ & $\bf \alpha_j$ \\ \hline
+\rowcolor{Peach}4 &  $q_4$ & 0  & 0 & $-\pi/2$ \\
+\rowcolor{Peach}5 &$q_5$ & 0 & 0 & $\pi/2$ \\
+\cellcolor{Peach} 6 & \cellcolor{Peach} $q_6$ & $z_t$ & $x_t$ & $\alpha_t$  \\ \hline
+\end{tabular}
+\end{center}
+then we can write a transform
+\[
+\mat{T}(x_t, 0, z_t) \mat{R}_x(\alpha_t)
+\]
+which may be sufficiently general for many tasks.
+
+\item We can append an arbitrary tool transform $\mat{T}_t$ to the robot's pose, rewriting  \eq{eq:1} as
+\[
+\mat{T}_E = \mat{T}_p(q_1 \cdots q_3) \mat{T}_o(q_4 \cdots q_6)  \mat{T_t}
+\]
+This approach might be considered for one of two reasons.  Firstly, the tool transform possible using the joint 6 Denavit-Hartenberg parameters might be insufficient, for instance, we may require an offset in the tool y-direction.  Secondly, we may not wish to modify the Denavit-Hartenberg parameters, preferring to keep them as a \textit{pure} robot model.
+\end{enumerate}
+
+\bibliographystyle{ieeetr}
+\bibliography{strings,book,publist}
+
+
+
+\end{document}  
