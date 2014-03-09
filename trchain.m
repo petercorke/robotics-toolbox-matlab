@@ -8,13 +8,18 @@
 % selects the variable from the Jth column of the vector Q (1xN).
 %
 % For example:
-%        trchain('Rx(q1)Tx(a1)Ry(q2)Ty(a3)Rz(q3)', [1 2 3])
+%        trchain('Rx(q1)Tx(a1)Ry(q2)Ty(a3)Rz(q3) Rx(pi/2)', [1 2 3])
 %
 % is equivalent to computing:
 %        trotx(1) * transl(a1,0,0) * troty(2) * transl(0,a3,0) * trotz(3)
 %
 % Notes::
 % - The string can contain spaces between elements or on either side of ARG.
+% - Works for symbolic variables in the workspace and/or passed in via the 
+%   vector Q.
+% - For symbolic operations that involve use of the value pi, make sure you
+%   define it first in the workspace: pi = sym('pi');
+%
 %
 % See also trchain2, trotx, troty, trotz, transl.
 
@@ -23,7 +28,7 @@ function T = trchain(s, q)
     
     % s = 'Rx(q1)Tx(a1)Ry(q2)Tx(a3)Rz(q3)Tx(a3)';
     
-    tokens = regexp(s, '\s*(?<op>R.?|T.)\(\s*(?<arg>[A-Za-z][A-Za-z0-9]*)\s*\)\s*', 'names');
+    tokens = regexp(s, '\s*(?<op>R.?|T.)\(\s*(?<arg>[A-Za-z\-][A-Za-z0-9+\-\*/]*)\s*\)\s*', 'names');
     
     T = eye(4,4);
     joint = 1;
