@@ -184,6 +184,8 @@ classdef Link < handle
             % - The link dynamic (inertial and motor) parameters are all set to
             %   zero.  These must be set by explicitly assigning the object
             %   properties: m, r, I, Jm, B, Tc, G.
+            %
+            % See also: Revolute, Prismatic.
             
             %TODO eliminate legacy dyn matrix
             
