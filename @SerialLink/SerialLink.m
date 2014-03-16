@@ -10,6 +10,7 @@
 %  teach         drive the graphical robot
 %  isspherical   test if robot has spherical wrist
 %  islimit       test if robot at joint limit
+%  isconfig      test robot joint configuration
 %
 %  fkine         forward kinematics
 %  ikine6s       inverse kinematics for 6-axis spherical wrist revolute robot
@@ -46,12 +47,18 @@
 %  manuf      annotation, manufacturer's name
 %  comment    annotation, general comment
 %  plotopt    options for plot() method (cell array)
+%  fast       use mex version of RNE.  Can only be set true if the mex
+%             file exists.  Default is true.
 %
 % Object properties (read only)::
 %
 %  n           number of joints
 %  config      joint configuration string, eg. 'RRRRRR'
 %  mdh         kinematic convention boolean (0=DH, 1=MDH)
+%  theta       kinematic: joint angles (1xN)
+%  d           kinematic: link offsets (1xN)
+%  a           kinematic: link lengths (1xN)
+%  alpha       kinematic: link twists (1xN)
 %
 % Note::
 %  - SerialLink is a reference object.
@@ -103,9 +110,11 @@ classdef SerialLink < handle
         
         qteach
 
-        fast_rne    % mex version of rne detected
+        fast    % mex version of rne detected
         
         interface   % interface to a real robot platform
+        
+        ikineType
 
     end
 
@@ -127,6 +136,10 @@ classdef SerialLink < handle
     properties (Dependent = true)
         offset
         qlim
+        d
+        a
+        alpha
+        theta
     end
 
     methods
@@ -178,7 +191,7 @@ classdef SerialLink < handle
         %   tool transforms are removed since general constant transforms cannot 
         %   be represented in Denavit-Hartenberg notation.
         %
-        % See also Link, SerialLink.plot.
+        % See also Link, Revolute, Prismatic, SerialLink.plot.
 
             r.name = 'noname';
             r.manuf = '';
@@ -195,7 +208,7 @@ classdef SerialLink < handle
             r.plotopt = {};
 
             if exist('frne') == 3
-                r.fast_rne = true;
+                r.fast = true;
             end
 
             if nargin == 0
@@ -256,6 +269,8 @@ classdef SerialLink < handle
             opt.offset = [];
             opt.qlim = [];
             opt.plotopt = [];
+            opt.ikine = [];
+            opt.fast = r.fast;
 
             [opt,out] = tb_optparse(opt, varargin);
             if ~isempty(out)
@@ -269,6 +284,8 @@ classdef SerialLink < handle
                     r.(p{i}) = getfield(opt, p{i});
                 end
             end
+            r.ikineType = opt.ikine;
+
 
             % set the robot object mdh status flag
             mdh = [r.links.mdh];
@@ -359,7 +376,12 @@ classdef SerialLink < handle
                 else
                     convention = 'stdDH';
                 end
-                s = sprintf('%s (%d axis, %s, %s)', r.name, r.n, r.config, convention);
+                if r.fast
+                    fast = 'fastRNE';
+                else
+                    fast = 'slowRNE';
+                end
+                s = sprintf('%s (%d axis, %s, %s, %s)', r.name, r.n, r.config, convention, fast);
 
                 % comment and other info
                 line = '';
@@ -432,6 +454,14 @@ classdef SerialLink < handle
                 r.tool = v;
             end
         end
+        
+        function set.fast(r,v)
+            if v && exist('frne') == 3
+                r.fast = true;
+            else
+                r.fast = false;
+            end
+        end
 
         function set.base(r, v)
             if isempty(v)
@@ -443,6 +473,19 @@ classdef SerialLink < handle
             end
         end
 
+        function v = get.d(r)
+            v = [r.links.d];
+        end
+        function v = get.a(r)
+            v = [r.links.a];
+        end
+        function v = get.theta(r)
+            v = [r.links.theta];
+        end
+        function v = get.alpha(r)
+            v = [r.links.alpha];
+        end
+        
         function set.offset(r, v)
             if length(v) ~= length(v)
                 error('offset vector length must equal number DOF');
@@ -526,22 +569,27 @@ classdef SerialLink < handle
         function v = isspherical(r)
         %SerialLink.isspherical Test for spherical wrist
         %
-        % R.isspherical() is true if the robot has a spherical wrist, that is, the 
+        % R.isspherical() is true if the robot has a spherical wrist, that is, the
         % last 3 axes are revolute and their axes intersect at a point.
         %
         % See also SerialLink.ikine6s.
             L = r.links(end-2:end);
-
-            v = false;
-            % first test that all lengths are zero
-            if ~all( [L(1).a L(2).a L(3).a L(2).d L(3).d] == 0 )
-                return
-            end
-
-            if (abs(L(1).alpha) == pi/2) && (abs(L(1).alpha + L(2).alpha) < eps)
-                v = true;
-                return;
-            end
+            
+            alpha = [-pi/2 pi/2];
+            v =  all([L(1:2).a] == 0) && ...
+                (L(2).d == 0) && ...
+                (all([L(1:2).alpha] == alpha) || all([L(1:2).alpha] == -alpha)) && ...
+                all([L(1:3).sigma] == 0);
+        end
+        
+        function v = isconfig(r, s)
+            %SerialLink.isconfig Test for particular joint configuration
+            %
+            % R.isconfig(s) is true if the robot has the joint configuration string
+            % given by the string s.
+            %
+            % See also SerialLink.config.
+            v = strcmpi(r.config(), s);
         end
         
         function payload(r, m, p)
