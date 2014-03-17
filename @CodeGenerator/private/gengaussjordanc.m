@@ -26,7 +26,7 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
 %
-% You should have received a copy of the GNU Leser General Public License
+% You should have received a copy of the GNU Lesser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
@@ -68,16 +68,6 @@ fprintf(fid,'%s\n\n',hFString);
 fprintf(fid,'%s\n\n',...
     ['#include "', hfilename,'"']);
 
-% Function
-fprintf(fid,'%s\n',['double ',funname,'(const double *input1, const double *input2, int nEl){']);
-fprintf(fid,'\t%s\n','double res = 0;');
-fprintf(fid,'\t%s\n\n','int iEl = 0;');
-fprintf(fid,'\t%s\n','for (iEl = 0; iEl < nEl; iEl++){');
-fprintf(fid,'\t\t%s\n','res += input1[iEl] * input2[iEl];');
-fprintf(fid,'\t%s\n\n','}');
-fprintf(fid,'\t%s\n','return res;');
-fprintf(fid,'%s\n','}');
-
 % Start actual function implementation
 fprintf(fid,'%s\n',['void ',funname,'(const double* inMatrix, double* outMatrix, int dim){']);
 
@@ -86,10 +76,18 @@ fprintf(fid,'%s\n',' '); % empty line
 % variable declarations
 fprintf(fid,'\t%s\n','int iRow, iCol, diagIndex;');
 fprintf(fid,'\t%s\n','double diagFactor, tmpFactor;');
+fprintf(fid,'\t%s\n','double* inMatrixCopy = (double*) malloc(dim*dim*sizeof(double));');
 
 fprintf(fid,'%s\n',' '); % empty line
 
 % input initialization
+fprintf(fid,'\t%s\n','// make deep copy of input matrix');
+fprintf(fid,'\t%s\n','for(iRow = 0; iRow < dim; iRow++ ){');
+fprintf(fid,'\t\t%s\n','for (iCol = 0; iCol < dim; iCol++){');
+fprintf(fid,'\t\t\t%s\n','inMatrixCopy[dim*iCol+iRow] = inMatrix[dim*iCol+iRow];');
+fprintf(fid,'\t\t%s\n','}');
+
+fprintf(fid,'\t%s\n','}');
 fprintf(fid,'\t%s\n','// Make output matrix an identity matrix.');
 fprintf(fid,'\t%s\n','// Output matrix is orignally assumed to be initialized with zeros!');
 fprintf(fid,'\t%s\n','for (iRow = 0; iRow < dim; iRow++ ){');
@@ -102,14 +100,13 @@ fprintf(fid,'%s\n',' '); % empty line
 fprintf(fid,'\t%s\n','for (diagIndex = 0; diagIndex < dim; diagIndex++ )');
 fprintf(fid,'\t%s\n','{');
 fprintf(fid,'\t\t%s\n','// determine diagonal factor');
-fprintf(fid,'\t\t%s\n','diagFactor = inMatrix[dim*diagIndex+diagIndex];');
-fprintf(fid,'\t\t%s\n','mexPrintf("Pivot factor is %f\n",diagFactor);');
+fprintf(fid,'\t\t%s\n','diagFactor = inMatrixCopy[dim*diagIndex+diagIndex];');
 
 fprintf(fid,'%s\n',' '); % empty line
         
 fprintf(fid,'\t\t%s\n','// divide column entries by diagonal factor');
 fprintf(fid,'\t\t%s\n','for (iCol = 0; iCol < dim; iCol++){');
-fprintf(fid,'\t\t\t%s\n','inMatrix[dim*iCol+diagIndex] /= diagFactor;');
+fprintf(fid,'\t\t\t%s\n','inMatrixCopy[dim*iCol+diagIndex] /= diagFactor;');
 fprintf(fid,'\t\t\t%s\n','outMatrix[dim*iCol+diagIndex] /= diagFactor;');
 fprintf(fid,'\t\t%s\n','}');
 
@@ -118,12 +115,12 @@ fprintf(fid,'%s\n',' '); % empty line
 fprintf(fid,'\t\t%s\n','// perform line-by-line elimination');
 fprintf(fid,'\t\t%s\n','for (iRow = 0; iRow < dim; iRow++){');
 fprintf(fid,'\t\t\t%s\n','if (iRow != diagIndex){');
-fprintf(fid,'\t\t\t\t%s\n','tmpFactor = inMatrix[dim*diagIndex+iRow];');
+fprintf(fid,'\t\t\t\t%s\n','tmpFactor = inMatrixCopy[dim*diagIndex+iRow];');
 
 fprintf(fid,'%s\n',' '); % empty line
                 
 fprintf(fid,'\t\t\t\t%s\n','for(iCol = 0; iCol < dim; iCol++){');
-fprintf(fid,'\t\t\t\t%s\n','inMatrix[dim*iCol+iRow]  -= inMatrix[dim*iCol+diagIndex]*tmpFactor;');
+fprintf(fid,'\t\t\t\t%s\n','inMatrixCopy[dim*iCol+iRow]  -= inMatrixCopy[dim*iCol+diagIndex]*tmpFactor;');
 fprintf(fid,'\t\t\t\t%s\n','outMatrix[dim*iCol+iRow] -= outMatrix[dim*iCol+diagIndex]*tmpFactor;');
 fprintf(fid,'\t\t\t\t%s\n','}');
 fprintf(fid,'\t\t\t%s\n','}');
@@ -132,7 +129,7 @@ fprintf(fid,'\t\t%s\n','} // line-by-line elimination');
 fprintf(fid,'%s\n',' '); % empty line
         
 fprintf(fid,'\t%s\n','}');
-    
+fprintf(fid,'\t%s\n','free(inMatrixCopy);');
 fprintf(fid,'%s\n','}');
 
 fclose(fid);
@@ -148,6 +145,7 @@ fprintf(fid,'%s\n%s\n\n',...
     ['#ifndef ', upper([funname,'_h'])],...
     ['#define ', upper([funname,'_h'])]);
 
+% Function prototype
 fprintf(fid,'%s\n\n',['void ',funname,'(const double *inMatrix, double *outMatrix, int dim);']);
 
 % Include guard
