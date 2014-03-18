@@ -84,10 +84,10 @@ if CGen.genccode
     CGen.genccodecoriolis;
 end
 
-% %% MEX
-% if CGen.genmex
-%     CGen.genmexinertia;
-% end
+%% MEX
+if CGen.genmex
+    CGen.genmexinertia;
+end
 
 
 end

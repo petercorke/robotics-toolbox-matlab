@@ -116,7 +116,7 @@ fprintf(fid,'%s\n',' '); % empty line
 fprintf(fid,'\t%s\n','/* fill temporary vector */');
 fprintf(fid,'\t%s\n',['matvecprod(tmpTau, coriolis, input2,',num2str(nJoints),',',num2str(nJoints),');']);
 fprintf(fid,'\t%s\n',['for (iCol = 0; iCol < ',num2str(nJoints),'; iCol++){']);
-fprintf(fid,'\t\t%s\n','tmpTau[iCol][0] = input3[iCol] -  tmpTau[iCol][0] - gravload[iCol][0] - friction[iCol][0];');
+fprintf(fid,'\t\t%s\n','tmpTau[iCol][0] = input3[iCol] -  tmpTau[iCol][0] - gravload[iCol][0] + friction[iCol][0];');
 fprintf(fid,'\t%s\n','}');
 
 fprintf(fid,'\t%s\n','/* compute acceleration */');
