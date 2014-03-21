@@ -4,31 +4,86 @@ initTestSuite;
 
 function [tStruct] = setup
 tStruct = struct;
-% mdl_puma560_3;
-% tStruct.rob = p560;
-mdl_twolink
-tStruct.rob = twolink;
+mdl_puma560_3;
+tStruct.rob = p560;
+% mdl_twolink
+% tStruct.rob = twolink;
+tStruct.nTrials = 1000; % number of tests to perform in each subroutine
 
-tStruct.cGen = CodeGenerator(tStruct.rob,'default','logfile','myLog.txt');
+tStruct.cGen = CodeGenerator(tStruct.rob,'default','logfile','cGenUnitTestLog.txt');
+tStruct.cGen.verbose = 0;
 
 function teardown(tStruct)
+clear mex
 if ~isempty(strfind(path,tStruct.cGen.basepath))
     rmpath(tStruct.cGen.basepath)
     rmdir(tStruct.cGen.basepath, 's')
-    delete('myLog.txt');
+    delete(tStruct.cGen.logfile);
 end
 
 function genfkine_test(tStruct)
-% - test forward kinematics against numeric version
-T = tStruct.cGen.genfkine;
+% - test generated forward kinematics code
+T = tStruct.cGen.genfkine; % generate symbolic expressions and m-files
+addpath(tStruct.cGen.basepath);
+
+specRob = eval(tStruct.cGen.getrobfname);
+symQ = tStruct.rob.gencoords;
+
+Q = rand(tStruct.nTrials,specRob.n);
+resRTB = rand(4,4,tStruct.nTrials);
+resSym = rand(4,4,tStruct.nTrials);
+resM = rand(4,4,tStruct.nTrials);
+resMEX = rand(4,4,tStruct.nTrials);
+
+profile on
+% test symbolics and generated m-code
+for iTry = 1:tStruct.nTrials
+    q = Q(iTry,:);
+    
+    resRTB(:,:,iTry) =  tStruct.rob.fkine(q);
+    resSym(:,:,iTry) = subs(T,symQ,q);
+    resM(:,:,iTry) = specRob.fkine(q);
+end
+profile off;
+pstat = profile('info');
+statRTB = getprofilefunctionstats(pstat,['SerialLink',filesep,'fkine']);
+statSym = getprofilefunctionstats(pstat,['sym',filesep,'subs']);
+statM = getprofilefunctionstats(pstat,[tStruct.cGen.getrobfname,filesep,'fkine']);
+profile clear;
+clear('specRob');
+rmpath(tStruct.cGen.basepath)
+
+% assertions so far?
+assertElementsAlmostEqual(resRTB, resSym);
+assertElementsAlmostEqual(resRTB, resM);
+
+tStruct.cGen.genccodefkine;
+tStruct.cGen.genmexfkine;
+
 addpath(tStruct.cGen.basepath);
 specRob = eval(tStruct.cGen.getrobfname);
 
-q = rand(1,specRob.n);
-symQ = tStruct.rob.gencoords;
+profile on;
+% test generated mex code
+for iTry = 1:tStruct.nTrials
+    q = Q(iTry,:);
+    resMEX(:,:,iTry) = specRob.fkine(q);
+end
+profile off;
+pstat = profile('info');
+statMEX = getprofilefunctionstats(pstat,[tStruct.cGen.getrobfname,filesep,'fkine.',mexext],'mex-function');
 
-assertElementsAlmostEqual(specRob.fkine(q), tStruct.rob.fkine(q));
-assertElementsAlmostEqual(specRob.fkine(q), subs(T,symQ,q));
+assertElementsAlmostEqual(resRTB, resMEX);
+
+tRTB = statRTB.TotalTime/statRTB.NumCalls;
+tSym = statSym.TotalTime/statSym.NumCalls;
+tM = statM.TotalTime/statM.NumCalls;
+tMEX = statMEX.TotalTime/statMEX.NumCalls;
+
+fprintf('RTB function time: %f\n', tRTB)
+fprintf('Sym function time: %f  speedups: %f to RTB\n',tSym, tRTB/tSym);
+fprintf('M function time: %f  speedups: %f  to RTB,  %f  to Sym\n',tM, tRTB/tM, tSym/tM);
+fprintf('MEX function time: %f  speedups: %f  to RTB,  %f  to Sym, %f to M\n',tMEX, tRTB/tMEX, tSym/tMEX, tM/tMEX);
 
 function genjacobian_test(tStruct)
 % - test differential kinematics against numeric version
