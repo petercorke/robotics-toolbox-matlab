@@ -10,119 +10,86 @@
 %
 % See also SerialLink.plot.
 
-function animate(robot, q, handles)
+function animate(robot, qq)
 
     if nargin < 3
         handles = findobj('Tag', robot.name);
     end
-
-    for handle=handles'     % for each graphical robot instance
-        h = get(handle, 'UserData');
-        animate2( h, q);
-    end
-
-
-function animate2(h, q)
-
-    robot = h.robot;
-    n = robot.n;
-    L = robot.links;
-
-    mag = h.mag;
-
-    % compute the link transforms, and record the origin of each frame
-    % for the animation.
-    t = robot.base;
-    Tn = t;
-    x = zeros(1,n);
-    y = zeros(1,n);
-    z = zeros(1,n);
-    xs = zeros(1,n);
-    ys = zeros(1,n);
-    zs = zeros(1,n);
-
-    % add first point to the link/shadow line, the base
-    x(1) = t(1,4);
-    y(1) = t(2,4);
-    z(1) = t(3,4);
-    xs(1) = t(1,4);
-    ys(1) = t(2,4);
-    zs(1) = h.zmin;
     
-    % add subsequent points
-    for j=1:n
-        Tn(:,:,j) = t;
-
-        t = t * L(j).A(q(j));
-
-        x(j+1) = t(1,4);
-        y(j+1) = t(2,4);
-        z(j+1) = t(3,4);
-        xs(j+1) = t(1,4);
-        ys(j+1) = t(2,4);
-        zs(j+1) = h.zmin;
-    end
-    t = t *robot.tool;
-
-    %
-    % draw the robot stick figure and the shadow
-    %
-    set(h.links,'xdata', x, 'ydata', y, 'zdata', z);
-    if isfield(h, 'shadow')
-        set(h.shadow,'xdata', xs, 'ydata', ys, 'zdata', zs);
-    end
+    links = robot.links;
     
-
-    %
-    % display the joints as cylinders with rotation axes
-    %
-    if isfield(h, 'joint')
-        xyz_line = [0 0; 0 0; -2*mag 2*mag; 1 1];
-
-        for j=1:n
-            % get coordinate data from the cylinder
-            xyz = get(h.joint(j), 'UserData');
-            xyz = Tn(:,:,j) * xyz;
-            ncols = numcols(xyz)/2;
-            xc = reshape(xyz(1,:), 2, ncols);
-            yc = reshape(xyz(2,:), 2, ncols);
-            zc = reshape(xyz(3,:), 2, ncols);
-
-            set(h.joint(j), 'Xdata', xc, 'Ydata', yc, ...
-                'Zdata', zc);
-
-            xyzl = Tn(:,:,j) * xyz_line;
-            if isfield(h, 'jointaxis')
-                set(h.jointaxis(j), 'Xdata', xyzl(1,:), ...
-                    'Ydata', xyzl(2,:), ...
-                    'Zdata', xyzl(3,:));
-                set(h.jointlabel(j), 'Position', xyzl(1:3,1));
+    % get handle of any existing graphical robots of same name
+    %  one may have just been created above
+    handles = findobj('Tag', robot.name);
+    
+    % MAIN DISPLAY/ANIMATION LOOP
+    while true
+        % animate over all instances of this robot in different axes
+        
+        for q=qq'  % for all configurations in trajectory
+            
+            for handle=handles'
+                h = get(handle, 'UserData');
+                h.q = q';
+                set(handle, 'UserData', h);
+                
+                % now draw it for a pose q
+                if robot.mdh
+                    T = robot.base;
+                    vert = transl(T)';
+                    
+                    for j=1:robot.n
+                        set(h.joint(j), 'Matrix', T);
+                        
+                        T = T * links(j).A(q(j));
+                        vert = [vert; transl(T)'];
+                    end
+                else
+                    T = robot.base;
+                    vert = transl(T)';
+                    
+                    for j=1:robot.n
+                        if robot.links(j).isprismatic()
+                            %set(h.joint(j), 'Matrix', diag([1 1 q(j) 1])*T);
+                            
+                            set(h.pjoint(j), 'Matrix', T*trotz(q(j))*diag([1 1 q(j) 1]));
+                        end
+                        set(h.joint(j), 'Matrix', T);
+                        
+                        T = T * links(j).A(q(j));
+                        vert = [vert; transl(T)'];
+                    end
+                end
+                
+                if ~isempty(h.shadow)
+                    set(h.shadow, 'Xdata', vert(:,1), 'Ydata', vert(:,2), 'Zdata', h.floorlevel*ones(size(vert(:,1))));
+                end
+                
+                T = T * robot.tool;
+                vert = [vert; transl(T)'];
+                
+                if ~isempty(h.wrist)
+                    trplot(h.wrist, T);
+                end
+                
+                if ~isempty(h.robot.framenum)
+                    % write the frame to the movie folder
+                    print( '-dpng', fullfile(h.robot.moviepath, sprintf('%04d.png', h.robot.framenum)) );
+                    h.robot.framenum = h.robot.framenum+1;
+                end
+                
+                if h.robot.delay > 0
+                    pause(h.robot.delay);
+                    drawnow
+                end
             end
         end
-    end
+        
+        if ~h.robot.loop
+            break;
+        end
+        
 
-    %
-    % display the wrist axes and labels
-    %
-    if isfield(h, 'x')
-        %
-        % compute the wrist axes, based on final link transformation
-        % plus the tool transformation.
-        %
-        xv = t*[mag;0;0;1];
-        yv = t*[0;mag;0;1];
-        zv = t*[0;0;mag;1];
 
-        %
-        % update the line segments, wrist axis and links
-        %
-        set(h.x,'xdata',[t(1,4) xv(1)], 'ydata', [t(2,4) xv(2)], ...
-            'zdata', [t(3,4) xv(3)]);
-        set(h.y,'xdata',[t(1,4) yv(1)], 'ydata', [t(2,4) yv(2)], ...
-             'zdata', [t(3,4) yv(3)]);
-        set(h.z,'xdata',[t(1,4) zv(1)], 'ydata', [t(2,4) zv(2)], ...
-             'zdata', [t(3,4) zv(3)]);
-        set(h.xt, 'Position', xv(1:3));
-        set(h.yt, 'Position', yv(1:3));
-        set(h.zt, 'Position', zv(1:3));
+        
     end

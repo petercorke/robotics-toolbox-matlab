@@ -1,31 +1,52 @@
 %SerialLink.plot Graphical display and animation
 %
-% R.plot(Q, options) displays a graphical animation of a robot based on 
+% R.plot(Q, options) displays a graphical animation of a robot based on
 % the kinematic model.  A stick figure polyline joins the origins of
-% the link coordinate frames. The robot is displayed at the joint angle Q (1xN), or 
+% the link coordinate frames. The robot is displayed at the joint angle Q (1xN), or
 % if a matrix (MxN) it is animated as the robot moves along the M-point trajectory.
 %
 % Options::
-%  'workspace', W   size of robot 3D workspace, W = [xmn, xmx ymn ymx zmn zmx]
-%  'delay', d       delay betwen frames for animation (s)
-%  'fps',fps        set number of frames per second for display
-%  '[no]loop'       loop over the trajectory forever
-%  'mag', scale     annotation scale factor
-%  'cylinder', C    color for joint cylinders, C=[r g b]
-%  'ortho'          orthogonal camera view (default)
-%  'perspective'    perspective camera view
-%  'xyz'            wrist axis label is XYZ
-%  'noa'            wrist axis label is NOA
-%  '[no]raise'      autoraise the figure (very slow).
-%  '[no]render'     controls shaded rendering after drawing
-%  '[no]base'       controls display of base 'pedestal'
-%  '[no]wrist'      controls display of wrist
-%  '[no]shadow'     controls display of shadow
-%  '[no]name'       display the robot's name 
-%  '[no]jaxes'      control display of joint axes
-%  '[no]joints'     controls display of joints
-%  'movie',M        save frames as files in the folder M
+% 'workspace', W    Size of robot 3D workspace, W = [xmn, xmx ymn ymx zmn zmx]
 %
+% 'delay',D         Delay betwen frames for animation (s)
+% 'fps',fps         Number of frames per second for display, inverse of 'delay' option
+% '[no]loop'        Loop over the trajectory forever
+% '[no]raise'       Autoraise the figure
+% 'movie',M         Save frames as files in the folder M
+%
+% 'scale',S         Annotation scale factor
+% 'ortho'           Orthographic view
+% 'perspective'     Perspective view (default)
+%
+% '[no]shading'     Enable Gouraud shading (default true)
+% 'lightpos',L      Position of the light source (default [0 0 20])
+% '[no]name'        Display the robot's name
+%
+% '[no]wrist'       Enable display of wrist coordinate frame
+% 'xyz'             Wrist axis label is XYZ
+% 'noa'             Wrist axis label is NOA
+% '[no]arrow'       Display wrist frame with 3D arrows
+%
+% '[no]floor'       Enable tiled floor (default true)
+% 'floorlevel',L    Z-coordinate of floor (default -1)
+% 'tilesize',S      Side length of square tiles on the floor (default 0.2)
+% 'floor1color',C   Color of even tiles [r g b] (default [0.5 1 0.5]  light green)
+% 'floor2color',C   Color of odd tiles [r g b] (default [1 1 1] white)
+%
+% '[no]shadow'      Enable display of shadow (default true)
+% 'shadowcolor',C   Colorspec of shadow, [r g b]
+% 'shadowwidth',W   Width of shadow line (default 6)
+%
+% '[no]jaxes'       Enable display of joint axes (default true)
+% '[no]joints'      Enable display of joints
+% 'jointcolor',C    Colorspec for joint cylinders (default [0.7 0 0])
+% 'jointdiam',D     Diameter of joint cylinder in scale units (default 5)
+%
+% 'linkcolor',C     Colorspec of links (default 'b')
+%
+% '[no]base'        Enable display of base 'pedestal'
+% 'basecolor',C     Color of base (default 'k')
+% 'basewidth',W     Width of base (default 3)
 %
 % The options come from 3 sources and are processed in order:
 % - Cell array of options returned by the function PLOTBOTOPT (if it exists)
@@ -36,38 +57,32 @@
 % Many boolean options can be enabled or disabled with the 'no' prefix.  The
 % various option sources can toggle an option, the last value is taken.
 %
-% To save the effort of processing options on each call they can be preprocessed by
-%        opts = robot.plot({'opt1', 'opt2', ... });
-% and the resulting object can be passed in to subsequent calls instead of text-based
-% options, for example:
-%        robot.plot(q, opts);
-%
 % Graphical annotations and options::
 %
-% The robot is displayed as a basic stick figure robot with annotations 
+% The robot is displayed as a basic stick figure robot with annotations
 % such as:
 % - shadow on the floor
 % - XYZ wrist axes and labels
 % - joint cylinders and axes
 % which are controlled by options.
 %
-% The size of the annotations is determined using a simple heuristic from 
-% the workspace dimensions.  This dimension can be changed by setting the 
+% The size of the annotations is determined using a simple heuristic from
+% the workspace dimensions.  This dimension can be changed by setting the
 % multiplicative scale factor using the 'mag' option.
 %
 % Figure behaviour::
 %
-% - If no figure exists one will be created and teh robot drawn in it.
+% - If no figure exists one will be created and the robot drawn in it.
 % - If no robot of this name is currently displayed then a robot will
 %   be drawn in the current figure.  If hold is enabled (hold on) then the
 %   robot will be added to the current figure.
-% - If the robot already exists then that graphical model will be found 
+% - If the robot already exists then that graphical model will be found
 %   and moved.
 %
 % Multiple views of the same robot::
 %
 % If one or more plots of this robot already exist then these will all
-% be moved according to the argument Q.  All robots in all windows with 
+% be moved according to the argument Q.  All robots in all windows with
 % the same name will be moved.
 %
 %  Create a robot in figure 1
@@ -82,7 +97,7 @@
 % Multiple robots in the same figure::
 %
 % Multiple robots can be displayed in the same plot, by using "hold on"
-% before calls to robot.plot().  
+% before calls to robot.plot().
 %
 %  Create a robot in figure 1
 %         figure(1)
@@ -101,41 +116,38 @@
 %         end
 %
 % Making an animation movie::
-% - The 'movie' options saves frames as files NNNN.png.
-% - When using 'movie' option ensure that the window is fully visible.
+% - The 'movie' options saves frames as files NNNN.png into the specified folder
+% - The specified folder will be created
 % - To convert frames to a movie use a command like:
 %        ffmpeg -r 10 -i %04d.png out.avi
 %
 % Notes::
+% - The options are processed when the figure is first drawn, to make different options come
+%   into effect it is neccessary to clear the figure.
+% - The link segments do not neccessarily represent the links of the robot, they are a pipe
+%   network that joins the origins of successive link coordinate frames.
 % - Delay betwen frames can be eliminated by setting option 'delay', 0 or
 %   'fps', Inf.
 % - By default a quite detailed plot is generated, but turning off labels,
 %   axes, shadows etc. will speed things up.
 % - Each graphical robot object is tagged by the robot's name and has UserData
 %   that holds graphical handles and the handle of the robot object.
-% - The graphical state holds the last joint configuration which can be retrieved
-%   using q = robot.plot().
+% - The graphical state holds the last joint configuration
 % - The size of the plot volume is determined by a heuristic for an all-revolute
 %   robot.  If a prismatic joint is present the 'workspace' option is required.
 %
-% See also plotbotopt, SerialLink.animate, SerialLink.fkine.
+% See also plotbotopt, SerialLink.animate, SerialLink.teach, SerialLink.fkine.
 
 
 % HANDLES:
 %
-% A robot comprises a bunch of individual graphical elements and these are 
+% A robot comprises a bunch of individual graphical elements and these are
 % kept in a structure:
 %
-%   h.link     the robot stick figure
+%   h.joint     the graphical elements that comprise each joint/link
+%   h.wrist     the coordinate frame marking the wrist frame
 %   h.shadow    the robot's shadow
-%   h.x     wrist vectors
-%   h.y
-%   h.z
-%   h.xt        wrist vector labels
-%   h.yt
-%   h.zt
-%
-%   h.q   the last set of joint coordinates
+%   h.floorlevel the z-coordinate of the tiled floor
 %   h.robot pointer to the robot object
 %   h.opt   the final options structure
 %
@@ -151,185 +163,445 @@
 % Copyright (C) 1993-2011, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
-function retval = plot(robot, tg, varargin)
-
-    % opts = PLOT(robot, options)
-    %  just convert options list to an options struct
-    if (nargin == 2) && iscell(tg)
-        retval = plot_options(robot, tg);
-        return;
-    end
-        
-    %
-    % q = PLOT(robot)
-    % return joint coordinates from a graphical robot of given name
-    %
-    %TODO should be robot.get_q()
-    if nargin == 1
-        handles = findobj('Tag', robot.name);
-        if ~isempty(handles)
-            h = get(handles(1), 'UserData');
-            retval = h.q;
-        end
-        return
-    end
+% TODO
+% deal with base transform and tool
+% more consistent option names, scale, mag etc.
+function plot(robot, qq, varargin)
     
-    % process options
-    if (nargin > 2) && isstruct(varargin{1})
-        % options is a struct
-        opt = varargin{1};
-    else
-        % options is a list of options
-        opt = plot_options(robot, varargin);
-    end
-
-    %
-    % robot2 = ROBOT(robot, q, varargin)
-    %
-    np = numrows(tg);
+    % check the joint angle data matches the robot
     n = robot.n;
-
-    if numcols(tg) ~= n
+    if numcols(qq) ~= n
         error('Insufficient columns in q')
     end
+    
+    % process options, these come from:
+    %  - passed arguments
+    %  - the robot object itself
+    %  - the file plotopt.m
+    opt = plot_options(robot, varargin);
+    
 
-%   if ~ishandle(robot.handle),
-%        %disp('has handles')
-%       % handles provided, animate just that robot
-%        count = opt.repeat;
-%        while count > 0
-%           for p=1:np,
-%                animate( robot, tg(p,:));
-%                pause(opt.delay)
-%           end
-%            count = count - 1;
-%       end
-%       return;
-%    end
-
-    % get handle of any existing graphical robot of same name
-    handles = findobj('Tag', robot.name);
-
-    if isempty(handles)
-        % no robot of this name exists in any figure, create one
-                
-        if ishold
-            % hold is on, add the robot to this figure
+    % logic to handle where the plot is drawn, are old figures updated or
+    % replaced?
+    %  calls create_floor() and create_robot() as required.
+    
+    if strcmp(get(gca,'Tag'), 'RTB.plot')
+        % this axis is an RTB plot window
+        
+        rhandles = findobj('Tag', robot.name)
+        
+        if isempty(rhandles)
+            % this robot doesnt exist here, create it or add it
             
-            if isempty( findobj(gca, 'Tag', robot.name))
-                % if no robot of this name in current axes, create one
-                handle = create_new_robot(robot, opt);
+            if ishold
+                % hold is on, add the robot, don't change the floor
+                handle = create_robot(robot, opt);
+                
+                
+                % tag one of the graphical handles with the robot name and hang
+                % the handle structure off it
+                set(handle.joint(1), 'Tag', robot.name);
+                set(handle.joint(1), 'UserData', handle);
             else
-                handle = findobj(gca, 'Tag', robot.name);
+                % create the robot and floor
+                newplot();
+
+                create_floor(opt);
+                handle = create_robot(robot, opt);
+                set(gca, 'Tag', 'RTB.plot');
+                
+                
+                % tag one of the graphical handles with the robot name and hang
+                % the handle structure off it
+                set(handle.joint(1), 'Tag', robot.name);
+                set(handle.joint(1), 'UserData', handle);
             end
             
-        else
-            % hold not on, create a robot in this or new plot
-            
-            newplot();
-            handle = create_new_robot(robot, opt);
-            
         end
+        
+    else
+        % this axis never had a robot drawn in it before, let's use it
+        create_floor(opt);
+        handle = create_robot(robot, opt);
+        set(gca, 'Tag', 'RTB.plot');
+        set(gcf, 'Units', 'Normalized');
+                        pf = get(gcf, 'Position');
+                set(gcf, 'Position', [0 1-pf(4) pf(3) pf(4)]);
         
         % tag one of the graphical handles with the robot name and hang
         % the handle structure off it
-        set(handle.links, 'Tag', robot.name);
-        set(handle.links, 'UserData', handle);
+        set(handle.joint(1), 'Tag', robot.name);
+        set(handle.joint(1), 'UserData', handle);
         
-        handles = handle.links;
     end
     
-            
-%         if isempty( get(gcf, 'Children'))
+    % deal with a few options that need to be stashed in the SerialLink object
+    if isempty(robot.framenum)
+        % movie mode has not already been flagged
+        if opt.movie
+            robot.framenum = 0;
+            robot.moviepath = opt.movie;
+        else
+            robot.framenum = [];
+        end
+    end
+    robot.delay = opt.delay;
+    robot.loop = opt.loop;   
     
     if opt.raise
         % note this is a very time consuming operation
         figure(gcf);
     end
     
+    if strcmp(opt.view, 'perspective')
+        set(gca, 'Projection', 'perspective');
+    end
+    
     if ~isempty(opt.movie)
         mkdir(opt.movie);
         framenum = 1;
     end
+    robot.animate(qq);
     
-    while true
-        for p=1:np      % for each point on path
-            robot.animate(tg(p,:), handles);
-            %drawnow
-            
-            if ~isempty(opt.movie)
-                % write the frame to the movie folder
-                print( '-dpng', fullfile(opt.movie, sprintf('%04d.png', framenum)) );
-                framenum = framenum+1;
-            end
-            
-            if opt.delay > 0
-                pause(opt.delay);
-                drawnow
+end
+
+% Create a new graphical robot in the current figure.
+% Returns a structure of handles that describe the various graphical entities in the robot model
+% Make extensive use of hgtransform, all entities are defined at the origin, then moved to their
+% proper pose
+function h = create_robot(robot, opt)
+    
+    disp('creating new robot');
+    
+    links = robot.links;
+    s = opt.scale;
+    
+    % create an axis
+    ish = ishold();
+    if ~ishold
+        % if hold is off, set the axis dimensions
+        axis(opt.workspace);
+        hold
+    end
+    xlabel('X')
+    ylabel('Y')
+    zlabel('Z')
+    grid on
+    
+    
+    % create the base
+    if opt.base
+        bt = transl(robot.base);
+        bt = [bt'; bt'];
+        bt(1,3) = opt.floorlevel;
+        line(bt(:,1), bt(:,2), bt(:,3), 'LineWidth', opt.basewidth, 'Color', opt.basecolor);
+    end
+    
+    % add the robot's name
+    if opt.name
+        b = transl(robot.base);
+        bz = 0;
+        if opt.base
+            bz = 0.5*opt.floorlevel;
+        end
+        text(b(1), b(2)-s, bz, [' ' robot.name], 'FontAngle', 'italic', 'FontWeight', 'bold')
+    end
+    
+    
+    % create the graphical link elements
+    for j=1:robot.n
+        if opt.debug
+            fprintf('create graphics for joint %d\n', j);
+        end
+        
+        % create the transform for displaying this element (joint cylinder + link)
+        h.joint(j) = hgtransform();
+        
+        % create a joint cylinder
+        if opt.joints
+            % create the body of the joint
+            if links(j).isrevolute
+                cyl('z', 2*s, opt.jointdiam/2*s*[-1 1], opt.jointcolor, 'Parent', h.joint(j));
+            else
+                % create an addition hgtransform for positioning and scaling the prismatic
+                % element.  The element is created with unit length.
+                h.pjoint(j) = hgtransform();
+                box('z', s, [0 1], opt.jointcolor, 'Parent', h.pjoint(j));
             end
         end
-        if ~opt.loop
-            break;
+        
+        % create the body of the link
+        
+        % create elements to represent translation between joint frames, ie. the link itself.
+        % This is drawn to resemble orthogonal plumbing.
+        if robot.mdh
+            % modified DH convention
+            if j < robot.n
+                A = links(j).A(0);
+                t = transl(A);
+                if t(1) ~= 0
+                    cyl('x', s, [0 t(1)], opt.linkcolor, 'Parent', h.joint(j));
+                end
+                if t(2) ~= 0
+                    cyl('y', s, [0 t(2)], opt.linkcolor, 'Parent', h.joint(j));
+                end
+                if t(2) ~= 0
+                    cyl('z', s, [0 t(3)], opt.linkcolor, 'Parent', h.joint(j));
+                end
+            end
+        else
+            % standard DH convention
+            if j > 1
+                Ainv = inv(links(j-1).A(0));
+                t = transl(Ainv);
+                if t(1) ~= 0
+                    cyl('x', s, [0 t(1)], opt.linkcolor, 'Parent', h.joint(j));
+                end
+                if t(2) ~= 0
+                    cyl('y', s, [0 t(2)], opt.linkcolor, 'Parent', h.joint(j));
+                end
+                if t(2) ~= 0
+                    cyl('z', s, [0 t(3)], opt.linkcolor, 'Parent', h.joint(j));
+                end
+            end
+        end
+        
+        % create the joint axis line
+        if opt.jaxes
+            line('XData', [0 0], ...
+                'YData', [0 0], ...
+                'ZData', 12*s*[-1 1], ...
+                'LineStyle', ':', 'Parent', h.joint(j));
+            
+            % create the joint axis label
+            text(0, 0, 12*s, sprintf('q%d', j), 'Parent', h.joint(j))
+        end
+        
+        % display the tool transform if it exists
+        if j == robot.n
+            if ~isempty(robot.tool)
+                t = transl(robot.tool);
+                cyl('y', s, [0 t(3)], 'r', 'Parent', h.joint(j));
+            end
         end
     end
+    
+    % display the wrist coordinate frame
+    if opt.wrist
+        if opt.arrow
+            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), 'arrow', 'rgb', 'length', 15*s);
+        else
+            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), 'rgb', 'length', 15*s);
+        end
+    else
+        h.wrist = [];
+    end
+    
+    % display a shadown on the floor
+    if opt.shadow
+        % create the polyline which is the shadow on the floor
+        h.shadow = line('LineWidth', opt.shadowwidth, 'Color', opt.shadowcolor);
+    else
+        h.shadow = [];
+    end
+    
+    
+    % deal with some display options
+    if opt.shading
+        lighting gouraud
+        light('position', opt.lightpos)
+    end
+    
+    % restore hold setting
+    if ~ish
+        hold off
+    end
+    h.floorlevel = opt.floorlevel;
+    h.robot = robot;
+    h.opt = opt;
+    
+    disp('done');
+end
 
-    % save the last joint angles away in the graphical robot
-    for handle=handles'
-        h = get(handle, 'UserData');
-        h.q = tg(end,:);
-        set(handle, 'UserData', h);
+
+function cyl(ax, r, ss, color, varargin)
+    if abs(ss(1) - ss(2)) < eps
+        return
+    end
+    %fprintf('   cyl: %s %g %g\n', ax, ss);
+    n = 20;
+    
+    r = [r;r];
+    
+    theta = (0:n)/n*2*pi;
+    sintheta = sin(theta); sintheta(n+1) = 0;
+    
+    switch ax
+        case 'x'
+            y = r * cos(theta);
+            z = r * sintheta;
+            x = ss(:) * ones(1,n+1);
+        case 'y'
+            x = r * cos(theta);
+            z = r * sintheta;
+            y = ss(:) * ones(1,n+1);
+        case 'z'
+            x = r * cos(theta);
+            y = r * sintheta;
+            z = ss(:) * ones(1,n+1);
+    end
+    
+    % walls of the cylinder
+    surf(x,y,z, 'FaceColor', color, 'EdgeColor', 'none', varargin{:})
+    
+    % put the ends on
+    patch(x', y', z', color, 'EdgeColor', 'none', varargin{:});
+end
+
+function box(ax, r, ss, color, varargin)
+    if abs(ss(1) - ss(2)) < eps
+        return
+    end
+    %fprintf('   box: %s %g %g\n', ax, ss);
+    n = 4;
+    
+    r = [r;r];
+    
+    theta = (0:n)/n*2*pi;
+    sintheta = sin(theta); sintheta(n+1) = 0;
+    
+    switch ax
+        case 'x'
+            y = r * cos(theta);
+            z = r * sintheta;
+            x = ss(:) * ones(1,n+1);
+        case 'y'
+            x = r * cos(theta);
+            z = r * sintheta;
+            y = ss(:) * ones(1,n+1);
+        case 'z'
+            y = r * cos(theta);
+            x = r * sintheta;
+            z = ss(:) * ones(1,n+1);
+    end
+    
+    % walls of the cylinder
+    surf(x,y,z, 'FaceColor', color, 'EdgeColor', 'none', varargin{:})
+    
+    % put the ends on
+    patch(x', y', z', color, 'EdgeColor', 'none', varargin{:});
+end
+
+% draw a tiled floor in the current axes
+function create_floor(opt)
+    
+    disp('create floor')
+    
+    
+    xmin = opt.workspace(1);
+    xmax = opt.workspace(2);
+    ymin = opt.workspace(3);
+    ymax = opt.workspace(4);
+    
+    opt.workspace
+    % create a colored tiled floor
+    if opt.floor
+        xt = xmin:opt.tilesize:xmax;
+        yt = ymin:opt.tilesize:ymax;
+        Z = opt.floorlevel*ones( numel(yt), numel(xt));
+        C = zeros(size(Z));
+        [r,c] = ind2sub(size(C), 1:numel(C));
+        C = bitand(r+c,1);
+        C = reshape(C, size(Z));
+        C = cat(3, opt.floor1color(1)*C+opt.floor2color(1)*(1-C), ...
+            opt.floor1color(2)*C+opt.floor2color(2)*(1-C), ...
+            opt.floor1color(3)*C+opt.floor2color(3)*(1-C));
+        [X,Y] = meshgrid(xt, yt);
+        surface(X, Y, Z, C, ...
+            'FaceColor','texturemap',...
+            'EdgeColor','none',...
+            'CDataMapping','direct');
     end
 end
 
-%PLOT_OPTIONS
-%
-%   o = PLOT_OPTIONS(robot, options)
-%
-% Returns an options structure
-
-function o = plot_options(robot, optin)
+function opt = plot_options(robot, optin)
     % process a cell array of options and return a struct
-
+    
     % define all possible options and their default values
-    o.erasemode = 'normal';
-    o.joints = true;
-    o.wrist = true;
-    o.loop = false;
-    o.shadow = true;
-    o.wrist = true;
-    o.jaxes = true;
-    o.base = true;
-    o.wristlabel = 'xyz';
-    o.perspective = true;
-    o.magscale = 1;
-    o.name = true;
-    o.delay = 0.1;
-    o.fps = [];
-    o.raise = true;
-    o.cylinder = [0 0 0.7];
-    o.workspace = [];
-    o.movie = [];
-    o.render = true;
-    o.ortho = true;
-    o.perspective = false;
+    
+    
+    % timing/looping
+    opt.delay = 0.1;
+    opt.fps = [];
+    opt.loop = false;
+    
+    opt.raise = false;
+    
+    % general appearance
+    opt.scale = 1;
+    
+    opt.workspace = [];
+    opt.view = {'ortho', 'perspective'};
+    opt.name = true;
+    
+    
+    % 3D rendering
+    opt.shading = true;
+    opt.lightpos = [0 0 20];
+    
+    % tiled floor
+    opt.floor = true;
+    opt.floor1color = [0.5 1 0.5];  % light green
+    opt.floor2color = [1 1 1];  % white
+    opt.floorlevel = [];
+    opt.tilesize = 0.2;
+    
+    % shadow on the floor
+    opt.shadow = true;
+    opt.shadowcolor = [0.5 0.5 0.5];
+    opt.shadowwidth = 6;
+     
+    % the base or pedestal
+    opt.base = true;
+    opt.basewidth = 3;
+    opt.basecolor = 'k';
+    
+    % wrist
+    opt.wrist = true;
+    opt.wristlabel = {'xyz', 'noa'};
+    opt.arrow = true;
+    
+    % joint rotation axes
+    opt.jaxes = false;
+    
+    % joint cylinders
+    opt.joints = true;
+    opt.jointdiam = 5;
+    opt.jointcolor = [0.7 0 0];
+    
+    % links
+    opt.linkcolor = 'b';
+    
+    % misc
+    opt.movie = [];
 
-
+    
     % build a list of options from all sources
     %   1. the M-file plotbotopt if it exists
     %   2. robot.plotopt
@@ -339,14 +611,15 @@ function o = plot_options(robot, optin)
     else
         options = [robot.plotopt optin];
     end
-
+    
     % parse the options
-    [o,args] = tb_optparse(o, options);
+    [opt,args] = tb_optparse(opt, options);
     if ~isempty(args)
         error(['unknown option: ' args{1}]);
     end
-
-    if isempty(o.workspace)
+    
+    % figure the size of the figure
+    if isempty(opt.workspace)
         %
         % simple heuristic to figure the maximum reach of the robot
         %
@@ -358,161 +631,35 @@ function o = plot_options(robot, optin)
         for i=1:robot.n
             reach = reach + abs(L(i).a) + abs(L(i).d);
         end
-        o.workspace = [-reach reach -reach reach -reach reach];
-        o.mag = reach/10;
-    else
-        reach = min(abs(o.workspace));
-    end
-    o.mag = o.magscale * reach/10;
-    
-    if ~isempty(o.fps)
-        o.delay = 1/o.fps;
-    end
-    
-end
-
-%CREATE_NEW_ROBOT
-% 
-%   h = CREATE_NEW_ROBOT(robot, opt)
-%
-% Using data from robot object and options create a graphical robot in
-% the current figure.
-%
-% Returns a structure of handles to graphical objects.
-%
-% If current figure is empty, draw robot in it
-% If current figure has hold on, add robot to it
-% Otherwise, create new figure and draw robot in it.
-%   
-
-% h.mag
-% h.zmin
-% h.links   the line segment that is the robot
-% h.shadow  the robot's shadow
-% h.x       the line segment that is T6 x-axis
-% h.y       the line segment that is T6 x-axis
-% h.z       the line segment that is T6 x-axis
-% h.xt      text for T6 x-axis
-% h.yt      text for T6 y-axis
-% h.zt      text for T6 z-axis
-% h.joint(i)        the joint i cylinder or box
-% h.jointaxis(i)    the line segment that is joint i axis
-% h.jointlabel(i)   text for joint i label
-
-function h = create_new_robot(robot, opt)
-    h.opt = opt;            % the options
-    h.robot = robot;        % pointer to robot
-
-    h.mag = opt.mag;
-    %
-    % setup an axis in which to animate the robot
-    %
-    % handles not provided, create graphics
-    %disp('in creat_new_robot')
-    if ~ishold
-        % if hold is off, set the axis dimensions
-        axis(opt.workspace);
-    end
-    xlabel('X')
-    ylabel('Y')
-    zlabel('Z')
-    %set(gca, 'drawmode', 'fast');
-    grid on
-
-    zlim = get(gca, 'ZLim');
-    h.zmin = zlim(1);
-
-    if opt.base
-        b = transl(robot.base);
-        line('xdata', [b(1);b(1)], ...
-            'ydata', [b(2);b(2)], ...
-            'zdata', [h.zmin;b(3)], ...
-            'LineWidth', 4, ...
-            'color', 'red');
-    end
-    
-    if opt.name
-        b = transl(robot.base);
-        text(b(1), b(2)-opt.mag, [' ' robot.name], 'FontAngle', 'italic', 'FontWeight', 'bold')
-    end
-    % create a line which we will
-    % subsequently modify.  Set erase mode to xor for fast
-    % update
-    %
-    h.links = line(robot.lineopt{:});
-    
-    if opt.shadow
-        h.shadow = line(robot.shadowopt{:}, ...
-            'Erasemode', opt.erasemode);
-    end
-
-    if opt.wrist,   
-        h.x = line('xdata', [0;0], ...
-            'ydata', [0;0], ...
-            'zdata', [0;0], ...
-            'color', 'red');
-        h.y = line('xdata', [0;0], ...
-            'ydata', [0;0], ...
-            'zdata', [0;0], ...
-            'color', 'green');
-        h.z = line('xdata', [0;0], ...
-            'ydata', [0;0], ...
-            'zdata', [0;0], ...
-            'color', 'blue');
-        h.xt = text(0, 0, opt.wristlabel(1), 'FontWeight', 'bold', 'HorizontalAlignment', 'Center');
-        h.yt = text(0, 0, opt.wristlabel(2), 'FontWeight', 'bold', 'HorizontalAlignment', 'Center');
-        h.zt = text(0, 0, opt.wristlabel(3), 'FontWeight', 'bold', 'HorizontalAlignment', 'Center');
-
-    end
-
-    %
-    % display cylinders (revolute) or boxes (pristmatic) at
-    % each joint, as well as axis centerline.
-    %
-    L = robot.links;
-    for i=1:robot.n
         
-        if opt.joints
-
-            % cylinder or box to represent the joint
-            if L(i).sigma == 0
-                N = 16;
-            else
-                N = 4;
-            end
-            % define the vertices of the cylinder
-            [xc,yc,zc] = cylinder(opt.mag/4, N);
-            zc(zc==0) = -opt.mag/2;
-            zc(zc==1) = opt.mag/2;
-
-            % create vertex color data
-            cdata = zeros(size(xc));
-            for j=1:3
-                cdata(:,:,j) = opt.cylinder(j);
-            end
-            % render the surface
-            h.joint(i) = surface(xc,yc,zc,cdata);
-            
-            % set the surfaces to be smoothed and translucent
-            set(h.joint(i), 'FaceColor', 'interp');
-            set(h.joint(i), 'EdgeColor', 'none');
-            set(h.joint(i), 'FaceAlpha', 0.7);
-
-            % build a matrix of coordinates so we
-            % can transform the cylinder in animate()
-            % and hang it off the cylinder
-            xyz = [xc(:)'; yc(:)'; zc(:)'; ones(1,2*N+2)]; 
-            set(h.joint(i), 'UserData', xyz);
+        % if we have a floor, quantize the reach to a tile size
+        if opt.floor
+            reach = opt.tilesize * ceil(reach/opt.tilesize);
         end
-
-        if opt.jaxes
-            % add a dashed line along the axis
-            h.jointaxis(i) = line('xdata', [0;0], ...
-                'ydata', [0;0], ...
-                'zdata', [0;0], ...
-                'color', 'blue', ...
-                'linestyle', ':');
-            h.jointlabel(i) = text(0, 0, 0, num2str(i), 'HorizontalAlignment', 'Center');
+        
+        % now create a 3D volume based on this reach
+        opt.workspace = [-reach reach -reach reach -reach reach];
+        
+        % if a floorlevel has been given, ammend the 3D volume
+        if ~isempty(opt.floorlevel)
+            opt.workspace(5) = opt.floorlevel;
+        else
+            opt.floorlevel = -reach;
+        end
+    else
+        reach = min(abs(opt.workspace));
+        if opt.floor
+            opt.workspace(1:4) = opt.tilesize * round(opt.workspace(1:4)/opt.tilesize);
         end
     end
+    
+    % update the fundamental scale factor (given by the user as a multiplier) by a length derived from
+    % the overall workspace dimension
+    %  we need that a lot when creating the robot model
+    opt.scale = opt.scale * reach/40;
+    
+    if ~isempty(opt.fps)
+        opt.delay = 1/opt.fps;
+    end
+    
 end
