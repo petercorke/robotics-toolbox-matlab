@@ -104,17 +104,19 @@ classdef SerialLink < handle
         manuf
         comment
 
-        plotopt
-        lineopt
-        shadowopt
+        plotopt  % options for the plot method, follow plot syntax
         
-        qteach
-
         fast    % mex version of rne detected
         
         interface   % interface to a real robot platform
         
         ikineType
+        
+        % to support the plot method
+        moviepath
+        framenum
+        delay
+        loop
 
     end
 
@@ -202,9 +204,7 @@ classdef SerialLink < handle
             r.gravity = [0; 0; 9.81];
             r.base = eye(4,4);
             r.tool = eye(4,4);
-
-            r.lineopt = {'Color', 'black', 'Linewidth', 4};
-            r.shadowopt = {'Color', 0.7*[1 1 1], 'Linewidth', 3};
+            
             r.plotopt = {};
 
             if exist('frne') == 3
@@ -646,10 +646,6 @@ classdef SerialLink < handle
             else
                 r.links.dyn();
             end
-        end
-
-        function record(r, q)
-            r.qteach = [r.qteach; q];
         end
 
         function sr = sym(r)
