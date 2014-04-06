@@ -24,16 +24,22 @@
 % trajectory then TAU (MxN) is a matrix with rows corresponding to each trajectory 
 % step.
 %
+% Fast RNE::
+% This algorithm is relatively slow, and a MEX file can provide better
+% performance.  The MEX file is executed if:
+%  - the robot is not symbolic, and
+%  - the SerialLink property fast is true, and
+%  - the MEX file exists.
+%
 % Notes::
 % - The robot base transform is ignored.
+% - Currently the MEX-file version does not compute WBASE.
 % - The torque computed contains a contribution due to armature
 %   inertia and joint friction.
-% - RNE can be either an M-file or a MEX-file.
 % - See the README file in the mex folder for details on how to configure 
 %   MEX-file operation.
 % - The M-file is a wrapper which calls either RNE_DH or RNE_MDH depending on 
 %   the kinematic conventions used by the robot object.
-% - Currently the MEX-file version does not compute WBASE.
 %
 % See also SerialLink.accel, SerialLink.gravload, SerialLink.inertia.
 
@@ -66,7 +72,7 @@
 
 function varargout = rne(robot, varargin)
 
-    if exist('frne') && ~robot.issym()
+    if robot.fast && ~robot.issym()
         % use the MEX-file implementation
         [varargout{1:nargout}] = frne(robot, varargin{:});
     else
