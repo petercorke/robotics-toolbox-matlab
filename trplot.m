@@ -39,6 +39,7 @@
 %                     'm'   magenta
 % 'dispar',D         Disparity for 3d display (default 0.1)
 % 'text'             Enable display of X,Y,Z labels on the frame
+% 'labels',L         Label the X,Y,Z axes with the 1st, 2nd, 3rd character of the string L
 % 'rgb'              Display X,Y,Z axes in colors red, green, blue respectively
 %
 % Examples::
@@ -46,6 +47,7 @@
 %       trplot(T, 'frame', 'A')
 %       trplot(T, 'frame', 'A', 'color', 'b')
 %       trplot(T1, 'frame', 'A', 'text_opts', {'FontSize', 10, 'FontWeight', 'bold'})
+%       trplot(T1, 'labels', 'NOA');
 %
 %       h = trplot(T, 'frame', 'A', 'color', 'b');
 %       trplot(h, T2);
@@ -119,6 +121,7 @@ function hout = trplot(T, varargin)
     opt.view = [];
     opt.width = 1;
     opt.arrow = false;
+    opt.labels = 'XYZ';
     opt.handle = [];
     opt.anaglyph = 'rc';
     opt.d_3d = false;
@@ -243,13 +246,13 @@ function hout = trplot(T, varargin)
     
     if opt.text
         % add the labels to each axis
-        h = text(x1(1), x1(2), x1(3), sprintf(fmt, 'X'), 'Parent', hg);
+        h = text(x1(1), x1(2), x1(3), sprintf(fmt, opt.labels(1)), 'Parent', hg);
         set(h, opt.text_opts{:});
         
-        h = text(y1(1), y1(2), y1(3), sprintf(fmt, 'Y'), 'Parent', hg);
+        h = text(y1(1), y1(2), y1(3), sprintf(fmt, opt.labels(2)), 'Parent', hg);
         set(h, opt.text_opts{:});
         
-        h = text(z1(1), z1(2), z1(3), sprintf(fmt, 'Z'), 'Parent', hg);
+        h = text(z1(1), z1(2), z1(3), sprintf(fmt, opt.labels(3)), 'Parent', hg);
         set(h, opt.text_opts{:});
     end
     
