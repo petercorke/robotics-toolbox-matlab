@@ -88,17 +88,17 @@ function [s,sd,sdd] = tpoly(q0, qf, t, qd0, qdf)
 
             clf
             subplot(311)
-            plot(xt, p); grid; ylabel('s');
+            plot(xt, p); grid; ylabel('$s$', 'FontSize', 16, 'Interpreter','latex');
 
             subplot(312)
-            plot(xt, pd); grid; ylabel('sd');
+            plot(xt, pd); grid; ylabel('$\dot{s}$', 'FontSize', 16, 'Interpreter','latex');
             
             subplot(313)
-            plot(xt, pdd); grid; ylabel('sdd');
+            plot(xt, pdd); grid; ylabel('$\ddot{s}$', 'FontSize', 16, 'Interpreter','latex');
             if ~isscalar(t0)
                 xlabel('time')
             else
-                for c=get(gcf, 'Children');
+                for c=findobj(gcf, 'Type', 'axes')
                     set(c, 'XLim', [1 t0]);
                 end
             end

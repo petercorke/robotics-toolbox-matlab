@@ -53,9 +53,10 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
         % if velocity not specified, compute it
         V = (q1-q0)/tf * 1.5;
     else
-        if V < (q1-q0)/tf
+        V = abs(V) * sign(q1-q0);
+        if abs(V) < abs(q1-q0)/tf
             error('V too small');
-        elseif V > 2*(q1-q0)/tf
+        elseif abs(V) > 2*abs(q1-q0)/tf
             error('V too big');
         end
     end
@@ -116,18 +117,19 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
             plot(xt(k), p(k), 'b-o');
             k = t>= (tf-tb);
             plot(xt(k), p(k), 'g-o');
-            grid; ylabel('s');
+            grid; ylabel('$s$', 'FontSize', 16, 'Interpreter','latex');
+
             hold off
 
             subplot(312)
-            plot(xt, pd); grid; ylabel('sd');
+            plot(xt, pd); grid; ylabel('$\dot{s}$', 'FontSize', 16, 'Interpreter','latex');
             
             subplot(313)
-            plot(xt, pdd); grid; ylabel('sdd');
+            plot(xt, pdd); grid; ylabel('$\ddot{s}$', 'FontSize', 16, 'Interpreter','latex');
             if ~isscalar(t0)
                 xlabel('time')
             else
-                for c=get(gcf, 'Children');
+                for c=findobj(gcf, 'Type', 'axes')
                     set(c, 'XLim', [1 t0]);
                 end
             end
