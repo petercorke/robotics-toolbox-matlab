@@ -13,6 +13,7 @@
 %
 % Options::
 %  'deg'      Compute angles in degrees (radians default)
+%  'flip'     Choose first Euler angle to be in quadrant 2 or 3.
 %
 % Notes::
 % - There is a singularity for the case where THETA=0 in which case PHI is arbitrarily
@@ -38,16 +39,17 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function euler = tr2eul(m, varargin)
+function euler = tr2eul(R, varargin)
 
     opt.deg = false;
+    opt.flip = false;
     opt = tb_optparse(opt, varargin);
 
-	s = size(m);
+	s = size(R);
 	if length(s) > 2
         euler = zeros(s(3), 3);
 		for i=1:s(3)
-			euler(i,:) = tr2eul(m(:,:,i));
+			euler(i,:) = tr2eul(R(:,:,i));
 		end
 
         if opt.deg
@@ -59,21 +61,29 @@ function euler = tr2eul(m, varargin)
 	euler = zeros(1,3);
 
 	% Method as per Paul, p 69.
-	% phi = atan2(ay, ax)
-	% Only positive phi is returned.
-	if abs(m(1,3)) < eps && abs(m(2,3)) < eps
+    % euler = [phi theta psi]
+    %
+
+	if abs(R(1,3)) < eps && abs(R(2,3)) < eps
 		% singularity
 		euler(1) = 0;
 		sp = 0;
 		cp = 1;
-		euler(2) = atan2(cp*m(1,3) + sp*m(2,3), m(3,3));
-		euler(3) = atan2(-sp * m(1,1) + cp * m(2,1), -sp*m(1,2) + cp*m(2,2));
-	else
-		euler(1) = atan2(m(2,3), m(1,3));
+		euler(2) = atan2(cp*R(1,3) + sp*R(2,3), R(3,3));
+		euler(3) = atan2(-sp * R(1,1) + cp * R(2,1), -sp*R(1,2) + cp*R(2,2));
+    else
+        % non singular
+        
+        % Only positive phi is returned.
+        if opt.flip
+            euler(1) = atan2(R(2,3), R(1,3));
+        else
+            euler(1) = atan2(-R(2,3), -R(1,3));
+        end
 		sp = sin(euler(1));
 		cp = cos(euler(1));
-		euler(2) = atan2(cp*m(1,3) + sp*m(2,3), m(3,3));
-		euler(3) = atan2(-sp * m(1,1) + cp * m(2,1), -sp*m(1,2) + cp*m(2,2));
+		euler(2) = atan2(cp*R(1,3) + sp*R(2,3), R(3,3));
+		euler(3) = atan2(-sp * R(1,1) + cp * R(2,1), -sp*R(1,2) + cp*R(2,2));
 	end
     if opt.deg
         euler = euler * 180/pi;
