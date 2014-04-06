@@ -395,10 +395,25 @@ function h = create_robot(robot, opt)
         
         % display the tool transform if it exists
         if j == robot.n
-            if ~isempty(robot.tool)
-                t = transl(robot.tool);
-                cyl('y', s, [0 t(3)], 'r', 'Parent', h.joint(j));
+            tool = [];
+            if (links(end).d ~= 0) || (links(end).a ~= 0)
+                tool = transl(links(end).a, 0, links(end).d);
             end
+            if ~isempty(robot.tool)
+                if isempty(t)
+                    tool = robot.tool;
+                else
+                    tool = tool * robot.tool;
+                end
+            end
+            t = transl(tool);
+            if t(1) ~= 0
+                cyl('x', s, [0 t(3)], 'r', 'Parent', h.joint(j));
+            end
+            if t(3) ~= 0
+                cyl('z', s, [0 t(3)], 'r', 'Parent', h.joint(j));
+            end
+
         end
     end
     
@@ -649,7 +664,9 @@ function opt = plot_options(robot, optin)
     else
         reach = min(abs(opt.workspace));
         if opt.floor
+            % set xy limits to be integer multiple of tilesize
             opt.workspace(1:4) = opt.tilesize * round(opt.workspace(1:4)/opt.tilesize);
+            opt.floorlevel = opt.workspace(5);
         end
     end
     
