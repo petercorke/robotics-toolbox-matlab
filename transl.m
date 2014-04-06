@@ -3,15 +3,19 @@
 % T = TRANSL(X, Y, Z) is an SE(3) homogeneous transform (4x4)representing a 
 % pure translation.
 %
-% T = TRANSL(P) is a homogeneous transform representing a translation or 
+% T = TRANSL(P) is an SE(3) homogeneous transform representing a translation or 
 % point P=[X,Y,Z]. If P (Mx3) it represents a sequence and T (4x4xM)
 % is a sequence of homogenous transforms such that T(:,:,i) corresponds to
 % the i'th row of P.
 %
-% P = TRANSL(T) is the translational part of a homogeneous transform as a 
+% P = TRANSL(T) is the translational part of a homogeneous transform T as a 
 % 3-element column vector.  If T (4x4xM) is a homogeneous transform sequence 
 % the rows of P (Mx3) are the translational component of the corresponding 
 % transform in the sequence.
+%
+% [X,Y,Z] = TRANSL(T) is the translational part of a homogeneous transform T as three
+% components.  If T (4x4xM) is a homogeneous transform sequence then X,Y,Z (1xM) are
+% the translational components of the corresponding transform in the sequence.
 %
 % Notes::
 % - Somewhat unusually this function performs a function and its inverse.  An
@@ -37,29 +41,42 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function T = transl(x, y, z)
+function [t1,t2,t3] = transl(x, y, z)
     if nargin == 1
         if ishomog(x)
             if ndims(x) == 3
                 % transl(T)  -> P, trajectory case
-                T = squeeze(x(1:3,4,:))';
+                if nargout == 1
+                    t1 = squeeze(x(1:3,4,:))';
+                elseif nargout == 3
+                    t1 = squeeze(x(1,4,:))';
+                    t2 = squeeze(x(2,4,:))';
+                    t3 = squeeze(x(3,4,:))';
+                end
             else
                 % transl(T)  -> P
-                T = x(1:3,4);
+                if nargout == 1
+                    t1 = x(1:3,4);
+                elseif nargout == 3
+                    t1 = x(1,4);
+                    t2 = x(2,4);
+                    t3 = x(3,4);
+                end
+                    
             end
         elseif length(x) == 3
             % transl(P) -> T
             t = x(:);
-            T =    [eye(3)          t(:);
+            t1 =    [eye(3)          t(:);
                 0   0   0   1];
         else
             % transl(P) -> T, trajectory case
             n = numrows(x);
-            T = repmat(eye(4,4), [1 1 n]);
-            T(1:3,4,:) = x';
+            t1 = repmat(eye(4,4), [1 1 n]);
+            t1(1:3,4,:) = x';
         end    
     elseif nargin == 3
         % transl(x,y,z) -> T
         t = [x; y; z];
-        T =    rt2tr( eye(3), t);
+        t1 =    rt2tr( eye(3), t);
     end
