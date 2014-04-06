@@ -37,11 +37,11 @@
 %  Jm       actuator: motor inertia (motor referred)
 %
 % Notes::
-% - This is reference class object
+% - This is a reference class object
 % - Link objects can be used in vectors and arrays
 %
 % References::
-% - Robotics, Vision & Control, Chap 7
+% - Robotics, Vision & Control, Chap 7,
 %   P. Corke, Springer 2011.
 %
 % See also Link, Revolute, Prismatic, SerialLink.

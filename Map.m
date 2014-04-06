@@ -49,6 +49,7 @@
 
 classdef Map < handle
 % TODO:
+% add a name property, show in char()
 
     properties
         map    % map features
