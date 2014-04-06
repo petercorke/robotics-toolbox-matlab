@@ -54,7 +54,7 @@ function R = rpy2r(roll, varargin)
         pitch = args{1};
         yaw = args{2};
     else
-        error('bad arguments')
+        error('RTB:rpy2r:badarg', 'bad arguments')
     end
 
     % optionally convert from degrees
