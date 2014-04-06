@@ -11,7 +11,7 @@
 % - Fundamentals of Robotics Mechanical Systems (2nd ed)
 %   J. Angleles, Springer 2003.
 %
-% See also: SerialLink.jacob0, diff2tr, tr2diff.
+% See also SerialLink.jacob0, diff2tr, tr2diff.
 
 % Copyright (C) 1993-2011, by Peter I. Corke
 %

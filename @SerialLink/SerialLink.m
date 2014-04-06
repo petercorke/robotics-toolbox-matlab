@@ -174,17 +174,18 @@ classdef SerialLink < handle
         %  'tool', tool            set tool transformation matrix property
         %  'gravity', g            set gravity vector property
         %  'plotopt', po           set plotting options property
+        %  'nofast'                don't use RNE MEX file
         %
         % Examples::
         %
         % Create a 2-link robot
-        %      L(1) = Link([ 0     0   a1  0], 'standard');
-        %      L(2) = Link([ 0     0   a2  0], 'standard');
-        %      twolink = SerialLink(L, 'name', 'two link');
+        %        L(1) = Link([ 0     0   a1  0], 'standard');
+        %        L(2) = Link([ 0     0   a2  0], 'standard');
+        %        twolink = SerialLink(L, 'name', 'two link');
         %
         % Robot objects can be concatenated in two ways
-        %      R = R1 * R2;
-        %      R = SerialLink([R1 R2]);
+        %        R = R1 * R2;
+        %        R = SerialLink([R1 R2]);
         %
         % Note::
         % - SerialLink is a reference object, a subclass of Handle object.
@@ -587,6 +588,9 @@ classdef SerialLink < handle
             %
             % R.isconfig(s) is true if the robot has the joint configuration string
             % given by the string s.
+            %
+            % Example:
+            %        robot.isconfig('RRRRRR');
             %
             % See also SerialLink.config.
             v = strcmpi(r.config(), s);

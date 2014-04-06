@@ -555,11 +555,10 @@ function create_floor(opt)
     end
 end
 
-function opt = plot_options(robot, optin)
     % process a cell array of options and return a struct
-    
     % define all possible options and their default values
     
+function opt = plot_options(robot, optin)
     
     % timing/looping
     opt.delay = 0.1;

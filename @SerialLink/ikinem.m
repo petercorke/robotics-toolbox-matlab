@@ -22,6 +22,8 @@
 % 'nolm'           Disable Levenberg-Marquadt
 %
 % Notes::
+% - PROTOTYPE CODE UNDER DEVELOPMENT, intended to do numerical inverse kinematics
+%   with joint limits
 % - The inverse kinematic solution is generally not unique, and
 %   depends on the initial guess Q0 (defaults to 0).
 % - The function to be minimized is highly nonlinear and the solution is
@@ -72,6 +74,7 @@ function qt = ikinem(robot, tr, varargin)
     opt.qlimits = false;
     opt.ilimit = 1000;
     opt.lm = true;
+    opt.col = 2;
     
     [opt,args] = tb_optparse(opt, varargin);
     
@@ -122,20 +125,28 @@ function qt = ikinem(robot, tr, varargin)
         
         qt(i,:) = q;
     end
+    
+    if opt.verbose
+        robot.fkine(qt)
+    end
 end
 
 % The cost function, this is the value to be minimized
 function E = costfun(q, robot, T, opt)
     
+    Tq = robot.fkine(q);
     % find the pose error in SE(3)
-    dT = T * inv( robot.fkine(q) );
+    dT = transl(T) - transl(Tq);
     
     % translation error
-    E = sum(transl(dT).^2) * opt.pweight;
+    E = norm(dT) * opt.pweight;
     
     % rotation error
-    [theta,n] = tr2angvec(dT);
-    E = E + theta^2;
+    %  find dot product of 
+    dd = dot(T(1:3,opt.col), Tq(1:3,opt.col));
+    %E = E + (1 - dd)^2*100000 ;
+    E = E + acos(dd)^2*1000 ;
+    
     
     if opt.stiffness > 0
         % enforce a continuity constraint on joints, minimum bend

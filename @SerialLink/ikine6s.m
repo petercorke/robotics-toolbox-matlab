@@ -2,8 +2,8 @@
 %
 % Q = R.ikine6s(T) is the joint coordinates corresponding to the robot
 % end-effector pose T represented by the homogenenous transform.  This
-% is a analytic solution for a 6-axis robot with a spherical wrist (such as
-% the Puma 560).
+% is a analytic solution for a 6-axis robot with a spherical wrist (the most
+% common form for industrial robot arms).
 %
 % Q = R.IKINE6S(T, CONFIG) as above but specifies the configuration of the arm in
 % the form of a string containing one or more of the configuration codes:
@@ -16,7 +16,11 @@
 % 'f'   wrist flipped (rotated by 180 deg)
 %
 % Notes::
-% - Only applicable for an all revolute 6-axis robot RRRRRR.
+% - Treats a number of specific cases:
+%  - Robot with no shoulder offset
+%  - Robot with a shoulder offset (has lefty/righty configuration)
+%  - Robot with a shoulder offset and a prismatic third joint (like Stanford arm)
+%  - The Puma 560 arms with should and elbow offsets
 % - The inverse kinematic solution is generally not unique, and
 %   depends on the configuration string.
 % - Joint offsets, if defined, are added to the inverse kinematics to
@@ -30,7 +34,7 @@
 %   Vol. 5, No. 2, Summer 1986, p. 32-44
 %
 % Author::
-% Robert Biro with Gary Von McMurray,
+% The Puma560 specific case by Robert Biro with Gary Von McMurray,
 % GTRI/ATRP/IIMB,
 % Georgia Institute of Technology
 % 2/13/95

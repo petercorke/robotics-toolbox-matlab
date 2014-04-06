@@ -34,6 +34,7 @@
 % - The 'all' option includes rotational and translational dexterity, but
 %   this involves adding different units.  It can be more useful to look at the
 %   translational and rotational manipulability separately.
+% - Examples in the RVC book can be replicated by using the 'all' option
 %
 % References::
 %

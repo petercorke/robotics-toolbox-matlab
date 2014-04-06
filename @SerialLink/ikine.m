@@ -1,23 +1,34 @@
-%SerialLink.IKINE Inverse manipulator kinematics
+%SerialLink.ikine Inverse manipulator kinematics
 %
-% Q = R.ikine(T) is the joint coordinates corresponding to the robot 
+% Q = R.ikine(T) are the joint coordinates corresponding to the robot 
 % end-effector pose T which is a homogenenous transform.
 %
 % Q = R.ikine(T, Q0, OPTIONS) specifies the initial estimate of the joint 
 % coordinates.
 %
-% Q = R.ikine(T, Q0, M, OPTIONS) specifies the initial estimate of the joint 
-% coordinates and a mask matrix.  For the case where the manipulator 
-% has fewer than 6 DOF the solution space has more dimensions than can
-% be spanned by the manipulator joint coordinates.  In this case
-% the mask matrix M specifies the Cartesian DOF (in the wrist coordinate 
-% frame) that will be ignored in reaching a solution.  The mask matrix 
+% This method can be used for robots with 6 or more degrees of freedom.
+%
+% Underactuated robots::
+%
+% For the case where the manipulator has fewer than 6 DOF the solution 
+% space has more dimensions than can be spanned by the manipulator joint 
+% coordinates.
+%
+% Q = R.ikine(T, Q0, M, OPTIONS) similar to above but where M is a mask 
+% vector (1x6) which specifies the Cartesian DOF (in the wrist coordinate 
+% frame) that will be ignored in reaching a solution.  The mask vector 
 % has six elements that correspond to translation in X, Y and Z, and rotation 
 % about X, Y and Z respectively.  The value should be 0 (for ignore) or 1.
 % The number of non-zero elements should equal the number of manipulator DOF.
 %
-% For example when using a 5 DOF manipulator rotation about the wrist z-axis
-% might be unimportant in which case  M = [1 1 1 1 1 0].
+% For example when using a 3 DOF manipulator rotation orientation might be 
+% unimportant in which case  M = [1 1 1 0 0 0].
+%
+% For robots with 4 or 5 DOF this method is very difficult to use since
+% orientation is specified by T in world coordinates and the achievable
+% orientations are a function of the tool position.
+%
+% Trajectory operation::
 %
 % In all cases if T is 4x4xM it is taken as a homogeneous transform sequence 
 % and R.ikine() returns the joint coordinates corresponding to each of the 
@@ -62,7 +73,6 @@
 %
 % See also SerialLink.fkine, SerialLink.ikinem, tr22angvec, SerialLink.jacob0, SerialLink.ikine6s.
  
-
 % Copyright (C) 1993-2011, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
@@ -83,6 +93,7 @@
 % http://www.petercorke.com
 
 function [qt,histout] = ikine(robot, tr, varargin)
+
     %  set default parameters for solution
     opt.ilimit = 1000;
     opt.tol = 1e-6;

@@ -352,6 +352,7 @@ function teach(robot, varargin)
 end
 
 function teach_callback(src, name, j, handles)
+    
     % called on changes to a slider or to the edit box showing joint coordinate
     %
     % src      the object that caused the event
@@ -437,6 +438,7 @@ function quit_callback(robot, handles)
 end
 
 function resize_callback(robot, handles)
+
     % come here on figure resize events
     fig = gcbo;   % this figure (whose callback is executing)
     fs = get(fig, 'Position');  % get size of figure

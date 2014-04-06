@@ -1,4 +1,4 @@
-%SerialLink.fkine  Forward kinematics
+%SerialLink.fkine Forward kinematics
 %
 % T = R.fkine(Q) is the pose (4x4) of the robot end-effector as a homogeneous
 % transformation for the joint configuration Q (1xN).
@@ -34,10 +34,11 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
-
+%
 % Modifications by Joern Malzahn to support CodeGenerator functionality
 
 function [t allt] = fkine(robot, q)
+    
 %
 % evaluate fkine for each point on a trajectory of
 % theta_i or q_i data
