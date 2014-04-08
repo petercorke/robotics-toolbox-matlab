@@ -74,7 +74,7 @@ fprintf(fid,'\t%s\n','int iRow, iCol = 0;');
 fprintf(fid,'%s\n',' '); % empty line    
 fprintf(fid,'\t%s\n','for (iRow = 0; iRow < nRow; iRow++){');
 fprintf(fid,'\t\t%s\n','for (iCol = 0; iCol < nCol; iCol++){');
-fprintf(fid,'\t\t\t%s\n','outVector[iRow] += inMatrix[nRow*iCol+iRow] * inVector[iCol];');
+fprintf(fid,'\t\t\t%s\n','outVector[iCol] += inMatrix[nRow*iRow+iCol] * inVector[iRow];');
 fprintf(fid,'\t\t%s\n','}');
 fprintf(fid,'\t%s\n','}  ');
 fprintf(fid,'%s\n','}');

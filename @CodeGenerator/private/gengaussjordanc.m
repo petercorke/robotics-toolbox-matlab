@@ -88,10 +88,16 @@ fprintf(fid,'\t\t\t%s\n','inMatrixCopy[dim*iCol+iRow] = inMatrix[dim*iCol+iRow];
 fprintf(fid,'\t\t%s\n','}');
 
 fprintf(fid,'\t%s\n','}');
-fprintf(fid,'\t%s\n','// Make output matrix an identity matrix.');
-fprintf(fid,'\t%s\n','// Output matrix is orignally assumed to be initialized with zeros!');
+fprintf(fid,'\t%s\n','// Initialize output matrix as identity matrix.');
 fprintf(fid,'\t%s\n','for (iRow = 0; iRow < dim; iRow++ ){');
-fprintf(fid,'\t\t%s\n','outMatrix[dim*iRow+iRow] = 1;');
+fprintf(fid,'\t\t%s\n','for (iCol = 0; iCol < dim; iCol++ ){');
+fprintf(fid,'\t\t\t%s\n','if (iCol == iRow){');
+fprintf(fid,'\t\t\t\t%s\n','outMatrix[dim*iCol+iRow] = 1;');
+fprintf(fid,'\t\t\t%s\n','}');
+fprintf(fid,'\t\t\t%s\n','else{');
+fprintf(fid,'\t\t\t\t%s\n','outMatrix[dim*iCol+iRow] = 0;');
+fprintf(fid,'\t\t\t%s\n','}');
+fprintf(fid,'\t\t%s\n','}');
 fprintf(fid,'\t%s\n','}');
 
 fprintf(fid,'%s\n',' '); % empty line

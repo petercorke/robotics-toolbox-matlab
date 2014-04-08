@@ -8,8 +8,8 @@ mdl_puma560_3;
 tStruct.rob = p560;
 % mdl_twolink
 % tStruct.rob = twolink;
-% tStruct.nTrials = 1000; % number of tests to perform in each subroutine
-tStruct.nTrials = 1; % number of tests to perform in each subroutine
+tStruct.nTrials = 1000; % number of tests to perform in each subroutine
+% tStruct.nTrials = 1; % number of tests to perform in each subroutine
 
 tStruct.cGen = CodeGenerator(tStruct.rob,'default','logfile','cGenUnitTestLog.txt');
 tStruct.cGen.verbose = 0;
@@ -519,7 +519,7 @@ fprintf('MEX function time: %f  speedups: %f  to RTB,  %f  to Sym, %f to M\n',tM
 
 function genfdyn_test(tStruct)
 % - test forward dynamics against numeric version
-Iqdd = tStruct.cGen.genfdyn.';
+IqddSym = tStruct.cGen.genfdyn.';
 
 addpath(tStruct.cGen.basepath);
 
@@ -543,7 +543,7 @@ for iTry = 1:tStruct.nTrials
     tau = TAU(iTry,:);
     
     resRTB(:,:,iTry) =  tStruct.rob.accel(q,qd,tau);
-    resSym(:,:,iTry) = subs(subs(subs(Iqdd,symQ,q),symQD,qd),symTau,tau);
+    resSym(:,:,iTry) = subs(subs(subs(IqddSym,symQ,q),symQD,qd),symTau,tau);
     resM(:,:,iTry) = specRob.accel(q, qd, tau);
     
 end
@@ -573,11 +573,11 @@ for iTry = 1:tStruct.nTrials
     qd = QD(iTry,:);
     tau = TAU(iTry,:);
     
-    resMEX(:,:,iTry) = specRob.fdyn(q,qd,tau);
+    resMEX(:,:,iTry) = specRob.accel(q,qd,tau);
 end
 profile off;
 pstat = profile('info');
-statMEX = getprofilefunctionstats(pstat,[tStruct.cGen.getrobfname,filesep,'fdyn.',mexext],'mex-function');
+statMEX = getprofilefunctionstats(pstat,[tStruct.cGen.getrobfname,filesep,'accel.',mexext],'mex-function');
 
 assertElementsAlmostEqual(resRTB, resMEX);
 

@@ -36,7 +36,7 @@ function [] = genmexfdyn(CGen)
 
 CGen.logmsg([datestr(now),'\tGenerating inverse dynamics MEX-function: ']);
 
-mexfunname = 'fdyn';
+mexfunname = 'accel';
 mexcfilename = fullfile(CGen.robjpath,[mexfunname,'.c']);
 
 cfunname = [CGen.rob.name,'_',mexfunname];
