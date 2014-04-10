@@ -9,7 +9,7 @@
 % - The .c and .h files are generated in the directory specified
 %   by the ccodepath property of the CodeGenerator object.
 % - The resulting C-function is composed of previously generated C-functions
-%   for the inertia matrix, coriolis matrix, vector of gravitational load and
+%   for the inertia matrix, Coriolis matrix, vector of gravitational load and
 %   joint friction vector. This function recombines these components to
 %   compute the forward dynamics.
 %
@@ -18,7 +18,7 @@
 %
 % See also CodeGenerator.CodeGenerator, CodeGenerator.genfdyn,CodeGenerator.genccodeinvdyn.
 
-% Copyright (C) 2012-2013, by Joern Malzahn
+% Copyright (C) 2012-2014, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
 %

@@ -4,9 +4,15 @@
 % the inverse dynamics.
 % 
 % Notes::
-% - Is called by CodeGenerator.geninvdyn if cGen has active flag genmex
+% - Is called by CodeGenerator.geninvdyn if cGen has active flag genmex.
+% - The MEX file uses the .c and .h files generated in the directory 
+%   specified by the ccodepath property of the CodeGenerator object.
 % - Access to generated function is provided via subclass of SerialLink
 %   whose class definition is stored in cGen.robjpath.
+% - You will need a C compiler to use the generated MEX-functions. See the 
+%   MATLAB documentation on how to setup the compiler in MATLAB. 
+%   Nevertheless the basic C-MEX-code as such may be generated without a
+%   compiler. In this case switch the cGen flag compilemex to false.
 %
 % Author::
 %  Joern Malzahn, (joern.malzahn@tu-dortmund.de)

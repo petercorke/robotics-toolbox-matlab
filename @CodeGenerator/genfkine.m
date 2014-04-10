@@ -15,6 +15,11 @@
 %   - genslblock: a Simulink block is generated and stored in a
 %     robot specific block library cGen.slib in the directory
 %     cGen.basepath
+%   - genccode: generates C-functions and -headers in the directory 
+%     specified by the ccodepath property of the CodeGenerator object.
+%   - mex: generates robot specific MEX-functions as replacement for the 
+%     m-functions mentioned above. Access is provided by the SerialLink 
+%     subclass. The MEX files rely on the C code generated before.
 %
 % Author::
 %  Joern Malzahn
@@ -23,7 +28,7 @@
 %
 % See also CodeGenerator.CodeGenerator, CodeGenerator.geninvdyn, CodeGenerator.genjacobian.
 
-% Copyright (C) 2012-2013, by Joern Malzahn
+% Copyright (C) 2012-2014, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
 %

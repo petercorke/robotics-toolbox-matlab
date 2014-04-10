@@ -4,7 +4,7 @@
 % robot Jacobian.
 %
 % Notes::
-% - Is called only if cGen has active flag genmfun
+% - Is called by CodeGenerator.genjacobian, if cGen has active flag genmfun
 % - Access to generated function is provided via subclass of SerialLink 
 %   whose class definition is stored in cGen.robjpath.
 %
@@ -15,7 +15,7 @@
 %
 % See also CodeGenerator.CodeGenerator, CodeGenerator.gencoriolis.
 
-% Copyright (C) 2012-2013, by Joern Malzahn
+% Copyright (C) 2012-2014, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
 %

@@ -4,7 +4,7 @@
 % inverse dynamics.
 %
 % Notes::
-% - Is called by CodeGenerator.geninvdyn if cGen has active flag genmMfun
+% - Is called by CodeGenerator.geninvdyn if cGen has active flag genmfun
 % - The generated M-function is composed of previously generated M-functions
 %   for the inertia matrix, coriolis matrix, vector of gravitational load and 
 %   joint friction vector.  This function recombines these components to 
@@ -19,7 +19,7 @@
 %
 % See also CodeGenerator.CodeGenerator, CodeGenerator.geninvdyn.
 
-% Copyright (C) 2012-2013, by Joern Malzahn
+% Copyright (C) 2012-2014, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
 %

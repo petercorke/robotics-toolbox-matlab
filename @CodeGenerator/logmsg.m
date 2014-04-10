@@ -18,7 +18,7 @@
 %  See also multidfprintf,fprintf,sprintf.
 
 % Copyright (C) 1993-2012, by Peter I. Corke
-% Copyright (C) 2012-2013, by Joern Malzahn
+% Copyright (C) 2012-2014, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
 %

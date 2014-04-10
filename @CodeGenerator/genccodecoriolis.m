@@ -6,8 +6,8 @@
 % Notes::
 % - Is called by CodeGenerator.gencoriolis if cGen has active flag genccode or
 %   genmex.
-% - The generated .c and .h files are generated in the directory specified
-%   by the ccodepath property of the CodeGenerator object.
+% - The .c and .h files are generated in the directory specified by the 
+%   ccodepath property of the CodeGenerator object.
 %
 % Author::
 %  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
@@ -117,7 +117,7 @@ end
 CGen.logmsg('\t%s\n',' done!');
 
 
-%% Full coriolis matrix
+%% Full Coriolis matrix
 CGen.logmsg([datestr(now),'\tGenerating full coriolis matrix C-code']);
 
 symname = 'coriolis';
@@ -206,16 +206,16 @@ end
 %% Definition of the header contents for each generated file
 function hStruct = createHeaderStructRow(rob,curJointIdx,fName)
 [~,hStruct.funName] = fileparts(fName);
-hStruct.shortDescription = ['Computation of the robot specific coriolis matrix row for corresponding to joint ', num2str(curJointIdx), ' of ',num2str(rob.n),'.'];
+hStruct.shortDescription = ['Computation of the robot specific Coriolis matrix row for corresponding to joint ', num2str(curJointIdx), ' of ',num2str(rob.n),'.'];
 hStruct.calls = {['Crow = ',hStruct.funName,'(rob,q)'],...
     ['Crow = rob.',hStruct.funName,'(q)']};
 hStruct.detailedDescription = {'Given a full set of joint variables this function computes the',...
-    ['coriolis matrix row number ', num2str(curJointIdx),' of ',num2str(rob.n),' for ',rob.name,'.']};
+    ['Coriolis matrix row number ', num2str(curJointIdx),' of ',num2str(rob.n),' for ',rob.name,'.']};
 hStruct.inputs = { ['rob: robot object of ', rob.name, ' specific class'],...
     ['q:  ',int2str(rob.n),'-element vector of generalized'],...
     '     coordinates',...
     'Angles have to be given in radians!'};
-hStruct.outputs = {['Crow:  [1x',int2str(rob.n),'] row of the robot coriolis matrix']};
+hStruct.outputs = {['Crow:  [1x',int2str(rob.n),'] row of the robot Coriolis matrix']};
 hStruct.references = {'1) Robot Modeling and Control - Spong, Hutchinson, Vidyasagar',...
     '2) Modelling and Control of Robot Manipulators - Sciavicco, Siciliano',...
     '3) Introduction to Robotics, Mechanics and Control - Craig',...
@@ -232,12 +232,12 @@ hStruct.shortDescription = ['Coriolis matrix for the ',rob.name,' arm.'];
 hStruct.calls = {['C = ',hStruct.funName,'(rob,q)'],...
     ['C = rob.',hStruct.funName,'(q)']};
 hStruct.detailedDescription = {'Given a full set of joint variables the function computes the',...
-    'coriolis Matrix of the robot.'};
+    'Coriolis matrix of the robot.'};
 hStruct.inputs = { ['rob: robot object of ', rob.name, ' specific class'],...
     ['q:  ',int2str(rob.n),'-element vector of generalized'],...
     '     coordinates',...
     'Angles have to be given in radians!'};
-hStruct.outputs = {['C:  [',int2str(rob.n),'x',int2str(rob.n),'] coriolis matrix']};
+hStruct.outputs = {['C:  [',int2str(rob.n),'x',int2str(rob.n),'] Coriolis matrix']};
 hStruct.references = {'1) Robot Modeling and Control - Spong, Hutchinson, Vidyasagar',...
     '2) Modelling and Control of Robot Manipulators - Sciavicco, Siciliano',...
     '3) Introduction to Robotics, Mechanics and Control - Craig',...

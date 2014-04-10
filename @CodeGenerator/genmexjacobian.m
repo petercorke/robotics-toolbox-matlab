@@ -1,13 +1,19 @@
-%CODEGENERATOR.GENMEXJACOBIAN Generate C-MEX-function for the robot jacobians
+%CODEGENERATOR.GENMEXJACOBIAN Generate C-MEX-function for the robot Jacobians
 %
 % CGEN.GENMEXJACOBIAN() generates robot-specific MEX-function to compute
-% the robot jacobian with respect to the base as well as the end effector
+% the robot Jacobian with respect to the base as well as the end effector
 % frame.
 %
 % Notes::
-% - Is called by CodeGenerator.genjacobian if cGen has active flag genmex
+% - Is called by CodeGenerator.genjacobian if cGen has active flag genmex.
+% - The MEX file uses the .c and .h files generated in the directory 
+%   specified by the ccodepath property of the CodeGenerator object.
 % - Access to generated function is provided via subclass of SerialLink
 %   whose class definition is stored in cGen.robjpath.
+% - You will need a C compiler to use the generated MEX-functions. See the 
+%   MATLAB documentation on how to setup the compiler in MATLAB. 
+%   Nevertheless the basic C-MEX-code as such may be generated without a
+%   compiler. In this case switch the cGen flag compilemex to false.
 %
 % Author::
 %  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
@@ -40,7 +46,7 @@ symname = 'jacob0';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
 if exist(fname,'file')
-    CGen.logmsg([datestr(now),'\tGenerating jacobian MEX-function with respect to the robot base frame']);
+    CGen.logmsg([datestr(now),'\tGenerating Jacobian MEX-function with respect to the robot base frame']);
     tmpStruct = load(fname);
 else
     error ('genmfunjacobian:SymbolicsNotFound','Save symbolic expressions to disk first!')
@@ -62,7 +68,7 @@ symname = 'jacobn';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
 if exist(fname,'file')
-    CGen.logmsg([datestr(now),'\tGenerating jacobian MEX-function with respect to the robot end-effector frame']);
+    CGen.logmsg([datestr(now),'\tGenerating Jacobian MEX-function with respect to the robot end-effector frame']);
     tmpStruct = load(fname);
 else
     error ('genMFunJacobian:SymbolicsNotFound','Save symbolic expressions to disk first!')
@@ -88,7 +94,7 @@ hStruct.shortDescription = ['MEX version of the Jacobian with respect to the bas
 hStruct.calls = {['J0 = ',hStruct.funName,'(rob,q)'],...
     ['J0 = rob.',hStruct.funName,'(q)']};
 hStruct.detailedDescription = {['Given a full set of joint variables the function'],...
-    'computes the robot jacobian with respect to the base frame.'};
+    'computes the robot Jacobian with respect to the base frame.'};
 hStruct.inputs = {['q:  ',int2str(rob.n),'-element vector of generalized coordinates.'],...
     'Angles have to be given in radians!'};
 hStruct.outputs = {['J0:  [6x',num2str(rob.n),'] Jacobian matrix']};
@@ -109,7 +115,7 @@ hStruct.shortDescription = ['MEX version of the Jacobian with respect to the end
 hStruct.calls = {['Jn = ',hStruct.funName,'(rob,q)'],...
     ['Jn = rob.',hStruct.funName,'(q)']};
 hStruct.detailedDescription = {['Given a full set of joint variables the function'],...
-    'computes the robot jacobian with respect to the end-effector frame.'};
+    'computes the robot Jacobian with respect to the end-effector frame.'};
 hStruct.inputs = {['q:  ',int2str(rob.n),'-element vector of generalized coordinates.'],...
     'Angles have to be given in radians!'};
 hStruct.outputs = {['Jn:  [6x',num2str(rob.n),'] Jacobian matrix']};
