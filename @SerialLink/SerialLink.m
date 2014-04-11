@@ -210,6 +210,8 @@ classdef SerialLink < handle
 
             if exist('frne') == 3
                 r.fast = true;
+            else
+                r.fast = false;
             end
 
             if nargin == 0
