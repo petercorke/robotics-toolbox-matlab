@@ -73,26 +73,36 @@ classdef VREP_camera < VREP_obj
              % range of Z from NEAR to FAR.  Objects outside this range
              % will not be rendered.
 
-             obj.vrep.setparam_float(obj.h, 1000, near);
-             obj.vrep.setparam_float(obj.h, 1000, far);
+             obj.vrep.setobjparam_float(obj.h, 1000, near);
+             obj.vrep.setobjparam_float(obj.h, 1001, far);
+        end
+        
+        function clip = getclipping(obj)
+             %VREP_camera.getclipping  Get clipping boundaries for V-REP vision sensor
+             %
+             % C.getclipping() is the near and far clipping boundaries (1x2) in the
+             % Z-direction as a 2-vector [NEAR,FAR]. 
+
+             clip(1) = obj.vrep.getobjparam_float(obj.h, 1000);
+             clip(2) = obj.vrep.getobjparam_float(obj.h, 1001);
         end
         
         function im = setangle(obj, angle)
             %VREP_camera.setangle  Set field of view for V-REP vision sensor
             %
             % C.setangle(FOV) set the field-of-view angle to FOV in
-            % degrees.
+            % radians.
             
-            obj.vrep.setparam_float(obj.h, 1004, angle);
+            obj.vrep.setobjparam_float(obj.h, 1004, angle);
         end
         
         function fov = getangle(obj)
             %VREP_camera.fetangle  Fet field of view for V-REP vision sensor
             %
-            % FOV = C.fetangle(FOV) is the field-of-view angle to FOV in
-            % degrees.
+            % FOV = C.getangle(FOV) is the field-of-view angle to FOV in
+            % radians.
             
-            fov = obj.vrep.getparam_float(obj.h, 1004);
+            fov = obj.vrep.getobjparam_float(obj.h, 1004);
         end
         
         function setresolution(obj, res)
@@ -106,8 +116,8 @@ classdef VREP_camera < VREP_obj
             else
                 rx = res(1); ry = res(2);
             end
-            obj.vrep.setparam_int(obj.h, 1002, rx);
-            obj.vrep.setparam_int(obj.h, 1003, ry);
+            obj.vrep.setobjparam_int(obj.h, 1002, rx);
+            obj.vrep.setobjparam_int(obj.h, 1003, ry);
         end
         
         function res = getresolution(obj)
@@ -117,8 +127,8 @@ classdef VREP_camera < VREP_obj
             % vision sensor R(1)xR(2).
             
             
-            res(1) = obj.vrep.setparam_int(obj.h, 1002);
-            res(2) = obj.vrep.setparam_int(obj.h, 1003);
+            res(1) = obj.vrep.getobjparam_int(obj.h, 1002);
+            res(2) = obj.vrep.getobjparam_int(obj.h, 1003);
         end
         
         function im = grab(obj, varargin)
