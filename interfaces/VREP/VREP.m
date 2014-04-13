@@ -29,6 +29,9 @@
 %  setobjparam_bool    set object boolean parameter
 %  setobjparam_int     set object integer parameter
 %  setobjparam_float   set object float parameter
+%  getobjparam_bool    get object boolean parameter
+%  getobjparam_int     get object integer parameter
+%  getobjparam_float   get object float parameter
 %-
 %  signal_int          send named integer signal
 %  signal_float        send named float signal
@@ -359,6 +362,39 @@ classdef VREP < handle
             % V.setobjparam_bool(H, PARAM, VAL) sets the float parameter
             % with identifier PARAM of object H to value VAL.
             s = obj.vrep.simxSetObjectFloatParameter(obj.client, h, paramid, val, obj.mode);
+            if s ~= 0
+                throw( obj.except(s) );
+            end
+        end
+        
+        function val = getobjparam_bool(obj, h, paramid)
+            %VREP.getobjparam_bool get boolean parameter of a V-REP object
+            %
+            % V.getobjparam_bool(H, PARAM) gets the boolean parameter
+            % with identifier PARAM of object with integer handle H.
+            [s,val] = obj.vrep.simxGetObjectIntParameter(obj.client, h, paramid, obj.mode);
+            if s ~= 0
+                throw( obj.except(s) );
+            end
+        end
+
+        function val = getobjparam_int(obj, h, paramid)
+            %VREP.getobjparam_int get Integer parameter of a V-REP object
+            %
+            % V.getobjparam_int(H, PARAM) gets the integer parameter
+            % with identifier PARAM of object with integer handle H.
+            [s,val] = obj.vrep.simxGetObjectIntParameter(obj.client, h, paramid, obj.mode);
+            if s ~= 0
+                throw( obj.except(s) );
+            end
+        end
+
+        function val = getobjparam_float(obj, h, paramid)
+            %VREP.getobjparam_float get float parameter of a V-REP object
+            %
+            % V.getobjparam_bool(H, PARAM) gets the float parameter
+            % with identifier PARAM of object with integer handle H.
+            [s,val] = obj.vrep.simxGetObjectFloatParameter(obj.client, h, paramid, obj.mode);
             if s ~= 0
                 throw( obj.except(s) );
             end
