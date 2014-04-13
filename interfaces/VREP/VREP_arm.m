@@ -73,7 +73,7 @@ classdef VREP_arm < VREP_obj
             if h == 0
                 error('no such object as %s in the scene', name);
             end
-            arm = arm@VREP_base(vrep, name);
+            arm = arm@VREP_obj(vrep, name);
             
             opt.fmt = '%s_joint%d';
             opt = tb_optparse(opt, varargin);
