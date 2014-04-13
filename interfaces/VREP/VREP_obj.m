@@ -1,0 +1,161 @@
+%VREP_obj V-REP mirror of simple object
+%
+% Mirror objects are MATLAB objects that reflect objects in the V-REP
+% environment.  Methods allow the V-REP state to be examined or changed.
+%
+% This is a concrete class, derived from VREP_mirror, for all V-REP objects 
+% and allows access to pose and object parameters.
+%
+% Example::
+%          vrep = VREP();
+%          bill = vrep.object('Bill');  % get the human figure Bill
+%          bill.setpos([1,2,0]);
+%          bill.setorient([0 pi/2 0]);
+%
+% Methods throw exception if an error occurs.
+%
+% Methods::
+%
+%  getpos              return position of object given handle
+%  setpos              set position of object given handle
+%  getorient           return orientation of object given handle
+%  setorient           set orientation of object given handle
+%  getpose             return pose of object given handle
+%  setpose             set pose of object given handle
+%
+% Superclass methods (VREP_base)::
+%  setobjparam_bool    set object boolean parameter
+%  setobjparam_int     set object integer parameter
+%  setobjparam_float   set object float parameter
+%
+%  display             print the link parameters in human readable form
+%  char                convert to string
+%
+% Properties (read/write)::
+%
+% See also VREP_mirror, VREP_obj, VREP_arm, VREP_camera, VREP_hokuyo.
+
+classdef VREP_obj < VREP_mirror
+    
+    properties
+    end
+    
+    methods
+        
+        function obj = VREP_obj(vrep, name)
+            %VREP_obj.VREP_obj VREP_obj mirror object constructor
+            %
+            % v = VREP_base(NAME) creates a V-REP mirror object for a
+            % simple V-REP object type.
+            obj = obj@VREP_base(vrep, name);
+        end
+        
+        function p = getpos(obj, relto)
+            %VREP_obj.getpos Get position of V-REP object
+            %
+            % V.getpos() is the position (1x3) of the corresponding V-REP object.
+            %
+            % V.getpos(BASE) as above but position is relative to the VREP_obj
+            % object BASE.
+            if nargin == 0
+                p = obj.vrep.getpos(obj.h);
+            elseif nargin == 1 && isa(relto, 'VREP_base')
+                p = obj.vrep.getpos(obj.h, relto.h);
+            end
+        end
+
+            function setpos(obj, p, relto)
+                %VREP_obj.setpos Set position of V-REP object
+                %
+                % V.setpos(T) sets the position of the corresponding V-REP object
+                % to T (1x3).
+                %
+                % V.setpos(T, BASE) as above but position is set relative to the
+                % position of the VREP_obj object BASE.
+                
+                if nargin == 1
+                    obj.vrep.setpos(obj.h, p);
+                elseif nargin == 2 && isa(relto, 'VREP_base')
+                    obj.vrep.setpos(obj.h, p, relto.h);
+                end
+            end
+
+            function p = getorient(obj, varargin)
+                %VREP_obj.getorient Get orientation of V-REP object
+                %
+                % V.getorient() is the orientation of the corresponding V-REP
+                % object as a rotation matrix (3x3).
+                %
+                % V.getorient('euler', OPTIONS) as above but returns ZYZ Euler
+                % angles.
+                %
+                % V.getorient(BASE) is the orientation of the corresponding V-REP
+                % object relative to the VREP_obj object BASE.
+                %
+                % V.getorient(BASE, 'euler', OPTIONS) as above but returns ZYZ Euler
+                % angles.
+                %
+                % Options::
+                % See tr2eul.
+                if nargin == 0
+                    p = obj.vrep.getorient(obj.h);
+                else
+                    if isa(varargin{1}, 'VREP_base')
+                        p = obj.vrep.getorient(obj.h, relto.h, varargin{2:end});
+                    else
+                        p = obj.vrep.getorient(obj.h, relto.h, varargin{:});
+                    end
+                end
+            end
+            
+            function setorient(obj, p, relto)
+                %VREP_obj.setorient Set orientation of V-REP object
+                %
+                % V.setorient(R) sets the orientation of the corresponding V-REP to rotation matrix R (3x3).
+                %
+                % V.setorient(T) sets the orientation of the corresponding V-REP object to rotational component of homogeneous transformation matrix
+                % T (4x4).
+                %
+                % V.setorient(E) sets the orientation of the corresponding V-REP object to ZYZ Euler angles (1x3).
+                %
+                % V.setorient(X, BASE) as above but orientation is set relative to the
+                % orientation of VREP_obj object BASE.
+                if nargin == 1
+                    obj.vrep.setorient(obj.h, p);
+                    
+                elseif nargin == 2 && isa(relto, 'VREP_base')
+                    obj.vrep.setorient(obj.h, p, relto.h);
+                end
+            end
+            
+            function p = getpose(obj, relto)
+                %VREP_obj.getpose Get pose of V-REP object
+                %
+                % V.getpose() is the pose (4x4) of the the corresponding V-REP object.
+                %
+                % V.getpose(BASE) as above but pose is relative to the
+                % pose the VREP_obj object BASE.
+                if nargin == 0
+                    p = obj.vrep.getpose(obj.h);
+                elseif nargin == 1 && isa(relto, 'VREP_base')
+                    p = obj.vrep.getpose(obj.h, relto.h);
+                end
+            end
+            
+            function setpose(obj, p, relto)
+                %VREP_obj.setpose Set pose of V-REP object
+                %
+                % V.setpose(T) sets the pose of the corresponding V-REP object
+                % to T (4x4).
+                %
+                % V.setpose(T, BASE) as above but pose is set relative to the
+                % pose of the VREP_obj object BASE.
+                if nargin == 1
+                    obj.vrep.setpose(obj.h, p);
+                elseif nargin == 2 && isa(relto, 'VREP_base')
+                    obj.vrep.setpose(obj.h, p, relto.h);
+                end
+            end
+    end
+end
+    

@@ -1,0 +1,164 @@
+%VREP_camera V-REP mirror of vision sensor object
+%
+% Mirror objects are MATLAB objects that reflect objects in the V-REP
+% environment.  Methods allow the V-REP state to be examined or changed.
+%
+% This is a concrete class, derived from VREP_mirror, for all V-REP vision 
+% sensor objects and allows access to images and image parameters.
+%
+% Methods throw exception if an error occurs.
+%
+% Example::
+%          vrep = VREP();
+%          camera = vrep.camera('Vision_sensor');
+%          im = camera.grab();
+%          camera.setpose(T);
+%          R = camera.getorient();
+%
+% Methods::
+%
+%  grab               return an image from simulated camera
+%  setangle           set field of view
+%  setresolution      set image resolution
+%  setclipping        set clipping boundaries
+%
+% Superclass methods (VREP_obj)::
+%  getpos              return position of object given handle
+%  setpos              set position of object given handle
+%  getorient           return orientation of object given handle
+%  setorient           set orientation of object given handle
+%  getpose             return pose of object given handle
+%  setpose             set pose of object given handle
+%
+% can be used to set/get the pose of the robot base.
+%
+% Superclass methods (VREP_base)::
+%  setobjparam_bool    set object boolean parameter
+%  setobjparam_int     set object integer parameter
+%  setobjparam_float   set object float parameter
+%
+% Properties::
+%  n     Number of joints
+%
+% See also VREP_mirror, VREP_obj, VREP_arm, VREP_camera, VREP_hokuyo.
+
+classdef VREP_camera < VREP_obj
+    
+    properties
+    end
+    
+    methods
+        function obj = VREP_camera(vrep, name)
+                        %VREP_camera.VREP_camera Create a camera mirror object
+            %
+            % C = VREP_camera(NAME, OPTIONS) is a mirror object that corresponds to the
+            % a vision senor named NAME in the V-REP environment.
+            %
+            % Options::
+            % 'fov',A           Specify field of view in degreees (default 60)
+            % 'resolution',N    Specify resolution.  If scalar NxN else N(1)xN(2) 
+            % 'clipping',Z      Specify near Z(1) and far Z(2) clipping boundaries
+            %
+            % Notes::
+            % - Default parameters are set in the V-REP environment
+            %
+            % See also VREP_obj.
+            obj = obj@VREP_obj(vrep, name);
+        end
+        
+        function im = setclipping(obj, near, far)
+             %VREP_camera.setclipping  Set clipping boundaries for V-REP vision sensor
+             %
+             % C.setclipping(NEAR, FAR) set clipping boundaries to the
+             % range of Z from NEAR to FAR.  Objects outside this range
+             % will not be rendered.
+
+             obj.vrep.setparam_float(obj.h, 1000, near);
+             obj.vrep.setparam_float(obj.h, 1000, far);
+        end
+        
+        function im = setangle(obj, angle)
+            %VREP_camera.setangle  Set field of view for V-REP vision sensor
+            %
+            % C.setangle(FOV) set the field-of-view angle to FOV in
+            % degrees.
+            
+            obj.vrep.setparam_float(obj.h, 1004, angle);
+        end
+        
+        function fov = getangle(obj)
+            %VREP_camera.fetangle  Fet field of view for V-REP vision sensor
+            %
+            % FOV = C.fetangle(FOV) is the field-of-view angle to FOV in
+            % degrees.
+            
+            fov = obj.vrep.getparam_float(obj.h, 1004);
+        end
+        
+        function setresolution(obj, res)
+            %VREP_camera.setresolution  Set resolution for V-REP vision sensor
+            %
+            % C.setresolution(R) set image resolution to RxR if R is a scalar or
+            % R(1)xR(2) if it is a 2-vector.
+            
+            if isscalar(res)
+                rx = res; ry = res;
+            else
+                rx = res(1); ry = res(2);
+            end
+            obj.vrep.setparam_int(obj.h, 1002, rx);
+            obj.vrep.setparam_int(obj.h, 1003, ry);
+        end
+        
+        function res = getresolution(obj)
+            %VREP_camera.getresolution  Get resolution for V-REP vision sensor
+            %
+            % R = C.getresolution() is the image resolution (1x2) of the
+            % vision sensor R(1)xR(2).
+            
+            
+            res(1) = obj.vrep.setparam_int(obj.h, 1002);
+            res(2) = obj.vrep.setparam_int(obj.h, 1003);
+        end
+        
+        function im = grab(obj, varargin)
+            %VREP_camera.grab  Get image from V-REP vision sensor
+            %
+            % IM = C.grab(OPTIONS) is an image (WxH) returned from the V-REP
+            % vision sensor.
+            %
+            % C.grab(OPTIONS) as above but the image is displayed using
+            % idisp.
+            %
+            % Options::
+            % 'grey'     Return a greyscale image (default color).
+            %
+            % Notes::
+            % - V-REP simulator must be running
+            % - Very slow, ie. seconds to grab a 256x256 image
+            % - Color images can be quite dark, ensure good light sources
+            % - Uses the signal 'handle_rgb_sensor' to trigger a single
+            %   image generation.
+            %
+            % See also idisp.
+            
+            opt.grey = false;
+            opt = tb_optparse(opt, varargin);
+            
+            % Ask the sensor to turn itself on, take A SINGLE 3D IMAGE, and turn itself off again
+            obj.vrep.signal_int('handle_rgb_sensor', 1);
+            fprintf('Capturing image...\n');
+            [s,res,image] = obj.vrep.vrep.simxGetVisionSensorImage2(obj.vrep.client, obj.h, opt.grey, obj.vrep.mode);
+            if s ~= 0
+                throw( obj.except(s) );
+            end
+            fprintf('Captured %dx%d image\n', res(1), res(2));
+            
+            if nargout == 0
+                idisp(image);
+            elseif nargout > 0
+                im = image;
+            end
+        end
+    end
+end
