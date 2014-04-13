@@ -47,7 +47,7 @@ classdef VREP_obj < VREP_mirror
             %
             % v = VREP_base(NAME) creates a V-REP mirror object for a
             % simple V-REP object type.
-            obj = obj@VREP_base(vrep, name);
+            obj = obj@VREP_mirror(vrep, name);
         end
         
         function p = getpos(obj, relto)
@@ -57,9 +57,9 @@ classdef VREP_obj < VREP_mirror
             %
             % V.getpos(BASE) as above but position is relative to the VREP_obj
             % object BASE.
-            if nargin == 0
+            if nargin == 1
                 p = obj.vrep.getpos(obj.h);
-            elseif nargin == 1 && isa(relto, 'VREP_base')
+            elseif nargin == 2 && isa(relto, 'VREP_base')
                 p = obj.vrep.getpos(obj.h, relto.h);
             end
         end
@@ -97,7 +97,7 @@ classdef VREP_obj < VREP_mirror
                 %
                 % Options::
                 % See tr2eul.
-                if nargin == 0
+                if nargin == 1
                     p = obj.vrep.getorient(obj.h);
                 else
                     if isa(varargin{1}, 'VREP_base')
@@ -135,9 +135,9 @@ classdef VREP_obj < VREP_mirror
                 %
                 % V.getpose(BASE) as above but pose is relative to the
                 % pose the VREP_obj object BASE.
-                if nargin == 0
+                if nargin == 1
                     p = obj.vrep.getpose(obj.h);
-                elseif nargin == 1 && isa(relto, 'VREP_base')
+                elseif nargin == 2 && isa(relto, 'VREP_base')
                     p = obj.vrep.getpose(obj.h, relto.h);
                 end
             end
