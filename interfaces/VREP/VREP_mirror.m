@@ -39,26 +39,47 @@ classdef (Abstract=true) VREP_mirror < handle
             end
             
             function setobjparam_bool(obj, paramid, val)
-                %VREP.setparam_bool Set boolean parameter of the V-REP simulator
+                %VREP.setparam_bool Set boolean parameter of V-REP object
                 %
                 % V.setparam_bool(NAME, VAL) sets the boolean parameter with name NAME
                 % to value VAL within the V-REP simulation engine.
                 obj.vrep.setobjparam_bool(obj, obj.h, paramid, val);
             end
             function setobjparam_int(obj, paramid, val)
-                %VREP.setparam_bool Set integer parameter of the V-REP simulator
+                %VREP.setparam_bool Set integer parameter of V-REP object
                 %
                 % V.setparam_int(NAME, VAL) sets the integer parameter with name NAME
                 % to value VAL within the V-REP simulation engine.
                 obj.vrep.setobjparam_int(obj, obj.h, paramid, val);
             end
             function setobjparam_float(obj, paramid, val)
-                %VREP.setparam_float Set float parameter of the V-REP simulator
+                %VREP.setparam_float Set float parameter of V-REP object
                 %
                 % V.setparam_float(NAME, VAL) sets the float parameter with name NAME
                 % to value VAL within the V-REP simulation engine.
                 obj.vrep.setobjparam_float(obj, obj.h, paramid, val);
             end
             
+            function val = getobjparam_bool(obj, paramid)
+                %VREP.getparam_bool Get boolean parameter of V-REP object
+                %
+                % V.getparam_bool(NAME, VAL) is the boolean parameter with name NAME
+                % of the corresponding V-REP object.
+                obj.vrep.setobjparam_bool(obj, obj.h, paramid, val);
+            end
+            function val = getobjparam_int(obj, paramid, val)
+                %VREP.getparam_bool Get integer parameter of V-REP object
+                %
+                % V.getparam_int(NAME, VAL) is the integer parameter with name NAME
+                % of the corresponding V-REP object.
+                obj.vrep.setobjparam_int(obj, obj.h, paramid);
+            end
+            function getobjparam_float(obj, paramid, val)
+                %VREP.getparam_float Get float parameter of V-REP object
+                %
+                % V.getparam_float(NAME, VAL) is the float parameter with name NAME
+                % of the corresponding V-REP object.
+                val = obj.vrep.setobjparam_float(obj, obj.h, paramid);
+            end
         end
 end
