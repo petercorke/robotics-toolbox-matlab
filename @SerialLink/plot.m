@@ -136,7 +136,7 @@
 % - The size of the plot volume is determined by a heuristic for an all-revolute
 %   robot.  If a prismatic joint is present the 'workspace' option is required.
 %
-% See also plotbotopt, SerialLink.animate, SerialLink.teach, SerialLink.fkine.
+% See also SerialLink.plot3d, plotbotopt, SerialLink.animate, SerialLink.teach, SerialLink.fkine.
 
 
 % HANDLES:

@@ -173,13 +173,14 @@ classdef SerialLink < handle
         %
         % Options::
         %
-        %  'name', name            set robot name property
-        %  'comment', comment      set robot comment property
-        %  'manufacturer', manuf   set robot manufacturer property
-        %  'base', base            set base transformation matrix property
-        %  'tool', tool            set tool transformation matrix property
-        %  'gravity', g            set gravity vector property
-        %  'plotopt', po           set plotting options property
+        %  'name',NAME             set robot name property to NAME
+        %  'comment',COMMENT       set robot comment property to COMMENT
+        %  'manufacturer',MANUF    set robot manufacturer property to MANUF
+        %  'base',T                set base transformation matrix property to T
+        %  'tool',T                set tool transformation matrix property to T
+        %  'gravity',G             set gravity vector property to G
+        %  'plotopt',P             set default options for .plot() to P
+        %  'plotopt3d',P           set default options for .plot3d() to P
         %  'nofast'                don't use RNE MEX file
         %
         % Examples::
