@@ -263,27 +263,64 @@ classdef EKF < handle
             opt.dim = [];
             
             [opt,args] = tb_optparse(opt, varargin);
-            if length(args) == 3
-                [sensor, W_est, map] = deal(args{:});
-            else
-                sensor = []; W_est = []; map = NaN;
-            end
-
+            
+            % copy options to class properties
             ekf.verbose = opt.verbose;
             ekf.keepHistory = opt.history;
             ekf.joseph = opt.joseph;
             ekf.P0 = P0;
-            ekf.map = map;
-            ekf.dim = opt.dim;
+            ekf.dim = opt.dim;         
             
-            ekf.sensor = [];
+            % figure what we need to estimate
+            ekf.estVehicle = false;
+            ekf.estMap = false;
+            switch length(args)
+                case 0
+                    % Deadreckoning:
+                    %    E = EKF(VEHICLE, V_EST, P0, OPTIONS)
+                    sensor = []; W_est = []; map = [];
+                    ekf.estVehicle = true;
+                case 3
+                    % Using a map:
+                    %    E = EKF(VEHICLE, V_EST, P0, SENSOR, W_EST, MAP, OPTIONS)
+                    % Estimating a map:
+                    %    E = EKF(VEHICLE,[], [], SENSOR, W_EST, [], OPTIONS)
+                    % Full SLAM:
+                    %    E = EKF(VEHICLE, V_EST, P0, SENSOR, W_EST, [], OPTIONS)
+
+                    [sensor, W_est, map] = deal(args{:});
+                    if isempty(map)
+                        ekf.estMap = true;
+                    end
+                    if ~isempty(V_est)
+                        ekf.estVehicle = true;
+                    end
+                    
+                otherwise
+                    error('RTB:EKF:badarg', 'incorrect number of non-option arguments');
+            end
+            
+            % check types for passed objects
+            if ~isempty(map) && ~isa(map, 'Map')
+                error('RTB:EKF:badarg', 'expecting Map object');
+            end
+            if ~isempty(sensor) && ~isa(sensor, 'Sensor')
+                error('RTB:EKF:badarg', 'expecting Sensor object');
+            end
+            if ~isa(robot, 'Vehicle')
+                error('RTB:EKF:badarg', 'expecting Vehicle object');
+            end
+            
+            % copy arguments to class properties
             ekf.robot = robot;
             ekf.V_est = V_est;
-            if nargin > 3
-                ekf.sensor = sensor;
-                ekf.W_est = W_est;
+            ekf.sensor = sensor;
+            ekf.map = map;
+            ekf.W_est = W_est;
+            
+            if ~isempty(sensor)
+                ekf.features = NaN*zeros(2, sensor.map.nfeatures);
             end
-            ekf.joseph = true;
 
             ekf.init();
         end
@@ -308,18 +345,7 @@ classdef EKF < handle
                 ekf.P_est = ekf.P0;
                 ekf.estVehicle = true;
                 
-            end
-            if isempty(ekf.map)
-                % no map given, we have to estimate it
-                ekf.estMap = true;
-                ekf.features = NaN*zeros(2, ekf.sensor.map.nfeatures);
-            elseif isa(ekf.map, 'Map')
-                ekf.estMap = false;
-            else
-                error('RTB:EKF:badarg', 'shouldnt happen')
-            end
-
-            
+            end     
         end
 
         function run(ekf, n, varargin)
