@@ -63,7 +63,7 @@ function fkine_test
     
 %    plot                       - plot/animate robot
 function SerialLink_plot_test
-    L(1)=Link([1 1 1 1 1]);
+    L(1)=Link([1 1 1 1 0]);
     L(1).qlim = [-5 5];
     L(2)=Link([0 1 0 1 0]);
     R1 = SerialLink(L,'name','robot1','comment', 'test robot','manufacturer', 'test',...
@@ -72,24 +72,22 @@ function SerialLink_plot_test
 
 %    teach                      - drive a graphical  robot
 function teach_test
-    L(1)=Link([1 1 1 1 1]);
+    L(1)=Link([1 1 1 1 0]);
     L(2)=Link([0 1 0 1 0]);
     L(1).qlim = [-5 5];
     R1 = SerialLink(L,'name','robot1','comment', 'test robot','manufacturer', 'test',...
     'base', eye(4,4), 'tool', eye(4,4), 'offset', [1 1 0 0 0 0 ] );
-    h = R1.teach;
-    drawnow
+    R1.teach;
     pause(0.5);
-    delete(h);
-
 
 %        ikine                  - inverse kinematics (numeric)
 function ikine_test
     mdl_puma560;
-    qn = [0 pi/4 -pi 1 pi/4 0];
+    qn = [0 pi/4 -pi 0 pi/4 0];
     T = p560.fkine(qn);
-    out = p560.ikine(T);
-    expected_out = [-0.0000   -0.8335    0.0940   -0.6880   -1.2140    1.1131];
+    out = p560.ikine(T, [0 0 3 0 0 0]);
+    % example from RVC p 149
+    expected_out = [-0.0000    0.7854    3.1416    0.0000    0.7854   -0.0000];
     assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
 
     assertTrue( all(all( abs(p560.fkine(out) - T) < 1e-4)) );
@@ -97,17 +95,16 @@ function ikine_test
 %        ikine6s                - inverse kinematics for 6-axis arm with sph.wrist
 function ikine6s_test
     mdl_puma560;
-    qz = [0 1 0 0 2 0];
     qn = [0 pi/4 -pi 1 pi/4 0];
-    T = p560.fkine(qz);
+    T = p560.fkine(qn);
     out = p560.ikine6s(T,'ru');
-    expected_out = [-1.3416 2.1416 -3.0476 2.9626 2.2600 1.6876];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    expected_out = [2.6486   -2.3081    3.1416    2.9483   -0.9810    0.8044];
+    assertElementsAlmostEqual(out,expected_out,'absolute',1e-3);
     
     T = p560.fkine(qn);
     out = p560.ikine6s(T,'ld');
-    expected_out = [2.6486 -2.3081 3.1416 -0.1933 0.9810 -2.3371];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    expected_out = [-0.0000   -0.8335    0.0940   -0.6880   -1.2140    1.1131];
+    assertElementsAlmostEqual(out,expected_out,'absolute',1e-3);
 
 %        jacob0                 - Jacobian in base coordinate frame
 function jacob0_test
@@ -222,29 +219,35 @@ function coriolis_test
     qd = 0.5 * [1 1 1 1 1 1];
     qn = [0 pi/4 -pi 1 pi/4 0];
     out = p560.coriolis(qn, qd);
-    expected_out = [-0.0000   -0.9116    0.2167    0.0016   -0.0019    0.0000
-                     0.3138    0.0000    0.5786   -0.0024   -0.0016    0.0000
-                    -0.1805   -0.1929    0.0000   -0.0006   -0.0025    0.0000
-                     0.0003    0.0009    0.0003    0.0000    0.0007   -0.0000
-                     0.0001    0.0001    0.0008   -0.0006   -0.0000   -0.0000
-                          0    0.0000    0.0000    0.0000    0.0000         0];
+    expected_out = [
+   -0.1336   -0.6458    0.0845    0.0005   -0.0008    0.0000
+    0.3136    0.1922    0.3851   -0.0018   -0.0007    0.0000
+   -0.1803   -0.1934   -0.0005   -0.0009   -0.0014    0.0000
+    0.0007    0.0008    0.0003    0.0001    0.0003   -0.0000
+   -0.0004    0.0005    0.0005   -0.0003   -0.0000   -0.0000
+    0.0000    0.0000    0.0000   -0.0000    0.0000         0
+                          ];
     assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
     
     qd = [0.1 0.1 0.1 0.1 0.1 0.1;0.2 0.2 0.2 0.2 0.2 0.2];
     qn = [0 pi/4 -pi 1 pi/4 0; 0 pi/2 -pi 1 pi/2 0];
     out = p560.coriolis(qn, qd);
-    expected_out(:,:,1) = [-0.0000   -0.1823    0.0433    0.0003   -0.0004    0.0000
-                            0.0628    0.0000    0.1157   -0.0005   -0.0003    0.0000
-                           -0.0361   -0.0386    0.0000   -0.0001   -0.0005    0.0000
-                            0.0001    0.0002    0.0001    0.0000    0.0001   -0.0000
-                            0.0000    0.0000    0.0002   -0.0001   -0.0000   -0.0000
-                                 0    0.0000    0.0000    0.0000    0.0000         0];
-    expected_out(:,:,2) = [-0.0000   -0.1700   -0.0795    0.0014   -0.0003   -0.0000
-                            0.0734    0.0000    0.2309   -0.0016   -0.0012    0.0000
-                           -0.0021   -0.0770    0.0000   -0.0005   -0.0012    0.0000
-                           -0.0001    0.0008    0.0004    0.0000    0.0004   -0.0000
-                            0.0002    0.0002    0.0007   -0.0004    0.0000    0.0000
-                                 0   -0.0000   -0.0000    0.0000   -0.0000         0];
+    expected_out(:,:,1) = [
+       -0.0267   -0.1292    0.0169    0.0001   -0.0002    0.0000
+        0.0627    0.0384    0.0770   -0.0004   -0.0001    0.0000
+       -0.0361   -0.0387   -0.0001   -0.0002   -0.0003    0.0000
+        0.0001    0.0002    0.0001    0.0000    0.0001   -0.0000
+       -0.0001    0.0001    0.0001   -0.0001   -0.0000   -0.0000
+        0.0000    0.0000    0.0000   -0.0000    0.0000         0
+                                 ];
+    expected_out(:,:,2) = [
+       -0.0715   -0.1242   -0.0534    0.0008   -0.0001   -0.0000
+        0.0731    0.0765    0.1535   -0.0009   -0.0007    0.0000
+       -0.0023   -0.0772   -0.0003   -0.0004   -0.0007    0.0000
+        0.0004    0.0006    0.0003    0.0000    0.0002   -0.0000
+        0.0002    0.0004    0.0004   -0.0002    0.0000    0.0000
+       -0.0000    0.0000    0.0000   -0.0000   -0.0000         0
+                                 ];
     
     assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
     

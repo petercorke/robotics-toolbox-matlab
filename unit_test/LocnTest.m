@@ -53,7 +53,7 @@ function MapLocalization_test
     veh.add_driver( RandomPath(10) );
     sensor = RangeBearingSensor(veh, map, W);
     sensor.interval = 5;
-    ekf = EKF(veh, W, P0, sensor, W);
+    ekf = EKF(veh, W, P0, sensor, W, map);
 
     ekf.run(1000);
 

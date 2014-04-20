@@ -328,7 +328,7 @@ function rpy2tr_test
          0     0     1     0
          0     0     0     1],'absolute',1e-4);
     %test for scalar input
-    assertExceptionThrown(@()rpy2tr(1),'');
+    assertExceptionThrown(@()rpy2tr(1),'RTB:rpy2r:badarg');
         
 %    t2r                        - HT to RM
 function t2r_test
