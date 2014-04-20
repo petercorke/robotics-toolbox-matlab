@@ -1,4 +1,4 @@
-%Revolute Robot manipulator Revolute link class for MDH convention
+%RevoluteMDH Robot manipulator Revolute link class for MDH convention
 %
 % A subclass of the Link class: holds all information related to a robot 
 % link such as kinematics parameters, rigid-body inertial parameters, motor
@@ -33,9 +33,9 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-classdef Revolute < Link
+classdef RevoluteMDH < Link
     methods
-        function L = Revolute(varargin)
+        function L = RevoluteMDH(varargin)
             L = L@Link(varargin{:});
             
             if nargin == 0
@@ -47,7 +47,7 @@ classdef Revolute < Link
             end
             L.mdh = 1;
             if ~isempty(L.theta)
-                error('theta cannot be specified for a prismatic link');
+                error('theta cannot be specified for a revolute link');
             end
         end
         

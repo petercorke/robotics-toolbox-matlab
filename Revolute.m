@@ -44,7 +44,7 @@ classdef Revolute < Link
                 L.d = 0;
             end
             if ~isempty(L.theta)
-                error('theta cannot be specified for a prismatic link');
+                error('theta cannot be specified for a revolute link');
             end
         end
         

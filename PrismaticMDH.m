@@ -1,4 +1,4 @@
-%Prismatic Robot manipulator Prismatic link class for MDH convention
+%PrismaticMDH Robot manipulator Prismatic link class for MDH convention
 %
 % A subclass of the Link class: holds all information related to a robot 
 % link such as kinematics parameters, rigid-body inertial parameters, motor
@@ -31,9 +31,9 @@
 % 
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
-classdef Prismatic < Link
+classdef PrismaticMDH < Link
     methods
-        function L = Prismatic(varargin)
+        function L = PrismaticMDH(varargin)
             L = L@Link(varargin{:});
             
             if nargin == 0
