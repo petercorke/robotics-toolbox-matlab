@@ -112,11 +112,17 @@ classdef SerialLink < handle
         
         ikineType
         
-        % to support the plot method
+        % to support plot method
         moviepath
         framenum
         delay
         loop
+        
+        % to support plot3d method
+        model3d
+        faces
+        points
+        plotopt3d % options for the plot3d method, follow plot3d syntax
 
     end
 
@@ -207,6 +213,7 @@ classdef SerialLink < handle
             r.tool = eye(4,4);
             
             r.plotopt = {};
+            r.plotopt3d = {};
 
             if exist('frne') == 3
                 r.fast = true;

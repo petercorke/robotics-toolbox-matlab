@@ -7,43 +7,43 @@
 %
 % Options::
 % 'workspace', W    Size of robot 3D workspace, W = [xmn, xmx ymn ymx zmn zmx]
-%
+% 'floorlevel',L    Z-coordinate of floor (default -1)
+%-
 % 'delay',D         Delay betwen frames for animation (s)
 % 'fps',fps         Number of frames per second for display, inverse of 'delay' option
 % '[no]loop'        Loop over the trajectory forever
 % '[no]raise'       Autoraise the figure
 % 'movie',M         Save frames as files in the folder M
-%
+%-
 % 'scale',S         Annotation scale factor
 % 'ortho'           Orthographic view
 % 'perspective'     Perspective view (default)
-%
+%-
 % '[no]shading'     Enable Gouraud shading (default true)
 % 'lightpos',L      Position of the light source (default [0 0 20])
 % '[no]name'        Display the robot's name
-%
+%-
 % '[no]wrist'       Enable display of wrist coordinate frame
 % 'xyz'             Wrist axis label is XYZ
 % 'noa'             Wrist axis label is NOA
 % '[no]arrow'       Display wrist frame with 3D arrows
-%
-% '[no]floor'       Enable tiled floor (default true)
-% 'floorlevel',L    Z-coordinate of floor (default -1)
+%-
+% '[no]tiles'       Enable tiled floor (default true)
 % 'tilesize',S      Side length of square tiles on the floor (default 0.2)
-% 'floor1color',C   Color of even tiles [r g b] (default [0.5 1 0.5]  light green)
-% 'floor2color',C   Color of odd tiles [r g b] (default [1 1 1] white)
-%
+% 'tile1color',C   Color of even tiles [r g b] (default [0.5 1 0.5]  light green)
+% 'tile2color',C   Color of odd tiles [r g b] (default [1 1 1] white)
+%-
 % '[no]shadow'      Enable display of shadow (default true)
 % 'shadowcolor',C   Colorspec of shadow, [r g b]
 % 'shadowwidth',W   Width of shadow line (default 6)
-%
+%-
 % '[no]jaxes'       Enable display of joint axes (default true)
 % '[no]joints'      Enable display of joints
 % 'jointcolor',C    Colorspec for joint cylinders (default [0.7 0 0])
 % 'jointdiam',D     Diameter of joint cylinder in scale units (default 5)
-%
+%-
 % 'linkcolor',C     Colorspec of links (default 'b')
-%
+%-
 % '[no]base'        Enable display of base 'pedestal'
 % 'basecolor',C     Color of base (default 'k')
 % 'basewidth',W     Width of base (default 3)
@@ -144,7 +144,7 @@
 % A robot comprises a bunch of individual graphical elements and these are
 % kept in a structure:
 %
-%   h.joint     the graphical elements that comprise each joint/link
+%   h.link     the graphical elements that comprise each joint/link
 %   h.wrist     the coordinate frame marking the wrist frame
 %   h.shadow    the robot's shadow
 %   h.floorlevel the z-coordinate of the tiled floor
@@ -204,7 +204,7 @@ function plot(robot, qq, varargin)
     if strcmp(get(gca,'Tag'), 'RTB.plot')
         % this axis is an RTB plot window
         
-        rhandles = findobj('Tag', robot.name)
+        rhandles = findobj('Tag', robot.name);
         
         if isempty(rhandles)
             % this robot doesnt exist here, create it or add it
@@ -222,44 +222,40 @@ function plot(robot, qq, varargin)
                 % create the robot and floor
                 newplot();
 
-                create_floor(opt);
+                if opt.tiles
+                    create_tiled_floor(opt);
+                end
                 handle = create_robot(robot, opt);
                 set(gca, 'Tag', 'RTB.plot');
-                
-                
-                % tag one of the graphical handles with the robot name and hang
-                % the handle structure off it
-                set(handle.joint(1), 'Tag', robot.name);
-                set(handle.joint(1), 'UserData', handle);
             end
             
         end
         
     else
         % this axis never had a robot drawn in it before, let's use it
-        create_floor(opt);
+        if opt.tiles
+            create_tiled_floor(opt);
+        end
         handle = create_robot(robot, opt);
         set(gca, 'Tag', 'RTB.plot');
         set(gcf, 'Units', 'Normalized');
-                        pf = get(gcf, 'Position');
-                set(gcf, 'Position', [0 1-pf(4) pf(3) pf(4)]);
+        pf = get(gcf, 'Position');
+        set(gcf, 'Position', [0 1-pf(4) pf(3) pf(4)]);
         
         % tag one of the graphical handles with the robot name and hang
         % the handle structure off it
-        set(handle.joint(1), 'Tag', robot.name);
-        set(handle.joint(1), 'UserData', handle);
+%  HACK       set(handle.joint(1), 'Tag', robot.name);
+%         set(handle.joint(1), 'UserData', handle);
         
     end
     
     % deal with a few options that need to be stashed in the SerialLink object
-    if isempty(robot.framenum)
-        % movie mode has not already been flagged
-        if opt.movie
-            robot.framenum = 0;
-            robot.moviepath = opt.movie;
-        else
-            robot.framenum = [];
-        end
+    % movie mode has not already been flagged
+    if opt.movie
+        robot.framenum = 0;
+        robot.moviepath = opt.movie;
+    else
+        robot.framenum = [];
     end
     robot.delay = opt.delay;
     robot.loop = opt.loop;   
@@ -271,6 +267,17 @@ function plot(robot, qq, varargin)
     
     if strcmp(opt.view, 'perspective')
         set(gca, 'Projection', 'perspective');
+    end
+    
+    if opt.look
+        switch opt.look
+        case 'top'
+            view(0, 90);
+        case 'x'
+            view(0, 0);
+        case 'y'
+            view(90, 0)
+        end
     end
     
     if ~isempty(opt.movie)
@@ -285,6 +292,13 @@ end
 % Returns a structure of handles that describe the various graphical entities in the robot model
 % Make extensive use of hgtransform, all entities are defined at the origin, then moved to their
 % proper pose
+%
+% The graphical hiearchy is:
+%  hggroup: Tag = robot name
+%     hgtransform: Tag = 'link#'
+%
+% The top-level group has user data which is the handle structure.
+
 function h = create_robot(robot, opt)
     
     disp('creating new robot');
@@ -299,11 +313,8 @@ function h = create_robot(robot, opt)
         axis(opt.workspace);
         hold
     end
-    xlabel('X')
-    ylabel('Y')
-    zlabel('Z')
-    grid on
     
+    N = robot.n;
     
     % create the base
     if opt.base
@@ -322,27 +333,28 @@ function h = create_robot(robot, opt)
         end
         text(b(1), b(2)-s, bz, [' ' robot.name], 'FontAngle', 'italic', 'FontWeight', 'bold')
     end
-    
+    group = hggroup('Tag', robot.name);
+    h.group = group;
     
     % create the graphical link elements
-    for j=1:robot.n
+    for L=1:N
         if opt.debug
-            fprintf('create graphics for joint %d\n', j);
+            fprintf('create graphics for joint %d\n', L);
         end
         
         % create the transform for displaying this element (joint cylinder + link)
-        h.joint(j) = hgtransform();
+        h.link(L) = hgtransform('Tag', sprintf('link%d', L), 'Parent', group);
         
         % create a joint cylinder
         if opt.joints
             % create the body of the joint
-            if links(j).isrevolute
-                cyl('z', 2*s, opt.jointdiam/2*s*[-1 1], opt.jointcolor, 'Parent', h.joint(j));
+            if links(L).isrevolute
+                cyl('z', 2*s, opt.jointdiam/2*s*[-1 1], opt.jointcolor, [], 'Parent', h.link(L));
             else
-                % create an addition hgtransform for positioning and scaling the prismatic
+                % create an additional hgtransform for positioning and scaling the prismatic
                 % element.  The element is created with unit length.
-                h.pjoint(j) = hgtransform();
-                box('z', s, [0 1], opt.jointcolor, 'Parent', h.pjoint(j));
+                h.pjoint(L) = hgtransform('Tag', 'prismatic', 'Parent', h.link(L));
+                box('z', s, [0 1], opt.jointcolor, [], 'Parent', h.pjoint(L));
             end
         end
         
@@ -352,32 +364,32 @@ function h = create_robot(robot, opt)
         % This is drawn to resemble orthogonal plumbing.
         if robot.mdh
             % modified DH convention
-            if j < robot.n
-                A = links(j).A(0);
+            if L < N
+                A = links(L).A(0);
                 t = transl(A);
                 if t(1) ~= 0
-                    cyl('x', s, [0 t(1)], opt.linkcolor, 'Parent', h.joint(j));
+                    cyl('x', s, [0 t(1)], opt.linkcolor, [], 'Parent', h.link(L));
                 end
                 if t(2) ~= 0
-                    cyl('y', s, [0 t(2)], opt.linkcolor, 'Parent', h.joint(j));
+                    cyl('y', s, [0 t(2)], opt.linkcolor, [], 'Parent', h.link(L));
                 end
                 if t(2) ~= 0
-                    cyl('z', s, [0 t(3)], opt.linkcolor, 'Parent', h.joint(j));
+                    cyl('z', s, [0 t(3)], opt.linkcolor, [], 'Parent', h.link(L));
                 end
             end
         else
             % standard DH convention
-            if j > 1
-                Ainv = inv(links(j-1).A(0));
+            if L > 1
+                Ainv = inv(links(L-1).A(0));
                 t = transl(Ainv);
                 if t(1) ~= 0
-                    cyl('x', s, [0 t(1)], opt.linkcolor, 'Parent', h.joint(j));
+                    cyl('x', s, [0 t(1)], opt.linkcolor, [], 'Parent', h.link(L));
                 end
                 if t(2) ~= 0
-                    cyl('y', s, [0 t(2)], opt.linkcolor, 'Parent', h.joint(j));
+                    cyl('y', s, [0 t(2)], opt.linkcolor, [], 'Parent', h.link(L));
                 end
                 if t(2) ~= 0
-                    cyl('z', s, [0 t(3)], opt.linkcolor, 'Parent', h.joint(j));
+                    cyl('z', s, [0 t(3)], opt.linkcolor, [], 'Parent', h.link(L));
                 end
             end
         end
@@ -387,34 +399,31 @@ function h = create_robot(robot, opt)
             line('XData', [0 0], ...
                 'YData', [0 0], ...
                 'ZData', 12*s*[-1 1], ...
-                'LineStyle', ':', 'Parent', h.joint(j));
+                'LineStyle', ':', 'Parent', h.link(L));
             
             % create the joint axis label
-            text(0, 0, 12*s, sprintf('q%d', j), 'Parent', h.joint(j))
+            text(0, 0, 12*s, sprintf('q%d', L), 'Parent', h.link(L))
         end
-        
-        % display the tool transform if it exists
-        if j == robot.n
-            tool = [];
-            if (links(end).d ~= 0) || (links(end).a ~= 0)
-                tool = transl(links(end).a, 0, links(end).d);
-            end
-            if ~isempty(robot.tool)
-                if isempty(t)
-                    tool = robot.tool;
-                else
-                    tool = tool * robot.tool;
-                end
-            end
-            t = transl(tool);
-            if t(1) ~= 0
-                cyl('x', s, [0 t(3)], 'r', 'Parent', h.joint(j));
-            end
-            if t(3) ~= 0
-                cyl('z', s, [0 t(3)], 'r', 'Parent', h.joint(j));
-            end
-
-        end
+    end
+    
+    % display the tool transform if it exists
+    h.link(N+1) = hgtransform('Tag', sprintf('link%d', N+1), 'Parent', group);
+    tool = eye(4,4);
+    if (links(end).d ~= 0) || (links(end).a ~= 0)
+        tool = transl(links(end).a, 0, links(end).d);
+    end
+    if ~isempty(robot.tool)
+        tool = tool * robot.tool;
+    end
+    t = transl(tool);
+    if t(1) ~= 0
+        cyl('x', s, [0 -t(1)], 'r', [], 'Parent', h.link(N+1));
+    end
+    if t(2) ~= 0
+        cyl('y', s, [0 -t(2)], 'r', [-t(1) 0 0], 'Parent', h.link(N+1));
+    end
+    if t(3) ~= 0
+        cyl('z', s, [0 -t(3)], 'r', [-t(1) -t(2) 0], 'Parent', h.link(N+1));
     end
     
     % display the wrist coordinate frame
@@ -428,7 +437,7 @@ function h = create_robot(robot, opt)
         h.wrist = [];
     end
     
-    % display a shadown on the floor
+    % display a shadow on the floor
     if opt.shadow
         % create the polyline which is the shadow on the floor
         h.shadow = line('LineWidth', opt.shadowwidth, 'Color', opt.shadowcolor);
@@ -442,6 +451,10 @@ function h = create_robot(robot, opt)
         lighting gouraud
         light('position', opt.lightpos)
     end
+    xlabel('X')
+    ylabel('Y')
+    zlabel('Z')
+    grid on
     
     % restore hold setting
     if ~ish
@@ -451,14 +464,22 @@ function h = create_robot(robot, opt)
     h.robot = robot;
     h.opt = opt;
     
-    disp('done');
+    % attach the handle structure to the top graphical element
+    set(group, 'UserData', h);
 end
 
+% draw a cylinder of radius r in the direction specified by ax, with an
+% extent from extent(1) to extent(2)
 
-function cyl(ax, r, ss, color, varargin)
-    if abs(ss(1) - ss(2)) < eps
+function cyl(ax, r, extent, color, offset, varargin)
+    if abs(extent(1) - extent(2)) < eps
         return
     end
+    
+    if isempty(offset)
+        offset = [0 0 0];
+    end
+    
     %fprintf('   cyl: %s %g %g\n', ax, ss);
     n = 20;
     
@@ -469,17 +490,17 @@ function cyl(ax, r, ss, color, varargin)
     
     switch ax
         case 'x'
-            y = r * cos(theta);
-            z = r * sintheta;
-            x = ss(:) * ones(1,n+1);
+            y = r * cos(theta) + offset(2);
+            z = r * sintheta + offset(3);
+            x = extent(:) * ones(1,n+1);
         case 'y'
-            x = r * cos(theta);
-            z = r * sintheta;
-            y = ss(:) * ones(1,n+1);
+            x = r * cos(theta) + offset(1);
+            z = r * sintheta + offset(3);
+            y = extent(:) * ones(1,n+1);
         case 'z'
-            x = r * cos(theta);
-            y = r * sintheta;
-            z = ss(:) * ones(1,n+1);
+            x = r * cos(theta) + offset(1);
+            y = r * sintheta + offset(2);
+            z = extent(:) * ones(1,n+1);
     end
     
     % walls of the cylinder
@@ -489,8 +510,11 @@ function cyl(ax, r, ss, color, varargin)
     patch(x', y', z', color, 'EdgeColor', 'none', varargin{:});
 end
 
-function box(ax, r, ss, color, varargin)
-    if abs(ss(1) - ss(2)) < eps
+% draw a cylinder of radius r in the direction specified by ax, with an
+% extent from extent(1) to extent(2)
+
+function box(ax, r, extent, color, offset, varargin)
+    if abs(extent(1) - extent(2)) < eps
         return
     end
     %fprintf('   box: %s %g %g\n', ax, ss);
@@ -505,15 +529,15 @@ function box(ax, r, ss, color, varargin)
         case 'x'
             y = r * cos(theta);
             z = r * sintheta;
-            x = ss(:) * ones(1,n+1);
+            x = extent(:) * ones(1,n+1);
         case 'y'
             x = r * cos(theta);
             z = r * sintheta;
-            y = ss(:) * ones(1,n+1);
+            y = extent(:) * ones(1,n+1);
         case 'z'
             y = r * cos(theta);
             x = r * sintheta;
-            z = ss(:) * ones(1,n+1);
+            z = extent(:) * ones(1,n+1);
     end
     
     % walls of the cylinder
@@ -524,7 +548,7 @@ function box(ax, r, ss, color, varargin)
 end
 
 % draw a tiled floor in the current axes
-function create_floor(opt)
+function create_tiled_floor(opt)
     
     disp('create floor')
     
@@ -536,23 +560,21 @@ function create_floor(opt)
     
     opt.workspace
     % create a colored tiled floor
-    if opt.floor
-        xt = xmin:opt.tilesize:xmax;
-        yt = ymin:opt.tilesize:ymax;
-        Z = opt.floorlevel*ones( numel(yt), numel(xt));
-        C = zeros(size(Z));
-        [r,c] = ind2sub(size(C), 1:numel(C));
-        C = bitand(r+c,1);
-        C = reshape(C, size(Z));
-        C = cat(3, opt.floor1color(1)*C+opt.floor2color(1)*(1-C), ...
-            opt.floor1color(2)*C+opt.floor2color(2)*(1-C), ...
-            opt.floor1color(3)*C+opt.floor2color(3)*(1-C));
-        [X,Y] = meshgrid(xt, yt);
-        surface(X, Y, Z, C, ...
-            'FaceColor','texturemap',...
-            'EdgeColor','none',...
-            'CDataMapping','direct');
-    end
+    xt = xmin:opt.tilesize:xmax;
+    yt = ymin:opt.tilesize:ymax;
+    Z = opt.floorlevel*ones( numel(yt), numel(xt));
+    C = zeros(size(Z));
+    [r,c] = ind2sub(size(C), 1:numel(C));
+    C = bitand(r+c,1);
+    C = reshape(C, size(Z));
+    C = cat(3, opt.tile1color(1)*C+opt.tile2color(1)*(1-C), ...
+        opt.tile1color(2)*C+opt.tile2color(2)*(1-C), ...
+        opt.tile1color(3)*C+opt.tile2color(3)*(1-C));
+    [X,Y] = meshgrid(xt, yt);
+    surface(X, Y, Z, C, ...
+        'FaceColor','texturemap',...
+        'EdgeColor','none',...
+        'CDataMapping','direct');
 end
 
     % process a cell array of options and return a struct
@@ -571,18 +593,18 @@ function opt = plot_options(robot, optin)
     opt.scale = 1;
     
     opt.workspace = [];
-    opt.view = {'ortho', 'perspective'};
     opt.name = true;
-    
-    
+    opt.view = {'ortho', 'perspective'};
+    opt.look = {[], 'top', 'x', 'y'};
+
     % 3D rendering
     opt.shading = true;
     opt.lightpos = [0 0 20];
     
     % tiled floor
-    opt.floor = true;
-    opt.floor1color = [0.5 1 0.5];  % light green
-    opt.floor2color = [1 1 1];  % white
+    opt.tiles = true;
+    opt.tile1color = [0.5 1 0.5];  % light green
+    opt.tile2color = [1 1 1];  % white
     opt.floorlevel = [];
     opt.tilesize = 0.2;
     
@@ -611,6 +633,7 @@ function opt = plot_options(robot, optin)
     
     % links
     opt.linkcolor = 'b';
+    opt.toolcolor = 'r';
     
     % misc
     opt.movie = [];
@@ -647,7 +670,7 @@ function opt = plot_options(robot, optin)
         end
         
         % if we have a floor, quantize the reach to a tile size
-        if opt.floor
+        if opt.tiles
             reach = opt.tilesize * ceil(reach/opt.tilesize);
         end
         
