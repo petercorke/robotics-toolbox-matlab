@@ -1,11 +1,17 @@
-%SerialLink.plot Graphical display and animation
+%SerialLink.plot Graphical display and animation of solid model robot
 %
-% R.plot(Q, options) displays a graphical animation of a robot based on
-% the kinematic model.  A stick figure polyline joins the origins of
-% the link coordinate frames. The robot is displayed at the joint angle Q (1xN), or
+% R.plot3d(Q, options) displays and animates a solid model of the robot.
+% The robot is displayed at the joint angle Q (1xN), or
 % if a matrix (MxN) it is animated as the robot moves along the M-point trajectory.
 %
 % Options::
+%
+% 'color',C         A cell array of color names, one per link.  These are
+%                   mapped to RGB using colorname().  If not given, colors
+%                   come from the axis ColorOrder property.
+% 'alpha',A         Set alpha for all links, 0 is transparant, 1 is opaque
+%                   (default 1)
+% 'path',P          Overide path to folder containing STL model files
 % 'workspace', W    Size of robot 3D workspace, W = [xmn, xmx ymn ymx zmn zmx]
 % 'floorlevel',L    Z-coordinate of floor (default -1)
 %-
@@ -19,10 +25,6 @@
 % 'ortho'           Orthographic view
 % 'perspective'     Perspective view (default)
 %-
-% '[no]shading'     Enable Gouraud shading (default true)
-% 'lightpos',L      Position of the light source (default [0 0 20])
-% '[no]name'        Display the robot's name
-%-
 % '[no]wrist'       Enable display of wrist coordinate frame
 % 'xyz'             Wrist axis label is XYZ
 % 'noa'             Wrist axis label is NOA
@@ -35,17 +37,33 @@
 %-
 % '[no]jaxes'       Enable display of joint axes (default true)
 % '[no]joints'      Enable display of joints
-% 'jointcolor',C    Colorspec for joint cylinders (default [0.7 0 0])
-% 'jointdiam',D     Diameter of joint cylinder in scale units (default 5)
-%-
-% 'linkcolor',C     Colorspec of links (default 'b')
 %-
 % '[no]base'        Enable display of base shape
+%
+% Notes::
+% - Solid models of the robot links are required as STL ascii format files,
+%   with extensions .stl
+% - Each STL model is called 'linkN'.stl where N is the link number 0 to N
+% - The root of the solid models is an installation of ARTE with an empty
+%   file called arte.m at the top level
+% - The specific folder to use comes from the SerialLink.model3d property
+% - The path of the folder containing the STL files can be specified using
+%   the 'path' option
+%
+% Authors::
+% - Peter Corke, based on existing code for plot()
+% - Bryan Moutrie, demo code on the Google Group for connecting ARTE and RTB
+% - Don Riley, function rndread() extracted from cad2matdemo (MATLAB
+%   File Exchange)
+% - Arturo Gil, the STL files that describe the robots, from ARTE: A 
+%   ROBOTICS TOOLBOX FOR EDUCATION
+%
+% See also SerialLink.plot, plotbotopt3d, SerialLink.animate, SerialLink.teach, SerialLink.fkine.
+
 
 function plot3d(robot, q, varargin)
     
     opt = plot_options(robot, varargin);
-    opt
     
     %-- load the shape if need be
     
@@ -54,14 +72,18 @@ function plot3d(robot, q, varargin)
     if isempty(robot.faces)
         % no 3d model defined, let's try to load one
         
-        % first find the path to the models
-        pth = which('arte.m');
-        if ~pth
-            error('RTB:plot3d:nomodel', 'no 3D model found, install the RTB contrib zip file');
+        if isempty(opt.path)
+            % first find the path to the models
+            pth = which('arte.m');
+            if ~pth
+                error('RTB:plot3d:nomodel', 'no 3D model found, install the RTB contrib zip file');
+            end
+            
+            % find the path to this specific model
+            pth = fullfile(fileparts(pth), 'robots', robot.model3d);
+        else
+            pth = opt.path;
         end
-        
-        % find the path to this specific model
-        pth = fullfile(fileparts(pth), 'robots', robot.model3d);
         
         % now load the STL files
         robot.points = cell(1, robot.n+1);
@@ -133,7 +155,7 @@ function plot3d(robot, q, varargin)
     %-- figure the colors for each shape 
     if isempty(opt.color)
         % if not given, use the axis color order
-    C = get(gca,'ColorOrder');
+        C = get(gca,'ColorOrder');
     else
         C = [];
         for c=opt.color
@@ -177,7 +199,7 @@ function plot3d(robot, q, varargin)
 end
 
 function opt = plot_options(robot, optin)
-        opt.color = [];
+    opt.color = [];
     opt.path = [];  % override path
     opt.alpha = 1;
     
