@@ -55,7 +55,7 @@ function [t1,t2,t3] = transl(x, y, z)
                 end
             else
                 % transl(T)  -> P
-                if nargout == 1
+                if nargout == 1 || nargout == 0
                     t1 = x(1:3,4);
                 elseif nargout == 3
                     t1 = x(1,4);
