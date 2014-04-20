@@ -8,6 +8,9 @@
 % the j'th joint parameter for the i'th trajectory point.  In this case
 % T is a 3d matrix (4x4xK) where the last subscript is the index along the path.
 %
+% [T,ALL] = R.fkine(Q) as above but ALL (4x4xN) is the pose of the link
+% frames 1 to N, such that ALL(:,:,k) is the pose of link frame k.
+%
 % Note::
 % - The robot's base or tool transform, if present, are incorporated into the
 %   result.
