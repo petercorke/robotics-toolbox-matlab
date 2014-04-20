@@ -1,4 +1,4 @@
-%STARTUP_RVC Initialize MATLAB paths for Robotics Toolbox
+%STARTUP_RTB Initialize MATLAB paths for Robotics Toolbox
 %
 % Adds demos, examples to the MATLAB path, and adds also to 
 % Java class path.
@@ -18,4 +18,10 @@ if release ~= currentversion
         currentversion);
 end
 %}
+% add the contrib code to the path
+p = fullfile(rvcpath, 'contrib/arte');
+if exist(p)
+    addpath( p );
+    disp([' - ARTE: A ROBOTICS TOOLBOX FOR EDUCATION (' p ')']);
+end
 clear release currentversion tbpath
