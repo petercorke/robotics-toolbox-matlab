@@ -3,6 +3,7 @@
 % An abstact superclass to represent robot navigation sensors.
 %
 % Methods::
+%   plot        plot a line from robot to map feature
 %   display     print the parameters in human readable form
 %   char        convert to string
 %
@@ -48,6 +49,7 @@ classdef Sensor < handle
         animate     % animate sensor measurements
         interval    % measurement return subsample factor
         fail
+        delay
         
         
     end
@@ -57,18 +59,29 @@ classdef Sensor < handle
         function s = Sensor(robot, map, varargin)
         %Sensor.Sensor Sensor object constructor
         %
-        % S = Sensor(VEHICLE, MAP) is a sensor mounted on the Vehicle object
+        % S = Sensor(VEHICLE, MAP, OPTIONS) is a sensor mounted on the Vehicle object
         % VEHICLE and observing the landmark map MAP.
-        % S = Sensor(VEHICLE, MAP, R) is an instance of the Sensor object mounted
+        %
+        % S = Sensor(VEHICLE, MAP, R, OPTIONS) is an instance of the Sensor object mounted
         % on a vehicle represented by the object VEHICLE and observing features in the
         % world represented by the object MAP.
+        %
+        % Options::
+        % 'animate'              animate the action of the laser scanner
+        % 'ls',LS                laser scan lines drawn with style ls (default 'r-')
+        % 'skip', I              return a valid reading on every I'th
+        %                        call
+        % 'fail', [TMIN TMAX     sensor simulates failure between
+        %                        timesteps TMIN and TMAX
+        %
         
             opt.skip = 1;
             opt.animate = false;
             opt.fail =  [];
             opt.ls = 'r-';
+            opt.delay = 0.1;
 
-            opt = tb_optparse(opt, varargin);
+            [opt,args] = tb_optparse(opt, varargin);
             
             s.interval = opt.skip;
             s.animate = opt.animate;
@@ -78,10 +91,17 @@ classdef Sensor < handle
             s.verbose = false;
             s.fail = opt.fail;
             s.ls = opt.ls;
-
         end
         
         function plot(s, jf)
+        %Sensor.plot Plot sensor reading
+        %
+        % S.plot(J) draws a line from the robot to the map feature J.
+        %
+        % Notes::
+        % - The line is drawn using the linestyle given by the property ls
+        % - There is a delay given by the property delay
+
             if isempty(s.ls)
                 return;
             end
@@ -96,8 +116,8 @@ classdef Sensor < handle
             
             xi = s.map.map(:,jf);
             set(h, 'XData', [s.robot.x(1), xi(1)], 'YData', [s.robot.x(2), xi(2)]);
-            %pause(0.1);
-            %delete(h);
+            pause(s.delay);
+
             drawnow
         end
 
