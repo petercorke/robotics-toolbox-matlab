@@ -132,9 +132,10 @@ L(6) = Revolute('d', 0, 'a', 0, 'alpha', 0,  ...
     'qlim', [-266 266]*deg );
 
 p560 = SerialLink(L, 'name', 'Puma 560', ...
-    'manufacturer', 'Unimation', 'comment', 'viscous friction; params of 8/95');
+    'manufacturer', 'Unimation', 'ikine', 'puma', 'comment', 'viscous friction; params of 8/95');
 
 
+p560.model3d = 'UNIMATE/puma560';
 
 %
 % some useful poses
