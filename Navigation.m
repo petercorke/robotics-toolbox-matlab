@@ -115,7 +115,7 @@ classdef Navigation < handle
         % - The 'private' option creates a private random number stream for the methods 
         %   rand, randn and randi.  If not given the global stream is used.
 
-            if nargin >= 1 && isnumeric(varargin{1})
+            if nargin >= 1 && isnumeric(varargin{1}) && ~isscalar(varargin{1})
                 nav.occgrid = varargin{1};
                 varargin = varargin(2:end);
             end
