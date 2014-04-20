@@ -6,7 +6,8 @@
 % Updates graphical instances of this robot in all figures.
 %
 % Notes::
-% - Not a general purpose method, used for Simulink robot animation.
+% - Called by plot() and plot3d() to actually move the arm models
+% - Used for Simulink robot animation.
 %
 % See also SerialLink.plot.
 
@@ -90,6 +91,12 @@ function animate(robot, qq)
                 end
                 if isfield(h, 'shadow')
                     set(h.shadow, 'Xdata', vert(:,1), 'Ydata', vert(:,2), 'Zdata', h.floorlevel*ones(size(vert(:,1))));
+                end
+                
+                if isfield(h, 'trail')
+                    T = robot.fkine(q);
+                    robot.trail = [robot.trail; transl(T)'];
+                    set(h.trail, 'Xdata', robot.trail(:,1), 'Ydata', robot.trail(:,2), 'Zdata', robot.trail(:,3));
                 end
                 
                 T = T * robot.tool;

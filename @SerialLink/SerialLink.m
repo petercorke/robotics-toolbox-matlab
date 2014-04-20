@@ -112,6 +112,8 @@ classdef SerialLink < handle
         
         ikineType
         
+        trail   % to support trail option
+        
         % to support plot method
         moviepath
         framenum

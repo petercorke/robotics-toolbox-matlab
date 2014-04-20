@@ -14,10 +14,14 @@
 % '[no]loop'        Loop over the trajectory forever
 % '[no]raise'       Autoraise the figure
 % 'movie',M         Save frames as files in the folder M
+% 'trail',L         Draw a line recording the tip path, with line style L
 %-
 % 'scale',S         Annotation scale factor
 % 'ortho'           Orthographic view
 % 'perspective'     Perspective view (default)
+% 'view',V          Specify view V='x', 'y', 'top' or [az el] for side elevations,
+%                   plan view, or general view by azimuth and elevation
+%                   angle. 
 %-
 % '[no]shading'     Enable Gouraud shading (default true)
 % 'lightpos',L      Position of the light source (default [0 0 20])
@@ -265,18 +269,22 @@ function plot(robot, qq, varargin)
         figure(gcf);
     end
     
-    if strcmp(opt.view, 'perspective')
+    if strcmp(opt.projection, 'perspective')
         set(gca, 'Projection', 'perspective');
     end
     
-    if opt.look
-        switch opt.look
-        case 'top'
-            view(0, 90);
-        case 'x'
-            view(0, 0);
-        case 'y'
-            view(90, 0)
+    if opt.view
+        switch opt.view
+            case 'top'
+                view(0, 90);
+            case 'x'
+                view(0, 0);
+            case 'y'
+                view(90, 0)
+            otherwise
+                if isnumeric(opt.view) && length(opt.view) == 2
+                    view(opt.view)
+                end
         end
     end
     
@@ -441,10 +449,12 @@ function h = create_robot(robot, opt)
     if opt.shadow
         % create the polyline which is the shadow on the floor
         h.shadow = line('LineWidth', opt.shadowwidth, 'Color', opt.shadowcolor);
-    else
-        h.shadow = [];
     end
     
+    if opt.trail
+        h.trail = plot(0, 0, opt.trail);
+        robot.trail = [];
+    end
     
     % deal with some display options
     if opt.shading
@@ -591,11 +601,12 @@ function opt = plot_options(robot, optin)
     
     % general appearance
     opt.scale = 1;
+    opt.trail = [];
     
     opt.workspace = [];
     opt.name = true;
-    opt.view = {'ortho', 'perspective'};
-    opt.look = {[], 'top', 'x', 'y'};
+    opt.projection = {'ortho', 'perspective'};
+    opt.view = {[], 'top', 'x', 'y'};
 
     % 3D rendering
     opt.shading = true;
@@ -653,6 +664,10 @@ function opt = plot_options(robot, optin)
     [opt,args] = tb_optparse(opt, options);
     if ~isempty(args)
         error(['unknown option: ' args{1}]);
+    end
+    
+    if ~isempty(opt.view)
+        opt.projection = 'ortho';
     end
     
     % figure the size of the figure
