@@ -76,9 +76,9 @@ function euler = tr2eul(R, varargin)
         
         % Only positive phi is returned.
         if opt.flip
-            euler(1) = atan2(R(2,3), R(1,3));
-        else
             euler(1) = atan2(-R(2,3), -R(1,3));
+        else
+            euler(1) = atan2(R(2,3), R(1,3));
         end
 		sp = sin(euler(1));
 		cp = cos(euler(1));
