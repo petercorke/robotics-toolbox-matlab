@@ -26,13 +26,13 @@
 %  mdh      kinematic: 0 if standard D&H, else 1
 %  offset   kinematic: joint variable offset
 %  qlim     kinematic: joint variable limits [min max]
-%
+%-
 %  m        dynamic: link mass
 %  r        dynamic: link COG wrt link coordinate frame 3x1
 %  I        dynamic: link inertia matrix, symmetric 3x3, about link COG.
 %  B        dynamic: link viscous friction (motor referred)
 %  Tc       dynamic: link Coulomb friction
-%
+%-S
 %  G        actuator: gear ratio
 %  Jm       actuator: motor inertia (motor referred)
 %
@@ -42,7 +42,7 @@
 %
 % References::
 % - Robotics, Vision & Control, Chap 7,
-%   P. Corke, Springer 2011.
+%   P. Corke, SprinSger 2011.
 %
 % See also Link, Revolute, Prismatic, SerialLink.
 
