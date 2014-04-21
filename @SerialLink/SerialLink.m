@@ -14,8 +14,8 @@
 %
 %  fkine         forward kinematics
 %  ikine6s       inverse kinematics for 6-axis spherical wrist revolute robot
-%  ikine3        inverse kinematics for 3-axis revolute robot
-%  ikine         inverse kinematics using iterative method
+%  ikine         inverse kinematics using iterative numerical method
+%  ikine_sym     analytic inverse kinematics obtained symbolically
 %  jacob0        Jacobian matrix in world frame
 %  jacobn        Jacobian matrix in tool frame
 %  maniplty      manipulability
