@@ -109,7 +109,7 @@ end
 function hStruct = createHeaderStruct(fname)
 [~,hStruct.funName] = fileparts(fname);
 hStruct.shortDescription = ['Compute the product of a matrix and a vector'];
-hStruct.calls = {['void ',hStruct.funName,'(double *outVector, const double *inMatrix, const double *inVector, int nRow, int nCol)']};
+hStruct.calls = ['void ',hStruct.funName,'(double *outVector, const double *inMatrix, const double *inVector, int nRow, int nCol)'];
 hStruct.detailedDescription = {['Given an [nRow x nCol] inMatrix and a nCol-element inVector, the function'],...
     'computes the nRow-element outVector as: outVector = inMatrix*inVector.'};
 hStruct.inputs = { ['inMatrix: [nRow x nCol] input matrix,'],...
