@@ -16,7 +16,7 @@
 % - Kinematic data from "Modelling, Trajectory calculation and Servoing of 
 %   a computer controlled arm".  Stanford AIM-177.  Figure 2.3
 % - Dynamic data from "Robot manipulators: mathematics, programming and control"
-%   Paul 1981, Tables 6.4, 6.6
+%   Paul 1981, Tables 6.5, 6.6
 % 
 % See also SerialLink, mdl_puma560, mdl_puma560akb, mdl_twolink.
 
@@ -42,10 +42,17 @@ clear L
 %             th    d       a    alpha
 L(1) = Link([ 0     0.412   0   -pi/2     0]);
 L(2) = Link([ 0     0.154   0    pi/2     0]);
-L(3) = Link([ -pi/2 0       0    0        1]);
+L(3) = Link([ -pi/2 0       0    0        1]);  % PRISMATIC link
 L(4) = Link([ 0     0       0   -pi/2     0]);
 L(5) = Link([ 0     0       0    pi/2     0]);
 L(6) = Link([ 0     0.263   0    0        0]);
+
+% guestimated from the image
+% http://infolab.stanford.edu/pub/voy/museum/pictures/display/robots/IMG_2408ArmCenter.JPG
+% and scaled by the pedestal which is commonly given as 0.412m (above) or
+% most likely 16".  Looks like minimum stroke is 8" and the rack is 24"
+% long.
+L(3).qlim = [0.2032 0.9144];
 
 L(1).m = 9.29;
 L(2).m = 5.01;
