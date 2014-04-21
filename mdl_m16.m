@@ -41,7 +41,7 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function mdl_m16()
+function r = mdl_m16()
     
     deg = pi/180;
     
@@ -69,7 +69,9 @@ function mdl_m16()
         'manufacturer', 'Fanuc'); 
     
     % place the variables into the global workspace
-    if nargout == 0
+    if nargin == 1
+        r = robot;
+    elseif nargin == 0
         assignin('base', 'm16', robot);
         assignin('base', 'qz', [0 0 0 0 0 0]); % zero angles
         assignin('base', 'qd', [0 -90 0 0 -180 180]*deg); % data sheet pose, horizontal

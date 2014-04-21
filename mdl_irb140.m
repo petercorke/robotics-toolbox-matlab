@@ -41,7 +41,7 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function mdl_irb140()
+function r = mdl_irb140()
     
     deg = pi/180;
     
@@ -65,10 +65,12 @@ function mdl_irb140()
     % and build a serial link manipulator
     
     robot = SerialLink(dh, 'name', 'IRB 140', ...
-        'manufacturer', 'ABB'); 
+        'manufacturer', 'ABB', 'ikine', 'nooffset'); 
     
     % place the variables into the global workspace
-    if nargout == 0
+    if nargin == 1
+        r = robot;
+    elseif nargin == 0
         assignin('base', 'irb140', robot);
         assignin('base', 'qz', [0 0 0 0 0 0]); % zero angles
         assignin('base', 'qd', [0 -90 180 0 0 -90]*deg); % data sheet pose, horizontal

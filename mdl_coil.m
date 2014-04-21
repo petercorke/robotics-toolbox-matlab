@@ -19,7 +19,7 @@
 %   behaves like a script and writes to the global workspace.
 %
 % See also SerialLink, mdl_puma560akb, mdl_stanford, mdl_twolink, mdl_ball.
-function mdl_coil(N)
+function r = mdl_coil(N)
     
     if nargin == 0
         N = 50;
@@ -31,10 +31,12 @@ function mdl_coil(N)
     end
     
     % and build a serial link manipulator
-    r = SerialLink(links, 'name', 'coil');
+    robot = SerialLink(links, 'name', 'coil');
     
     % place the variables into the global workspace
-    if nargin == 0
-        assignin('base', 'coil', r);
+    if nargin == 1
+        r = robot;
+    elseif nargin == 0
+        assignin('base', 'coil', robot);
         assignin('base', 'q', 10*pi/N*ones(1,N));
     end

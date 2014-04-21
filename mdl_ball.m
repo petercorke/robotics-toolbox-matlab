@@ -20,7 +20,7 @@
 %
 % See also SerialLink, mdl_puma560akb, mdl_stanford, mdl_twolink, mdl_coil.
 
-function mdl_ball(N)
+function r = mdl_ball(N)
     
     if nargin == 0
         N = 50;
@@ -33,11 +33,13 @@ function mdl_ball(N)
     end
     
     % and build a serial link manipulator
-    r = SerialLink(links, 'name', 'ball');
+    robot = SerialLink(links, 'name', 'ball');
     
     % place the variables into the global workspace
-    if nargin == 0
-        assignin('base', 'coil', r);
+    if nargin == 1
+        r = robot;
+    elseif nargin == 0
+        assignin('base', 'ball', robot);
         assignin('base', 'q', q);     
     end
     

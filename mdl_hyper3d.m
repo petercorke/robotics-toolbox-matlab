@@ -23,7 +23,7 @@
 %
 % See also SerialLink, mdl_hyper2d, mdl_puma560akb, mdl_stanford, mdl_twolink, mdl_coil.
 
-function [r_,q_] = mdl_hyper3d(N)
+function [r,qq] = mdl_hyper3d(N)
     
     if nargin == 0
         N = 10;
@@ -41,17 +41,17 @@ function [r_,q_] = mdl_hyper3d(N)
     end
     
     % and build a serial link manipulator
-    r = SerialLink(links, 'name', 'hyper2d');
+    robot = SerialLink(links, 'name', 'hyper2d');
     
     % place the variables into the global workspace
     if nargout == 0
-        assignin('base', 'h3d', r);
+        assignin('base', 'h3d', robot);
         assignin('base', 'qz', q);
     elseif nargout == 1
-        r_ = r;
+        r = robot;
     elseif nargout == 2
-        r_ = r;
-        q_ = q;
+        r = robot;
+        qq = q;
     end
     
     

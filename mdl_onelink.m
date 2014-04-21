@@ -38,14 +38,10 @@
 
 
 a1 = 1;
-a2 = 1;
-%   theta d a alpha
 
-twolink = SerialLink([
-    Revolute('d', 0, 'a', a1, 'alpha', 0, 'm', 1, 'r', [-0.5 0 0], 'I', [0 0 0], 'B', 0, 'G', 0, 'Jm', 0, 'standard')
-    Revolute('d', 0, 'a', a2, 'alpha', 0, 'm', 1, 'r', [-0.5 0 0], 'I', [0 0 0], 'B', 0, 'G', 0, 'Jm', 0, 'standard')
+onelink = SerialLink([
+          Revolute('d', 0, 'a', a1, 'alpha', 0, 'standard')
     ], ...
-    'name', 'two link', ...
-    'comment', 'from Spong, Hutchinson, Vidyasagar');
-qz = [0 0];
-qn = [pi/6, -pi/6];
+    'name', 'one link');
+qz = [0];
+qn = [pi/6];

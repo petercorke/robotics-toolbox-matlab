@@ -37,7 +37,7 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function mdl_jaco()
+function r = mdl_jaco()
     
     deg = pi/180;
     
@@ -78,7 +78,9 @@ function mdl_jaco()
  
     
     % place the variables into the global workspace
-    if nargout == 0
+    if nargin == 1
+        r = robot;
+    elseif nargin == 0
         assignin('base', 'jaco', robot);
         assignin('base', 'qz', [0 0 0 0 0 0]); % zero angles
         assignin('base', 'qr', [270 180 180 0 0 0]*deg); % vertical pose as per Fig 2
