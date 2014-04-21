@@ -17,6 +17,8 @@
 % 'trail',L         Draw a line recording the tip path, with line style L
 %-
 % 'scale',S         Annotation scale factor
+% 'zoom',Z          Reduce size of auto-computed workspace by Z, makes
+%                   robot look bigger
 % 'ortho'           Orthographic view
 % 'perspective'     Perspective view (default)
 % 'view',V          Specify view V='x', 'y', 'top' or [az el] for side elevations,
@@ -138,7 +140,8 @@
 %   that holds graphical handles and the handle of the robot object.
 % - The graphical state holds the last joint configuration
 % - The size of the plot volume is determined by a heuristic for an all-revolute
-%   robot.  If a prismatic joint is present the 'workspace' option is required.
+%   robot.  If a prismatic joint is present the 'workspace' option is
+%   required.  The 'zoom' option can reduce the size of this workspace.
 %
 % See also SerialLink.plot3d, plotbotopt, SerialLink.animate, SerialLink.teach, SerialLink.fkine.
 
@@ -244,13 +247,7 @@ function plot(robot, qq, varargin)
         set(gca, 'Tag', 'RTB.plot');
         set(gcf, 'Units', 'Normalized');
         pf = get(gcf, 'Position');
-        set(gcf, 'Position', [0 1-pf(4) pf(3) pf(4)]);
-        
-        % tag one of the graphical handles with the robot name and hang
-        % the handle structure off it
-%  HACK       set(handle.joint(1), 'Tag', robot.name);
-%         set(handle.joint(1), 'UserData', handle);
-        
+        set(gcf, 'Position', [0.1 1-pf(4) pf(3) pf(4)]);
     end
     
     % deal with a few options that need to be stashed in the SerialLink object
@@ -344,7 +341,7 @@ function h = create_robot(robot, opt)
     group = hggroup('Tag', robot.name);
     h.group = group;
     
-    % create the graphical link elements
+    % create the graphical joint and link elements
     for L=1:N
         if opt.debug
             fprintf('create graphics for joint %d\n', L);
@@ -373,7 +370,7 @@ function h = create_robot(robot, opt)
         if robot.mdh
             % modified DH convention
             if L < N
-                A = links(L).A(0);
+                A = links(L+1).A(0);
                 t = transl(A);
                 if t(1) ~= 0
                     cyl('x', s, [0 t(1)], opt.linkcolor, [], 'Parent', h.link(L));
@@ -414,11 +411,16 @@ function h = create_robot(robot, opt)
         end
     end
     
+    if opt.debug
+        fprintf('create graphics for tool\n');
+    end
     % display the tool transform if it exists
     h.link(N+1) = hgtransform('Tag', sprintf('link%d', N+1), 'Parent', group);
     tool = eye(4,4);
-    if (links(end).d ~= 0) || (links(end).a ~= 0)
-        tool = transl(links(end).a, 0, links(end).d);
+    if ~robot.mdh
+        if (links(end).d ~= 0) || (links(end).a ~= 0)
+            tool = transl(links(end).a, 0, links(end).d);
+        end
     end
     if ~isempty(robot.tool)
         tool = tool * robot.tool;
@@ -490,7 +492,8 @@ function cyl(ax, r, extent, color, offset, varargin)
         offset = [0 0 0];
     end
     
-    %fprintf('   cyl: %s %g %g\n', ax, ss);
+    %fprintf('   cyl: %s, r=%f, extent=[%g, %g]\n', ax, r, extent);
+    
     n = 20;
     
     r = [r;r];
@@ -527,7 +530,7 @@ function box(ax, r, extent, color, offset, varargin)
     if abs(extent(1) - extent(2)) < eps
         return
     end
-    %fprintf('   box: %s %g %g\n', ax, ss);
+    %fprintf('   box: %s, r=%f, extent=[%g, %g]\n', ax, r, extent);
     n = 4;
     
     r = [r;r];
@@ -560,15 +563,11 @@ end
 % draw a tiled floor in the current axes
 function create_tiled_floor(opt)
     
-    disp('create floor')
-    
-    
     xmin = opt.workspace(1);
     xmax = opt.workspace(2);
     ymin = opt.workspace(3);
     ymax = opt.workspace(4);
     
-    opt.workspace
     % create a colored tiled floor
     xt = xmin:opt.tilesize:xmax;
     yt = ymin:opt.tilesize:ymax;
@@ -601,6 +600,7 @@ function opt = plot_options(robot, optin)
     
     % general appearance
     opt.scale = 1;
+    opt.zoom = 1;
     opt.trail = [];
     
     opt.workspace = [];
@@ -683,6 +683,8 @@ function opt = plot_options(robot, optin)
         for i=1:robot.n
             reach = reach + abs(L(i).a) + abs(L(i).d);
         end
+        reach = reach + sum(abs(transl(robot.tool)));
+        reach = reach/opt.zoom;
         
         % if we have a floor, quantize the reach to a tile size
         if opt.tiles
@@ -700,7 +702,7 @@ function opt = plot_options(robot, optin)
         end
     else
         reach = min(abs(opt.workspace));
-        if opt.floor
+        if opt.tiles
             % set xy limits to be integer multiple of tilesize
             opt.workspace(1:4) = opt.tilesize * round(opt.workspace(1:4)/opt.tilesize);
             opt.floorlevel = opt.workspace(5);

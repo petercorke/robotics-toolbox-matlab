@@ -45,11 +45,19 @@ function animate(robot, qq)
                     vert = transl(T)';
                     
                     for L=1:N
-                        set(h.link(L), 'Matrix', T);
-                        
+                        if robot.links(L).isprismatic()
+                            set(h.pjoint(L), 'Matrix', trotz(q(L))*diag([1 1 -q(L) 1]));
+                        end
                         T = T * links(L).A(q(L));
-                        vert = [vert; transl(T)']; % a stack of joint origin coordinates
+                        set(h.link(L), 'Matrix', T); 
+                        vert = [vert; transl(T)'];
                     end
+                    % update the transform for link N+1 (the tool)
+                    T = T * robot.tool;
+                    if length(h.link) > N
+                        set(h.link(N+1), 'Matrix', T);
+                    end
+                    vert = [vert; transl(T)'];
                 else
                     % standard DH case
                     T = robot.base;
@@ -58,8 +66,6 @@ function animate(robot, qq)
                     for L=1:N
                         % for all N+1 links
                         if robot.links(L).isprismatic()
-                            %set(h.joint(j), 'Matrix', diag([1 1 q(j) 1])*T);
-                            
                             set(h.pjoint(L), 'Matrix', T*trotz(q(L))*diag([1 1 q(L) 1]));
                         end
                         if h.link(L) ~= 0
@@ -73,35 +79,40 @@ function animate(robot, qq)
                     if length(h.link) > N
                         set(h.link(N+1), 'Matrix', T);
                     end
+                    T = T*robot.tool;
+                    vert = [vert; transl(T)'];
                 end
                 
                 % now draw the shadow
-                if ~isempty(robot.tool)
-                    t = transl(T*robot.tool);
-                    vl = vert(end,:);
-                    if t(1) ~= 0
-                        vert = [vert; [t(1) vl(2) vl(3)]];
-                    end
-                    if t(2) ~= 0
-                        vert = [vert; [t(1) t(2) vl(3)]];
-                    end
-                    if t(3) ~= 0
-                        vert = [vert; t'];
-                    end
-                end
+%                 if ~isempty(robot.tool)
+%                     t = transl(T*robot.tool);
+%                     vl = vert(end,:);
+%                     if t(1) ~= 0
+%                         vert = [vert; [t(1) vl(2) vl(3)]];
+%                     end
+%                     if t(2) ~= 0
+%                         vert = [vert; [t(1) t(2) vl(3)]];
+%                     end
+%                     if t(3) ~= 0
+%                         vert = [vert; t'];
+%                     end
+%                 end
                 if isfield(h, 'shadow')
-                    set(h.shadow, 'Xdata', vert(:,1), 'Ydata', vert(:,2), 'Zdata', h.floorlevel*ones(size(vert(:,1))));
+                    set(h.shadow, 'Xdata', vert(:,1), 'Ydata', vert(:,2), ...
+                        'Zdata', h.floorlevel*ones(size(vert(:,1))));
                 end
                 
+                % update the tool tip trail
                 if isfield(h, 'trail')
                     T = robot.fkine(q);
                     robot.trail = [robot.trail; transl(T)'];
                     set(h.trail, 'Xdata', robot.trail(:,1), 'Ydata', robot.trail(:,2), 'Zdata', robot.trail(:,3));
                 end
                 
-                T = T * robot.tool;
-                vert = [vert; transl(T)'];
+%                 T = T * robot.tool;
+%                 vert = [vert; transl(T)'];
                 
+                % animate the wrist frame
                 if ~isempty(h.wrist)
                     trplot(h.wrist, T);
                 end
