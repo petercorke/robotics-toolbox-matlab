@@ -101,25 +101,39 @@ for iArg = 1:2:nargin-2
     end
 end
 
-% Generate function description header
-if ~isempty(opt.hStruct)
-    hFString = CGen.constructheaderstringc(opt.hStruct);
+%% Create Copyright Note
+cprNote = CGen.generatecopyrightnote;
+cprNote = regexprep(cprNote, '%', '//');
+
+%% Create Compilation Command
+srcDir = fullfile(CGen.ccodepath,'src');
+hdrDir = fullfile(CGen.ccodepath,'include');
+if CGen.verbose
+    mexCompCmnd = ['mex ',opt.funfilename, ' ',fullfile(srcDir,[opt.funname,'.c']),' -I',hdrDir, ' -v -outdir ',CGen.robjpath];   
 else
-    hFString = [];
+    mexCompCmnd = ['mex ',opt.funfilename, ' ',fullfile(srcDir,[opt.funname,'.c']),' -I',hdrDir,' -outdir ',CGen.robjpath];
 end
 
 %% Generate C code
 fid = fopen(opt.funfilename,'w+');
 
-% Insert description header
-fprintf(fid,'%s\n',hFString);    
+% Add compilation note
+fprintf(fid,'// %s\n',[upper(opt.funname) ,' - This file contains auto generated C-code for a MATLAB MEX function.']);    
+fprintf(fid,'// %s\n',['For details on how to use the complied MEX function see the documentation provided in ',opt.funname,'.m']);    
+fprintf(fid,'// %s\n//\n',['The compiled MEX function replaces this .m-function with identical usage but substantial execution speedup.']);    
+fprintf(fid,'// %s\n//\n',['For compilation of this C-code using MATLAB please run:']);    
+fprintf(fid,'// \t\t%s\n//\n',['''',mexCompCmnd,'''']);    
+fprintf(fid,'// %s\n',['Make sure you have a C-compiler installed and your MATLAB MEX environment readily configured.']);
+fprintf(fid,'// %s\n//\n',['Type ''doc mex'' for additional help.']); 
+
+% Insert Copyright Note 
+fprintf(fid,'// %s\n','__Copyright Note__:');
+fprintf(fid,'%s\n',cprNote);
 
 % Includes
 fprintf(fid,'%s\n%s\n\n',...
     '#include "mex.h"',...
     ['#include "',[opt.funname,'.h'],'"']);
-
-
 
 % Generate the mex gateway routine
 funstr = CGen.genmexgatewaystring(f,'funname',opt.funname, 'vars',opt.vars);
@@ -128,10 +142,6 @@ fprintf(fid,'%s',sprintf(funstr));
 fclose(fid);
 
 %% Compile the MEX file
-srcDir = fullfile(CGen.ccodepath,'src');
-hdrDir = fullfile(CGen.ccodepath,'include');
-if CGen.verbose
-    eval(['mex ',opt.funfilename, ' ',fullfile(srcDir,[opt.funname,'.c']),' -I',hdrDir, ' -v -outdir ',CGen.robjpath]);   
-else
-    eval(['mex ',opt.funfilename, ' ',fullfile(srcDir,[opt.funname,'.c']),' -I',hdrDir,' -outdir ',CGen.robjpath]);
+if CGen.compilemex
+    eval(mexCompCmnd)
 end
