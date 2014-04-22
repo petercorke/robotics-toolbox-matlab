@@ -260,10 +260,11 @@ classdef CodeGenerator
         end
         
         function robName = getrobfname(CGen)
-            robName = CGen.rob.name;
-            blanks = isspace(robName)==1;
-            robName(blanks)= [];
-            robName(robName=='/') = [];
+        % Use regular expression \W to replace any character
+        % that is not alphabetic, numeric, or underscore. 
+        % For English character sets, this is equivalent to [^a-zA-Z_0-9].
+        % This yields proper variable and function names!
+            robName = regexprep(CGen.rob.name, '\W', '');
         end
 
         function savesym(CGen,sym2save, symname, fname)
