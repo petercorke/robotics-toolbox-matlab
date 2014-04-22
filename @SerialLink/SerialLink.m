@@ -237,7 +237,7 @@ classdef SerialLink < handle
                             newlinks(j) = copy(L.links(j));
                         end
                         r.links = newlinks;
-                        r.name = [L.name ' (copy)'];
+                        r.name = [L.name ' copy'];
                         r.base = L.base;
                         r.tool = L.tool;
                     else
@@ -274,7 +274,7 @@ classdef SerialLink < handle
             end
 
             % process the rest of the arguments in key, value pairs
-            opt.name = 'robot';
+            opt.name = [];
             opt.comment = [];
             opt.manufacturer = [];
             opt.base = [];
