@@ -265,6 +265,10 @@ classdef CodeGenerator
         % For English character sets, this is equivalent to [^a-zA-Z_0-9].
         % This yields proper variable and function names!
             robName = regexprep(CGen.rob.name, '\W', '');
+            
+            if numel(robName)>4 && strcmp(robName(end-3:end),'copy')
+                robName = robName(1:end-4);
+            end
         end
 
         function savesym(CGen,sym2save, symname, fname)
