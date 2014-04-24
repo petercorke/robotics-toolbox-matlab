@@ -1,4 +1,4 @@
-% Copyright (C) 1993-2013, by Jorn Malzahn
+% Copyright (C) 1993-2014, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -34,12 +34,12 @@
 % We start off with the instantiation of a |CodeGenerator| class object.
 % First, we load the |SerialLink| object for which we intend to generate
 % code.
-mdl_puma560_3
+mdl_planar3
 
 %%
-% After that, we find a |SerialLink| object named p560 in the workspace. This
+% After that, we find a |SerialLink| object named p3 in the workspace. This
 % object is used to instantiate the CodeGenerator.
-cGen = CodeGenerator(p560)
+cGen = CodeGenerator(p3)
 
 %% Code generation 
 % By default |CodeGenerator| class objects are configured to generate:
@@ -67,9 +67,9 @@ cGen.logfile = 'roblog.txt'
 % The output variable |symExp| now contains the symbolic expression for the
 % forward kinematics. This expression is the same as would be obtained by
 % the following code.
-symP560 = p560.sym;
-q = symP560.gencoords;
-symExpDir = symP560.fkine(q)
+symp3 = p3.sym;
+q = symp3.gencoords;
+symExpDir = symp3.fkine(q)
 
 % So we have basically two ways for deriving symbolic expressions using the
 % Robotics Toolbox.
@@ -102,7 +102,7 @@ qz
 %%
 % With the generic version of the fkine function from the |SerialLink| 
 % class we would compute the forward kinematics as follows:
-tic; Tz1 = p560.fkine(qz); t1 = toc
+tic; Tz1 = p3.fkine(qz); t1 = toc
 %% 
 % In order to use the generated robot specific m-functions we add them to
 % the search path and instantiate a new robot object.
@@ -124,11 +124,10 @@ tic; Tz2 = specRob.fkine(qz); t2 = toc
 %
 % This way the specialized m-code can be used to decrease simulation times.
 %
-
 %%
 % We obtain the exact solution without floating point notation if we use
 % the symbolic expression as follows:
-tic; Tz1 = subs(symExp, ['q1', 'q2', 'q3'],qz); toc
+tic; Tz1 = subs(symExp, {'q1', 'q2', 'q3'},qz); toc
 %%
 % This is however more time consuming. Most probably we might use the
 % symbolic expressions for algorithm development, controller design, 
@@ -140,12 +139,68 @@ tic; Tz1 = subs(symExp, ['q1', 'q2', 'q3'],qz); toc
 % solutions. See the documentation of genfkine for details.
 %
 
+%% C-Code generation
+% Since Release 9.9 the RTB is able to also generate ready to use C-code.
+% You can enable C-code generation by activating the CodeGenerator property
+% flag |cGen.genccode|:
+cGen.genccode = true;
+%% 
+% Now all higher level generator methods (|cGen.genfkine|, |cGen.geninvdyn|
+% etc. ...) also produce .c and .h files. They are written to the directory 
+% specified by the |cGen.ccodepath| property. You can use the C-files in 
+% your projects outside the MATLAB world. The header files are documented
+% and compatible with Doxygen.
+%
+% Instead of using the higher level generator methods, you can also
+% directly call the C-code generation routine for the model code of your
+% choice. In the following we complement the previously generated m-functions 
+% for the forward kinematics by their C-equivalent:
+cGen.genccodefkine;
+disp('Generated C-headers:')
+ls(fullfile(cGen.ccodepath,'include'))
+disp('Generated C-definitions:')
+ls(fullfile(cGen.ccodepath,'src'))
+
+%% Generating C-MEX functions
+% We can use the generated C-code outside the MATLAB world and use it in
+% arbitrary C-applications. In addition we can also benefit from it inside
+% the MATLAB world by means of C-MEX functions. The automated generation of 
+% C-MEX functions is controlled by the CodeGenerator flag properties
+% |cGen.genmex| and |cGen.compilemex|: 
+cGen.genmex = true;
+%% 
+% Now all higher level generator methods (|cGen.genfkine|, |cGen.geninvdyn|
+% etc. ...) also produce C-MEX files. The MEX files are stored in the class 
+% directory |cGen.robjpath| of the specialized robot object also incorporating the 
+% m-functions we generated before.
+%%
+% By default the flag compilemex is active. This means that the 
+% CodeGenerator always compiles the generated MEX function after generation.
+% We require an installed C-compiler and our MATLAB MEX environment being
+% configured properly. See the MATLAB documentation ond MEX files for
+% details. In order to proceed with this demo in the case where we do not
+% have this prerequisites, we now deactivate the automatic generation:
+cGen.compilemex = false;
+%%
+% Nevhertheless, we can create the C-MEX code for the forward kinematics 
+% and inspect the |cGen.robjpath| directory:
+cGen.genmexfkine
+disp('Robot object directory with new MEX source file fkine.c:')
+ls(cGen.robjpath)
+%%
+% The readily compiled MEX functions will shadow the previously generated
+% m-functions. The function calls as such remain identical. Using the
+% specialized robot object with MEX files we experience an additional and 
+% substantial computation speed up compared to the robot specific m-code 
+% as well as the generic rne functions (both, m and MEX version). 
+% 
+
 %% Inheritance
 % Even though we have not yet generated robot specific code for |SerialLink|
 % metods other than |fkine|, we can still use all functionality of
 % |SerialLink| objects with our new specialized robot object which inherits
 % from |SerialLink|.
-J01 = p560.jacob0(qz)
+J01 = p3.jacob0(qz)
 J02 = specRob.jacob0(qz)
 
 %% A look at the generated Simulink blocks
@@ -170,7 +225,7 @@ bdclose(cGen.slib);
 % For further information on symbolics and code generation see the
 % documentation of the |SerialLink| and |CodeGenerator| class.
 %
-% All generated functions come with their own headers so that information
+% All generated functions come with their own description headers so that information
 % about their usage can be found by typing |help funname|.
 %
 % A list of all available methods provide by the |CodeGenerator| class can be
