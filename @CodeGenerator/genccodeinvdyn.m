@@ -118,8 +118,8 @@ fprintf(fid,'%s\n',' '); % empty line
 fprintf(fid,'%s\n','/* fill output vector */');
 
 for iJoints = 1:nJoints
-    fprintf(fid,'%s\n',[outputname,'[0][',num2str(iJoints-1),'] = dotprod(inertia_row',num2str(iJoints),', input3, ',num2str(nJoints),') // inertia']);
-    fprintf(fid,'\t%s\n',[' + dotprod(coriolis_row',num2str(iJoints),', input2, ',num2str(nJoints),') // coriolis']);
+    fprintf(fid,'%s\n',[outputname,'[0][',num2str(iJoints-1),'] = dotprod(inertia_row',num2str(iJoints),', input3, ',num2str(nJoints),') /* inertia */']);
+    fprintf(fid,'\t%s\n',[' + dotprod(coriolis_row',num2str(iJoints),', input2, ',num2str(nJoints),') /* coriolis */']);
     fprintf(fid,'\t%s\n',[' + gravload[',num2str(iJoints-1),'][0]']);
     fprintf(fid,'\t%s\n',[' - friction[',num2str(iJoints-1),'][0];']);
 end

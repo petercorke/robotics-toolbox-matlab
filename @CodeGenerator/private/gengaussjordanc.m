@@ -78,14 +78,14 @@ fprintf(fid,'\t%s\n','double* inMatrixCopy = (double*) malloc(dim*dim*sizeof(dou
 fprintf(fid,'%s\n',' '); % empty line
 
 % input initialization
-fprintf(fid,'\t%s\n','// make deep copy of input matrix');
+fprintf(fid,'\t%s\n','/* make deep copy of input matrix */');
 fprintf(fid,'\t%s\n','for(iRow = 0; iRow < dim; iRow++ ){');
 fprintf(fid,'\t\t%s\n','for (iCol = 0; iCol < dim; iCol++){');
 fprintf(fid,'\t\t\t%s\n','inMatrixCopy[dim*iCol+iRow] = inMatrix[dim*iCol+iRow];');
 fprintf(fid,'\t\t%s\n','}');
 
 fprintf(fid,'\t%s\n','}');
-fprintf(fid,'\t%s\n','// Initialize output matrix as identity matrix.');
+fprintf(fid,'\t%s\n','/* Initialize output matrix as identity matrix. */');
 fprintf(fid,'\t%s\n','for (iRow = 0; iRow < dim; iRow++ ){');
 fprintf(fid,'\t\t%s\n','for (iCol = 0; iCol < dim; iCol++ ){');
 fprintf(fid,'\t\t\t%s\n','if (iCol == iRow){');
@@ -102,12 +102,12 @@ fprintf(fid,'%s\n',' '); % empty line
 % actual elimination
 fprintf(fid,'\t%s\n','for (diagIndex = 0; diagIndex < dim; diagIndex++ )');
 fprintf(fid,'\t%s\n','{');
-fprintf(fid,'\t\t%s\n','// determine diagonal factor');
+fprintf(fid,'\t\t%s\n','/* determine diagonal factor */');
 fprintf(fid,'\t\t%s\n','diagFactor = inMatrixCopy[dim*diagIndex+diagIndex];');
 
 fprintf(fid,'%s\n',' '); % empty line
         
-fprintf(fid,'\t\t%s\n','// divide column entries by diagonal factor');
+fprintf(fid,'\t\t%s\n','/* divide column entries by diagonal factor */');
 fprintf(fid,'\t\t%s\n','for (iCol = 0; iCol < dim; iCol++){');
 fprintf(fid,'\t\t\t%s\n','inMatrixCopy[dim*iCol+diagIndex] /= diagFactor;');
 fprintf(fid,'\t\t\t%s\n','outMatrix[dim*iCol+diagIndex] /= diagFactor;');
@@ -115,7 +115,7 @@ fprintf(fid,'\t\t%s\n','}');
 
 fprintf(fid,'%s\n',' '); % empty line
         
-fprintf(fid,'\t\t%s\n','// perform line-by-line elimination');
+fprintf(fid,'\t\t%s\n','/* perform line-by-line elimination */');
 fprintf(fid,'\t\t%s\n','for (iRow = 0; iRow < dim; iRow++){');
 fprintf(fid,'\t\t\t%s\n','if (iRow != diagIndex){');
 fprintf(fid,'\t\t\t\t%s\n','tmpFactor = inMatrixCopy[dim*diagIndex+iRow];');
@@ -127,7 +127,7 @@ fprintf(fid,'\t\t\t\t%s\n','inMatrixCopy[dim*iCol+iRow]  -= inMatrixCopy[dim*iCo
 fprintf(fid,'\t\t\t\t%s\n','outMatrix[dim*iCol+iRow] -= outMatrix[dim*iCol+diagIndex]*tmpFactor;');
 fprintf(fid,'\t\t\t\t%s\n','}');
 fprintf(fid,'\t\t\t%s\n','}');
-fprintf(fid,'\t\t%s\n','} // line-by-line elimination');
+fprintf(fid,'\t\t%s\n','} /* line-by-line elimination */');
 
 fprintf(fid,'%s\n',' '); % empty line
         
