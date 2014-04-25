@@ -118,7 +118,7 @@ end
 fid = fopen(opt.funfilename,'w+');
 
 % Add compilation note
-fprintf(fid,'// %s\n',[upper(opt.funname) ,' - This file contains auto generated C-code for a MATLAB MEX function.']);    
+fprintf(fid,'/* %s\n',[upper(opt.funname) ,' - This file contains auto generated C-code for a MATLAB MEX function.']);    
 fprintf(fid,'// %s\n',['For details on how to use the complied MEX function see the documentation provided in ',opt.funname,'.m']);    
 fprintf(fid,'// %s\n//\n',['The compiled MEX function replaces this .m-function with identical usage but substantial execution speedup.']);    
 fprintf(fid,'// %s\n//\n',['For compilation of this C-code using MATLAB please run:']);    
@@ -128,7 +128,7 @@ fprintf(fid,'// %s\n//\n',['Type ''doc mex'' for additional help.']);
 
 % Insert Copyright Note 
 fprintf(fid,'// %s\n','__Copyright Note__:');
-fprintf(fid,'%s\n',cprNote);
+fprintf(fid,'%s */\n',cprNote);
 
 % Includes
 fprintf(fid,'%s\n%s\n\n',...
