@@ -58,7 +58,7 @@ Q = CGen.rob.gencoords;
 hStruct = createHeaderStructGravity(CGen.rob,symname); 
 
 % Generate and compile MEX function 
-CGen.mexfunction(tmpStruct.(symname), 'funfilename',funfilename,'funname',[CGen.rob.name,'_',symname],'vars',{Q},'output','G','header',hStruct)
+CGen.mexfunction(tmpStruct.(symname), 'funfilename',funfilename,'funname',[CGen.getrobfname,'_',symname],'vars',{Q},'output','G','header',hStruct)
 
 CGen.logmsg('\t%s\n',' done!');
 

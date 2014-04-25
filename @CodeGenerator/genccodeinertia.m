@@ -65,7 +65,7 @@ for kJoints = 1:nJoints
         error ('genmfuninertia:SymbolicsNotFound','Save symbolic expressions to disk first!')
     end
     
-    funname = [CGen.rob.name,'_',symname];
+    funname = [CGen.getrobfname,'_',symname];
     funfilename = [funname,'.c'];
     hfilename = [funname,'.h'];
     
@@ -123,7 +123,7 @@ CGen.logmsg([datestr(now),'\tGenerating full inertia matrix C-code']);
 
 symname = 'inertia';
 
-funname = [CGen.rob.name,'_',symname];
+funname = [CGen.getrobfname,'_',symname];
 funfilename = [funname,'.c'];
 hfilename = [funname,'.h'];
 outname = 'I';
@@ -156,7 +156,7 @@ fprintf(fid,'%s\n',' '); % empty line
 
 fprintf(fid,'\t%s\n','/* call the row routines */');
 for kJoints = 1:nJoints
-    fprintf(fid,'\t%s_inertia_row_%d(row%d, input1);\n',CGen.rob.name,kJoints,kJoints);
+    fprintf(fid,'\t%s_inertia_row_%d(row%d, input1);\n',CGen.getrobfname,kJoints,kJoints);
 end
 fprintf(fid,'%s\n',' '); % empty line\n
 
@@ -187,7 +187,7 @@ fprintf(fid,'%s\n%s\n\n',...
 fprintf(fid,'%s\n\n',...
     '#include "math.h"');
 for kJoints = 1:nJoints
-    rowstring = [CGen.rob.name,'_inertia_row_',num2str(kJoints)];
+    rowstring = [CGen.getrobfname,'_inertia_row_',num2str(kJoints)];
     fprintf(fid,'%s\n',...
         ['#include "',rowstring,'.h"']);
 end

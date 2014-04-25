@@ -56,7 +56,7 @@ end
 symname = 'invdyn';
 outputname = 'TAU';
 
-funname = [CGen.rob.name,'_',symname];
+funname = [CGen.getrobfname,'_',symname];
 funfilename = [funname,'.c'];
 hfilename = [funname,'.h'];
 
@@ -102,16 +102,16 @@ fprintf(fid,'%s\n',['double friction[',num2str(nJoints),'][1];']);
 
 fprintf(fid,'%s\n',' '); % empty line
 fprintf(fid,'%s\n','/* call the computational routines */');
-fprintf(fid,'%s\n',[CGen.rob.name,'_','gravload(gravload, input1);']);
-fprintf(fid,'%s\n',[CGen.rob.name,'_','friction(friction, input2);']);
+fprintf(fid,'%s\n',[CGen.getrobfname,'_','gravload(gravload, input1);']);
+fprintf(fid,'%s\n',[CGen.getrobfname,'_','friction(friction, input2);']);
 
 fprintf(fid,'%s\n','/* rowwise routines */');
 for iJoints = 1:nJoints
-    fprintf(fid,'%s\n',[CGen.rob.name,'_','inertia_row_',num2str(iJoints),'(inertia_row',num2str(iJoints),', input1);']);
+    fprintf(fid,'%s\n',[CGen.getrobfname,'_','inertia_row_',num2str(iJoints),'(inertia_row',num2str(iJoints),', input1);']);
 end
 
 for iJoints = 1:nJoints
-    fprintf(fid,'%s\n',[CGen.rob.name,'_','coriolis_row_',num2str(iJoints),'(coriolis_row',num2str(iJoints),', input1, input2);']);
+    fprintf(fid,'%s\n',[CGen.getrobfname,'_','coriolis_row_',num2str(iJoints),'(coriolis_row',num2str(iJoints),', input1, input2);']);
 end
 
 fprintf(fid,'%s\n',' '); % empty line
@@ -143,10 +143,10 @@ fprintf(fid,'%s\n%s\n\n',...
 % Includes
 fprintf(fid,'%s\n%s\n%s\n%s\n%s\n\n',...
     '#include "dotprod.h"',...
-    ['#include "',CGen.rob.name,'_inertia.h"'],...
-    ['#include "',CGen.rob.name,'_coriolis.h"'],...
-    ['#include "',CGen.rob.name,'_gravload.h"'],...
-    ['#include "',CGen.rob.name,'_friction.h"']);
+    ['#include "',CGen.getrobfname,'_inertia.h"'],...
+    ['#include "',CGen.getrobfname,'_coriolis.h"'],...
+    ['#include "',CGen.getrobfname,'_gravload.h"'],...
+    ['#include "',CGen.getrobfname,'_friction.h"']);
 
 
 fprintf(fid,'%s\n\n',hstring);

@@ -60,7 +60,7 @@ if ~exist(hdrDir,'dir')
     mkdir(hdrDir);
 end
 
-funname = [CGen.rob.name,'_',symname];
+funname = [CGen.getrobfname,'_',symname];
 funfilename = [funname,'.c'];
 hfilename = [funname,'.h'];
 Q = CGen.rob.gencoords;
@@ -124,7 +124,7 @@ else
     error ('genMFunJacobian:SymbolicsNotFound','Save symbolic expressions to disk first!')
 end
 
-funname = [CGen.rob.name,'_',symname];
+funname = [CGen.getrobfname,'_',symname];
 funfilename = [funname,'.c'];
 hfilename = [funname,'.h'];
 

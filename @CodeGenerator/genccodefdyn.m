@@ -57,7 +57,7 @@ end
 symname = 'fdyn';
 outputname = 'QDD';
 
-funname = [CGen.rob.name,'_accel'];
+funname = [CGen.getrobfname,'_accel'];
 funfilename = [funname,'.c'];
 hfilename = [funname,'.h'];
 
@@ -100,11 +100,11 @@ fprintf(fid,'\t%s\n',['double tmpTau[1][',num2str(nJoints),'];']);
 fprintf(fid,'%s\n',' '); % empty line
 
 fprintf(fid,'\t%s\n','/* call the computational routines */');
-fprintf(fid,'\t%s\n',[CGen.rob.name,'_','inertia(inertia, input1);']);
+fprintf(fid,'\t%s\n',[CGen.getrobfname,'_','inertia(inertia, input1);']);
 fprintf(fid,'\t%s\n',['gaussjordan(inertia, invinertia, ',num2str(nJoints),');']);
-fprintf(fid,'\t%s\n',[CGen.rob.name,'_','coriolis(coriolis, input1, input2);']);
-fprintf(fid,'\t%s\n',[CGen.rob.name,'_','gravload(gravload, input1);']);
-fprintf(fid,'\t%s\n',[CGen.rob.name,'_','friction(friction, input2);']);
+fprintf(fid,'\t%s\n',[CGen.getrobfname,'_','coriolis(coriolis, input1, input2);']);
+fprintf(fid,'\t%s\n',[CGen.getrobfname,'_','gravload(gravload, input1);']);
+fprintf(fid,'\t%s\n',[CGen.getrobfname,'_','friction(friction, input2);']);
 
 fprintf(fid,'%s\n',' '); % empty line
 
@@ -137,10 +137,10 @@ fprintf(fid,'%s\n%s\n\n',...
 fprintf(fid,'%s\n%s\n%s\n%s\n%s\n%s\n\n',...
     '#include "matvecprod.h"',...
     '#include "gaussjordan.h"',...
-    ['#include "',CGen.rob.name,'_inertia.h"'],...
-    ['#include "',CGen.rob.name,'_coriolis.h"'],...
-    ['#include "',CGen.rob.name,'_gravload.h"'],...
-    ['#include "',CGen.rob.name,'_friction.h"']);
+    ['#include "',CGen.getrobfname,'_inertia.h"'],...
+    ['#include "',CGen.getrobfname,'_coriolis.h"'],...
+    ['#include "',CGen.getrobfname,'_gravload.h"'],...
+    ['#include "',CGen.getrobfname,'_friction.h"']);
 
 
 fprintf(fid,'%s\n\n',hstring);

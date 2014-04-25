@@ -45,7 +45,7 @@ CGen.logmsg([datestr(now),'\tGenerating inverse dynamics MEX-function: ']);
 mexfunname = 'invdyn';
 mexcfilename = fullfile(CGen.robjpath,[mexfunname,'.c']);
 
-cfunname = [CGen.rob.name,'_',mexfunname];
+cfunname = [CGen.getrobfname,'_',mexfunname];
 cfilename = [cfunname '.c'];
 hfilename = [cfunname '.h'];
 
@@ -80,14 +80,14 @@ hdrDir = fullfile(CGen.ccodepath,'include');
 
 cfilelist = fullfile(srcDir,cfilename);
 for kJoints = 1:CGen.rob.n
-    cfilelist = [cfilelist, ' ',fullfile(srcDir,[CGen.rob.name,'_inertia_row_',num2str(kJoints),'.c'])];
+    cfilelist = [cfilelist, ' ',fullfile(srcDir,[CGen.getrobfname,'_inertia_row_',num2str(kJoints),'.c'])];
 end
 for kJoints = 1:CGen.rob.n
-    cfilelist = [cfilelist, ' ',fullfile(srcDir,[CGen.rob.name,'_coriolis_row_',num2str(kJoints),'.c'])];
+    cfilelist = [cfilelist, ' ',fullfile(srcDir,[CGen.getrobfname,'_coriolis_row_',num2str(kJoints),'.c'])];
 end
 
-cfilelist = [cfilelist, ' ', fullfile(srcDir,[CGen.rob.name,'_gravload.c'])];
-cfilelist = [cfilelist, ' ', fullfile(srcDir,[CGen.rob.name,'_friction.c'])];
+cfilelist = [cfilelist, ' ', fullfile(srcDir,[CGen.getrobfname,'_gravload.c'])];
+cfilelist = [cfilelist, ' ', fullfile(srcDir,[CGen.getrobfname,'_friction.c'])];
 cfilelist = [cfilelist, ' ', fullfile(srcDir,'dotprod.c')];
 
 if CGen.verbose

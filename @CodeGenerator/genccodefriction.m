@@ -59,7 +59,7 @@ if ~exist(hdrDir,'dir')
     mkdir(hdrDir);
 end
 
-funname = [CGen.rob.name,'_',symname];
+funname = [CGen.getrobfname,'_',symname];
 funfilename = [funname,'.c'];
 hfilename = [funname,'.h'];
 

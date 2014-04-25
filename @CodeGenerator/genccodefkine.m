@@ -60,7 +60,7 @@ if ~exist(hdrDir,'dir')
     mkdir(hdrDir);
 end
 
-funname = [CGen.rob.name,'_',symname];
+funname = [CGen.getrobfname,'_',symname];
 funfilename = [funname,'.c'];
 hfilename = [funname,'.h'];
 
@@ -126,7 +126,7 @@ for iJoints=1:CGen.rob.n
     tmpStruct = struct;
     tmpStruct = load(fname);
     
-    funname = [CGen.rob.name,'_',symname];
+    funname = [CGen.getrobfname,'_',symname];
     funfilename = [funname,'.c'];
     hfilename = [funname,'.h'];
     Q = CGen.rob.gencoords;

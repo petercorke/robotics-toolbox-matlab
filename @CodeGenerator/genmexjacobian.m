@@ -59,7 +59,7 @@ Q = CGen.rob.gencoords;
 hStruct = createHeaderStructJacob0(CGen.rob,symname); % create header
 
 % Generate and compile MEX function 
-CGen.mexfunction(tmpStruct.(symname),'funfilename',funfilename,'funname',[CGen.rob.name,'_',symname],'vars',{Q},'output','J0','header',hStruct);
+CGen.mexfunction(tmpStruct.(symname),'funfilename',funfilename,'funname',[CGen.getrobfname,'_',symname],'vars',{Q},'output','J0','header',hStruct);
 
 CGen.logmsg('\t%s\n',' done!');
 
@@ -81,7 +81,7 @@ Q = CGen.rob.gencoords;
 hStruct = createHeaderStructJacobn(CGen.rob,symname); % create header
 
 % Generate and compile MEX function 
-CGen.mexfunction(tmpStruct.(symname),'funfilename',funfilename,'funname',[CGen.rob.name,'_',symname],'vars',{Q},'output','Jn','header',hStruct);
+CGen.mexfunction(tmpStruct.(symname),'funfilename',funfilename,'funname',[CGen.getrobfname,'_',symname],'vars',{Q},'output','Jn','header',hStruct);
 
 CGen.logmsg('\t%s\n',' done!');
 
