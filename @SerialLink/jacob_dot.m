@@ -13,9 +13,10 @@
 %
 % See also SerialLink.jacob0, diff2tr, tr2diff.
 
-% Copyright (C) 1993-2011, by Peter I. Corke
+
+% Copyright (C) 1993-2014, by Peter I. Corke
 %
-% This file is part of The Robotics Toolbox for Matlab (RTB).
+% This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by

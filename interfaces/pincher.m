@@ -1,13 +1,3 @@
-%ROTZ Rotation about Z axis
-%
-% R = ROTZ(THETA) is a rotation matrix representing a rotation of THETA 
-% radians about the z-axis.
-%
-% R = ROTZ(THETA, 'deg') as above but THETA is in degrees.
-%
-% See also ROTX, ROTY, ANGVEC2R, ROT2.
-
-
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %
@@ -27,16 +17,21 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+clear L
+L(1) = Revolute('d', 40, 'alpha', -pi/2);
+L(2) = Revolute('a', -105, 'alpha', pi, 'offset', pi/2);
+L(3) = Revolute('a', -105);
+L(4) = Revolute('a', -105);
 
-function R = rotz(t, deg)
-    if nargin > 1 && strcmp(deg, 'deg')
-        t = t *pi/180;
-    end
-    
-    ct = cos(t);
-    st = sin(t);
-    R = [
-        ct  -st  0
-        st   ct  0
-        0    0   1
-        ];
+% Note alpha_2 = pi, needed to account for rotation axes of joints 3 and 4 having
+% opposite sign to joint 2.
+%
+% s='Rz(q1) Tz(L1) Ry(q2) Tz(L2) Ry(q3) Tz(L3) Ry(q4) Tz(L4)'
+% DHFactor(s)
+
+
+arb = Arbotix('port', '/dev/tty.usbserial-A800JDPN', 'nservos', 5);
+
+px = RobotArm(L, arb, 'name', 'PhantomX', 'manufacturer', 'Trossen Robotics');
+qz = [0 0 0 0];
+px.tool = trotz(-pi/2) * trotx(pi/2);

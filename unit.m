@@ -6,9 +6,10 @@
 % - Reports error for the case where norm(V) is zero.
 
 
-% Copyright (C) 1993-2011, by Peter I. Corke
+
+% Copyright (C) 1993-2014, by Peter I. Corke
 %
-% This file is part of The Robotics Toolbox for Matlab (RTB).
+% This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
@@ -22,6 +23,8 @@
 % 
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
+%
+% http://www.petercorke.com
 
 function u = unit(v)
     n = norm(v, 'fro');

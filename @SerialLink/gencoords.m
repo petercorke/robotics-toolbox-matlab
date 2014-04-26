@@ -8,9 +8,10 @@
 % [Q,QD,QDD] = R.gencoords() as above but QDD is a vector (1xN) of 
 % symbols [qdd1 qdd2 ... qddN].
 
-% Copyright (C) 1993-2011, by Peter I. Corke
+
+% Copyright (C) 1993-2014, by Peter I. Corke
 %
-% This file is part of The Robotics Toolbox for Matlab (RTB).
+% This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
