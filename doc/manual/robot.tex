@@ -32,6 +32,21 @@
 
 \input{release.tex}
 
+%\usepackage{multind}
+\usepackage{multicol}
+\makeatletter
+\def\printindex#1#2{\subsection*{#2}
+  \@input{#1.ind}}
+  
+\def\theindex{\parindent\z@
+\parskip\z@ plus .3pt\relax\let\item\@idxitem}
+\def\@idxitem{\par\hangindent 40pt}
+\def\subitem{\par\hangindent 40pt \hspace*{20pt}}
+\def\subsubitem{\par\hangindent 40pt \hspace*{30pt}}
+\def\endtheindex{}
+\def\indexspace{\par \vskip 10pt plus 5pt minus 3pt\relax}
+\makeatother
+
 \usepackage{fancyvrb}
 \fvset{formatcom=\color{blue},fontseries=c,fontfamily=courier,xleftmargin=4mm,commentchar=!}
 \DefineVerbatimEnvironment{Code}{Verbatim}{formatcom=\color{blue},fontseries=c,fontfamily=courier,fontsize=\footnotesize,xleftmargin=4mm,commentchar=!}
@@ -54,7 +69,7 @@ Discussion group & \url{http://groups.google.com.au/group/robotics-tool-box}
 \end{tabular}
 \vspace*{\fill}
 \hrule
-Copyright \textcopyright 2013 Peter Corke\\
+Copyright \textcopyright 2014 Peter Corke\\
 peter.i.corke$@$gmail.com\\
 \url{http://www.petercorke.com}
 \newpage
@@ -65,11 +80,11 @@ peter.i.corke$@$gmail.com\\
 
 \pagestyle{headings}        % Gives page headings at top of page
 \lfoot{Robotics Toolbox \release\ for \Mlab}
-\rfoot{Copyright \copyright Peter Corke 2013}
+\rfoot{Copyright \copyright Peter Corke 2014}
 
 \newpage
 \setcounter{section}{0}
-\addcontentsline{toc}{section}{Introduction}
+\addcontentsline{toc}{section}{Preface}
 \cleardoublepage
 \chapter*{Preface}
 \pagestyle{fancyplain}
@@ -112,11 +127,17 @@ The manual is now auto-generated from the comments in the \Mlab\ code itself whi
 in maintaining code and a separate manual as I used to --- the downside is that there are no worked examples and figures in the manual.
 However the book ``\textit{Robotics, Vision \& Control}''  provides a detailed discussion (600 pages, nearly 400 figures and 1000 code examples)
 of how to use the Toolbox functions to
-solve many types of problems in robotics, and I commend it to you.
+solve many types of problems in robotics.
 
 
 \newpage
 \tableofcontents
+\newpage
+\chapter*{Functions by category}
+\addcontentsline{toc}{section}{Functions by category}
+\begin{multicols}{2}
+\input{funcidx_body.tex}
+\end{multicols}
 \newpage
 \chapter{Introduction}
 \section{What's changed}
@@ -130,17 +151,53 @@ The negative consequence is that the manual is a little ``drier'' than it used t
 \item Online HTML-format help is available from \url{http://www.petercorke.com/RTB/r9/html}
 \end{itemize}
 
-\subsection{Changed behaviour}
-This particular dot point release
+\subsection{New features and changes}
+\begin{figure}[t]
+\centering
+\includegraphics[width=6cm]{plot3d.pdf}
+\caption{New rendered robot model using the \texttt{plot3d()} method.}\label{fig:plot3d}
+\end{figure}
+Features of this particular dot point release include:
 \begin{itemize}
+\item A major rewrite of \texttt{ikine6s} to handle a number of specific cases: robot with no shoulder offset, robot with
+shoulder offset (can have lefty/right configuration), Stanford arm (prismatic third joint), Puma 560 arm.  The previous code made lots
+of assumptions applicable to the Puma, which caused errors for other 6-axis robots with spherical wrists.
+\item Symbolic inverse kinematics (developmental) can be found for robots with 2, 3 or 6 DOF.  See \texttt{SerialLink.ikine\_sym}.
+\item Aesthetic updates to \texttt{plot()} and \texttt{teach()} methods of the \texttt{SerialLink} object
+
+\item A new method \texttt{plot3d()} which uses STL format solid models to render realistic looking robots as shown in Figure
+\ref{fig:plot3d}.  This requires STL models,
+such as those shipped with the package ARTE by Arturo Gil.
+
+\item There are subclasses of \texttt{Link} called \texttt{Revolute}, \texttt{Prismatic}, \texttt{RevoluteMDH} and \texttt{PrismaticMDH} that can be used to make your
+code clearer and more concise.
+\item The behaviour of Fast RNE is a bit different.  The MATLAB version \texttt{@SerialLink/rne.m} is always executed, and it makes
+the decision whether or not to invoke the MEX file.  The MEX file is executed if:
+	\begin{enumerate}
+	\item the robot is not symbolic, and
+	\item the \texttt{SerialLink} property \texttt{fast} is true (ie. the 'nofast' option is not given), and
+	\item the MEX file exists.
+	\end{enumerate}
+	
+\item A significant number of new robot models.
+\item A major renovation of \texttt{DHFactor} to bring it up to spec with the lastest version of Java.
+\item A 'flip' option added to \texttt{tr2eul}.
+\item A new method \texttt{A} for \texttt{SerialLink} object that computes a sequence of \texttt{Link} A matrices.
+\item A new method \texttt{trchain} for \texttt{SerialLink} object that emits the kinematic model as a sequence of elementary
+transforms.
+\item A new method \texttt{trchain} that expresses kinematics as a chain of elementary transforms.
+\item A bunch of functions with suffix \texttt{2} that deal with SE(2) and SO(2) transforms.
+\item An improved version of the demo \texttt{rtbdemo}, with more functions and an improved interface.  It uses the common
+function \texttt{runscript} to step through the individual demo scripts.  It works even better with \texttt{cprintf} from MATLAB Central.
+\item A set of classes (experimental) to interface with the V-REP robotics simulation engine by Coppelia Robotics.  See
+\texttt{robot/interfaces/VREP}.
 \item Since 9.8 the Toolbox now contains the Robotic Symbolic Toolbox
 by Jo\"{e}rn Malzahn.  There are additional functions, as well as symbolic
 support throughout the SerialLink class.
-\item A significant number of new robot models.
 \item Many bug fixes
 \end{itemize}
 
-Compared to release 8 and earlier:
+Compared to release 8.x and earlier:
 \begin{itemize}
 \item The command \texttt{startup\_rvc} should be executed before using the Toolbox.  This sets up the MATLAB search paths correctly.
 \item The Robot class is now named SerialLink to be more specific.
@@ -177,7 +234,6 @@ Release 9 introduces considerable new functionality, in particular for mobile ro
  
 \item Arm robotics:
   \begin{description}
-\item jsingu
 \item jsingu
 \item qplot
 \item DHFactor a simple means to generate the Denavit-Hartenberg kinematic model of a robot from a sequence of elementary transforms.
@@ -216,7 +272,7 @@ Release 9 introduces considerable new functionality, in particular for mobile ro
 \item[plot\_circle] plot one or more circles, with options for edge color, fill color and transparency.
 \item[plot\_sphere] plot a sphere, with options for edge color, fill color and transparency.
 \item[plot\_ellipse] plot an ellipse, with options for edge color, fill color and transparency.
-\item]plot\_ellipsoid] plot an ellipsoid, with options for edge color, fill color and transparency.
+\item[plot\_ellipsoid] plot an ellipsoid, with options for edge color, fill color and transparency.
 \item[plot\_poly] plot a polygon, with options for edge color, fill color and transparency.
  \end{description}
  
@@ -285,7 +341,7 @@ Toolbox" appears under the Contents.
 
 
 \section{MATLAB version issues}
-The Toolbox has been tested under R2012a.
+The Toolbox has been tested under R2014a.
 
 \section{Use in teaching}
 This is definitely encouraged!
