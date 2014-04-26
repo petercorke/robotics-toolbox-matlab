@@ -260,6 +260,7 @@ classdef CodeGenerator
         end
         
         function robName = getrobfname(CGen)
+
         % Use regular expression \W to replace any character
         % that is not alphabetic, numeric, or underscore. 
         % For English character sets, this is equivalent to [^a-zA-Z_0-9].
