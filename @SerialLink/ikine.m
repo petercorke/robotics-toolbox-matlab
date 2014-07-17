@@ -98,7 +98,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
     %  set default parameters for solution
     opt.ilimit = 1000;
     opt.tol = 1e-6;
-    opt.alpha = 1;
+    opt.alpha = 0.5;
     opt.plot = false;
     opt.pinv = true;
     opt.varstep = false;
@@ -163,7 +163,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
 
         nm = Inf;
         % initialize state for the ikine loop
-        eprev = Inf;
+        eprev = [Inf Inf Inf Inf Inf Inf];
         save.e = [Inf Inf Inf Inf Inf Inf];
         save.q = [];
         count = 0;
@@ -187,7 +187,6 @@ function [qt,histout] = ikine(robot, tr, varargin)
             [th,n] = tr2angvec(Rq'*t2r(T));
             e(4:6) = th*n;
             
-
             % optionally adjust the step size
             if opt.varstep
                 % test against last best error, only consider the DOF of
@@ -253,7 +252,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
             
             nm = norm(e(m));
 
-            if norm(e) > 1.5*norm(eprev)
+            if norm(e(m)) > 1.5*norm(eprev(m))
                 warning('RTB:ikine:diverged', 'solution diverging at step %d, try reducing alpha', count);
             end
             eprev = e;
@@ -277,30 +276,27 @@ function [qt,histout] = ikine(robot, tr, varargin)
     % plot evolution of variables
     if opt.plot
         figure(1);
+        subplot(511)
         plot([history.q]');
-        xlabel('iteration');
         ylabel('q');
         grid
 
-        figure(2);
+        subplot(512)
         plot([history.dq]');
-        xlabel('iteration');
         ylabel('dq');
         grid
 
-        figure(3);
+        subplot(513)
         plot([history.e]');
-        xlabel('iteration');
         ylabel('e');
         grid
 
-        figure(4);
+        subplot(514)
         semilogy([history.ne]);
-        xlabel('iteration');
         ylabel('|e|');
         grid
 
-        figure(5);
+        subplot(515)
         plot([history.alpha]);
         xlabel('iteration');
         ylabel('\alpha');
