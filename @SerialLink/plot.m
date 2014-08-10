@@ -224,8 +224,8 @@ function plot(robot, qq, varargin)
                 
                 % tag one of the graphical handles with the robot name and hang
                 % the handle structure off it
-                set(handle.joint(1), 'Tag', robot.name);
-                set(handle.joint(1), 'UserData', handle);
+%                 set(handle.joint(1), 'Tag', robot.name);
+%                 set(handle.joint(1), 'UserData', handle);
             else
                 % create the robot and floor
                 newplot();
@@ -248,7 +248,9 @@ function plot(robot, qq, varargin)
         set(gca, 'Tag', 'RTB.plot');
         set(gcf, 'Units', 'Normalized');
         pf = get(gcf, 'Position');
-        set(gcf, 'Position', [0.1 1-pf(4) pf(3) pf(4)]);
+        if strcmp( get(gcf, 'WindowStyle'), 'docked') == 0
+            set(gcf, 'Position', [0.1 1-pf(4) pf(3) pf(4)]);
+        end
     end
     
     % deal with a few options that need to be stashed in the SerialLink object
@@ -307,7 +309,7 @@ end
 
 function h = create_robot(robot, opt)
     
-    disp('creating new robot');
+    %disp('creating new robot');
     
     links = robot.links;
     s = opt.scale;
@@ -317,7 +319,7 @@ function h = create_robot(robot, opt)
     if ~ishold
         % if hold is off, set the axis dimensions
         axis(opt.workspace);
-        hold
+        hold on
     end
     
     N = robot.n;
@@ -419,7 +421,7 @@ function h = create_robot(robot, opt)
     h.link(N+1) = hgtransform('Tag', sprintf('link%d', N+1), 'Parent', group);
     tool = eye(4,4);
     if ~robot.mdh
-        if (links(end).d ~= 0) || (links(end).a ~= 0)
+        if (links(end).d ~= 0) | (links(end).a ~= 0)
             tool = transl(links(end).a, 0, links(end).d);
         end
     end
@@ -702,7 +704,7 @@ function opt = plot_options(robot, optin)
             opt.floorlevel = -reach;
         end
     else
-        reach = min(abs(opt.workspace));
+        reach = min(abs(diff(reshape(opt.workspace, [2 3]))));
         if opt.tiles
             % set xy limits to be integer multiple of tilesize
             opt.workspace(1:4) = opt.tilesize * round(opt.workspace(1:4)/opt.tilesize);
