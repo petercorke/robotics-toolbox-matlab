@@ -69,6 +69,10 @@ function hout = trplot2(T, varargin)
         return;
     end
 
+    % convert rotation matrix to homog transform
+    if all(size(T) == [2 2])
+        T = [T [0; 0]; 0 0 1];
+    end
     opt.color = 'b';
     opt.axes = true;
     opt.axis = [];
@@ -87,7 +91,7 @@ function hout = trplot2(T, varargin)
     end
     if isempty(opt.axis)
         if all(size(T) == [3 3]) || norm(transl(T)) < eps
-            c = transl(T);
+            c = transl2(T);
             d = 1.2;
             opt.axis = [c(1)-d c(1)+d c(2)-d c(2)+d];
         end
@@ -129,6 +133,7 @@ function hout = trplot2(T, varargin)
     if opt.arrow
         % draw the 2 arrows
         S = [opt.color num2str(opt.width)];
+        daspect([1 1 1]);
         ha = arrow3(mstart, mend, S);
         for h=ha'
             set(h, 'Parent', hg);
