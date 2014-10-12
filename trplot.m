@@ -228,6 +228,7 @@ function hout = trplot(T, varargin)
 %         for h=ha'
 %             set(h, 'Parent', hg);
 %         end
+          daspect([1,1,1])
           for i=1:3
               ha = arrow3(mstart(i,1:3), mend(i,1:3), [axcolors{i} num2str(opt.width)]);
               set(ha, 'Parent', hg);
