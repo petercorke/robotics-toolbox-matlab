@@ -38,9 +38,14 @@ if release ~= currentversion
 end
 %}
 % add the contrib code to the path
-p = fullfile(rvcpath, 'contrib/arte');
-if exist(p)
+a = fullfile(rvcpath, 'contrib', 'arte');
+if exist(a, 'dir')
+    addpath( a );
+    disp([' - ARTE: A ROBOTICS TOOLBOX FOR EDUCATION (' a ')']);
+end
+p = fullfile(rvcpath, 'contrib', 'pHRIWARE');
+if exist(p, 'dir')
     addpath( p );
-    disp([' - ARTE: A ROBOTICS TOOLBOX FOR EDUCATION (' p ')']);
+    disp([' - pHRIWARE (release ',pHRIWARE('ver'),'): ',pHRIWARE('c')]);
 end
 clear release currentversion tbpath
