@@ -191,7 +191,6 @@
 % deal with base transform and tool
 % more consistent option names, scale, mag etc.
 function plot(robot, qq, varargin)
-    
     % check the joint angle data matches the robot
     n = robot.n;
     if numcols(qq) ~= n
@@ -288,6 +287,9 @@ function plot(robot, qq, varargin)
         end
     end
     
+    % enable mouse-based 3D rotation
+    rotate3d on
+    
     if ~isempty(opt.movie)
         mkdir(opt.movie);
         framenum = 1;
@@ -379,10 +381,10 @@ function h = create_robot(robot, opt)
                     cyl('x', s, [0 t(1)], opt.linkcolor, [], 'Parent', h.link(L));
                 end
                 if t(2) ~= 0
-                    cyl('y', s, [0 t(2)], opt.linkcolor, [], 'Parent', h.link(L));
+                    cyl('y', s, [0 t(2)], opt.linkcolor, [t(1) 0 0], 'Parent', h.link(L));
                 end
-                if t(2) ~= 0
-                    cyl('z', s, [0 t(3)], opt.linkcolor, [], 'Parent', h.link(L));
+                if t(3) ~= 0
+                    cyl('z', s, [0 t(3)], opt.linkcolor, [t(1) t(2) 0], 'Parent', h.link(L));
                 end
             end
         else
@@ -394,11 +396,12 @@ function h = create_robot(robot, opt)
                     cyl('x', s, [0 t(1)], opt.linkcolor, [], 'Parent', h.link(L));
                 end
                 if t(2) ~= 0
-                    cyl('y', s, [0 t(2)], opt.linkcolor, [], 'Parent', h.link(L));
+                    cyl('y', s, [0 t(2)], opt.linkcolor, [t(1) 0 0], 'Parent', h.link(L));
                 end
-                if t(2) ~= 0
-                    cyl('z', s, [0 t(3)], opt.linkcolor, [], 'Parent', h.link(L));
+                if t(3) ~= 0
+                    cyl('z', s, [0 t(3)], opt.linkcolor, [t(1) t(2) 0], 'Parent', h.link(L));
                 end
+                %line([0 t(1)]', [0 t(2)]', [0 t(3)]', 'Parent', h.link(L));
             end
         end
         
@@ -421,30 +424,30 @@ function h = create_robot(robot, opt)
     h.link(N+1) = hgtransform('Tag', sprintf('link%d', N+1), 'Parent', group);
     tool = eye(4,4);
     if ~robot.mdh
-        if (links(end).d ~= 0) | (links(end).a ~= 0)
-            tool = transl(links(end).a, 0, links(end).d);
-        end
+        tool = links(L).A(0);
     end
     if ~isempty(robot.tool)
         tool = tool * robot.tool;
     end
-    t = transl(tool);
+    t = transl(inv(tool))
     if t(1) ~= 0
-        cyl('x', s, [0 -t(1)], 'r', [], 'Parent', h.link(N+1));
+        cyl('x', s, [0 t(1)], 'r', [], 'Parent', h.link(N+1));
     end
     if t(2) ~= 0
-        cyl('y', s, [0 -t(2)], 'r', [-t(1) 0 0], 'Parent', h.link(N+1));
+        cyl('y', s, [0 t(2)], 'r', [t(1) 0 0], 'Parent', h.link(N+1));
     end
     if t(3) ~= 0
-        cyl('z', s, [0 -t(3)], 'r', [-t(1) -t(2) 0], 'Parent', h.link(N+1));
+        cyl('z', s, [0 t(3)], 'r', [t(1) t(2) 0], 'Parent', h.link(N+1));
     end
     
     % display the wrist coordinate frame
     if opt.wrist
         if opt.arrow
-            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), 'arrow', 'rgb', 'length', 15*s);
+            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), ...
+                'arrow', 'rgb', 'length', 15*s);
         else
-            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), 'rgb', 'length', 15*s);
+            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), ...
+                'rgb', 'length', 15*s);
         end
     else
         h.wrist = [];
@@ -508,15 +511,15 @@ function cyl(ax, r, extent, color, offset, varargin)
         case 'x'
             y = r * cos(theta) + offset(2);
             z = r * sintheta + offset(3);
-            x = extent(:) * ones(1,n+1);
+            x = extent(:) * ones(1,n+1) + offset(1);
         case 'y'
             x = r * cos(theta) + offset(1);
             z = r * sintheta + offset(3);
-            y = extent(:) * ones(1,n+1);
+            y = extent(:) * ones(1,n+1) + offset(2);
         case 'z'
             x = r * cos(theta) + offset(1);
             y = r * sintheta + offset(2);
-            z = extent(:) * ones(1,n+1);
+            z = extent(:) * ones(1,n+1) + offset(3);
     end
     
     % walls of the cylinder
