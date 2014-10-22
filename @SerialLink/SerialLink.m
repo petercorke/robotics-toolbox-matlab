@@ -8,6 +8,8 @@
 %
 %  plot          display graphical representation of robot
 %  teach         drive the graphical robot
+%  getpos        get position of graphical robot
+%
 %  isspherical   test if robot has spherical wrist
 %  islimit       test if robot at joint limit
 %  isconfig      test robot joint configuration
@@ -453,6 +455,29 @@ classdef SerialLink < handle
                 T = T * r.links(joint).A(q(joint));
             end
         end
+        
+        function q = getpos(robot)
+        %SerialLink.getpos Get joint coordinates from graphical display
+        %
+        % q = R.getpos() returns the joint coordinates set by the last plot or
+        % teach operation on the graphical robot.
+        %
+        % See also SerialLink.plot, SerialLink.teach.
+    
+        rhandles = findobj('Tag', robot.name);
+        
+        % find the graphical element of this name
+        if isempty(rhandles)
+            error('RTB:getpos:badarg', 'No graphical robot of this name found');
+        end
+        % get the info from its Userdata
+        info = get(rhandles(1), 'UserData');
+        
+        % the handle contains current joint angles (set by plot)
+        if ~isempty(info.q)
+            q = info.q;
+        end
+end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %   set/get methods
