@@ -28,15 +28,6 @@ addpath( fullfile(tbpath, 'demos') );
 addpath( fullfile(tbpath, 'examples') );
 addpath( fullfile(tbpath, 'mex') );
 javaaddpath( fullfile(tbpath, 'DH.jar') );
-%currentversion = urlread('http://www.petercorke.com/RTB/currentversion.php');
-currentversion = '0';
-currentversion = str2double(currentversion);
-%{
-if release ~= currentversion
-    fprintf('** Release %.1f now available\n\n', ...
-        currentversion);
-end
-%}
 % add the contrib code to the path
 a = fullfile(rvcpath, 'contrib', 'arte');
 if exist(a, 'dir')
@@ -48,4 +39,17 @@ if exist(p, 'dir')
     addpath( p );
     disp([' - pHRIWARE (release ',pHRIWARE('ver'),'): ',pHRIWARE('c')]);
 end
-clear release currentversion tbpath
+p = fullfile(rvcpath, 'contrib/paretofront');
+if exist(p)
+    addpath( p );
+    disp([' - paretofront contributed code (' p ')']);
+end
+[currentversion,status] = urlread('http://www.petercorke.com/RTB/currentversion.php', 'Timeout', 2.0);
+if status == 1
+    currentversion = str2double(currentversion);
+    if release ~= currentversion
+        fprintf('** Release %.1f now available\n\n', ...
+            currentversion);
+    end
+end
+clear status release currentversion tbpath
