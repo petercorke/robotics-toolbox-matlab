@@ -16,7 +16,8 @@
 % 'rpy'           Display tool orientation in roll/pitch/yaw angles
 % 'approach'      Display tool orientation as approach vector (z-axis)
 % 'radians'       Display angles in radians (default degrees)
-% 'callback',C    Set a callback function
+% 'callback',C    Set a callback function, called with robot object and
+%                 joint angle vector
 %
 % GUI::
 %
@@ -421,10 +422,11 @@ function teach_callback(src, name, j, handles)
     end
     
     if ~isempty(handles.callback)
-        handles.callback(q);
+        handles.callback(handles.robot, info.q);
     end
     
-    handles.robot.notify('Moved');
+    %notify(handles.robot, 'Moved');
+
 end
 
 function record_callback(robot, handles)
