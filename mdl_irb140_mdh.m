@@ -24,6 +24,8 @@
 % - Zero angle configuration has the upper arm vertical and lower arm
 %   horizontal.
 
+% MODEL: ABB, IRB140, 6DOF, modified_DH
+
 % Reference::
 
 

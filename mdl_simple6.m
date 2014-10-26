@@ -15,7 +15,7 @@
 %
 % See also SerialLink, Revolute, mdl_offset6, mdl_puma560, mdl_twolink.
 
-
+% MODEL: generic, 6DOF, standard_DH
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %

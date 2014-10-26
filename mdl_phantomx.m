@@ -18,6 +18,8 @@
 %
 % - http://www.trossenrobotics.com/productdocs/assemblyguides/phantomx-basic-robot-arm.html
 
+% MODEL: Trossen Robotics, PhantomX Pincher, 4DOF, standard_DH
+
 % Copyright (C) 1993-2014, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).

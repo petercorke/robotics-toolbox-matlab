@@ -16,6 +16,8 @@
 %
 % See also SerialLink, mdl_puma560akb, mdl_stanford, mdl_twolink.
 
+% MODEL: Fanuc, AM120iB/10L, 6DOF, standard_DH
+
 % Copyright (C) 1993-2011, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

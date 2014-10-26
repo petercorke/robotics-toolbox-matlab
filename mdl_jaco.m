@@ -19,6 +19,7 @@
 %
 % See also SerialLink, Revolute, mdl_mico, mdl_puma560, mdl_twolink.
 
+% MODEL: Kinova, Jaco, 6DOF, standard_DH
 
 
 % Copyright (C) 1993-2014, by Peter I. Corke

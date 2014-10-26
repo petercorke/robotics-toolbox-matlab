@@ -1,4 +1,4 @@
-%MDL_M16 Create model of Fanuc M16 Mico manipulator
+%MDL_M16 Create model of Fanuc M16 manipulator
 %
 %      mdl_m16
 %
@@ -24,6 +24,7 @@
 % See also SerialLink, Revolute, mdl_irb140, mdl_puma560, mdl_twolink.
 
 
+% MODEL: Fanuc, M16, 6DOF, standard_DH
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %

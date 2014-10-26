@@ -18,6 +18,7 @@
 %
 % See also SerialLink, mdl_puma560, mdl_stanford, mdl_twolink.
 
+% MODEL: Unimation, Puma560, dynamics, 6DOF, modified_DH
 
 
 % Copyright (C) 1993-2014, by Peter I. Corke

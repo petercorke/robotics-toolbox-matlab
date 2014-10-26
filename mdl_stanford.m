@@ -17,10 +17,13 @@
 %   a computer controlled arm".  Stanford AIM-177.  Figure 2.3
 % - Dynamic data from "Robot manipulators: mathematics, programming and control"
 %   Paul 1981, Tables 6.5, 6.6
+% - Dobrotin & Scheinman, "Design of a computer controlled manipulator for
+%   robot research", IJCAI, 1973.
 % 
 % See also SerialLink, mdl_puma560, mdl_puma560akb, mdl_twolink.
 
 
+% MODEL: Stanford, Stanford Arm, prismatic, 6DOF, standard_DH
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %
@@ -50,12 +53,21 @@ L(4) = Link([ 0     0       0   -pi/2     0]);
 L(5) = Link([ 0     0       0    pi/2     0]);
 L(6) = Link([ 0     0.263   0    0        0]);
 
-% guestimated from the image
-% http://infolab.stanford.edu/pub/voy/museum/pictures/display/robots/IMG_2408ArmCenter.JPG
-% and scaled by the pedestal which is commonly given as 0.412m (above) or
-% most likely 16".  Looks like minimum stroke is 8" and the rack is 24"
-% long.
-L(3).qlim = [0.2032 0.9144];
+% guestimates of some parameters
+%
+% According to the IJCAI paper the rack is 38in and the maximum reach is 52in
+% From the image http://infolab.stanford.edu/pub/voy/museum/pictures/display/robots/IMG_2408ArmCenter.JPG
+% and scaled by the rack length (38in) it looks like the minimum stroke is 12in.
+%
+L(3).qlim = [12 12+38] * 0.0254;
+
+% According to the IJCAI paper
+L(1).qlim = [-170 170]*pi/180;
+L(2).qlim = [-170 170]*pi/180;
+L(4).qlim = [-170 170]*pi/180;
+L(5).qlim = [-90 90]*pi/180;
+L(6).qlim = [-170 170]*pi/180;
+
 
 L(1).m = 9.29;
 L(2).m = 5.01;

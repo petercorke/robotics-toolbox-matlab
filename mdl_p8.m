@@ -14,6 +14,7 @@
 %
 % See also SerialLink, mdl_puma560.
 
+% MODEL: Unimation, Puma560, on XY base, redundant, 8DOF, standard_DH
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %

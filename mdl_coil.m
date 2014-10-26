@@ -20,6 +20,8 @@
 %
 % See also SerialLink, mdl_puma560akb, mdl_stanford, mdl_twolink, mdl_ball.
 
+% MODEL: generic, coil, hyper redundant, 50DOF, standard_DH
+
 % Copyright (C) 1993-2014, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).

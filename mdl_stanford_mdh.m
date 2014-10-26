@@ -19,6 +19,8 @@
 % See also SerialLink, mdl_puma560, mdl_puma560akb, mdl_twolink.
 
 
+% MODEL: Stanford, Stanford arm, prismatic, 6DOF, modified_DH
+
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %

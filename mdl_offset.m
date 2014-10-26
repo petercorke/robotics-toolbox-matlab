@@ -1,20 +1,3 @@
-%MDL_PLANAR2 Create model of a simple planar 2-link mechanism
-%
-%      mdl_planar2
-%
-% Script creates the workspace variable p2 which describes the 
-% kinematic and dynamic characteristics of a simple planar 2-link mechanism.
-%
-% Also defines the vector:
-%   qz   corresponds to the zero joint angle configuration.
-%
-% Notes::
-% - No dynamics in this model
-%
-% See also SerialLink, mdl_twolink.
-
-
-% MODEL: generic, planar, 2DOF, standard_DH
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %
@@ -34,14 +17,4 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
-
-
-a1 = 1;
-a2 = 1;
-
-p2 = SerialLink([
-    Revolute('d', 0, 'a', a1, 'alpha', 0, 'standard')
-    Revolute('d', 0, 'a', a2, 'alpha', 0, 'standard')
-    ], ...
-    'name', 'two link');
-qz = [0 0];
+    

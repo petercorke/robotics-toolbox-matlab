@@ -44,6 +44,7 @@
 %
 % See also sl_quadcopter.
 
+% MODEL: quadrotor
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %

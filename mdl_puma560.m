@@ -21,6 +21,8 @@
 %
 % See also SerialRevolute, mdl_puma560akb, mdl_stanford, mdl_twolink.
 
+% MODEL: Unimation, Puma560, dynamics, 6DOF, standard_DH
+
 %
 % Notes:
 %    - the value of m1 is given as 0 here.  Armstrong found no value for it
@@ -44,8 +46,6 @@
 % $Log: not supported by cvs2svn $
 % Revision 1.4  2008/04/27 11:36:54  cor134
 % Add nominal (non singular) pose qn
-
-
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %

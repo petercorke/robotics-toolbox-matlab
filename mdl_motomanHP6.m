@@ -16,6 +16,7 @@
 %
 % See also SerialLink, mdl_puma560akb, mdl_stanford, mdl_twolink.
 
+% MODEL: Motoman, HP6, 6DOF, standard_DH
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %

@@ -3,7 +3,9 @@
 % Reference:
 % Kinematics Modeling and Experimental Verification of Baxter Robot
 % Z. Ju, C. Yang, H. Ma, Chinese Control Conf, 2014.
-%
+
+% MODEL: Baxter, Rethink Robotics, 7DOF, standard_DH
+
 
 %     th  d  a  alpha
 

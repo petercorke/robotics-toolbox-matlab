@@ -34,6 +34,7 @@
 %
 % See also SerialLink, Revolute.
 
+% MODEL: Aldebaran, NAO, humanoid, 4DOF, standard_DH
 
 
 % Copyright (C) 1993-2014, by Peter I. Corke

@@ -1,9 +1,9 @@
-%MDL_TWOLINK Create model of a simple 2-link mechanism
+%MDL_ONELINK Create model of a simple 1-link mechanism
 %
-%      mdl_twolink
+%      mdl_onelink
 %
 % Script creates the workspace variable tl which describes the 
-% kinematic and dynamic characteristics of a simple planar 2-link mechanism.
+% kinematic and dynamic characteristics of a simple planar 1-link mechanism.
 %
 % Also defines the vector:
 %   qz   corresponds to the zero joint angle configuration.
@@ -18,7 +18,7 @@
 %
 % See also SerialLink, mdl_puma560, mdl_stanford.
 
-
+% MODEL: generic, planar, 1DOF, standard_DH
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %

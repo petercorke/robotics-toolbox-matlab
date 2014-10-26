@@ -23,6 +23,8 @@
 %
 % See also SerialLink, mdl_hyper2d, mdl_puma560akb, mdl_stanford, mdl_twolink, mdl_coil.
 
+% MODEL: hyper redundant, 10DOF, standard_DH
+
 % Copyright (C) 1993-2014, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).

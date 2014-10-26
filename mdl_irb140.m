@@ -1,8 +1,8 @@
-%MDL_IRB140 Create model of ABB IRB 140 Mico manipulator
+%MDL_IRB140 Create model of ABB IRB 140 manipulator
 %
 %      mdl_irb140
 %
-% Script creates the workspace variable mico which describes the 
+% Script creates the workspace variable robot which describes the 
 % kinematic characteristics of an ABB IRB 140 manipulator
 % using standard DH conventions.
 %
@@ -23,6 +23,7 @@
 %
 % See also SerialLink, Revolute, mdl_puma560, mdl_twolink.
 
+% MODEL: ABB, IRB140, 6DOF, standard_DH
 
 
 % Copyright (C) 1993-2014, by Peter I. Corke
