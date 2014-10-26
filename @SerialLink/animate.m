@@ -50,13 +50,8 @@ function animate(robot, qq)
         for q=qq'  % for all configurations in trajectory
             q = q';
             for handle=handles'
-%                 h = get(handle, 'UserData');
-%                 h.q = q';
-%                 set(handle, 'UserData', h);
+                h = get(handle, 'UserData');
                 
-                  group = findobj('Tag', robot.name);
-                  h = get(group, 'UserData');
-                  
                 % now draw it for a pose q
                 if robot.mdh
                     % modified DH case
@@ -65,7 +60,14 @@ function animate(robot, qq)
                     
                     for L=1:N
                         if robot.links(L).isprismatic()
-                            set(h.pjoint(L), 'Matrix', trotz(q(L))*diag([1 1 -q(L) 1]));
+                            % scale the box representing the prismatic joint
+                            % it is based at the origin and extends in z-direction                            
+                            if q(L) > 0
+                                set(h.pjoint(L), 'Matrix', diag([1 1 q(L) 1]));
+                            else
+                                % if length is zero the matrix is singular and MATLAB complains
+                                error('Prismatic length must be > 0');
+                            end
                         end
                         T = T * links(L).A(q(L));
                         set(h.link(L), 'Matrix', T); 
@@ -83,39 +85,37 @@ function animate(robot, qq)
                     vert = transl(T)';
                     
                     for L=1:N
-                        % for all N+1 links
+                        % for all N links
+                        
                         if robot.links(L).isprismatic()
-                            set(h.pjoint(L), 'Matrix', T*trotz(q(L))*diag([1 1 q(L) 1]));
+                            % scale the box representing the prismatic joint
+                            % it is based at the origin and extends in z-direction
+                            if q(L) > 0
+                                set(h.pjoint(L), 'Matrix', diag([1 1 q(L) 1]));
+                            else
+                                % if length is zero the matrix is singular and MATLAB complains
+                                error('Prismatic length must be > 0');
+                            end
                         end
-                        if h.link(L) ~= 0
-                            set(h.link(L), 'Matrix', T);
-                        end
+                        
+                        % now set the transform for frame {L}, this controls the displayed pose of:
+                        %   the pipes associated with link L, that join {L} back to {L-1}
+                        %   (optional) a prismatic joint L, that joins {L} to {L+1}
+                        set(h.link(L), 'Matrix', T);
                         
                         T = T * links(L).A(q(L));
                         vert = [vert; transl(T)'];
                     end
                     % update the transform for link N+1 (the tool)
+                    T = T*robot.tool;
                     if length(h.link) > N
                         set(h.link(N+1), 'Matrix', T);
                     end
-                    T = T*robot.tool;
+
                     vert = [vert; transl(T)'];
                 end
                 
                 % now draw the shadow
-%                 if ~isempty(robot.tool)
-%                     t = transl(T*robot.tool);
-%                     vl = vert(end,:);
-%                     if t(1) ~= 0
-%                         vert = [vert; [t(1) vl(2) vl(3)]];
-%                     end
-%                     if t(2) ~= 0
-%                         vert = [vert; [t(1) t(2) vl(3)]];
-%                     end
-%                     if t(3) ~= 0
-%                         vert = [vert; t'];
-%                     end
-%                 end
                 if isfield(h, 'shadow')
                     set(h.shadow, 'Xdata', vert(:,1), 'Ydata', vert(:,2), ...
                         'Zdata', h.floorlevel*ones(size(vert(:,1))));
@@ -127,9 +127,6 @@ function animate(robot, qq)
                     robot.trail = [robot.trail; transl(T)'];
                     set(h.trail, 'Xdata', robot.trail(:,1), 'Ydata', robot.trail(:,2), 'Zdata', robot.trail(:,3));
                 end
-                
-%                 T = T * robot.tool;
-%                 vert = [vert; transl(T)'];
                 
                 % animate the wrist frame
                 if ~isempty(h.wrist)
@@ -147,6 +144,8 @@ function animate(robot, qq)
                     pause(h.robot.delay);
                     drawnow
                 end
+                h.q = q;
+                set(handle, 'UserData', h);
             end
         end
         
@@ -155,5 +154,3 @@ function animate(robot, qq)
         end        
     end
     
-    h.q = q;
-    set(group, 'UserData', h);

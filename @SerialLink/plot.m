@@ -364,7 +364,13 @@ function h = create_robot(robot, opt)
                 % create an additional hgtransform for positioning and scaling the prismatic
                 % element.  The element is created with unit length.
                 h.pjoint(L) = hgtransform('Tag', 'prismatic', 'Parent', h.link(L));
-                box('z', s, [0 1], opt.jointcolor, [], 'Parent', h.pjoint(L));
+                if links(L).mdh
+                    % make the box extend in negative z-dir because scaling factor in animate
+                    % must be positive
+                    box('z', s, [0 -1], opt.jointcolor, [], 'Parent', h.pjoint(L));
+                else
+                    box('z', s, [0 1], opt.jointcolor, [], 'Parent', h.pjoint(L));
+                end
             end
         end
         
@@ -396,10 +402,10 @@ function h = create_robot(robot, opt)
                     cyl('x', s, [0 t(1)], opt.linkcolor, [], 'Parent', h.link(L));
                 end
                 if t(2) ~= 0
-                    cyl('y', s, [0 t(2)], opt.linkcolor, [t(1) 0 0], 'Parent', h.link(L));
+                    cyl('y', s, [s t(2)], opt.linkcolor, [t(1) 0 0], 'Parent', h.link(L));
                 end
                 if t(3) ~= 0
-                    cyl('z', s, [0 t(3)], opt.linkcolor, [t(1) t(2) 0], 'Parent', h.link(L));
+                    cyl('z', s, [s t(3)], opt.linkcolor, [t(1) t(2) 0], 'Parent', h.link(L));
                 end
                 %line([0 t(1)]', [0 t(2)]', [0 t(3)]', 'Parent', h.link(L));
             end
@@ -429,15 +435,15 @@ function h = create_robot(robot, opt)
     if ~isempty(robot.tool)
         tool = tool * robot.tool;
     end
-    t = transl(inv(tool))
+    t = transl(inv(tool));
     if t(1) ~= 0
         cyl('x', s, [0 t(1)], 'r', [], 'Parent', h.link(N+1));
     end
     if t(2) ~= 0
-        cyl('y', s, [0 t(2)], 'r', [t(1) 0 0], 'Parent', h.link(N+1));
+        cyl('y', s, [s t(2)], 'r', [t(1) 0 0], 'Parent', h.link(N+1));
     end
     if t(3) ~= 0
-        cyl('z', s, [0 t(3)], 'r', [t(1) t(2) 0], 'Parent', h.link(N+1));
+        cyl('z', s, [s t(3)], 'r', [t(1) t(2) 0], 'Parent', h.link(N+1));
     end
     
     % display the wrist coordinate frame
