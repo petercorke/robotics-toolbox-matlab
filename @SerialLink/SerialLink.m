@@ -7,23 +7,31 @@
 % Methods::
 %
 %  plot          display graphical representation of robot
+%  plot3d        display 3D graphical model of robot
 %  teach         drive the graphical robot
 %  getpos        get position of graphical robot
+%
+%  jtraj         a joint space trajectory
+%
+%  edit          display and edit kinematic and dynamic parameters
 %
 %  isspherical   test if robot has spherical wrist
 %  islimit       test if robot at joint limit
 %  isconfig      test robot joint configuration
 %
 %  fkine         forward kinematics
+%  A             link transforms
+%  trchain
+%
 %  ikine6s       inverse kinematics for 6-axis spherical wrist revolute robot
 %  ikine         inverse kinematics using iterative numerical method
 %  ikine_sym     analytic inverse kinematics obtained symbolically
+%
 %  jacob0        Jacobian matrix in world frame
 %  jacobn        Jacobian matrix in tool frame
 %  maniplty      manipulability
-%  A             link transforms
-%
-%  jtraj         a joint space trajectory
+%  vellipse      display velocity ellipsoid
+%  fellipse      display force ellipsoid
 %
 %  accel         joint acceleration
 %  coriolis      Coriolis joint force
@@ -36,6 +44,11 @@
 %  rne           joint torque/force
 %  payload       add a payload in end-effector frame
 %  perturb       randomly perturb link dynamic parameters
+%
+%  sym           a symbolic version of the object
+%  gencoords     symbolic generalized coordinates
+%  genforces     symbolic generalized forces
+%  issym         test if object is symbolic
 %
 % Properties (read/write)::
 %
