@@ -9,7 +9,7 @@
 %
 % T = SE2(XYT) as above where XYT=[X,Y,THETA]
 %
-% See also TRPLOT2.
+% See also TRANSL2, ROT2, ISHOMOG2, ISROT2, TRPLOT2.
 
 
 % Copyright (C) 1993-2014, by Peter I. Corke
@@ -31,8 +31,12 @@
 %
 % http://www.petercorke.com
 
-function t = se2(a, b, c)
+function t = se2(a, b, c, varargin)
 
+    opt.deg = false;
+    
+    opt = tb_optparse(opt, varargin);
+    
     if length(a) == 3
         x = a(1);
         y = a(2);
@@ -55,6 +59,9 @@ function t = se2(a, b, c)
         end
     end
 
+    if opt.deg 
+        th = th * pi/180.0;
+    end
     cth = cos(th);
     sth = sin(th);
     R = [cth -sth; sth cth];
