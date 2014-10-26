@@ -60,7 +60,8 @@ function [r,qq] = mdl_hyper3d(N)
     end
     
     % and build a serial link manipulator
-    robot = SerialLink(links, 'name', 'hyper2d');
+    robot = SerialLink(links, 'name', 'hyper3d', ...
+        'plotopt', {'nojoints'});
     
     % place the variables into the global workspace
     if nargout == 0
