@@ -226,6 +226,24 @@ classdef SerialLink < handle
             else
                 r.fast = false;
             end
+            
+            % process the rest of the arguments in key, value pairs
+            opt.name = [];
+            opt.comment = [];
+            opt.manufacturer = [];
+            opt.base = [];
+            opt.tool = [];
+            opt.offset = [];
+            opt.qlim = [];
+            opt.plotopt = [];
+            opt.ikine = [];
+            opt.fast = r.fast;
+            opt.modified = false;
+
+            [opt,out] = tb_optparse(opt, varargin);
+            if ~isempty(out)
+                error('unknown option <%s>', out{1});
+            end
 
             if nargin == 0
                 % zero argument constructor, sets default values
@@ -259,15 +277,20 @@ classdef SerialLink < handle
                     dh_dyn = L;
                     clear L
                     for j=1:numrows(dh_dyn)
-                        L(j) =        Link();
-                        L(j).theta =  dh_dyn(j,1);
-                        L(j).d =      dh_dyn(j,2);
-                        L(j).a =      dh_dyn(j,3);
-                        L(j).alpha =  dh_dyn(j,4);
-
-                        if numcols(dh_dyn) > 4
-                            L(j).sigma = dh_dyn(j,5);
+                        if opt.modified 
+                            L(j) =        Link(dh_dyn(j,:), 'modified');
+                        else
+                            L(j) =        Link(dh_dyn(j,:));
+                            
                         end
+%                         L(j).theta =  dh_dyn(j,1);
+%                         L(j).d =      dh_dyn(j,2);
+%                         L(j).a =      dh_dyn(j,3);
+%                         L(j).alpha =  dh_dyn(j,4);
+
+%                         if numcols(dh_dyn) > 4
+%                             L(j).sigma = dh_dyn(j,5);
+%                         end
                     end
                     r.links = L;
                 else
@@ -276,22 +299,7 @@ classdef SerialLink < handle
                 r.n = length(r.links);
             end
 
-            % process the rest of the arguments in key, value pairs
-            opt.name = [];
-            opt.comment = [];
-            opt.manufacturer = [];
-            opt.base = [];
-            opt.tool = [];
-            opt.offset = [];
-            opt.qlim = [];
-            opt.plotopt = [];
-            opt.ikine = [];
-            opt.fast = r.fast;
 
-            [opt,out] = tb_optparse(opt, varargin);
-            if ~isempty(out)
-                error('unknown option <%s>', out{1});
-            end
 
             % copy the properties to robot object
             p = properties(r);
@@ -410,11 +418,11 @@ classdef SerialLink < handle
                 s = char(s, line);
 
                 % link parameters
-                s = char(s, '+---+-----------+-----------+-----------+-----------+');
-                s = char(s, '| j |     theta |         d |         a |     alpha |');
-                s = char(s, '+---+-----------+-----------+-----------+-----------+');
+                s = char(s, '+---+-----------+-----------+-----------+-----------+-----------+');
+                s = char(s, '| j |     theta |         d |         a |     alpha |    offset |');
+                s = char(s, '+---+-----------+-----------+-----------+-----------+-----------+');
                 s = char(s, char(r.links, true));
-                s = char(s, '+---+-----------+-----------+-----------+-----------+');
+                s = char(s, '+---+-----------+-----------+-----------+-----------+-----------+');
 
                 % gravity, base, tool
                 s_grav = horzcat(char('grav = ', ' ', ' '), mat2str(r.gravity));
