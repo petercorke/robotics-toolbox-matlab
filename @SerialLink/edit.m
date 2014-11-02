@@ -25,25 +25,27 @@
                 dh(j,4) = L.alpha;
                 dh(j,5) = L.sigma;
                 dh(j,6) = L.offset;
+                dh(j,7) = L.qlim(1);
+                dh(j,8) = L.qlim(2);
                 if isdyn
-                    dh(j,7) = L.m;
-                    dh(j,8) = L.Jm;
-                    dh(j,9) = L.B;
-                    dh(j,10) = L.G;
-                    dh(j,11) = L.Tc(1);
-                    dh(j,12) = L.Tc(2);
-                    dh(j,13) = L.r(1);
-                    dh(j,14) = L.r(2);
-                    dh(j,15) = L.r(3);
-                    dh(j,16) = L.I(1,1);
-                    dh(j,17) = L.I(2,2);
-                    dh(j,18) = L.I(3,3);
-                    dh(j,19) = L.I(1,2);
-                    dh(j,20) = L.I(2,3);
-                    dh(j,21) = L.I(3,1);
+                    dh(j,9) = L.m;
+                    dh(j,10) = L.Jm;
+                    dh(j,11) = L.B;
+                    dh(j,12) = L.G;
+                    dh(j,13) = L.Tc(1);
+                    dh(j,14) = L.Tc(2);
+                    dh(j,15) = L.r(1);
+                    dh(j,16) = L.r(2);
+                    dh(j,17) = L.r(3);
+                    dh(j,18) = L.I(1,1);
+                    dh(j,19) = L.I(2,2);
+                    dh(j,20) = L.I(3,3);
+                    dh(j,21) = L.I(1,2);
+                    dh(j,22) = L.I(2,3);
+                    dh(j,23) = L.I(3,1);
                 end
             end
-            headings = {'theta', 'd', 'a', 'alpha', 'sigma', 'offset'};
+            headings = {'theta', 'd', 'a', 'alpha', 'sigma', 'offset', 'q_min', 'q_max'};
             if isdyn
                 headings = [headings 'mass', 'Jm', 'B', 'G', 'Tc+', 'Tc-', 'rx', 'ry', 'rz', 'Ixx', 'Iyy', 'Izz', 'Ixy', 'Iyz', 'Ixz'];
             end
@@ -79,25 +81,27 @@
                 L.alpha = dh(j,4);
                 L.sigma = dh(j,5);
                 L.offset = dh(j,6);
+                L.qlim(1) = dh(j,7);
+                L.qlim(2) = dh(j,8);
                 if numcols(dh) > 6
-                    L.m = dh(j,7);
-                    L.Jm = dh(j,8);
-                    L.B = dh(j,9);
-                    L.G = dh(j,10);
-                    L.Tc(1) = dh(j,11);
-                    L.Tc(2) = dh(j,12);
-                    L.r(1) = dh(j,13);
-                    L.r(2) = dh(j,14);
-                    L.r(3) = dh(j,15);
-                    L.I(1,1) = dh(j,16);
-                    L.I(2,2) = dh(j,17);
-                    L.I(3,3) = dh(j,18);
-                    L.I(1,2) = dh(j,19);
-                    L.I(2,3) = dh(j,20);
-                    L.I(3,1) = dh(j,21);
-                    L.I(2,1) = dh(j,19);
-                    L.I(3,2) = dh(j,20);
-                    L.I(1,3) = dh(j,21);
+                    L.m = dh(j,9);
+                    L.Jm = dh(j,10);
+                    L.B = dh(j,11);
+                    L.G = dh(j,12);
+                    L.Tc(1) = dh(j,13);
+                    L.Tc(2) = dh(j,14);
+                    L.r(1) = dh(j,15);
+                    L.r(2) = dh(j,16);
+                    L.r(3) = dh(j,17);
+                    L.I(1,1) = dh(j,18);
+                    L.I(2,2) = dh(j,19);
+                    L.I(3,3) = dh(j,20);
+                    L.I(1,2) = dh(j,21);
+                    L.I(2,3) = dh(j,22);
+                    L.I(3,1) = dh(j,23);
+                    L.I(2,1) = dh(j,21);
+                    L.I(3,2) = dh(j,22);
+                    L.I(1,3) = dh(j,23);
                 end
             end
         end
