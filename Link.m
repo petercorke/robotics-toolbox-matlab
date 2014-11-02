@@ -210,9 +210,9 @@ classdef Link < handle
                 
                 %% dynamic parameters
                 % these parameters must be set by the user if dynamics is used
-                l.m = [];
-                l.r = [];
-                l.I = [];
+                l.m = 0;
+                l.r = [0 0 0];
+                l.I = zeros(3,3);
                 
                 % dynamic params with default (zero friction)
                 l.Jm = 0;
@@ -234,10 +234,10 @@ classdef Link < handle
                 opt.G = 0;
                 opt.B = 0;
                 opt.Tc = [0 0];
-                opt.Jm = [];
-                opt.I = [];
-                opt.m = [];
-                opt.r = [];
+                opt.Jm = 0;
+                opt.I = zeros(3,3);
+                opt.m = 0;
+                opt.r = [0 0 0];
                 opt.offset = 0;
                 opt.qlim = [];
                 opt.type = {'revolute', 'prismatic', 'fixed'};
