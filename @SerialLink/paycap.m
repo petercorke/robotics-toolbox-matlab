@@ -1,33 +1,29 @@
-%PAYCAP Compute the static payload capacity of a SerialLink object
+%SerialLink.PAYCAP Static payload capacity of a robot
 %
-% Find the maximum magnitude of a wrench applied at the end-effector
-% for a given pose. The wrench may be referenced in the world frame or
-% end-effector frame. How loads are calculated vary to minimise time.
+% [WMAX,J] = R.paycap(Q, W, F, TLIM) returns the maximum permissible
+% payload wrench WMAX (1x6) applied at the end-effector, and the index of
+% the joint J which hits its force/torque limit at that wrench.  Q (1xN) is
+% the manipulator pose, W the payload wrench (1x6), F the wrench reference
+% frame (either '0' or 'n') and TLIM (2xN) is a matrix of joint
+% forces/torques (first row is maximum, second row minimum).
 %
+% Trajectory operation::
+%
+% In the case Q is MxN then WMAX is Mx6 and J is Mx1 where the rows are the
+% results at the pose given by corresponding row of Q.
+%
+% Notes::
+% - Tool transforms are not taken into consideration.
+%
+% Author::
+% Bryan Moutrie
+%
+% See also SerialLink.pay, SerialLink.gravload.
+
 % Copyright (C) Bryan Moutrie, 2013-2014
 % Licensed under the GNU Lesser General Public License
 % see full file for full statement
 %
-% This file requires file(s) from The Robotics Toolbox for MATLAB (RTB)
-% by Peter Corke (www.petercorke.com), see file for statement
-%
-% Syntax:
-%  (1) [wM, j] = robot.paycap(q, w, f, tauR)
-%
-% Outputs:
-%  wM : The maximum permissible magnitude of the wrench
-%  j  : The joint which hits its limit at wM
-%
-% Inputs:
-% q    : Joint co-ordinates of the robot, may be a matrix where each 
-%        row is a configuration, in which case wM and j are vectors
-% w    : Wrench vector (column). The magnitude of w is ignored.
-% f    : Reference frame, '0' for world frame or 'n' for end-effector
-% tauR : 2xn matrix of maximum/minimum joint forces/torques. The first
-%         row is maximum, second minimum. The number of joints is n.
-%
-% See also grav, pay
-
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
@@ -44,44 +40,38 @@
 %
 % You should have received a copy of the GNU Lesser General Public 
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
-%
-% RTB LIBRARY:
-%
-% Copyright (C) 1993-2014, by Peter I. Corke
-% http://www.petercorke.com
-% Released under the GNU Lesser General Public license
 
 function [wM, j] = paycap(robot, q, w, f, tauR)
-
-if robot.fast
-    tauB = robot.gravload(q);
-    tauP = robot.frne(q, 0*q, 0*q, [0; 0; 0], unit(w));
-elseif f == '0'
-    [tauB, J] = grav(robot, q);
-    tauP = pay(unit(w), J);
-elseif f == 'n'
-    tauB = grav(robot, q);
-    tauP = pay(robot, unit(w), q, 'n'); 
-end
-
-M = tauP > 0;
-m = ~M;
-
-TAUm = ones(size(tauB));
-TAUM = ones(size(tauB));
-for c = 1:robot.n
-    TAUM(:,c) = tauR(1,c);
-    TAUm(:,c) = tauR(2,c);
-end
-
-WM = zeros(size(tauB));
-WM(M) = (TAUM(M) - tauB(M)) ./ tauP(M);
-WM(m) = (TAUm(m) - tauB(m)) ./ tauP(m);
-
-WM(isinf(WM)) = Inf; % Makes -Inf values Inf
-
-[wM, j] = min(WM,[],2);
-
+    
+    if robot.fast
+        tauB = robot.gravload(q);
+        tauP = robot.rne(q, 0*q, 0*q, [0; 0; 0], unit(w));
+    elseif f == '0'
+        [tauB, J] = grav(robot, q);
+        tauP = pay(unit(w), J);
+    elseif f == 'n'
+        tauB = grav(robot, q);
+        tauP = pay(robot, unit(w), q, 'n');
+    end
+    
+    M = tauP > 0;
+    m = ~M;
+    
+    TAUm = ones(size(tauB));
+    TAUM = ones(size(tauB));
+    for c = 1:robot.n
+        TAUM(:,c) = tauR(1,c);
+        TAUm(:,c) = tauR(2,c);
+    end
+    
+    WM = zeros(size(tauB));
+    WM(M) = (TAUM(M) - tauB(M)) ./ tauP(M);
+    WM(m) = (TAUm(m) - tauB(m)) ./ tauP(m);
+    
+    WM(isinf(WM)) = Inf; % Makes -Inf values Inf
+    
+    [wM, j] = min(WM,[],2);
+    
 end
 
 function u = unit(v)

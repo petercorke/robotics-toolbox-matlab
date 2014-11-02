@@ -21,10 +21,12 @@
 %
 %  fkine         forward kinematics
 %  A             link transforms
-%  trchain
+%  trchain       forward kinematics as a chain of elementary transforms
 %
 %  ikine6s       inverse kinematics for 6-axis spherical wrist revolute robot
 %  ikine         inverse kinematics using iterative numerical method
+%  ikunc         inverse kinematics using optimisation
+%  ikcon         inverse kinematics using optimisation with joint limits
 %  ikine_sym     analytic inverse kinematics obtained symbolically
 %
 %  jacob0        Jacobian matrix in world frame
@@ -32,6 +34,7 @@
 %  maniplty      manipulability
 %  vellipse      display velocity ellipsoid
 %  fellipse      display force ellipsoid
+%  qmincon       null space motion to centre joints between limits
 %
 %  accel         joint acceleration
 %  coriolis      Coriolis joint force
@@ -42,8 +45,12 @@
 %  inertia       joint inertia matrix
 %  nofriction    set friction parameters to zero
 %  rne           joint torque/force
+%
 %  payload       add a payload in end-effector frame
 %  perturb       randomly perturb link dynamic parameters
+%  gravjac       gravity load and Jacobian
+%  paycap        payload capacity
+%  pay           payload effect
 %
 %  sym           a symbolic version of the object
 %  gencoords     symbolic generalized coordinates
