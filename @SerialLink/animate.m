@@ -101,7 +101,10 @@ function animate(robot, qq)
                         % now set the transform for frame {L}, this controls the displayed pose of:
                         %   the pipes associated with link L, that join {L} back to {L-1}
                         %   (optional) a prismatic joint L, that joins {L} to {L+1}
-                        set(h.link(L), 'Matrix', T);
+                        if h.link(L) ~= 0
+                            % for plot3d, skip any 0 in the handle list
+                            set(h.link(L), 'Matrix', T);
+                        end
                         
                         T = T * links(L).A(q(L));
                         vert = [vert; transl(T)'];
