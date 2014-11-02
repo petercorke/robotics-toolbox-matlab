@@ -35,7 +35,7 @@ function qplot(t, q)
         q = t;
         t = (1:numrows(q))';
     end
-    clf
+    %clf
     hold on
     plot(t, q(:,1:3))
     plot(t, q(:,4:6), '--')
