@@ -25,8 +25,13 @@
                 dh(j,4) = L.alpha;
                 dh(j,5) = L.sigma;
                 dh(j,6) = L.offset;
-                dh(j,7) = L.qlim(1);
-                dh(j,8) = L.qlim(2);
+                if isempty(L.qlim)
+                    dh(j,7) = L.qlim(1);
+                    dh(j,8) = L.qlim(2);
+                else
+                    dh(j,7) = -Inf;
+                    dh(j,8) = Inf;
+                end
                 if isdyn
                     dh(j,9) = L.m;
                     dh(j,10) = L.Jm;
