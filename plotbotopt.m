@@ -27,4 +27,4 @@
 % http://www.petercorke.com
 
 function options = plotbotopt
-	options = {'base' 'perspective'};
+	options = {'base'};
