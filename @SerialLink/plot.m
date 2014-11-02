@@ -272,7 +272,7 @@ function plot(robot, qq, varargin)
         set(gca, 'Projection', 'perspective');
     end
     
-    if opt.view
+    if isstr(opt.view)
         switch opt.view
             case 'top'
                 view(0, 90);
@@ -281,10 +281,10 @@ function plot(robot, qq, varargin)
             case 'y'
                 view(90, 0)
             otherwise
-                if isnumeric(opt.view) && length(opt.view) == 2
-                    view(opt.view)
-                end
+                error('rtb:plot:badarg', 'view must be: x, y, top')
         end
+    elseif isnumeric(opt.view) && length(opt.view) == 2
+        view(opt.view)
     end
     
     % enable mouse-based 3D rotation
@@ -618,7 +618,7 @@ function opt = plot_options(robot, optin)
     opt.workspace = [];
     opt.name = true;
     opt.projection = {'ortho', 'perspective'};
-    opt.view = {[], 'top', 'x', 'y'};
+    opt.view = [];
 
     % 3D rendering
     opt.shading = true;
@@ -678,7 +678,7 @@ function opt = plot_options(robot, optin)
         error(['unknown option: ' args{1}]);
     end
     
-    if ~isempty(opt.view)
+    if ~isempty(opt.projection)
         opt.projection = 'ortho';
     end
     

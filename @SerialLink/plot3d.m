@@ -24,6 +24,9 @@
 % 'scale',S         Annotation scale factor
 % 'ortho'           Orthographic view (default)
 % 'perspective'     Perspective view
+% 'view',V          Specify view V='x', 'y', 'top' or [az el] for side elevations,
+%                   plan view, or general view by azimuth and elevation
+%                   angle. 
 %-
 % '[no]wrist'       Enable display of wrist coordinate frame
 % 'xyz'             Wrist axis label is XYZ
@@ -86,6 +89,7 @@
 
 function plot3d(robot, q, varargin)
     
+    clf
     opt = plot_options(robot, varargin);
     
     %-- load the shape if need be
@@ -150,19 +154,8 @@ function plot3d(robot, q, varargin)
         figure(gcf);
     end
     
-    if strcmp(opt.view, 'perspective')
+    if strcmp(opt.projection, 'perspective')
         set(gca, 'Projection', 'perspective');
-    end
-    
-    if opt.look
-        switch opt.look
-            case 'top'
-                view(0, 90);
-            case 'x'
-                view(0, 0);
-            case 'y'
-                view(90, 0)
-        end
     end
     
     grid on
@@ -174,7 +167,23 @@ function plot3d(robot, q, varargin)
     end
     
     %--- configure view and lighting
-    campos([2 2 1]);
+    if isstr(opt.view)
+        switch opt.view
+            case 'top'
+                view(0, 90);
+            case 'x'
+                view(0, 0);
+            case 'y'
+                view(90, 0)
+            otherwise
+                error('rtb:plot3d:badarg', 'view must be: x, y, top')
+        end
+    elseif isnumeric(opt.view) && length(opt.view) == 2
+        view(opt.view)
+    else
+        campos([2 2 1]);
+    end
+
     daspect([1 1 1]);
     light('Position', [0 0 opt.reach*2]);
     light('Position', [1 0.5 1]);
@@ -214,6 +223,10 @@ function plot3d(robot, q, varargin)
             'Parent', h.link(link));
         end
     end
+    
+    % enable mouse-based 3D rotation
+    rotate3d on
+    
     h.wrist = [];  % HACK, should be trplot
     h.robot = robot;
     h.link = [0 h.link];
@@ -245,8 +258,8 @@ function opt = plot_options(robot, optin)
     opt.floorlevel = [];
 
     opt.name = true;
-    opt.view = {'ortho', 'perspective'};
-    opt.look = {[], 'top', 'x', 'y'};
+    opt.projection = {'ortho', 'perspective'};
+    opt.view = [];
 
     
     % tiled floor
