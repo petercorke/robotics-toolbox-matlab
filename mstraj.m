@@ -1,6 +1,6 @@
 %MSTRAJ  Multi-segment multi-axis trajectory
 %
-% TRAJ = MSTRAJ(P, QDMAX, Q0, DT, TACC, OPTIONS) is a multi-segment trajectory (KxN)
+% TRAJ = MSTRAJ(P, QDMAX, TSEG, Q0, DT, TACC, OPTIONS) is a multi-segment trajectory (KxN)
 % based on via points P (MxN) and axis velocity limits QDMAX (1xN).  The 
 % path comprises linear segments with polynomial blends.  The output 
 % trajectory matrix has one row per time step, and one column per axis.
@@ -8,7 +8,7 @@
 % - P (MxN) is a matrix of via points, 1 row per via point, one column 
 %   per axis.  The last via point is the destination.
 % - QDMAX (1xN) are axis velocity limits which cannot be exceeded, or
-% - QDMAX (Mx1) are the durations for each of the M segments
+% - TSEG (Mx1) are the durations for each of the M segments
 % - Q0 (1xN) are the initial axis coordinates
 % - DT is the time step
 % - TACC (1x1) this acceleration time is applied to all segment transitions
@@ -23,6 +23,7 @@
 % 'verbose'    Show details.
 %
 % Notes::
+% - Only one of QDMAX or TSEG should be specified, the other is set to [].
 % - If no output arguments are specified the trajectory is plotted.
 % - The path length K is a function of the number of via points, Q0, DT
 %   and TACC.
@@ -34,7 +35,7 @@
 % - Can be used to create Cartesian trajectories with the "axes" assigned
 %   to translation and orientation in RPY or Euler angle form.
 %
-% See also MSTRAJ, LSPB, CTRAJ.
+% See also MTRAJ, LSPB, CTRAJ.
 
 
 
