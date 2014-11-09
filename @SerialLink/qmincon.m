@@ -51,7 +51,7 @@
 function [qstar, error, exitflag] = qmincon(robot, q)
     % check if Optimization Toolbox exists, we need it
     if ~exist('fmincon')
-        error('rtb:ikcon:nosupport', 'Optimization Toolbox required');
+        error('rtb:qmincon:nosupport', 'Optimization Toolbox required');
     end
     M = size(q,1);
     n = robot.n;
