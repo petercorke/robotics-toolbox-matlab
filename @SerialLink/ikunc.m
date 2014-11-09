@@ -7,13 +7,13 @@
 % scalar final value of the objective function.
 %
 % [Q,ERR,EXITFLAG] = robot.ikunc(T) as above but also returns the
-% status EXITFLAG from fmincon.
+% status EXITFLAG from fminunc.
 %
 % [Q,ERR,EXITFLAG] = robot.ikunc(T, Q0) as above but specify the
 % initial joint coordinates Q0 used for the minimisation.
 %
-% [Q,ERR,EXITFLAG] = robot.ikunc(T, Q0) as above but specify the
-% initial joint coordinates used for the minimisation.
+% [Q,ERR,EXITFLAG] = robot.ikunc(T, Q0, options) as above but specify the
+% options for fminunc to use.
 %
 % Trajectory operation::
 %
@@ -27,7 +27,7 @@
 % for the corresponding trajectory step.
 %
 % Notes::
-% - Requires fmincon from the optimization toolbox.
+% - Requires fminunc from the optimization toolbox.
 % - Joint limits are not considered in this solution.
 % - Can be used for robots with arbitrary degrees of freedom.
 % - In the case of multiple feasible solutions, the solution returned
@@ -68,8 +68,8 @@
 function [qstar, error, exitflag] = ikunc(robot, T, q0, options)
 
     % check if Optimization Toolbox exists, we need it
-    if ~exist('fmincon')
-        error('rtb:ikcon:nosupport', 'Optimization Toolbox required');
+    if ~exist('fminunc')
+        error('rtb:ikunc:nosupport', 'Optimization Toolbox required');
     end
     
     % create output variables
@@ -82,7 +82,7 @@ function [qstar, error, exitflag] = ikunc(robot, T, q0, options)
     problem.x0 = zeros(1, robot.n);
     problem.options = optimoptions('fminunc', ...
         'Algorithm', 'quasi-newton', ...
-        'Display', 'off');
+        'Display', 'off'); % default options for ikunc
     
     if nargin > 2
         problem.x0 = q0;
