@@ -12,11 +12,13 @@
 %
 % Trajectory operation::
 %
-% In the case Q is MxN then TAU is MxN where each row is the generalised
-% force/torque at the pose given by corresponding row of Q.
+% In the case Q is MxN or J is 6xNxM then TAU is MxN where each row is the
+% generalised force/torque at the pose given by corresponding row of Q.
 %
 % Notes::
-% - Tool transforms are not taken into consideration.
+% - Wrench vector and Jacobian must be from the same reference frame.
+% - Tool transforms are taken into consideration when F = 'n'.
+% - Must have a constant wrench - no trajectory support for this yet.
 %
 % Author::
 % Bryan Moutrie
@@ -44,17 +46,16 @@
 % You should have received a copy of the GNU Lesser General Public 
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
-function tauP = pay(varargin)
+function tauP = pay(robot, varargin)
     
     if length(varargin) == 2
         w = varargin{1};
         J = varargin{2};
         n = size(J,2);
-    elseif length(varargin) == 4
-        robot = varargin{1};
-        q = varargin{2};
-        w = varargin{3};
-        f = varargin{4};
+    elseif length(varargin) == 3
+        q = varargin{1};
+        w = varargin{2};
+        f = varargin{3};
         n = robot.n;
         J = zeros(6,n,size(q,1));
         if f == '0'
@@ -68,6 +69,7 @@ function tauP = pay(varargin)
         end
     end
     
+    if ~isequal(size(w),[6 1]), error(pHRIWARE('error', 'inputSize')); end
     tauP = -reshape(J(:,:)'*w,n,[])';
     
 end
