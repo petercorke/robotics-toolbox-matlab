@@ -5,7 +5,10 @@
 % class CollisionModel.
 %
 % C = R.collisions(Q, MODEL, DYNMODEL, TDYN) as above but also checks
-% dynamic collision model whose elements are at pose TDYN.
+% dynamic collision model DYNMODEL whose elements are at pose TDYN.
+% TDYN is a 4x4xP array of transformation matrices, where
+% P = length(DYNMODEL.primitives). The pth plane of TDYN transforms the
+% pth primitive of DYNMODEL before its own transform property.
 %
 % C = R.collisions(Q, MODEL, DYNMODEL) as above but assumes TDYN is the
 % robot's tool frame.
@@ -13,7 +16,7 @@
 % Trajectory operation::
 %
 % If Q is MxN it is taken as a pose sequence and C is Mx1 and the collision
-% value applies to the pose of the corresponding row of Q.
+% value applies to the pose of the corresponding row of Q. TDYN is 4x4xMxP.
 %
 % Notes::
 % - Requires the pHRIWARE package which defines CollisionModel class.
