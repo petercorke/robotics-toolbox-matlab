@@ -12,8 +12,8 @@
 % [Q,ERR,EXITFLAG] = robot.ikcon(T, Q0) as above but specify the
 % initial joint coordinates Q0 used for the minimisation.
 %
-% [Q,ERR,EXITFLAG] = robot.ikcon(T, Q0) as above but specify the
-% initial joint coordinates used for the minimisation.
+% [Q,ERR,EXITFLAG] = robot.ikcon(T, Q0, options) as above but specify the
+% options for fmincon to use.
 %
 % Trajectory operation::
 %
@@ -79,9 +79,9 @@ function [qstar, error, exitflag] = ikcon(robot, T, q0, options)
     exitflag = zeros(T_sz, 1);
     
     problem.x0 = zeros(1, robot.n);
-    opt = optimoptions('fmincon', ...
+    problem.options = optimoptions('fmincon', ...
         'Algorithm', 'active-set', ...
-        'Display', 'off');
+        'Display', 'off'); % default options for ikcon
     
     if nargin > 2
         % user passed initial joint coordinates
