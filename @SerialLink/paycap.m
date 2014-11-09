@@ -13,12 +13,13 @@
 % results at the pose given by corresponding row of Q.
 %
 % Notes::
-% - Tool transforms are not taken into consideration.
+% - Wrench vector and Jacobian must be from the same reference frame
+% - Tool transforms are taken into consideration for F = 'n'.
 %
 % Author::
 % Bryan Moutrie
 %
-% See also SerialLink.pay, SerialLink.gravload.
+% See also SerialLink.pay, SerialLink.gravjac, SerialLink.gravload.
 
 % Copyright (C) Bryan Moutrie, 2013-2014
 % Licensed under the GNU Lesser General Public License
@@ -45,13 +46,13 @@ function [wM, j] = paycap(robot, q, w, f, tauR)
     
     if robot.fast
         tauB = robot.gravload(q);
-        tauP = robot.rne(q, 0*q, 0*q, [0; 0; 0], unit(w));
+        tauP = robot.rne(q, zeros(size(q)), zeros(size(q)), [0; 0; 0], unit(w));
     elseif f == '0'
-        [tauB, J] = grav(robot, q);
-        tauP = pay(unit(w), J);
+        [tauB, J] = gravjac(robot, q);
+        tauP = robot.pay(unit(w), J);
     elseif f == 'n'
-        tauB = grav(robot, q);
-        tauP = pay(robot, unit(w), q, 'n');
+        tauB = gravjac(robot, q);
+        tauP = robot.pay(unit(w), q, 'n');
     end
     
     M = tauP > 0;
