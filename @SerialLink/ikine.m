@@ -1,7 +1,7 @@
 %SerialLink.ikine Inverse manipulator kinematics
 %
-% Q = R.ikine(T) are the joint coordinates corresponding to the robot 
-% end-effector pose T which is a homogenenous transform.
+% Q = R.ikine(T) are the joint coordinates (1xN) corresponding to the robot 
+% end-effector pose T (4x4) which is a homogenenous transform.
 %
 % Q = R.ikine(T, Q0, OPTIONS) specifies the initial estimate of the joint 
 % coordinates.
@@ -98,7 +98,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
     %  set default parameters for solution
     opt.ilimit = 1000;
     opt.tol = 1e-6;
-    opt.alpha = 0.5;
+    opt.alpha = 0.9;
     opt.plot = false;
     opt.pinv = true;
     opt.varstep = false;
@@ -149,7 +149,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
     J0 = jacob0(robot, q);
     J0 = J0(m, :);
     if cond(J0) > 100
-        warning('RTB:ikine:singular', 'Initial joint angles results in near-singular configuration, this may slow convergence');
+        warning('RTB:ikine:singular', 'Initial joint configuration results in a (near-)singular configuration, this may slow convergence');
     end
 
     history = [];
@@ -252,7 +252,7 @@ function [qt,histout] = ikine(robot, tr, varargin)
             
             nm = norm(e(m));
 
-            if norm(e(m)) > 1.5*norm(eprev(m))
+            if norm(e(m)) > 2*norm(eprev(m))
                 warning('RTB:ikine:diverged', 'solution diverging at step %d, try reducing alpha', count);
             end
             eprev = e;
