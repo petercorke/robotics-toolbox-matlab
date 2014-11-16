@@ -84,7 +84,7 @@ function theta = ikine6s(robot, T, varargin)
     
     % default configuration
     
-    sol = [1 1 1];
+    sol = [1 1 1];  % left, up, noflip
     
     for c=configuration
         switch lower(c)
@@ -96,9 +96,9 @@ function theta = ikine6s(robot, T, varargin)
                 sol(2) = 1;
             case 'd'
                 sol(2) = 2;
-            case 'f'
-                sol(3) = 1;
             case 'n'
+                sol(3) = 1;
+            case 'f'
                 sol(3) = 2;
         end
     end
@@ -174,9 +174,9 @@ function theta = ikine6s(robot, T, varargin)
             
             r=sqrt(Px^2 + Py^2);
             if sol(1) == 1
-                theta(1)= atan2(Py,Px) + asin(d3/r);
-            else
                 theta(1)= atan2(Py,Px) + pi - asin(d3/r);
+            else
+                theta(1)= atan2(Py,Px) + asin(d3/r);
             end
             
             %
@@ -189,9 +189,12 @@ function theta = ikine6s(robot, T, varargin)
             % parameter n2
             %
             if sol(2) == 1
-                n2 = 1;
-            else
                 n2 = -1;
+            else
+                n2 = 1;
+            end
+            if sol(1) == 2
+                n2 = -n2;
             end
             
             V114= Px*cos(theta(1)) + Py*sin(theta(1));
@@ -398,10 +401,10 @@ function theta = ikine6s(robot, T, varargin)
 
     % the spherical wrist implements Euler angles
     
-    if sol(3) == 1
-        theta(4:6) = tr2eul(R);
-    else
+if sol(3) == 1
         theta(4:6) = tr2eul(R, 'flip');
+    else
+        theta(4:6) = tr2eul(R);
         
     end
     if L(4).alpha > 0
