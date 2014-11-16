@@ -1,23 +1,36 @@
 %IKINE_SYM  Symbolic inverse kinematics
 %
-% Q = R.IKINE_SYM(N, OPTIONS) is a vector (Nx1) of symbolic expressions
-% for the inverse kinematic solution of the SerialLink object ROBOT.  The
+% Q = R.IKINE_SYM(N, OPTIONS) is a cell array (Cx1) of inverse kinematic
+% solutions of the SerialLink object ROBOT.  The cells of Q represent the
+% different possible configurations.  Each cell of Q is a vector (Nx1), and
+% element J is the symbolic expressions for the J'th joint angle.  The
 % solution is in terms of the desired end-point pose of the robot which is
 % represented by the symbolic matrix and elements
-%      nx ox ax px
-%      ny oy ay py
-%      nz oz az pz
-% Elements of Q may be cell arrays that contain multiple expressions,
-% representing different possible joint configurations.
+%      nx ox ax tx
+%      ny oy ay ty
+%      nz oz az tz
+% where the first three columns specify orientation and the last column
+% specifies translation.
 %
 % N can have only specific values:
-%  - 2 solve for translation px and py
-%  - 3 solve for translation px, py and pz
+%  - 2 solve for translation tx and ty
+%  - 3 solve for translation tx, ty and tz
 %  - 6 solve for translation and orientation
 %
 % Options::
 %
 % 'file',F    Write the solution to an m-file named F
+%
+% Example::
+%
+%         mdl_planar2
+%         sol = p2.ikine_sym();
+%         length(sol)
+%         ans = 
+%               2       % there are 2 solutions
+%         s1 = sol{1}  % is one solution
+%         q1 = s1(1);      % the expression for q1
+%         q2 = s1(2);      % the expression for q2
 %
 % Notes::
 % - This code is experimental and has a lot of diagnostic prints
@@ -74,9 +87,9 @@ function out = ikine_sym(srobot, N, varargin)
     end
     
     % define symbolic elements of the homogeneous transform
-    syms nx ox ax px
-    syms ny oy ay py
-    syms nz oz az pz
+    syms nx ox ax tx
+    syms ny oy ay ty
+    syms nz oz az tz
     syms d3
     
     % inits
@@ -236,13 +249,13 @@ function [L,R] = pieper(robot, n, which)
         which = 'left';
     end
     
-    syms nx ox ax px real
-    syms ny oy ay py real
-    syms nz oz az pz real
+    syms nx ox ax tx real
+    syms ny oy ay ty real
+    syms nz oz az tz real
         
-    T = [nx ox ax px
-        ny oy ay py
-        nx oz az pz
+    T = [nx ox ax tx
+        ny oy ay ty
+        nx oz az tz
         0  0  0  1 ];
     
     T = inv(robot.base) * T * inv(robot.tool);
