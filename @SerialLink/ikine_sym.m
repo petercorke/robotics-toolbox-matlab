@@ -61,7 +61,7 @@ function out = ikine_sym(srobot, N, varargin)
     opt = tb_optparse(opt, varargin);
     
     % make a symbolic representation of the passed robot
-    srobot = sym(robot);
+    srobot = sym(srobot);
     q = srobot.gencoords();
 
     % test N DOF has an allowable value
@@ -124,6 +124,8 @@ function out = ikine_sym(srobot, N, varargin)
             end
         end
         
+        eq = [];
+        
         if ~isnan(k)
             % create the equation to solve: LHS-RHS == 0
             eq = left(k) - right(k);
@@ -161,6 +163,12 @@ function out = ikine_sym(srobot, N, varargin)
         trigsubOld = [trigsubOld mvar('sin(q%d)', j) mvar('cos(q%d)', j)];
         trigsubNew = [trigsubNew mvar('S%d', j) mvar('C%d', j)];
         
+        if isempty(eq)
+            fprintf('cant solve this equation');
+            k
+            left(k)==right(k)
+            error('cant solve');
+        end
         % now solve the equation
         if srobot.links(j).isrevolute()
             % for revolute joint it will be a trig equation, do we know how to solve it?
@@ -231,7 +239,7 @@ function [L,R] = pieper(robot, n, which)
     syms nx ox ax px real
     syms ny oy ay py real
     syms nz oz az pz real
-    
+        
     T = [nx ox ax px
         ny oy ay py
         nx oz az pz
