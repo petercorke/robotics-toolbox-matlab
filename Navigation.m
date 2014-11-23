@@ -66,12 +66,12 @@
 classdef Navigation < handle
 
     properties
-        occgrid     % occupancy grid
+        occgrid     % occupancy grid; free space = 0, obstacle = 1
         goal        % goal coordinate
-
+        
         navhook     % function handle, called on each navigation iteration
         verbose     % verbosity
-        seed            % current random seed
+        seed        % current random seed
         spincount
 
         randstream
@@ -98,7 +98,9 @@ classdef Navigation < handle
         %Navigation.Navigation Create a Navigation object
         %
         % N = Navigation(OCCGRID, OPTIONS) is a Navigation object that holds an
-        % occupancy grid OCCGRID.  A number of options can be be passed.
+        % occupancy grid OCCGRID.  A number of options can be be passed. If
+        % OCCGRID==0, an occupancy grid of random obstacles will be
+        % gnerated.
         %
         % Options::
         % 'navhook',F   Specify a function to be called at every step of path
@@ -118,8 +120,15 @@ classdef Navigation < handle
         % - The 'private' option creates a private random number stream for the methods 
         %   rand, randn and randi.  If not given the global stream is used.
 
-            if nargin >= 1 && isnumeric(varargin{1}) && ~isscalar(varargin{1})
-                nav.occgrid = varargin{1};
+            if nargin >= 1 && isnumeric(varargin{1})
+                if varargin{1} == 0
+                    dim = [100 100];
+                    obs = 25; % fill 25% w/ obstacles
+                    free = [1 dim(1);1 dim(2)]; % free areas near corners for start/goal states
+                    nav.occgrid = Navigation.randGrid(dim,obs,free);                
+                else
+                    nav.occgrid = varargin{1};
+                end
                 varargin = varargin(2:end);
             end
             
@@ -283,8 +292,15 @@ classdef Navigation < handle
                 fprintf('\n');
                 start = round([x;y]);
             end
-            start = start(:);
 
+            back = 0; % Check if search algorithm calls for backpropogation:
+            if length(start)==3 % backpropogation is specified
+                start = start(1:2);
+                back = 1;
+            else
+                start = start(:); % is this assignment ever necessary?????
+            end
+            
             % if no output arguments given, then display the world
             if nargout == 0
                 % render the world
@@ -294,10 +310,14 @@ classdef Navigation < handle
             
             nav.navigate_init(start);
 
-            p = [];
+            p = []; % initialize the path
             % robot is a column vector
-            robot = start;
-
+            if back==1
+                robot = nav.goal(:);
+            else
+                robot = start;
+            end
+            
             % iterate using the next() method until we reach the goal
             while true
                 if nargout == 0
@@ -305,7 +325,7 @@ classdef Navigation < handle
                     drawnow 
                 end
 
-                % move to next point on path
+                % move to next point on path; returns null if at goal
                 robot = nav.next(robot);
 
                 % are we there yet?
@@ -346,7 +366,7 @@ classdef Navigation < handle
         %  'distance',D   Display a distance field D behind the obstacle map.  D is
         %                 a matrix of the same size as the occupancy grid.            
             
-            opt.goal = false;
+            opt.goal = true; % plot goal (line #401)
             opt.distance = [];
             
             [opt,args] = tb_optparse(opt, varargin);
@@ -358,7 +378,7 @@ classdef Navigation < handle
                 %   obstacle, color index = 2, red
                 cmap = [1 1 1; 1 0 0];  % non obstacles are white
                 image(nav.occgrid+1, 'CDataMapping', 'direct');
-                colormap(cmap)
+                colormap(pink)
                 
             else
                 % create color map for distance field + obstacle:
@@ -372,7 +392,7 @@ classdef Navigation < handle
                 
                 % create the color map
                 cmap = [1 0 0; gray(maxdist)];
-                
+%                 cmap = [0 0 1; 1 0 0];
                 % ensure obstacles appear as red pixels
                 opt.distance(nav.occgrid > 0) = 0;
                 
@@ -484,9 +504,32 @@ classdef Navigation < handle
         % N.spinner() displays a simple ASCII progress spinner, a rotating bar.
             spinchars = '-\|/';
             nav.spincount = nav.spincount + 1;
-            fprintf('\r%c', spinchars( mod(nav.spincount, length(spinchars))+1 ) );
+            fprintf('\b%c', spinchars( mod(nav.spincount, length(spinchars))+1 ) );
         end
-
+        
     end % method
 
+    methods (Static)
+
+        function M = randGrid(dim,obs,free)
+            %Navigation.randGrid Create occupancy grid of radnom obstacles
+            % Initialize matrix.
+            M = zeros(dim(1), dim(2), 'int32');
+            for col = 1:dim(2)
+                % Get random order of rows.
+                randRows = randperm(dim(1));
+                % Pick out 'obs'/total rows that will be set to 1.
+                rowsWithOne = randRows(1:100*(obs/dim(1)));
+                % Set those rows only to 1 for this column.
+                M(rowsWithOne, col) = 1;
+            end
+            % Open Start and Goal areas
+            row_buffer = round(dim(1)/20);
+            col_buffer = round(dim(2)/20);
+            M((free(1,1):(free(1,1) + row_buffer)), (free(2,1):(free(2,1) + col_buffer))) = 0;
+            M(((free(1,2) - row_buffer):free(1,2)), ((free(2,2) - col_buffer):free(2,2))) = 0;
+            M = double(M);
+        end
+        
+    end % static methods
 end % classdef
