@@ -17,8 +17,8 @@ function [sys, x0, str, ts] = slaccel(t, x, u, flag, robot)
 		% come here to calculate derivitives
         
         % first check that the torque vector is sensible
-        if length(u) ~= (3*robot.n)
-            error('RTB:slaccel:badarg', 'Input vector is length %d, should be %d', length(u), 3*robot.n);
+        if numel(u) ~= (3*robot.n)
+            error('RTB:slaccel:badarg', 'Input vector is length %d, should be %d', numel(u), 3*robot.n);
         end
         if ~isreal(u)
             error('RTB:slaccel:badarg', 'Input vector is complex, should be real'); 
