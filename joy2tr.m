@@ -17,6 +17,8 @@
 % - A 'delay' of zero means no pause
 % - If 'delay' is non-zero 'scale' maps full scale to m/s or rad/s.
 % - If 'delay' is zero 'scale' maps full scale to m/sample or rad/sample.
+%
+% See also joystick.
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %

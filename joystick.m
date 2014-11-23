@@ -6,8 +6,12 @@
 % either 0 (not pressed) or 1 (pressed).
 %
 % Notes::
+% - This is a MEX file that uses SDL (www.libsdl.org) to interface to a standard
+%   gaming joystick.
 % - The length of the vectors J and B depend on the capabilities of the
 %   joystick identified when it is first opened.
+%
+% See also joy2tr.
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %
