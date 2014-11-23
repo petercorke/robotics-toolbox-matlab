@@ -51,7 +51,10 @@
 % - Robotics, Vision & Control, Sec 5.2.2,
 %   Peter Corke, Springer, 2011.
 %
-% See also Navigation, Dstar, DstarMOO
+% Author::
+% Alexander Lavin based on Dstar by Peter Corke
+%
+% See also Navigation, Dstar, DstarMOO, Astar, DXform.
 
 
 % Copyright (C) 1993-2014, by Peter I. Corke, Alexander Lavin
@@ -134,7 +137,6 @@ classdef DstarPO < Navigation
             % for traversing a cell.
             %
             % Options::
-            % 'world' = 0 will call for a random occupancy grid to be built
             % 'goal',G      Specify the goal point (2x1)
             % 'metric',M    Specify the distance metric as 'euclidean' (default)
             %               or 'cityblock'.
@@ -142,6 +144,9 @@ classdef DstarPO < Navigation
             % 'quiet'       Don't display the progress spinner
             %
             % Other options are supported by the Navigation superclass.
+            %
+            % Notes::
+            % - If MAP == 0 a random map is created.
             %
             % See also Navigation.Navigation.
 

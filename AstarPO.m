@@ -5,48 +5,53 @@
 % navigation algorithm for multiobjective optimization (MOO) - i.e.
 % optimizes over several objectives/criteria.
 % 
-% Methods:
-% 	plan            Compute the cost map given a goal and map
-% 	path            Compute a path to the goal
-% 	visualize       Display the obstacle map (deprecated)
-% 	plot            Display the obstacle map
-% 	costmap_modify 	Modify the costmap
-% 	costmap_get     Return the current costmap
-% 	costmap_set     Set the current costmap
-% 	distancemap_get Set the current distance map
-% 	display         Print the parameters in human readable form
-% 	char            Convert to string
+% Methods::
+% plan              Compute the cost map given a goal and map
+% path              Compute a path to the goal
+% visualize         Display the obstacle map (deprecated)
+% plot              Display the obstacle map
+% costmap_modify 	Modify the costmap
+% costmap_get       Return the current costmap
+% costmap_set       Set the current costmap
+% distancemap_get   Set the current distance map
+% heuristic_get     Get the current heuristic map
+% display           Print the parameters in human readable form
+% char              Convert to string
 % 
-% Properties:
+% Properties::
 % TBD
 % 
-% Example:
-% 	load map1           % load map
-% 	goal = [50;30];
-% 	start = [20;10];
-% 	as = AstarPO(map);	% create Navigation object
-% 	as.plan(goal,2);	% setup costmap for specified goal
-% 	as.path(start);		% plan solution path star-goal, animate
-% 	P = as.path(start);	% plan solution path star-goal, return path
+% Example::
+%
+%         load map1          % load map
+% 	      goal = [50;30];
+% 	      start = [20;10];
+% 	      as = AstarPO(map); % create Navigation object
+% 	      as.plan(goal,2);   % setup costmap for specified goal
+% 	      as.path(start);    % plan solution path star-goal, animate
+% 	      P = as.path(start); % plan solution path star-goal, return path
+%
 % Example 2:
-% 	goal = [100;100];
-% 	start = [1;1];
-% 	as = AstarPO(0);   % create Navigation object with random occupancy grid
-%   as.addCost(1,L);    % add 1st add'l cost layer L
-% 	as.plan(goal,3);	% setup costmap for specified goal
-% 	as.path(start);		% plan solution path start-goal, animate
-% 	P = as.path(start);	% plan solution path start-goal, return path
+%         goal = [100;100];
+%         start = [1;1];
+%         as = AstarPO(0);   % create Navigation object with random occupancy grid
+%         as.addCost(1,L);   % add 1st add'l cost layer L
+%         as.plan(goal,3);   % setup costmap for specified goal
+%         as.path(start);    % plan solution path start-goal, animate
+%         P = as.path(start); % plan solution path start-goal, return path
 %     
-% Notes
+% Notes::
 % - Obstacles are represented by Inf in the costmap.
 % 
-% References
+% References::
 % - A Pareto Optimal D* Search Algorithm for Multiobjective Path Planning, A. Lavin.
 % - A Pareto Front-Based Multiobjective Path Planning Algorithm, A. Lavin.
 % - Robotics, Vision & Control, Sec 5.2.2, Peter Corke, Springer, 2011.
+%
+% Author::
+% Alexander Lavin
 % 
-% See Also
-% Navigation, Astar, AstarMOO
+% See also Navigation, Astar, AstarMOO.
 
 % Copyright (C) 1993-2014, by Peter I. Corke, Alexander Lavin
 %
@@ -172,9 +177,10 @@ classdef AstarPO < Navigation
             as.openlist_maxlen = -Inf;
         end
         
+        %AstarPO.goal_change Changes to costlayers due to new goal
+        %position
         function goal_change(as)
-            %AstarPO.goal_change Changes to costlayers due to new goal
-            %position
+
             if isempty(as.b)
                 return;
             end
@@ -452,11 +458,9 @@ classdef AstarPO < Navigation
         function addCost(as, layer, values)
         %AstarPO.addCost Add an additional cost layer
         %
-        % AS.addCost(layer,values) adds the matrix specified by values as a
-        % cost layer.
-        % Inputs
-        %   layer: 1, 2, or 3 to specify which cost layer to add
-        %   values: normalized matrix the size of the environment (100x100)
+        % AS.addCost(LAYER, VALUES) adds the matrix specified by values as a
+        % cost layer.  The layer number is given by LAYER, and VALUES has the same
+        % size as the original occupancy grid.
             if size(values)~=size(as.occgrid)
                 display('Layer size does not match the environment')
                 return
@@ -501,7 +505,7 @@ classdef AstarPO < Navigation
             end
         end
         
-        function k_new = updateCosts(as, a, b, obj)
+ 
             % NOTE: Only for costs that accumulate (i.e. sum) over the
             % path, and for dynamic costs.
             % E.g. the heuristic parameter AS.cost_h only needs updating
@@ -509,7 +513,9 @@ classdef AstarPO < Navigation
             % cell.
             %
             % Location moving from state b to a.
-            if nargout > 0
+       function k_new = updateCosts(as, a, b, obj)
+           
+           if nargout > 0
                 k_new = as.cost_g(b) + as.dc(b,a);
                 return
             end
@@ -532,9 +538,11 @@ classdef AstarPO < Navigation
             end
         end
         
-        function pt = projectCost(as, a, b)
             % Returns the projection of state a into objective space. If
             % specified, location is moving from b to a.
+            
+       function pt = projectCost(as, a, b)
+
             switch nargin
                 case 2
                     pt = [as.cost_g(a);
@@ -555,11 +563,13 @@ classdef AstarPO < Navigation
             end
         end
         
-        function INSERT(as, X, pt, where)
             % Add state X to the openlist with objective space values
             % specified by pt.
 
             % where is for diagnostic purposes only
+            
+            function INSERT(as, X, pt, where)
+
             as.message('insert (%s) %d = %f\n', where, X, pt);
             
             i = find(as.openlist(1,:) == X);

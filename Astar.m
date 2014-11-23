@@ -1,51 +1,54 @@
-% Astar (A*)
-% A* navigation class
+%Astar A* navigation class
 % 
 % A concrete subclass of the Navigation class that implements the A* navigation algorithm. This 
 % provides minimum distance paths that are guaranteed optimal.
 % 
-% Methods:
-% 	plan            Compute the cost map given a goal and map
-% 	path            Compute a path to the goal
-% 	visualize       Display the obstacle map (deprecated)
-% 	plot            Display the obstacle map
-% 	costmap_modify 	Modify the costmap
-% 	costmap_get     Return the current costmap
-% 	costmap_set     Set the current costmap
-% 	distancemap_get Set the current distance map
-% 	display         Print the parameters in human readable form
-% 	char            Convert to string
+% Methods::
+%     plan              Compute the cost map given a goal and map
+%     path              Compute a path to the goal
+%     visualize         Display the obstacle map (deprecated)
+%     plot              Display the obstacle map
+%     costmap_modify    Modify the costmap
+%     costmap_get       Return the current costmap
+%     costmap_set       Set the current costmap
+%     distancemap_get   Get the current distance map
+%     heuristic_get     Get the current heuristic map
+%     display           Print the parameters in human readable form
+%     char              Convert to string
 % 
-% Properties:
-% costmap           Distance from each point to the goal.
+% Properties::
+% costmap             Distance from each point to the goal.
 % 
-% Example:
-% 	load map1           % load map
-% 	goal = [50;30];
-% 	start = [20;10];
-% 	as = Astar(map);	% create Navigation object
-% 	as.plan(goal);		% setup costmap for specified goal
-% 	as.path(start);		% plan solution path star-goal, animate
-% 	P = as.path(start);	% plan solution path star-goal, return path
+% Example::
+%         load map1           % load map
+%         goal = [50;30];
+%         start = [20;10];
+%         as = Astar(map);    % create Navigation object
+%         as.plan(goal);      % setup costmap for specified goal
+%         as.path(start);     % plan solution path star-goal, animate
+%         P = as.path(start); % plan solution path star-goal, return path
+%
 % Example 2:
-% 	goal = [100;100];
-% 	start = [1;1];
-% 	as = Astar(0);      % create Navigation object with random occupancy grid
-% 	as.plan(goal);		% setup costmap for specified goal
-% 	as.path(start);		% plan solution path start-goal, animate
-% 	P = as.path(start);	% plan solution path start-goal, return path
+%         goal = [100;100];
+%         start = [1;1];
+%         as = Astar(0);      % create Navigation object with random occupancy grid
+%         as.plan(goal);      % setup costmap for specified goal
+%         as.path(start);     % plan solution path start-goal, animate
+%         P = as.path(start); % plan solution path start-goal, return path
 %     
-% Notes
+% Notes::
 % - Obstacles are represented by Inf in the costmap.
 % - The value of each element in the costmap is the shortest distance from the corresponding 
-% point in the map to the current goal.
+%   point in the map to the current goal.
 % 
-% References
+% References::
 % - A Pareto Front-Based Multiobjective Path Planning Algorithm, A. Lavin.
 % - Robotics, Vision & Control, Sec 5.2.2, Peter Corke, Springer, 2011.
 % 
-% See Also
-% Navigation, AstarMOO, AstarPO
+% Author::
+% Alexander Lavin
+%
+% See also Navigation, AstarMOO, AstarPO, Dstar.
 
 % Copyright (C) 1993-2014, by Peter I. Corke, Alexander Lavin
 %
@@ -120,7 +123,6 @@ classdef Astar < Navigation
             % for traversing a cell.
             %
             % Options::
-            % 'world' = 0 will call for a random occupancy grid to be built
             % 'goal',G      Specify the goal point (2x1)
             % 'metric',M    Specify the distance metric as 'euclidean' (default)
             %               or 'cityblock'.
@@ -128,6 +130,9 @@ classdef Astar < Navigation
             % 'quiet'       Don't display the progress spinner
             %
             % Other options are supported by the Navigation superclass.
+            %
+            % Notes::
+            % - If MAP == 0 a random map is created.
             %
             % See also Navigation.Navigation.
             
@@ -162,9 +167,10 @@ classdef Astar < Navigation
             as.openlist_maxlen = -Inf;
         end
         
+        %Astar.goal_change Changes to costlayers due to new goal
+        %position
         function goal_change(as)
-            %Astar.goal_change Changes to costlayers due to new goal
-            %position
+
             if isempty(as.b)
                 return;
             end
@@ -204,10 +210,11 @@ classdef Astar < Navigation
             plot@Navigation(as, 'distance', as.cost_h, varargin{:});
         end
 
-       % invoked by Navigation.step
+        % invoked by Navigation.step
+        % Backpropagate from goal to start
+        % Return [col;row] of previous step
+
         function n = next(as, current)
-            % Backpropagate from goal to start
-            % Return [col;row] of previous step
             if as.changed
                 error('Cost map has changed, replan');
             end
@@ -326,10 +333,10 @@ classdef Astar < Navigation
             as.changed = false;
         end
         
-        function c = heurstic_get(as)
-        %Astar.heuristice_get Get the current heuristic map
+        function c = heuristic_get(as)
+        %Astar.heuristic_get Get the current heuristic map
         %
-        % C = AS.heuristice_get() is the current heuristic map.  This map is the same size
+        % C = AS.heuristic_get() is the current heuristic map.  This map is the same size
         % as the occupancy grid and the value of each element is the shortest distance 
         % from the corresponding point in the map to the current goal.  It is computed
         % by Astar.plan.
@@ -383,7 +390,7 @@ classdef Astar < Navigation
         %
         % Notes::
         % - After one or more point costs have been updated the path
-        %   should be replanned by calling DS.plan().
+        %   should be replanned by calling AS.plan().
         %
         % See also Astar.costmap_set, Astar.costmap_get.
 
@@ -426,11 +433,11 @@ classdef Astar < Navigation
             end
         end
         
+        % X is new node with the cost already calculated into the
+        % variable cost.
+        % where is for diagnostic purposes only
+
         function INSERT(as, X, D, where)
-            % X is new node with the cost already calculated into the
-            % variable cost.
-            
-            % where is for diagnostic purposes only
             if nargin>2
                 as.message('insert (%s) %d = %f\n', where, X, D);
             end
