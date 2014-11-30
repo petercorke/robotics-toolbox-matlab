@@ -1,5 +1,5 @@
 
-function [sys,x0,str,ts] = quadrotor_dynamics(t,x,u,flag, quad)
+function [sys,x0,str,ts] = nrotor_dynamics(t,x,u,flag, vehicle, nrotors)
     % Flyer2dynamics lovingly coded by Paul Pounds, first coded 12/4/04
     % A simulation of idealised X-4 Flyer II flight dynamics.
     % version 2.0 2005 modified to be compatible with latest version of Matlab
@@ -7,6 +7,8 @@ function [sys,x0,str,ts] = quadrotor_dynamics(t,x,u,flag, quad)
     % version 4.0 4/2/10, fixed rotor flapping rotation matrix bug, mirroring
     % version 5.0 8/8/11, simplified and restructured
    % version 6.0 25/10/13, fixed rotation matrix/inverse wronskian definitions, flapping cross-product bug
+    
+    % modified by PIC for N rotors
     
     warning off MATLAB:divideByZero
     
@@ -30,8 +32,7 @@ function [sys,x0,str,ts] = quadrotor_dynamics(t,x,u,flag, quad)
     %   init    Initial conditions              1x12
     
     %INPUTS
-    %   u = [N S E W]
-    %   NSEW motor commands                     1x4
+    %   u      rotor speed                      1xN
     
     %CONTINUOUS STATES
     %   z      Position                         3x1   (x,y,z)
@@ -51,22 +52,34 @@ function [sys,x0,str,ts] = quadrotor_dynamics(t,x,u,flag, quad)
     init = [z0 n0 v0 o0];
     
     %CONTINUOUS STATE EQUATIONS
-    %   z` = v
-    %   v` = g*e3 - (1/m)*T*R*e3
-    %   I*o` = -o X I*o + G + torq
+    %   z' = v
+    %   v' = g*e3 - (1/m)*T*R*e3
+    %   I*o' = -o X I*o + G + torq
     %   R = f(n)
-    %   n` = inv(W)*o
+    %   n' = inv(W)*o
+    
+
+    % basic sanity checks on number of rotors
+    if mod(nrotors,2) == 1
+        error('RTB:nrotor_dynamics:bardarg', 'Number of rotors must be even')
+    end
+    if nrotors < 4
+        error('RTB:nrotor_dynamics:bardarg', 'Number of rotors must be at least 4')
+    end
+    
+    % if model doesn't have nrotors field, set it from the passed parameters
+    if ~isfield(vehicle, 'nrotors')
+        vehicle.nrotors = nrotors;
+    end
     
     % Dispatch the flag.
-    %
-    
     switch flag
         case 0
-            [sys,x0,str,ts]=mdlInitializeSizes(init, quad); % Initialization
+            [sys,x0,str,ts]=mdlInitializeSizes(init, vehicle); % Initialization
         case 1
-            sys = mdlDerivatives(t,x,u, quad); % Calculate derivatives
+            sys = mdlDerivatives(t,x,u, vehicle); % Calculate derivatives
         case 3
-            sys = mdlOutputs(t,x, quad); % Calculate outputs
+            sys = mdlOutputs(t,x, vehicle); % Calculate outputs
         case { 2, 4, 9 } % Unused flags
             sys = [];
         otherwise
@@ -89,7 +102,7 @@ function [sys,x0,str,ts] = mdlInitializeSizes(init, quad)
     sizes.NumContStates  = 12;
     sizes.NumDiscStates  = 0;
     sizes.NumOutputs     = 12;
-    sizes.NumInputs      = 4;
+    sizes.NumInputs      = quad.nrotors;
     sizes.DirFeedthrough = 0;
     sizes.NumSampleTimes = 1;
     sys = simsizes(sizes);
@@ -117,26 +130,22 @@ end % End of mdlInitializeSizes.
 function sys = mdlDerivatives(t,x,u, quad)
     global a1s b1s
     
-    %CONSTANTS
-    %Cardinal Direction Indicies
-    N = 1;                      %   N       'North'                             1x1
-    E = 2;                      %   S       'South'                             1x1
-    S = 3;                      %   E       'East'                              1x1
-    W = 4;                      %   W       'West'                              1x1
     
-    
-    D(:,1) = [quad.d;0;quad.h];          %   Di      Rotor hub displacements             1x3
-    D(:,2) = [0;quad.d;quad.h];
-    D(:,3) = [-quad.d;0;quad.h];
-    D(:,4) = [0;-quad.d;quad.h];
+    for i = 1:quad.nrotors
+        theta = (i-1)/quad.nrotors*2*pi;
+        %   Di      Rotor hub displacements (1x3)
+        % first rotor is on the x-axis, clockwise order looking down from above
+        D(:,i) = [ quad.d*cos(theta); quad.d*sin(theta); quad.h];
+    end
+
     
     %Body-fixed frame references
     e1 = [1;0;0];               %   ei      Body fixed frame references         3x1
     e2 = [0;1;0];
     e3 = [0;0;1];
     
-    %EXTRACT STATES FROM U
-    w = u(1:4);
+    %EXTRACT ROTOR SPEED DEMANDS FROM U
+    w = u(1:quad.nrotors);
     
     %EXTRACT STATES FROM X
     z = x(1:3);   % position in {W}
@@ -167,7 +176,9 @@ function sys = mdlDerivatives(t,x,u, quad)
           cos(the) sin(psi)*sin(the) cos(psi)*sin(the)] / cos(the);
     
     %ROTOR MODEL
-    for i=[N E S W] %for each rotor
+        quad.nrotors
+
+    for i=1:quad.nrotors %for each rotor
         %Relative motion
         
         Vr = cross(o,D(:,i)) + v;

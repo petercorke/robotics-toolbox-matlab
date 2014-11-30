@@ -1,5 +1,5 @@
 Model {
-  Name			  "sl_quadrotor"
+  Name			  "sl_octorotor"
   Version		  8.4
   MdlSubVersion		  0
   SavedCharacterEncoding  "ISO-8859-1"
@@ -7,7 +7,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.27"
+    ComputedModelVersion    "1.28"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -31,7 +31,7 @@ Model {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [759.0, 80.0, 1013.0, 745.0]
+      Location		      [165.0, 23.0, 1013.0, 745.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -57,7 +57,7 @@ Model {
 	LoadSaveID		"0"
 	Extents			[979.0, 575.0]
 	ZoomFactor		[1.0]
-	Offset			[0.0, 0.0]
+	Offset			[0.0, -1.4210854715202004e-13]
       }
     }
   }
@@ -67,9 +67,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun Nov 30 14:14:43 2014"
-  RTWModifiedTimeStamp	  339257681
-  ModelVersionFormat	  "1.%<AutoIncrement:27>"
+  LastModifiedDate	  "Sun Nov 30 15:09:32 2014"
+  RTWModifiedTimeStamp	  339260177
+  ModelVersionFormat	  "1.%<AutoIncrement:28>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -112,11 +112,11 @@ Model {
     $PropName		    "DataLoggingOverride"
     $ObjectID		    6
     $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
-    model_		    "sl_quadrotor"
+    model_		    "sl_octorotor"
     Array {
       Type		      "Cell"
       Dimension		      1
-      Cell		      "sl_quadrotor"
+      Cell		      "sl_octorotor"
       PropName		      "logAsSpecifiedByModels_"
     }
     Array {
@@ -911,8 +911,8 @@ Model {
     }
   }
   System {
-    Name		    "sl_quadrotor"
-    Location		    [759, 80, 1772, 825]
+    Name		    "sl_octorotor"
+    Location		    [165, 23, 1178, 768]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -926,7 +926,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "108"
+    SIDHighWatermark	    "113"
     Block {
       BlockType		      BusSelector
       Name		      "Bus\nSelector1"
@@ -1056,16 +1056,19 @@ Model {
     }
     Block {
       BlockType		      Reference
-      Name		      "Control Mixer"
-      SID		      "93"
+      Name		      "Control Mixer N"
+      SID		      "113"
       Ports		      [4, 2]
-      Position		      [700, 47, 760, 358]
-      ZOrder		      -8
+      Position		      [705, 49, 760, 356]
+      ZOrder		      61
       DropShadow	      on
       LibraryVersion	      "1.67"
-      SourceBlock	      "roblocks/Dynamics/Control Mixer 4"
+      SourceBlock	      "roblocks/Dynamics/Control Mixer N"
       SourceType	      ""
       ContentPreviewEnabled   off
+      nrotors		      "6"
+      wmax		      "1000"
+      wmin		      "100"
     }
     Block {
       BlockType		      Gain
@@ -1153,6 +1156,21 @@ Model {
       }
     }
     Block {
+      BlockType		      Reference
+      Name		      "N-rotor"
+      SID		      "112"
+      Ports		      [1, 1]
+      Position		      [820, 114, 880, 226]
+      ZOrder		      60
+      DropShadow	      on
+      LibraryVersion	      "1.67"
+      SourceBlock	      "roblocks/Dynamics/N-rotor"
+      SourceType	      ""
+      ContentPreviewEnabled   off
+      nrotors		      "6"
+      quad		      "quad"
+    }
+    Block {
       BlockType		      Gain
       Name		      "P_pr"
       SID		      "36"
@@ -1221,31 +1239,20 @@ Model {
     }
     Block {
       BlockType		      Reference
-      Name		      "Quadrotor"
-      SID		      "85"
-      Ports		      [1, 1]
-      Position		      [810, 47, 870, 293]
-      ZOrder		      -21
-      DropShadow	      on
-      LibraryVersion	      "1.67"
-      SourceBlock	      "roblocks/Dynamics/Quadrotor"
-      SourceType	      ""
-      ContentPreviewEnabled   off
-      quad		      "quad"
-    }
-    Block {
-      BlockType		      Reference
       Name		      "Quadrotor plot"
       SID		      "91"
       Ports		      [1]
-      Position		      [650, 422, 680, 468]
+      Position		      [650, 422, 705, 468]
       ZOrder		      -22
       DropShadow	      on
       LibraryVersion	      "1.67"
       SourceBlock	      "roblocks/Robot Graphics/Quadrotor plot"
       SourceType	      ""
       ContentPreviewEnabled   off
-      x			      "0"
+      quad		      "quad"
+      nrotors		      "6"
+      xydim		      "3"
+      zdim		      "10"
     }
     Block {
       BlockType		      MATLABFcn
@@ -1540,10 +1547,10 @@ Model {
       DstPort		      2
     }
     Line {
-      ZOrder		      6
-      SrcBlock		      "Quadrotor"
+      ZOrder		      77
+      SrcBlock		      "N-rotor"
       SrcPort		      1
-      Points		      [55, 0; 0, 365; -130, 0]
+      Points		      [45, 0; 0, 365; -130, 0]
       Branch {
 	ZOrder			7
 	Points			[-180, 0]
@@ -1715,11 +1722,11 @@ Model {
       DstPort		      1
     }
     Line {
-      ZOrder		      33
+      ZOrder		      80
       SrcBlock		      "P_yaw"
       SrcPort		      1
       Points		      [270, 0; 0, -85]
-      DstBlock		      "Control Mixer"
+      DstBlock		      "Control Mixer N"
       DstPort		      3
     }
     Line {
@@ -1816,11 +1823,11 @@ Model {
       DstPort		      2
     }
     Line {
-      ZOrder		      47
+      ZOrder		      79
       SrcBlock		      "Demux"
       SrcPort		      2
       Points		      [0, 75]
-      DstBlock		      "Control Mixer"
+      DstBlock		      "Control Mixer N"
       DstPort		      2
     }
     Line {
@@ -1837,17 +1844,17 @@ Model {
       SrcPort		      1
       Points		      [75, 0]
       Branch {
+	ZOrder			81
+	Labels			[2, 0]
+	Points			[65, 0; 0, -110; 90, 0; 0, -30]
+	DstBlock		"Control Mixer N"
+	DstPort			4
+      }
+      Branch {
 	ZOrder			50
 	Points			[0, 25]
 	DstBlock		"To Workspace1"
 	DstPort			1
-      }
-      Branch {
-	ZOrder			51
-	Labels			[3, 0]
-	Points			[65, 0; 0, -110; 90, 0; 0, -30]
-	DstBlock		"Control Mixer"
-	DstPort			4
       }
     }
     Line {
@@ -1872,9 +1879,9 @@ Model {
       DstPort		      1
     }
     Line {
-      ZOrder		      64
+      ZOrder		      83
       Labels		      [2, 1]
-      SrcBlock		      "Control Mixer"
+      SrcBlock		      "Control Mixer N"
       SrcPort		      2
       Points		      [15, 0; 0, 180]
       DstBlock		      "Mux"
@@ -1920,19 +1927,19 @@ Model {
       DstPort		      1
     }
     Line {
-      ZOrder		      61
+      ZOrder		      78
       SrcBlock		      "Demux"
       SrcPort		      1
       Points		      [5, 0; 0, 20]
-      DstBlock		      "Control Mixer"
+      DstBlock		      "Control Mixer N"
       DstPort		      1
     }
     Line {
-      ZOrder		      66
-      SrcBlock		      "Control Mixer"
+      ZOrder		      82
+      SrcBlock		      "Control Mixer N"
       SrcPort		      1
       Points		      [20, 0; 0, 45]
-      DstBlock		      "Quadrotor"
+      DstBlock		      "N-rotor"
       DstPort		      1
     }
     Annotation {
