@@ -89,6 +89,11 @@
 
 function plot3d(robot, q, varargin)
     
+    
+    if robot.mdh
+        error('RTB:plot3d:badmodel', '3D models are defined for standard, not modified, DH parameters');
+    end
+    
     clf
     opt = plot_options(robot, varargin);
     
