@@ -1,5 +1,5 @@
 
-function [sys,x0,str,ts] = nrotor_dynamics(t,x,u,flag, vehicle, nrotors)
+function [sys,x0,str,ts] = nrotor_dynamics(t,x,u,flag, vehicle)
     % Flyer2dynamics lovingly coded by Paul Pounds, first coded 12/4/04
     % A simulation of idealised X-4 Flyer II flight dynamics.
     % version 2.0 2005 modified to be compatible with latest version of Matlab
@@ -58,18 +58,15 @@ function [sys,x0,str,ts] = nrotor_dynamics(t,x,u,flag, vehicle, nrotors)
     %   R = f(n)
     %   n' = inv(W)*o
     
-
     % basic sanity checks on number of rotors
-    if mod(nrotors,2) == 1
+    if ~isfield(vehicle, 'nrotors')
+         error('RTB:nrotor_dynamics:bardarg', 'Number of rotors not specified in model structure')
+    end
+    if mod(vehicle.nrotors,2) == 1
         error('RTB:nrotor_dynamics:bardarg', 'Number of rotors must be even')
     end
-    if nrotors < 4
+    if vehicle.nrotors < 4
         error('RTB:nrotor_dynamics:bardarg', 'Number of rotors must be at least 4')
-    end
-    
-    % if model doesn't have nrotors field, set it from the passed parameters
-    if ~isfield(vehicle, 'nrotors')
-        vehicle.nrotors = nrotors;
     end
     
     % Dispatch the flag.
@@ -93,7 +90,7 @@ end % End of flyer2dynamics
 % S-function.
 %==============================================================
 %
-function [sys,x0,str,ts] = mdlInitializeSizes(init, quad)
+function [sys,x0,str,ts] = mdlInitializeSizes(init, vehicle)
     %
     % Call simsizes for a sizes structure, fill it in and convert it
     % to a sizes array.
@@ -102,7 +99,7 @@ function [sys,x0,str,ts] = mdlInitializeSizes(init, quad)
     sizes.NumContStates  = 12;
     sizes.NumDiscStates  = 0;
     sizes.NumOutputs     = 12;
-    sizes.NumInputs      = quad.nrotors;
+    sizes.NumInputs      = vehicle.nrotors;
     sizes.DirFeedthrough = 0;
     sizes.NumSampleTimes = 1;
     sys = simsizes(sizes);
@@ -116,7 +113,7 @@ function [sys,x0,str,ts] = mdlInitializeSizes(init, quad)
     % Generic timesample
     ts = [0 0];
     
-    if quad.verbose
+    if vehicle.verbose
         disp(sprintf('t\t\tz1\t\tz2\t\tz3\t\tn1\t\tn2\t\tn3\t\tv1\t\tv2\t\tv3\t\to1\t\to2\t\to3\t\tw1\t\tw2\t\tw3\t\tw4\t\tu1\t\tu2\t\tu3\t\tu4'))
     end
 end % End of mdlInitializeSizes.
@@ -176,7 +173,6 @@ function sys = mdlDerivatives(t,x,u, quad)
           cos(the) sin(psi)*sin(the) cos(psi)*sin(the)] / cos(the);
     
     %ROTOR MODEL
-        quad.nrotors
 
     for i=1:quad.nrotors %for each rotor
         %Relative motion

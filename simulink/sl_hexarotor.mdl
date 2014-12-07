@@ -1,5 +1,5 @@
 Model {
-  Name			  "sl_octorotor"
+  Name			  "sl_hexarotor"
   Version		  8.4
   MdlSubVersion		  0
   SavedCharacterEncoding  "ISO-8859-1"
@@ -7,7 +7,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.28"
+    ComputedModelVersion    "1.29"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -57,7 +57,7 @@ Model {
 	LoadSaveID		"0"
 	Extents			[979.0, 575.0]
 	ZoomFactor		[1.0]
-	Offset			[0.0, -1.4210854715202004e-13]
+	Offset			[0.0, -1.1368683772161603e-13]
       }
     }
   }
@@ -67,9 +67,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun Nov 30 15:09:32 2014"
-  RTWModifiedTimeStamp	  339260177
-  ModelVersionFormat	  "1.%<AutoIncrement:28>"
+  LastModifiedDate	  "Tue Dec 02 12:01:31 2014"
+  RTWModifiedTimeStamp	  339422455
+  ModelVersionFormat	  "1.%<AutoIncrement:29>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -112,11 +112,11 @@ Model {
     $PropName		    "DataLoggingOverride"
     $ObjectID		    6
     $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
-    model_		    "sl_octorotor"
+    model_		    "sl_hexarotor"
     Array {
       Type		      "Cell"
       Dimension		      1
-      Cell		      "sl_octorotor"
+      Cell		      "sl_hexarotor"
       PropName		      "logAsSpecifiedByModels_"
     }
     Array {
@@ -911,7 +911,7 @@ Model {
     }
   }
   System {
-    Name		    "sl_octorotor"
+    Name		    "sl_hexarotor"
     Location		    [165, 23, 1178, 768]
     Open		    on
     ModelBrowserVisibility  off
@@ -1062,7 +1062,7 @@ Model {
       Position		      [705, 49, 760, 356]
       ZOrder		      61
       DropShadow	      on
-      LibraryVersion	      "1.67"
+      LibraryVersion	      "1.68"
       SourceBlock	      "roblocks/Dynamics/Control Mixer N"
       SourceType	      ""
       ContentPreviewEnabled   off
@@ -1163,7 +1163,7 @@ Model {
       Position		      [820, 114, 880, 226]
       ZOrder		      60
       DropShadow	      on
-      LibraryVersion	      "1.67"
+      LibraryVersion	      "1.68"
       SourceBlock	      "roblocks/Dynamics/N-rotor"
       SourceType	      ""
       ContentPreviewEnabled   off
@@ -1218,7 +1218,7 @@ Model {
       Position		      [340, 440, 370, 470]
       ZOrder		      -19
       ForegroundColor	      "red"
-      Gain		      "-40"
+      Gain		      "-80"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
@@ -1245,7 +1245,7 @@ Model {
       Position		      [650, 422, 705, 468]
       ZOrder		      -22
       DropShadow	      on
-      LibraryVersion	      "1.67"
+      LibraryVersion	      "1.68"
       SourceBlock	      "roblocks/Robot Graphics/Quadrotor plot"
       SourceType	      ""
       ContentPreviewEnabled   off

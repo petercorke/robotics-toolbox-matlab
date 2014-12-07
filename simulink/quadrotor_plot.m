@@ -16,7 +16,7 @@
 %
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
-function [sys,x0,str,ts] = quadrotor_plot(t,x,u,flag,s,plot,enable,vehicle, nrotors)
+function [sys,x0,str,ts] = quadrotor_plot(t,x,u,flag,s,plot,enable,vehicle)
     % Flyer plot, lovingly coded by Paul Pounds, first coded 17/4/02
     % version 2 2004 added scaling and ground display
     % version 3 2010 improved rotor rendering and fixed mirroring bug
@@ -41,7 +41,10 @@ function [sys,x0,str,ts] = quadrotor_plot(t,x,u,flag,s,plot,enable,vehicle, nrot
     %   None
     ts = [-1 0];
     
-    vehicle.nrotors = nrotors;
+    if ~isfield(vehicle, 'nrotors')
+        vehicle.nrotors = 4;    % sensible default for quadrotor function
+    end
+    
     switch flag,
         case 0
             [sys,x0,str,ts] = mdlInitializeSizes(ts,plot,enable); % Initialization
