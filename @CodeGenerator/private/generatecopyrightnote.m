@@ -6,9 +6,7 @@ function [ outstring ] = generatecopyrightnote( CGen )
 % the copyright note.
 %
 % Authors::
-%  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany
-%  http://www.rst.e-technik.tu-dortmund.de
+%  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
 %
 % See also CodeGenerator.CodeGenerator, CodeGenerator.genjacobian
 

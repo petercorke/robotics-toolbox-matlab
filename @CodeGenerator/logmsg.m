@@ -11,9 +11,7 @@
 %  either the Matlab console, a log file or both. 
 %
 % Authors::
-%  Joern Malzahn   
-%  2012 RST, Technische Universitaet Dortmund, Germany
-%  http://www.rst.e-technik.tu-dortmund.de
+%  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
 %
 %  See also multidfprintf,fprintf,sprintf.
 

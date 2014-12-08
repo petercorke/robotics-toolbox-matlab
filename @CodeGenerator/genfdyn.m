@@ -19,9 +19,7 @@
 %     subclass. The MEX files rely on the C code generated before.
 %
 % Author::
-%  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany.
-%  http://www.rst.e-technik.tu-dortmund.de
+%  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
 %
 % See also CodeGenerator.CodeGenerator, CodeGenerator.geninertia, CodeGenerator.genfkine.
 

@@ -10,9 +10,7 @@
 % - Blocks are created for intermediate transforms T0, T1 etc. as well.
 %
 % Author::
-%  Joern Malzahn
-%  2012 RST, Technische Universitaet Dortmund, Germany.
-%  http://www.rst.e-technik.tu-dortmund.de
+%  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
 %
 % See also CodeGenerator.CodeGenerator, CodeGenerator.genfkine.
 
