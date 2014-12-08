@@ -1,6 +1,6 @@
 %MEXFUNCTION Converts a symbolic expression into a MEX-function
 %
-% [] = CGEN.MEXFUNCTION(SYMEXPR, ARGLIST) translates a symbolic expression
+% [] = cGen.mexfunction(SYMEXPR, ARGLIST) translates a symbolic expression
 % into C-code and joins it with a MEX gateway routine. The resulting C-file
 % is ready to be compiled using the matlab built-in mex command.
 %

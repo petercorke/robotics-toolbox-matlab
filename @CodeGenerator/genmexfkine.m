@@ -1,6 +1,6 @@
 %CODEGENERATOR.GENMEXFKINE Generate C-MEX-function for forward kinematics
 %
-% CGEN.GENMEXFKINE() generates a robot-specific MEX-function to compute
+% cGen.genmexfkine() generates a robot-specific MEX-function to compute
 % forward kinematics.
 %
 % Notes::

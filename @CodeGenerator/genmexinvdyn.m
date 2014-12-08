@@ -1,6 +1,6 @@
 %CODEGENERATOR.GENMEXINVDYN Generate C-MEX-function for inverse dynamics
 %
-% CGEN.GENMEXINVDYN() generates a robot-specific MEX-function to compute
+% cGen.genmexinvdyn() generates a robot-specific MEX-function to compute
 % the inverse dynamics.
 % 
 % Notes::

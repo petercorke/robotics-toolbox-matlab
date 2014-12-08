@@ -1,10 +1,10 @@
 %CODEGENERATOR.GENMATVECPRODC Generates a matrix-vector product C-implementation.
 %
-% CGen.gendotprodc generates a .h and a .c file in the directory
+% cGen.gendotprodc generates a .h and a .c file in the directory
 % specified by ccodepath.
 %
 % Notes::
-% - Is called by geninvdyn and genfdyn if CGen has active flag genmex or genccode.
+% - Is called by geninvdyn and genfdyn if cGen has active flag genmex or genccode.
 %
 % Authors::
 %  Joern Malzahn   (joern.malzahn@tu-dortmund.de) 

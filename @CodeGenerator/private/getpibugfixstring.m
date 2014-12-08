@@ -1,6 +1,6 @@
 %CODEGENERATOR.GETPIBUGFIXSTRING Returns a string to fix PI-Bug in auto genereated functions.
 % 
-% bfixString = CGen.getPiBugfixString() Is the string with explanation comment 
+% bfixString = cGen.getPiBugfixString() Is the string with explanation comment 
 % and variable declaration as described below.
 % 
 % Notes::

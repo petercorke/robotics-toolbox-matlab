@@ -1,6 +1,6 @@
 %CODEGENERATOR.GENMEXFRICTION Generate C-MEX-function for joint friction
 %
-% CGEN.GENMEXFRICTION() generates a robot-specific MEX-function to compute
+% cGen.genmexfriction() generates a robot-specific MEX-function to compute
 % the vector of joint friction.
 %
 % Notes::

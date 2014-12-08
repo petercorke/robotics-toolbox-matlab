@@ -1,10 +1,10 @@
 %CODEGENERATOR.GENGAUSSJORDANC Generates a Gauss-Jordan C-implementation.
 %
-% CGen.gengaussjordanc generates a .h and a .c file in the directory
+% cGen.gengaussjordanc generates a .h and a .c file in the directory
 % specified by ccodepath.
 %
 % Notes::
-% - Is called by genfdyn if CGen has active flag genmex or genccode.
+% - Is called by genfdyn if cGen has active flag genmex or genccode.
 %
 % Authors::
 %  Joern Malzahn   (joern.malzahn@tu-dortmund.de) 

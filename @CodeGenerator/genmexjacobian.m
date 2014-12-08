@@ -1,6 +1,6 @@
 %CODEGENERATOR.GENMEXJACOBIAN Generate C-MEX-function for the robot Jacobians
 %
-% CGEN.GENMEXJACOBIAN() generates robot-specific MEX-function to compute
+% cGen.genmexjacobian() generates robot-specific MEX-function to compute
 % the robot Jacobian with respect to the base as well as the end effector
 % frame.
 %

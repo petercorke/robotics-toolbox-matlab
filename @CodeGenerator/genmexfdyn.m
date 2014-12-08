@@ -1,6 +1,6 @@
 %CODEGENERATOR.GENMEXFDYN Generate C-MEX-function for forward dynamics
 %
-% CGEN.GENMEXFDYN() generates a robot-specific MEX-function to compute
+% cGen.genmexfdyn() generates a robot-specific MEX-function to compute
 % the forward dynamics.
 % 
 % Notes::

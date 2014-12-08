@@ -1,6 +1,6 @@
 %GENMEXGATEWAYSTRING Generates a mex gateway function
 %
-% [FUNSTR] = GENMEXGATEWAYSTRING(SYMEXPR, ARGLIST) returns a string
+% [FUNSTR] = genmexgatewaystring(SYMEXPR, ARGLIST) returns a string
 % representing a C-code implementation of a mex gateway function.
 %
 % The argumentlist ARGLIST may contain the following property-value pairs

@@ -1,6 +1,6 @@
 %CODEGENERATOR.GENMEXGRAVLOAD Generate C-MEX-function for gravitational load
 %
-% CGEN.GENMEXGRAVLOAD() generates a robot-specific MEX-function to compute
+% cGen.genmexgravload() generates a robot-specific MEX-function to compute
 % gravitation load forces and torques.
 % 
 % Notes::
