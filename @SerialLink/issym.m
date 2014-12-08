@@ -6,9 +6,7 @@
 %
 %
 % Authors::
-% Jörn Malzahn   
-% 2012 RST, Technische Universität Dortmund, Germany
-% http://www.rst.e-technik.tu-dortmund.de    
+%  Joern Malzahn, (joern.malzahn@tu-dortmund.de) 
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %
