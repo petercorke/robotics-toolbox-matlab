@@ -20,6 +20,7 @@
 %
 % Notes::
 % - Requires the pHRIWARE package which defines CollisionModel class.
+%   Available from: https://code.google.com/p/phriware/ .
 % - The robot is defined by a point cloud, given by its points property.
 % - The function does not currently check the base of the SerialLink
 %   object.
