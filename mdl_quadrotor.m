@@ -65,6 +65,7 @@
 %
 % http://www.petercorke.com
 
+quad.nrotors = 4;                %   4 rotors
 quad.g = 9.81;                   %   g       Gravity                             1x1
 quad.rho = 1.184;                %   rho     Density of air                      1x1
 quad.muv = 1.5e-5;               %   muv     Viscosity of air                    1x1
