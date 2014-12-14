@@ -44,7 +44,7 @@ function [theta_, n_] = tr2angvec(R)
     end
     
     % check the determinant
-    if abs(det(R)-1) > 4*eps
+    if abs(det(R)-1) > 10*eps
            error('matrix not orthonormal rotation matrix');
     end
         
