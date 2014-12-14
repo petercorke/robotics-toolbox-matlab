@@ -21,7 +21,7 @@
 function models(query)
 
     p = what('robot');
-    models = dir(fullfile(p.path, 'mdl_*.m'));
+    models = dir(fullfile(p(1).path, 'mdl_*.m'));
     info = {};
     for model=models'
         fid = fopen(model.name, 'r');
