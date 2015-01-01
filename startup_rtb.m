@@ -21,8 +21,10 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
-release = load('RELEASE');
-fprintf('- Robotics Toolbox for Matlab (release %.1f)\n', release)
+fp = fopen('RELEASE', 'r');
+release = fgetl(fp);
+fclose(fp);
+fprintf('- Robotics Toolbox for Matlab (release %s)\n', release)
 tbpath = fileparts(which('Link'));
 addpath( fullfile(tbpath, 'demos') );
 addpath( fullfile(tbpath, 'examples') );
@@ -46,9 +48,8 @@ if exist(p)
 end
 [currentversion,status] = urlread('http://www.petercorke.com/RTB/currentversion.php', 'Timeout', 2.0);
 if status == 1
-    currentversion = str2double(currentversion);
-    if release ~= currentversion
-        fprintf('** Release %.1f now available\n\n', ...
+    if ~strcmp(release, currentversion)
+        fprintf('** Release %s now available\n\n', ...
             currentversion);
     end
 end
