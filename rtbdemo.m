@@ -1,6 +1,6 @@
 %RTBDEMO 	Robot toolbox demonstrations
 %
-% Displays popup menu of toolbox demonstration scripts that illustrate:
+% rtbdemo is displays popup menu of toolbox demonstration scripts that illustrate:
 %   - homogeneous transformations
 %   - trajectories
 %   - forward kinematics
@@ -9,10 +9,12 @@
 %   - inverse dynamics
 %   - forward dynamics
 %
+% rtbdemo(T) as above but waits for T seconds after every statement, no
+% need to push the enter key periodically.
+%
 % Notes::
-% - The scripts require the user to periodically hit <Enter> in order to move
-%   through the explanation.
-% - Set PAUSE OFF if you want the scripts to run completely automatically.
+% - By default the scripts require the user to periodically hit <Enter> in
+%   order to move through the explanation.
 
 
 % Copyright (C) 1993-2014, by Peter I. Corke
@@ -34,64 +36,149 @@
 %
 % http://www.petercorke.com
 
-echo off
-clear all
-delete( get(0, 'Children') );
-
-% find the path to the demos
-if exist('rtbdemo', 'file') == 2
-    tbpath = fileparts(which('rtbdemo'));
-    demopath = fullfile(tbpath, 'demos');
-end
-
-opts = {'path', demopath};
-
-% uncomment the next line to allow demos to run without needing to press
-% enter key at each step
-%opts = {'path', demopath, 'delay', 0.5};
+function rtbdemo(timeout)
+    echo off
+    delete( get(0, 'Children') );
     
-
-fprintf('------------------------------------------------------------\n');
-fprintf('Many of these demos print tutorial text and MATLAB commmands in the console window.\n');
-fprintf('Read the text and press <enter> to move on to the next command\n');
-fprintf('At the end of the tutorial::demo you can choose the next one from the graphical menu.\n');
-fprintf('------------------------------------------------------------\n');
-
-demos = {
-    'General::Rotations', 'rotation';
-    'General::Transformations', 'trans';
-    'General::JoystickTransform', 'joytest';
-    'General::Trajectory', 'traj';
-    'Arm::Robots', 'robot';
-    'Arm::Animation', 'graphics';
-    'Arm::Forward kinematics', 'fkine';
-    'Arm::Inverse kinematics', 'ikine';
-    'Arm::Jacobians', 'jacob';
-    'Arm::Inverse dynamics', 'idyn';
-    'Arm::Forward dynamics', 'fdyn';
-    'Arm::Symbolic', 'symbolic';
-    'Arm::Code generation', 'codegen';
-    'Mobile::driving to a pose', 'drivepose';
-    'Mobile::quadrotor', 'quadrotor';
-    'Mobile::Braitenberg', 'braitnav';
-    'Mobile::Bug', 'bugnav';
-    'Mobile::D*', 'dstarnav';
-    'Mobile::PRM', 'prmnav';
-    'Mobile::SLAM', 'slam';
-    'Mobile::Particle filter', 'particlefilt';
-    'Exit', '';
-    };
-
-while true
-    selection = menu('Robot Toolbox demonstrations', demos{:,1});
+    % find the path to the demos
+    if exist('rtbdemo', 'file') == 2
+        tbpath = fileparts(which('rtbdemo'));
+        demopath = fullfile(tbpath, 'demos');
+    end
     
-    if strcmp(demos{selection,1}, 'Exit')
-        % quit now
-        delete( get(0, 'Children') );
-        break;
-    else
-        % run the appropriate script
-        script = demos{selection,2}
-        runscript(script, opts{:})
+    % create the options to pass through to runscript
+    opts = {'path', demopath};
+    
+    % if a timeout interval is given, add this to the options
+    if nargin > 0
+        opts = {opts, 'delay', timeout};
+    end
+    
+    % display a help message in the consolde
+    msg = {
+'------------------------------------------------------------'
+'Many of these demos print tutorial text and MATLAB commmands'
+'in the console window.  Read the text and press <enter> to move'
+'on to the next command. At the end of the tutorial you can' 
+'choose the next one from the graphical menu, or close the menu'
+'window.'
+'------------------------------------------------------------'
+};
+    for i=1:numel(msg)
+        fprintf('%s\n', msg{i});
+    end
+    
+    % Map the button names (must be exact match) to the scripts to invoke
+    demos = {
+        'Rotations', 'rotation';
+        'Transformations', 'trans';
+        'Joystick demo', 'joytest';
+        'Trajectory', 'traj';
+        'Create a model', 'robot';
+        'Animation', 'graphics';
+        'Forward kinematics', 'fkine';
+        'Inverse kinematics', 'ikine';
+        'Jacobians', 'jacob';
+        'Inverse dynamics', 'idyn';
+        'Forward dynamics', 'fdyn';
+        'Symbolic', 'symbolic';
+        'Code generation', 'codegen';
+        'Driving to a pose', 'drivepose';
+        'Quadrotor flying', 'quadrotor';
+        'Braitenberg vehicle', 'braitnav';
+        'Bug navigation', 'bugnav';
+        'D* navigation', 'dstarnav';
+        'PRM navigation', 'prmnav';
+        'SLAM demo', 'slam';
+        'Particle filter localization', 'particlefilt';
+        };
+    
+    % display the GUI panel
+    %  some of this taken from the GUIDE generated file
+    gui_Singleton = 1;
+    gui_State = struct('gui_Name',       'rtbdemo_gui', ...
+        'gui_Singleton',  gui_Singleton, ...
+        'gui_OpeningFcn', @rtbdemo_gui_OpeningFcn, ...
+        'gui_OutputFcn',  @rtbdemo_gui_OutputFcn, ...
+        'gui_LayoutFcn',  [] , ...
+        'gui_Callback',   []);
+    h = gui_mainfcn(gui_State);
+
+    
+    % now set the callback for every button, can't seem to make this work using
+    % GUIDE.
+    for hh=get(h, 'Children')'
+        if ~strcmp( get(hh, 'Style'), 'pushbutton')
+            continue;
+        end
+        set(hh, 'Callback', @demo_pushbutton_callback);
+    end
+    
+    % TODO:
+    %  build the buttons dynamically, eliminate the need for GUIDE
+    
+    while true
+
+        % wait for a button press
+        %   buttons set the UserData property of the GUI to the button string name
+        waitfor(h, 'UserData');
+        
+        % check if the GUI window has been dismissed
+        if ~ishandle(h)
+            break
+        end
+        
+        % get the user's selection, it was stashed in GUI UserData
+        selection = get(h, 'UserData');
+        
+        % now look for it in the list of demos
+        for i=1:size(demos, 1)
+            if strcmp(selection, demos{i,1})
+                % then run the appropriate script
+                script = demos{i,2}
+                runscript(script, opts{:})
+            end
+        end
     end
 end
+
+% --- Executes just before rtbdemo_gui is made visible.
+function rtbdemo_gui_OpeningFcn(hObject, eventdata, handles, varargin)
+    % This function has no output args, see OutputFcn.
+    % hObject    handle to figure
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+    % varargin   command line arguments to rtbdemo_gui (see VARARGIN)
+    
+    % Choose default command line output for rtbdemo_gui
+    handles.output = hObject;
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+    initialize_gui(hObject, handles, false);
+end
+
+% --- Outputs from this function are returned to the command line.
+function varargout = rtbdemo_gui_OutputFcn(hObject, eventdata, handles)
+    % varargout  cell array for returning output args (see VARARGOUT);
+    % hObject    handle to figure
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+    
+    % Get default command line output from handles structure
+    varargout{1} = handles.output;
+end
+
+function initialize_gui(fig_handle, handles, isreset)
+    % Update handles structure
+    guidata(handles.figure1, handles);
+end
+
+% --- Executes on button press .
+function demo_pushbutton_callback(hObject, eventdata, handles)
+        % hObject    handle to pushbutton (see GCBO)
+        % eventdata  reserved - to be defined in a future version of MATLAB
+        % handles    structure with handles and user data (see GUIDATA)
+        set(gcf, 'Userdata', get(hObject, 'String'));
+    end
