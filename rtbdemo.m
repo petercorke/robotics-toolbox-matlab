@@ -38,7 +38,7 @@
 
 function rtbdemo(timeout)
     echo off
-    delete( get(0, 'Children') );
+    close all
     
     % find the path to the demos
     if exist('rtbdemo', 'file') == 2
@@ -117,7 +117,12 @@ function rtbdemo(timeout)
     % TODO:
     %  build the buttons dynamically, eliminate the need for GUIDE
     
+    set(h, 'Name', 'rtbdemo');
+    
     while true
+        
+        set(h, 'Visible', 'on');
+
 
         % wait for a button press
         %   buttons set the UserData property of the GUI to the button string name
@@ -130,13 +135,20 @@ function rtbdemo(timeout)
         
         % get the user's selection, it was stashed in GUI UserData
         selection = get(h, 'UserData');
+        set(h, 'UserData', []); % reset user data so we notice next change
         
         % now look for it in the list of demos
         for i=1:size(demos, 1)
             if strcmp(selection, demos{i,1})
                 % then run the appropriate script
                 script = demos{i,2}
+                set(h, 'Visible', 'off');
+                try
                 runscript(script, opts{:})
+                catch me
+                    disp('error in executing demo script');
+                    me.getReport()
+                end
             end
         end
     end
