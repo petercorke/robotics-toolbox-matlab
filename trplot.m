@@ -132,6 +132,7 @@ function hout = trplot(T, varargin)
     opt.thick = 0.5;
     opt.length = 1;
     opt.text = true;
+    opt.lefty = false;
 
     opt = tb_optparse(opt, varargin);
 
@@ -208,7 +209,11 @@ function hout = trplot(T, varargin)
     o =  [0 0 0]';
     x1 = opt.length*[1 0 0]';
     y1 = opt.length*[0 1 0]';
-    z1 = opt.length*[0 0 1]';
+    if opt.lefty
+        z1 = opt.length*[0 0 -1]';
+    else
+        z1 = opt.length*[0 0 1]';
+    end
     
     % draw the axes
     

@@ -83,6 +83,7 @@ function hout = trplot2(T, varargin)
     opt.arrow = false;
     opt.handle = [];
     opt.length = 1;
+    opt.lefty = false;
 
     opt = tb_optparse(opt, varargin);
 
@@ -122,7 +123,13 @@ function hout = trplot2(T, varargin)
     % create unit vectors
     o =  opt.length*[0 0 1]'; o = o(1:2);
     x1 = opt.length*[1 0 1]'; x1 = x1(1:2);
-    y1 = opt.length*[0 1 1]'; y1 = y1(1:2);
+    
+    if opt.lefty
+        y1 = opt.length*[0 -1 1]'; y1 = y1(1:2);
+    else
+        y1 = opt.length*[0 1 1]'; y1 = y1(1:2);
+    end
+   
     
     % draw the axes
     
