@@ -1,6 +1,6 @@
 %Navigation Navigation superclass
 %
-% An abstract superclass for implementing navigation classes.  
+% An abstract superclass for implementing planar grid-based navigation classes.  
 %
 % Methods::
 %   plot        Display the occupancy grid
@@ -14,19 +14,25 @@
 %   randn       Normally distributed random number
 %   randi       Uniformly distributed random integer
 %
-% Properties (read only)::
-%   occgrid   Occupancy grid representing the navigation environment
-%   goal      Goal coordinate
-%   seed0     Random number state
+% Abstract methods::
+% These methods must be implemented in a subclass
 %
-% Methods that must be provided in subclass::
 %   plan      Generate a plan for motion to goal
 %   next      Returns coordinate of next point along path
 %
-% Methods that may be overriden in a subclass::
-%   goal_set        The goal has been changed by nav.goal = (a,b)
-%   navigate_init   Start of path planning.
+% Method to overide::
+% These methods may be redfined in a subclass::
+%   goal_change     The goal has been changed by nav.goal = (a,b)
+%   navigate_init   Start of path planning
 % 
+% Properties (read/write)::
+%   goal      Goal coordinate, column vector
+%
+% Properties (read only)::
+%   occgrid   Occupancy grid representing the navigation environment
+%   seed0     Random number state
+%
+%
 % Notes::
 % - Subclasses the MATLAB handle class which means that pass by reference semantics
 %   apply.
@@ -35,7 +41,7 @@
 % - The initial random number state is captured as seed0 to allow rerunning an
 %   experiment with an interesting outcome.
 %
-% See also Dstar, Dxform, PRM, RRT.
+% See also Astar, Dstar, Dxform, PRM, RRT.
 
 
 % Copyright (C) 1993-2014, by Peter I. Corke
@@ -116,7 +122,8 @@ classdef Navigation < handle
         % Notes::
         % - In the occupancy grid a value of zero means free space and non-zero means
         %   occupied (not driveable).
-        % - Obstacle inflation is performed with a round structuring element (kcircle).
+        % - Obstacle inflation is performed with a round structuring element
+        %   (kcircle) with radius as given by the 'inflate' option.
         % - The 'private' option creates a private random number stream for the methods 
         %   rand, randn and randi.  If not given the global stream is used.
 
@@ -180,16 +187,16 @@ classdef Navigation < handle
         function r = rand(nav, varargin)
         %Navigation.rand Uniformly distributed random number
         %
-        % R = N.rand() return a uniformly distributed random number from
+        % R = N.rand() is a uniformly distributed random number from
         % a private random number stream.
         %
-        % R = N.rand(M) as above but return a matrix (MxM) of random numbers.
+        % R = N.rand(M) as above but returns a matrix (MxM) of random numbers.
         %
-        % R = N.rand(L,M) as above but return a matrix (LxM) of random numbers.
+        % R = N.rand(L,M) as above but returns a matrix (LxM) of random numbers.
         %
         % Notes::
         % - Accepts the same arguments as rand().
-        % - Seed is provided to Navigation constructor.
+        % - Random number seed is provided to Navigation constructor.
         %
         % See also rand, RandStream.
             r = nav.randstream.rand(varargin{:});
@@ -198,17 +205,16 @@ classdef Navigation < handle
         function r = randn(nav, varargin)
         %Navigation.randn Normally distributed random number
         %
-        % R = N.randn() return a normally distributed random number from
+        % R = N.randn() is a normally distributed random number from
         % a private random number stream.
         %
-        % R = N.randn(M) as above but return a matrix (MxM) of random numbers.
+        % R = N.randn(M) as above but is a matrix (MxM) of random numbers.
         %
-        % R = N.randn(L,M) as above but return a matrix (LxM) of random numbers.
-        %
+        % R = N.randn(L,M) as above is return a matrix (LxM) of random numbers.
         %
         % Notes::
         % - Accepts the same arguments as randn().
-        % - Seed is provided to Navigation constructor.
+        % - Random number seed is provided to Navigation constructor.
         %
         % See also randn, RandStream.
             r = nav.randstream.randn(varargin{:});
@@ -217,17 +223,16 @@ classdef Navigation < handle
         function r = randi(nav, varargin)
         %Navigation.randi Integer random number
         %
-        % I = N.randi(RM) return a uniformly distributed random integer in the 
+        % I = N.randi(RM) is a uniformly distributed random integer in the 
         % range 1 to RM from a private random number stream.
         %
-        % I = N.randi(RM, M) as above but return a matrix (MxM) of random integers.
+        % I = N.randi(RM, M) as above but is a matrix (MxM) of random integers.
         %
-        % I = N.randn(RM, L,M) as above but return a matrix (LxM) of random integers.
-        %
+        % I = N.randn(RM, L,M) as above but is a matrix (LxM) of random integers.
         %
         % Notes::
         % - Accepts the same arguments as randn().
-        % - Seed is provided to Navigation constructor.
+        % - Random number seed is provided to Navigation constructor.
         %
         % See also randn, RandStream.
             r = nav.randstream.randi(varargin{:});
@@ -274,9 +279,10 @@ classdef Navigation < handle
             % The method performs the following steps:
             %
             %  - Get start position interactively if not given
-            %  - Initialized navigation, invoke method N.navigate_init()
+            %  - Initialize navigation, invoke method N.navigate_init(start)
             %  - Visualize the environment, invoke method N.plot()
-            %  - Iterate on the next() method of the subclass
+            %  - Iterate on the next() method of the subclass until the goal is
+            %    reached.
             %
             % See also Navigation.plot, Navigation.goal.
 
@@ -364,7 +370,10 @@ classdef Navigation < handle
         % Options::
         %  'goal'         Superimpose the goal position if set
         %  'distance',D   Display a distance field D behind the obstacle map.  D is
-        %                 a matrix of the same size as the occupancy grid.            
+        %                 a matrix of the same size as the occupancy grid.
+        %
+        % Notes::
+        % - Obstacles are displayed in red.
             
             opt.goal = true; % plot goal (line #401)
             opt.distance = [];
@@ -378,7 +387,7 @@ classdef Navigation < handle
                 %   obstacle, color index = 2, red
                 cmap = [1 1 1; 1 0 0];  % non obstacles are white
                 image(nav.occgrid+1, 'CDataMapping', 'direct');
-                colormap(pink)
+                colormap(cmap)
                 
             else
                 % create color map for distance field + obstacle:
@@ -392,7 +401,6 @@ classdef Navigation < handle
                 
                 % create the color map
                 cmap = [1 0 0; gray(maxdist)];
-%                 cmap = [0 0 1; 1 0 0];
                 % ensure obstacles appear as red pixels
                 opt.distance(nav.occgrid > 0) = 0;
                 
@@ -427,9 +435,12 @@ classdef Navigation < handle
         function navigate_init(nav, start)
             %Navigation.navigate_init Notify start of path
             %
-            % Invoked when the path() method is invoked. Typically overriden in a subclass 
-            % to take particular action such as computing some path parameters.
-            % start is the initial position for this path, and nav.goal is the final position.
+            % N.navigate_init(start) is invoked when the path() method is invoked and
+            % is passed the start coordinate for the path (1x3).
+            %
+            % Typically overriden in a subclass to take particular action such as
+            % computing some path parameters. start is the initial position for this
+            % path, and nav.goal is the final position.
         end
 
 
@@ -488,7 +499,7 @@ classdef Navigation < handle
         end
         
         function message(nav, varargin)
-        %Navigation.message Display debug message
+        %Navigation.message Print debug message
         %
         % N.message(S) displays the string S if the verbose property is true.
         %
@@ -512,7 +523,14 @@ classdef Navigation < handle
     methods (Static)
 
         function M = randGrid(dim,obs,free)
-            %Navigation.randGrid Create occupancy grid of radnom obstacles
+            %Navigation.randGrid Create occupancy grid of random obstacles
+            %
+            % map = Navigate.randGrid(D, OBS, FREE) is a class method that returns a
+            % randomly generated occupancy grid (D(1)xD(2)).  The number of obstacles
+            % increases as OBS increases up to a maximum of max(D).  Regions of the
+            % obstacle grid are guaranteed free for a region around (X1,Y1) and (X2,
+            % Y2) as defined by FREE = [X1 X2; Y1 Y2].
+            
             % Initialize matrix.
             M = zeros(dim(1), dim(2), 'int32');
             for col = 1:dim(2)
