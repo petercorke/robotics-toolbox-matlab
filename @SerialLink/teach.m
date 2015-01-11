@@ -1,11 +1,9 @@
 %SerialLink.teach Graphical teach pendant
 %
-% R.teach(Q) drive a graphical robot by means of a graphical slider panel.
-% If no graphical robot exists one is created in a new window.  Otherwise
-% all current instances of the graphical robot are driven.  The robots are set
-% to the initial joint angles Q.
-%
-% R.teach(Q, OPTIONS) as above but with options.
+% R.teach(Q, OPTIONS) allows the user to "drive" a graphical robot by means
+% of a graphical slider panel. If no graphical robot exists one is created
+% in a new window.  Otherwise all current instances of the graphical robot
+% are driven.  The robots are set to the initial joint angles Q.
 %
 % R.teach(OPTIONS) as above but with options and the initial joint angles
 % are taken from the pose of an existing graphical robot, or if that doesn't
@@ -15,23 +13,31 @@
 % 'eul'           Display tool orientation in Euler angles
 % 'rpy'           Display tool orientation in roll/pitch/yaw angles
 % 'approach'      Display tool orientation as approach vector (z-axis)
-% 'radians'       Display angles in radians (default degrees)
-% 'callback',C    Set a callback function, called with robot object and
-%                 joint angle vector
+% '[no]deg'       Display angles in degrees (default true)
+% 'callback',CB   Set a callback function, called with robot object and
+%                 joint angle vector: CB(R, Q)
+%
+% Example::
+%
+% To display the velocity ellipsoid for a Puma 560
+%
+%        p560.teach('callback', @(r,q) r.vellipse(q));
 %
 % GUI::
 %
-% - The record button invokes the user specified callback function, and is passed
+% - The specified callback function is invoked every time the joint configuration changes.
 %   the joint coordinate vector.
-% - The Quit button destroys the teach window.
+% - The Quit (red X) button destroys the teach window.
 %
 % Notes::
+% - If the robot is displayed in several windows, only one has the
+%   teach panel added.
 % - The slider limits are derived from the joint limit properties.  If not
 %   set then for
 %   - a revolute joint they are assumed to be [-pi, +pi]
 %   - a prismatic joint they are assumed unknown and an error occurs.
 %
-% See also SerialLink.plot.
+% See also SerialLink.plot, SerialLink.getpos.
 
 
 % Copyright (C) 1993-2014, by Peter I. Corke
@@ -66,7 +72,7 @@ function teach(robot, varargin)
     
     
     %---- handle options
-    opt.radians = false;
+    opt.deg = true;
     opt.orientation = {'approach', 'eul', 'rpy'};
     opt.callback = [];    
     [opt,args] = tb_optparse(opt, varargin);
@@ -74,6 +80,7 @@ function teach(robot, varargin)
     % stash some options into the persistent object
     handles.orientation = opt.orientation;
     handles.callback = opt.callback;
+    handles.opt = opt;
 
     
     % we need to have qlim set to finite values for a prismatic joint
@@ -92,7 +99,7 @@ function teach(robot, varargin)
     qscale = ones(robot.n,1);
     for j=1:robot.n
         L=robot.links(j);
-        if ~opt.radians && L.isrevolute
+        if opt.deg && L.isrevolute
             qscale(j) = 180/pi;
         end
     end
@@ -257,7 +264,7 @@ function teach(robot, varargin)
         case 'approach'
             labels = {'ax:', 'ay:', 'az:'};
         case 'eul'
-            labels = {'\phi:', '\theta:', '\psi:'};
+            labels = {[char(hex2dec('3c6')) ':'], [char(hex2dec('3b8')) ':'], [char(hex2dec('3c8')) ':']}; % phi theta psi
         case'rpy'
             labels = {'R:', 'P:', 'Y:'};
     end
@@ -410,9 +417,9 @@ function teach_callback(src, name, j, handles)
         case 'approach'
             orient = T6(:,3);    % approach vector
         case 'eul'
-            orient = tr2eul(T6);
+            orient = tr2eul(T6, 'setopt', handles.opt);
         case'rpy'
-            orient = tr2rpy(T6);
+            orient = tr2rpy(T6, 'setopt', handles.opt);
     end
     
     % update the display in the teach window
