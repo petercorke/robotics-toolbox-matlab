@@ -1,9 +1,13 @@
-%SerialLink.ikine6s Inverse kinematics for 6-axis robot with spherical wrist
+%SerialLink.ikine6s Analytical inverse kinematics
 %
-% Q = R.ikine6s(T) is the joint coordinates corresponding to the robot
-% end-effector pose T represented by the homogenenous transform.  This
+% Q = R.ikine6s(T) is the joint coordinates (1xN) corresponding to the robot
+% end-effector pose T represented by an SE(3) homogenenous transform (4x4).  This
 % is a analytic solution for a 6-axis robot with a spherical wrist (the most
 % common form for industrial robot arms).
+%
+% If T represents a trajectory (4x4xM) then the inverse kinematics is
+% computed for all M poses resulting in Q (MxN) with each row representing
+% the joint angles at the corresponding pose.
 %
 % Q = R.IKINE6S(T, CONFIG) as above but specifies the configuration of the arm in
 % the form of a string containing one or more of the configuration codes:
@@ -20,7 +24,8 @@
 %  - Robot with no shoulder offset
 %  - Robot with a shoulder offset (has lefty/righty configuration)
 %  - Robot with a shoulder offset and a prismatic third joint (like Stanford arm)
-%  - The Puma 560 arms with should and elbow offsets
+%  - The Puma 560 arms with shoulder and elbow offsets (4 lengths parameters)
+%  - The Kuka KR5 with many offsets (7 length parameters)
 % - The inverse kinematic solution is generally not unique, and
 %   depends on the configuration string.
 % - Joint offsets, if defined, are added to the inverse kinematics to
@@ -34,10 +39,11 @@
 %   Vol. 5, No. 2, Summer 1986, p. 32-44
 %
 % Author::
-% The Puma560 specific case by Robert Biro with Gary Von McMurray,
-% GTRI/ATRP/IIMB,
-% Georgia Institute of Technology
-% 2/13/95
+% - The Puma560 case: Robert Biro with Gary Von McMurray,
+%   GTRI/ATRP/IIMB, Georgia Institute of Technology, 2/13/95
+% - Kuka KR5 case: Gautam Sinha,
+%   Autobirdz Systems Pvt. Ltd.,  SIDBI Office,
+%   Indian Institute of Technology Kanpur, Kanpur, Uttar Pradesh.
 %
 % See also SerialLink.FKINE, SerialLink.IKINE.
 
@@ -79,7 +85,7 @@ function theta = ikine6s(robot, T, varargin)
     if nargin < 3
         configuration = '';
     else
-        configuration = varargin{1};
+        configuration = lower(varargin{1});
     end
     
     % default configuration
@@ -87,7 +93,7 @@ function theta = ikine6s(robot, T, varargin)
     sol = [1 1 1];  % left, up, noflip
     
     for c=configuration
-        switch lower(c)
+        switch c
             case 'l'
                 sol(1) = 1;
             case 'r'
@@ -381,6 +387,136 @@ function theta = ikine6s(robot, T, varargin)
                 q(3) = -C2*d1+C2*pz-C1*S2*px-S1*S2*py;
             end
             theta(1:3) = q;
+            
+        case 'kr5'
+            %Given function will calculate inverse kinematics for KUKA KR5 robot
+            
+            % Equations are calculated and implemented by
+            % Gautam Sinha
+            % Autobirdz Systems Pvt. Ltd.
+            % SIDBI Office,
+            % Indian Institute of Technology Kanpur, Kanpur, Uttar Pradesh
+            % 208016
+            % India
+            %email- gautam.sinha705@gmail.com
+            
+            
+            
+            % get the a1, a2 and a3-- link lenghts for link no 1,2,3
+            L = robot.links;
+            a1 = L(1).a;
+            a2 = L(2).a;
+            a3 = L(3).a;
+            
+            % Check wether wrist is spherical or not
+            if ~robot.isspherical()
+                error('wrist is not spherical')
+            end
+            
+            % get d1,d2,d3,d4---- Link offsets for link no 1,2,3,4
+            d1 = L(1).d;
+            d2 = L(2).d;
+            d3 = L(3).d;
+            d4 = L(4).d;
+            
+            % Get the parameters from transformation matrix
+            Ox = T(1,2);
+            Oy = T(2,2);
+            Oz = T(3,2);
+            
+            Ax = T(1,3);
+            Ay = T(2,3);
+            Az = T(3,3);
+            
+            Px = T(1,4);
+            Py = T(2,4);
+            Pz = T(3,4);
+            
+            
+            
+            % Set the parameters n1, n2 and n3 to get required configuration from
+            % solution
+            n1 = -1;   % 'l'
+            n2 = -1;   % 'u'
+            n4 = -1;   % 'n'
+            if ~isempty(strfind(configuration, 'l'))
+                n1 = -1;
+            end
+            if ~isempty(strfind(configuration, 'r'))
+                n1 = 1;
+            end
+            if ~isempty(strfind(configuration, 'u'))
+                if n1 == 1
+                    n2 = 1;
+                else
+                    n2 = -1;
+                end
+            end
+            if ~isempty(strfind(configuration, 'd'))
+                if n1 == 1
+                    n2 = -1;
+                else
+                    n2 = 1;
+                end
+            end
+            if ~isempty(strfind(configuration, 'n'))
+                n4 = 1;
+            end
+            if ~isempty(strfind(configuration, 'f'))
+                n4 = -1;
+            end
+            
+            
+            % Calculation for theta(1)
+            r=sqrt(Px^2+Py^2);
+            
+            if (n1 == 1)
+                theta(1)= atan2(Py,Px) + asin((d2-d3)/r);
+            else
+                theta(1)= atan2(Py,Px)+ pi - asin((d2-d3)/r);
+            end
+            
+            % Calculation for theta(2)
+            X= Px*cos(theta(1)) + Py*sin(theta(1)) - a1;
+            r=sqrt(X^2 + (Pz-d1)^2);
+            Psi = acos((a2^2-d4^2-a3^2+X^2+(Pz-d1)^2)/(2.0*a2*r));
+            
+            if ~isreal(Psi)
+                warning('RTB:ikine6s:notreachable', 'point not reachable');
+                theta = [NaN NaN NaN NaN NaN NaN];
+                return
+            end
+            
+            theta(2) = atan2((Pz-d1),X) + n2*Psi;
+            
+            % Calculation for theta(3)
+            Nu = cos(theta(2))*X + sin(theta(2))*(Pz-d1) - a2;
+            Du = sin(theta(2))*X - cos(theta(2))*(Pz-d1);
+            theta(3) = atan2(a3,d4) - atan2(Nu, Du);
+            
+            % Calculation for theta(4)
+            Y = cos(theta(1))*Ax + sin(theta(1))*Ay;
+            M2 = sin(theta(1))*Ax - cos(theta(1))*Ay ;
+            M1 =  ( cos(theta(2)-theta(3)) )*Y + ( sin(theta(2)-theta(3)) )*Az;
+            theta(4) = atan2(n4*M2,n4*M1);
+            
+            % Calculation for theta(5)
+            Nu =  -cos(theta(4))*M1 - M2*sin(theta(4));
+            M3 =  -Az*( cos(theta(2)-theta(3)) ) + Y*( sin(theta(2)-theta(3)) );
+            theta(5) = atan2(Nu,M3);
+            
+            % Calculation for theta(6)
+            Z = cos(theta(1))*Ox + sin(theta(1))*Oy;
+            L2 = sin(theta(1))*Ox - cos(theta(1))*Oy;
+            L1 = Z*( cos(theta(2)-theta(3) )) + Oz*( sin(theta(2)-theta(3)));
+            L3 = Z*( sin(theta(2)-theta(3) )) - Oz*( cos(theta(2)-theta(3)));
+            A1 = L1*cos(theta(4)) + L2*sin(theta(4));
+            A3 = L1*sin(theta(4)) - L2*cos(theta(4));
+            Nu =  -A1*cos(theta(5)) - L3*sin(theta(5));
+            Du =  -A3;
+            theta(6) = atan2(Nu,Du);
+            
+
         otherwise
             error('RTB:ikine6s:badarg', 'Unknown solution type [%s]', robot.ikineType);
     end
