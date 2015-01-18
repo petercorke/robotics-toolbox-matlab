@@ -1,6 +1,6 @@
 %RTBDEMO 	Robot toolbox demonstrations
 %
-% rtbdemo is displays popup menu of toolbox demonstration scripts that illustrate:
+% rtbdemo displays a menu of toolbox demonstration scripts that illustrate:
 %   - homogeneous transformations
 %   - trajectories
 %   - forward kinematics
@@ -47,7 +47,7 @@ function rtbdemo(timeout)
     end
     
     % create the options to pass through to runscript
-    opts = {'path', demopath};
+    opts = {'begin', 'path', demopath};
     
     % if a timeout interval is given, add this to the options
     if nargin > 0
@@ -74,6 +74,7 @@ function rtbdemo(timeout)
         'Transformations', 'trans';
         'Joystick demo', 'joytest';
         'Trajectory', 'traj';
+        'V-REP simulator', 'vrepdemo';
         'Create a model', 'robot';
         'Animation', 'graphics';
         'Forward kinematics', 'fkine';
