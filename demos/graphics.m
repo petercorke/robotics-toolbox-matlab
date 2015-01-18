@@ -50,9 +50,7 @@ p560.plot(q);
 %
 % Let's make a clone of the Puma robot, but change its name and base location
 
-p560_2 = SerialLink(p560, ...
-    'name', 'another Puma', ...
-    'base', transl(-0.5, 0.5, 0) )
+p560_2 = SerialLink(p560, 'name', 'another Puma', 'base', transl(-0.5, 0.5, 0) )
 hold on
 p560_2.plot(q);
 
@@ -63,11 +61,16 @@ p560.plot(qr);
 figure
 p560.plot(qr);
 view(40,50)
+
+% so now when we animate the robot, it moves in both views
 p560.plot(q)
 
 % Sometimes it's useful to be able to manually drive the robot around to
 % get an understanding of how it works.
 
 p560.teach()
-% Use the sliders to control the robot (in fact both views).  Hit the red quit
-% button when you are done.
+% Use the sliders to control the robot (in fact both views).  Hit the 
+% red X button when you are done.
+
+% you can find the final joint angles of the robot you drove it to
+p560.getpos()
