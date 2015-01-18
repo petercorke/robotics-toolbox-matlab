@@ -21,7 +21,7 @@ Model {
   FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
   InitFcn		  "% load parameters of the default quadrotor\ndisp('Quadrotor parameters loaded by InitFcn')\nmdl_quadroto"
-  "r"
+  "r\nquad.nrotors = 6;  % HACK"
   Object {
     $PropName		    "BdWindowsInfo"
     $ObjectID		    1
@@ -67,8 +67,8 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Dec 02 12:01:31 2014"
-  RTWModifiedTimeStamp	  339422455
+  LastModifiedDate	  "Sun Jan 04 19:31:11 2015"
+  RTWModifiedTimeStamp	  339921970
   ModelVersionFormat	  "1.%<AutoIncrement:29>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
@@ -913,7 +913,7 @@ Model {
   System {
     Name		    "sl_hexarotor"
     Location		    [165, 23, 1178, 768]
-    Open		    on
+    Open		    off
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
     ScreenColor		    "white"
@@ -1048,7 +1048,7 @@ Model {
       BlockType		      Clock
       Name		      "Clock"
       SID		      "70"
-      Position		      [700, 409, 745, 431]
+      Position		      [720, 409, 745, 431]
       ZOrder		      -7
       BackgroundColor	      "yellow"
       ShowName		      off
@@ -1167,7 +1167,6 @@ Model {
       SourceBlock	      "roblocks/Dynamics/N-rotor"
       SourceType	      ""
       ContentPreviewEnabled   off
-      nrotors		      "6"
       quad		      "quad"
     }
     Block {
@@ -1250,7 +1249,6 @@ Model {
       SourceType	      ""
       ContentPreviewEnabled   off
       quad		      "quad"
-      nrotors		      "6"
       xydim		      "3"
       zdim		      "10"
     }

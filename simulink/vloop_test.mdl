@@ -1,28 +1,27 @@
 Model {
   Name			  "vloop_test"
-  Version		  8.0
+  Version		  8.4
   MdlSubVersion		  0
+  SavedCharacterEncoding  "ISO-8859-1"
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    2
     Outport {
+      Name		      "qd"
       BusObject		      ""
       BusOutputAsStruct	      "off"
-      Name		      "qd"
     }
     Outport {
+      Name		      "qd*"
       BusObject		      ""
       BusOutputAsStruct	      "off"
       SignalName	      "qd*"
-      Name		      "qd*"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.13"
+    ComputedModelVersion    "1.15"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
-  SavedCharacterEncoding  "ISO-8859-1"
-  SaveDefaultBlockParams  on
   ScopeRefreshTime	  0.035000
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
@@ -33,6 +32,7 @@ Model {
   FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
   InitFcn		  "G = 107.815;"
+  UserBdParams		  "DisableUpgradeWarningsForVersion"
   Object {
     $PropName		    "BdWindowsInfo"
     $ObjectID		    1
@@ -42,7 +42,7 @@ Model {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [1154.0, 551.0, 749.0, 475.0]
+      Location		      [852.0, 22.0, 932.0, 512.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -51,7 +51,7 @@ Model {
 	DockPosition		"Left"
 	Width			[50]
 	Height			[50]
-	Filter			[10]
+	Filter			[11]
       }
       Object {
 	$PropName		"ExplorerBarInfo"
@@ -66,21 +66,22 @@ Model {
 	IsActive		[1]
 	ViewObjType		"SimulinkTopLevel"
 	LoadSaveID		"0"
-	Extents			[715.0, 301.0]
+	Extents			[898.0, 339.0]
 	ZoomFactor		[1.0]
 	Offset			[0.0, 0.0]
       }
     }
   }
-  Created		  "Tue Jul  7 06:47:01 2009"
+  DisableUpgradeWarningsForVersion "R2014b"
+  Created		  "Tue Jul 07 06:47:01 2009"
   Creator		  "pic"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun Jan 27 11:35:31 2013"
-  RTWModifiedTimeStamp	  281187295
-  ModelVersionFormat	  "1.%<AutoIncrement:13>"
+  LastModifiedDate	  "Mon Oct 20 07:40:07 2014"
+  RTWModifiedTimeStamp	  335691585
+  ModelVersionFormat	  "1.%<AutoIncrement:15>"
   ConfigurationManager	  "customverctrl"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -98,14 +99,20 @@ Model {
   SortedOrder		  off
   ExecutionContextIcon	  off
   ShowLinearizationAnnotations on
+  ShowMarkup		  on
   BlockNameDataTip	  off
   BlockParametersDataTip  off
   BlockDescriptionStringDataTip	off
   ToolBar		  on
   StatusBar		  on
   BrowserShowLibraryLinks off
-  BrowserLookUnderMasks	  off
+  BrowserLookUnderMasks	  on
   SimulationMode	  "normal"
+  PauseTimes		  "5"
+  NumberOfSteps		  1
+  SnapshotBufferSize	  10
+  SnapshotInterval	  10
+  NumberOfLastSnapshots	  0
   LinearizationMsg	  "none"
   Profile		  off
   ParamWorkspaceSource	  "MATLABWorkspace"
@@ -138,6 +145,7 @@ Model {
   CovNameIncrementing	  off
   CovHtmlReporting	  on
   CovForceBlockReductionOff on
+  CovEnableCumulative	  on
   covSaveCumulativeToWorkspaceVar on
   CovSaveSingleToWorkspaceVar on
   CovCumulativeVarName	  "covCumulativeData"
@@ -145,6 +153,12 @@ Model {
   CovReportOnPause	  on
   CovModelRefEnable	  "Off"
   CovExternalEMLEnable	  off
+  CovSFcnEnable		  off
+  CovBoundaryAbsTol	  0.000010
+  CovBoundaryRelTol	  0.010000
+  CovUseTimeInterval	  off
+  CovStartTime		  0
+  CovStopTime		  0
   ExtModeBatchMode	  off
   ExtModeEnableFloating	  on
   ExtModeTrigType	  "manual"
@@ -174,13 +188,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      7
-      Version		      "1.12.1"
+      Version		      "1.14.3"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  8
-	  Version		  "1.12.1"
+	  Version		  "1.14.3"
 	  StartTime		  "0.0"
 	  StopTime		  "1.0"
 	  AbsTol		  "auto"
@@ -215,7 +229,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  9
-	  Version		  "1.12.1"
+	  Version		  "1.14.3"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -233,6 +247,7 @@ Model {
 	  SignalLogging		  on
 	  DSMLogging		  on
 	  InspectSignalLogs	  off
+	  VisualizeSimOutput	  on
 	  SaveTime		  on
 	  ReturnWorkspaceOutputs  off
 	  StateSaveName		  "xout"
@@ -247,7 +262,7 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  10
-	  Version		  "1.12.1"
+	  Version		  "1.14.3"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -263,13 +278,16 @@ Model {
 	  BooleanDataType	  on
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
-	  UseIntDivNetSlope	  off
+	  UseDivisionForNetSlopeComputation "Off"
 	  UseFloatMulNetSlope	  off
+	  DefaultUnderspecifiedDataType	"double"
 	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
 	  EnhancedBackFolding	  off
+	  CachingGlobalReferences off
+	  GlobalBufferReuse	  on
 	  StrengthReduction	  off
 	  ExpressionFolding	  on
 	  BooleansAsBitfields	  off
@@ -284,6 +302,7 @@ Model {
 	  SystemCodeInlineAuto	  off
 	  StateBitsets		  off
 	  DataBitsets		  off
+	  ActiveStateOutputEnumStorageType "Native Integer"
 	  UseTempVars		  off
 	  ZeroExternalMemoryAtStartup on
 	  ZeroInternalMemoryAtStartup on
@@ -301,7 +320,7 @@ Model {
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  11
-	  Version		  "1.12.1"
+	  Version		  "1.14.3"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -375,7 +394,7 @@ Model {
 	  SimStateInterfaceChecksumMismatchMsg "warning"
 	  SimStateOlderReleaseMsg "error"
 	  InitInArrayFormatMsg	  "warning"
-	  StrictBusMsg		  "Warning"
+	  StrictBusMsg		  "ErrorLevel1"
 	  BusNameAdapt		  "WarnAndRepair"
 	  NonBusSignalsTreatedAsBus "none"
 	  LoggingUnavailableSignals "error"
@@ -388,14 +407,16 @@ Model {
 	  SFUnconditionalTransitionShadowingDiag "warning"
 	  SFUndirectedBroadcastEventsDiag "warning"
 	  SFTransitionActionBeforeConditionDiag	"warning"
+	  IntegerSaturationMsg	  "warning"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  12
-	  Version		  "1.12.1"
+	  Version		  "1.14.3"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
 	  ProdBitPerLong	  32
+	  ProdBitPerLongLong	  64
 	  ProdBitPerFloat	  32
 	  ProdBitPerDouble	  64
 	  ProdBitPerPointer	  32
@@ -405,17 +426,20 @@ Model {
 	  ProdEndianess		  "Unspecified"
 	  ProdWordSize		  32
 	  ProdShiftRightIntArith  on
+	  ProdLongLongMode	  off
 	  ProdHWDeviceType	  "32-bit Generic"
 	  TargetBitPerChar	  8
 	  TargetBitPerShort	  16
 	  TargetBitPerInt	  32
 	  TargetBitPerLong	  32
+	  TargetBitPerLongLong	  64
 	  TargetBitPerFloat	  32
 	  TargetBitPerDouble	  64
 	  TargetBitPerPointer	  32
 	  TargetLargestAtomicInteger "Char"
 	  TargetLargestAtomicFloat "None"
 	  TargetShiftRightIntArith on
+	  TargetLongLongMode	  off
 	  TargetIntDivRoundTo	  "Undefined"
 	  TargetEndianess	  "Unspecified"
 	  TargetWordSize	  32
@@ -428,7 +452,7 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  13
-	  Version		  "1.12.1"
+	  Version		  "1.14.3"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -443,7 +467,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  14
-	  Version		  "1.12.1"
+	  Version		  "1.14.3"
 	  SimCustomInitializer	  "if ~exist(tau_d)\n   tau_d = 0\nend"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
@@ -455,11 +479,12 @@ Model {
 	  SimUseLocalCustomCode	  off
 	  SimParseCustomCode	  on
 	  SimBuildMode		  "sf_incremental_build"
+	  SimGenImportedTypeDefs  off
 	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  15
-	  Version		  "1.12.1"
+	  Version		  "1.14.3"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -472,11 +497,15 @@ Model {
 	    PropName		    "DisabledProps"
 	  }
 	  SystemTargetFile	  "grt.tlc"
+	  TLCOptions		  ""
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
 	  GenerateMakefile	  on
 	  PackageGeneratedCodeAndArtifacts off
+	  PackageName		  ""
 	  TemplateMakefile	  "grt_default_tmf"
+	  PostCodeGenCommand	  ""
+	  Description		  ""
 	  GenerateReport	  off
 	  SaveLog		  off
 	  RTWVerbose		  on
@@ -487,18 +516,29 @@ Model {
 	  TLCAssert		  off
 	  ProcessScriptMode	  "Default"
 	  ConfigurationMode	  "Optimized"
+	  ProcessScript		  ""
+	  ConfigurationScript	  ""
 	  ConfigAtBuild		  off
 	  RTWUseLocalCustomCode	  off
 	  RTWUseSimCustomCode	  off
+	  CustomSourceCode	  ""
+	  CustomHeaderCode	  ""
+	  CustomInclude		  ""
+	  CustomSource		  ""
+	  CustomLibrary		  ""
+	  CustomInitializer	  ""
+	  CustomTerminator	  ""
+	  Toolchain		  "Automatically locate an installed toolchain"
+	  BuildConfiguration	  "Faster Builds"
 	  IncludeHyperlinkInReport off
 	  LaunchReport		  off
 	  PortableWordSizes	  off
-	  GenerateErtSFunction	  off
 	  CreateSILPILBlock	  "None"
 	  CodeExecutionProfiling  off
 	  CodeExecutionProfileVariable "executionProfile"
 	  CodeProfilingSaveOptions "SummaryOnly"
 	  CodeProfilingInstrumentation off
+	  SILDebugging		  off
 	  TargetLang		  "C"
 	  IncludeBusHierarchyInRTWFileBlockHierarchyMap	off
 	  IncludeERTFirstTime	  off
@@ -512,14 +552,17 @@ Model {
 	  GenerateCodeMetricsReport off
 	  GenerateCodeReplacementReport	off
 	  RTWCompilerOptimization "Off"
+	  RTWCustomCompilerOptimizations ""
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
+	  DataInitializer	  ""
+	  SharedConstantsCachingThreshold 1024
 	  Array {
 	    Type		    "Handle"
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      16
-	      Version		      "1.12.1"
+	      Version		      "1.14.3"
 	      Array {
 		Type			"Cell"
 		Dimension		17
@@ -544,6 +587,7 @@ Model {
 	      }
 	      ForceParamTrailComments off
 	      GenerateComments	      on
+	      CommentStyle	      "Auto"
 	      IgnoreCustomStorageClasses on
 	      IgnoreTestpoints	      off
 	      IncHierarchyInIds	      off
@@ -559,13 +603,14 @@ Model {
 	      IncDataTypeInIds	      off
 	      MangleLength	      1
 	      CustomSymbolStrGlobalVar "$R$N$M"
-	      CustomSymbolStrType     "$N$R$M"
+	      CustomSymbolStrType     "$N$R$M_T"
 	      CustomSymbolStrField    "$N$M"
 	      CustomSymbolStrFcn      "$R$N$M$F"
 	      CustomSymbolStrFcnArg   "rt$I$N$M"
 	      CustomSymbolStrBlkIO    "rtb_$N$M"
 	      CustomSymbolStrTmpVar   "$N$M"
 	      CustomSymbolStrMacro    "$R$N$M"
+	      CustomSymbolStrUtil     "$N$C"
 	      DefineNamingRule	      "None"
 	      ParamNamingRule	      "None"
 	      SignalNamingRule	      "None"
@@ -574,7 +619,7 @@ Model {
 	      SimulinkBlockComments   on
 	      MATLABSourceComments    off
 	      EnableCustomComments    off
-	      InternalIdentifier      "Classic"
+	      InternalIdentifier      "Shortened"
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
 	      UseSimReservedNames     off
@@ -582,31 +627,32 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      17
-	      Version		      "1.12.1"
+	      Version		      "1.14.3"
 	      Array {
 		Type			"Cell"
-		Dimension		15
+		Dimension		14
 		Cell			"IncludeMdlTerminateFcn"
-		Cell			"CombineOutputUpdateFcns"
+		Cell			"SupportNonInlinedSFcns"
 		Cell			"SuppressErrorStatus"
 		Cell			"ERTCustomFileBanners"
 		Cell			"GenerateSampleERTMain"
 		Cell			"GenerateTestInterfaces"
 		Cell			"ModelStepFunctionPrototypeControlCompliant"
 		Cell			"CPPClassGenCompliant"
-		Cell			"MultiInstanceERTCode"
+		Cell			"SupportContinuousTime"
 		Cell			"PurelyIntegerCode"
 		Cell			"PortableWordSizes"
 		Cell			"SupportComplex"
 		Cell			"SupportAbsoluteTime"
-		Cell			"SupportContinuousTime"
-		Cell			"SupportNonInlinedSFcns"
+		Cell			"GenerateAllocFcn"
 		PropName		"DisabledProps"
 	      }
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
-	      CodeReplacementLibrary  "ANSI_C"
+	      GenFloatMathFcnCalls    "NOT IN USE"
+	      TargetLangStandard      "C89/C90 (ANSI)"
+	      CodeReplacementLibrary  "None"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
 	      ERTMultiwordLength      256
@@ -614,7 +660,6 @@ Model {
 	      GenerateFullHeader      on
 	      GenerateSampleERTMain   off
 	      GenerateTestInterfaces  off
-	      IsPILTarget	      off
 	      ModelReferenceCompliant on
 	      ParMdlRefBuildCompliant on
 	      CompOptLevelCompliant   on
@@ -631,6 +676,7 @@ Model {
 	      LogVarNameModifier      "rt_"
 	      MatFileLogging	      on
 	      MultiInstanceERTCode    off
+	      CodeInterfacePackaging  "Nonreusable function"
 	      SupportNonFinite	      on
 	      SupportComplex	      on
 	      PurelyIntegerCode	      off
@@ -639,10 +685,14 @@ Model {
 	      SupportVariableSizeSignals off
 	      EnableShiftOperators    on
 	      ParenthesesLevel	      "Nominal"
+	      CastingMode	      "Nominal"
+	      MATLABClassNameForMDSCustomization "Simulink.SoftwareTarget.GRTCustomization"
 	      ModelStepFunctionPrototypeControlCompliant off
-	      CPPClassGenCompliant    off
+	      CPPClassGenCompliant    on
 	      AutosarCompliant	      off
 	      GRTInterface	      on
+	      GenerateAllocFcn	      off
+	      GenerateSharedConstants on
 	      UseMalloc		      off
 	      ExtMode		      off
 	      ExtModeStaticAlloc      off
@@ -656,6 +706,7 @@ Model {
 	      RTWCAPIStates	      off
 	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
+	      MultiInstanceErrorCode  "Error"
 	    }
 	    PropName		    "Components"
 	  }
@@ -663,8 +714,8 @@ Model {
 	PropName		"Components"
       }
       Name		      "Configuration"
-      CurrentDlgPage	      "Simulation Target/Custom Code"
-      ConfigPrmDlgPosition     [ 280, 124, 1160, 754 ] 
+      CurrentDlgPage	      "Diagnostics/Connectivity"
+      ConfigPrmDlgPosition     [ 280, 102, 1360, 764 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -740,6 +791,7 @@ Model {
       DisplayOption	      "none"
       OutDataTypeStr	      "Inherit: auto"
       NonVirtualBus	      off
+      InheritFromInputs	      on
     }
     Block {
       BlockType		      Constant
@@ -816,7 +868,7 @@ Model {
   }
   System {
     Name		    "vloop_test"
-    Location		    [1154, 551, 1903, 1026]
+    Location		    [852, 22, 1784, 534]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -830,13 +882,13 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "36"
+    SIDHighWatermark	    "41"
     Block {
       BlockType		      BusCreator
       Name		      "Bus\nCreator"
       SID		      "1"
       Ports		      [2, 1]
-      Position		      [535, 27, 540, 98]
+      Position		      [535, 32, 540, 103]
       ZOrder		      -1
       ShowName		      off
       Inputs		      "2"
@@ -860,7 +912,7 @@ Model {
       Name		      "Signal\nGenerator"
       SID		      "24"
       Ports		      [0, 1]
-      Position		      [110, 75, 140, 105]
+      Position		      [110, 85, 140, 115]
       ZOrder		      -3
       WaveForm		      "square"
       Amplitude		      "50"
@@ -904,6 +956,7 @@ Model {
       SaveName		      "ScopeData3"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
+      ScrollMode	      off
     }
     Block {
       BlockType		      Scope
@@ -913,8 +966,8 @@ Model {
       Position		      [575, 114, 605, 146]
       ZOrder		      -5
       Floating		      off
-      Location		      [118, 1175, 442, 1414]
-      Open		      off
+      Location		      [1888, 409, 2212, 648]
+      Open		      on
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
@@ -937,17 +990,18 @@ Model {
       SaveName		      "ScopeData2"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
+      ScrollMode	      off
     }
     Block {
       BlockType		      Scope
       Name		      "qd*/qd"
       SID		      "5"
       Ports		      [1]
-      Position		      [575, 49, 605, 81]
+      Position		      [575, 54, 605, 86]
       ZOrder		      -6
       Floating		      off
-      Location		      [212, 1467, 536, 1706]
-      Open		      off
+      Location		      [1880, 109, 2204, 348]
+      Open		      on
       NumInputPorts	      "1"
       ZoomMode		      "xonly"
       List {
@@ -970,6 +1024,7 @@ Model {
       YMax		      "90"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
+      ScrollMode	      off
     }
     Block {
       BlockType		      Scope
@@ -979,8 +1034,8 @@ Model {
       Position		      [575, 184, 605, 216]
       ZOrder		      -7
       Floating		      off
-      Location		      [815, 1445, 1139, 1684]
-      Open		      off
+      Location		      [1884, 714, 2208, 953]
+      Open		      on
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
@@ -1003,6 +1058,7 @@ Model {
       SaveName		      "ScopeData1"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
+      ScrollMode	      off
     }
     Block {
       BlockType		      Constant
@@ -1016,14 +1072,15 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "vloop"
-      SID		      "32"
+      SID		      "37"
       Ports		      [2, 4]
-      Position		      [315, 69, 365, 191]
-      ZOrder		      -9
+      Position		      [310, 72, 375, 188]
+      ZOrder		      55
       DropShadow	      on
-      LibraryVersion	      "1.18"
-      SourceBlock	      "control/vloop"
+      LibraryVersion	      "1.62"
+      SourceBlock	      "roblocks/Dynamics/vloop"
       SourceType	      ""
+      ContentPreviewEnabled   off
       J			      "372e-6"
       B			      "817e-6"
       Km		      "0.228"
@@ -1036,7 +1093,7 @@ Model {
       BlockType		      Outport
       Name		      "qd"
       SID		      "22"
-      Position		      [460, 93, 490, 107]
+      Position		      [460, 98, 490, 112]
       ZOrder		      -10
       IconDisplay	      "Port number"
     }
@@ -1044,76 +1101,88 @@ Model {
       BlockType		      Outport
       Name		      "qd*"
       SID		      "23"
-      Position		      [255, 103, 285, 117]
+      Position		      [255, 113, 285, 127]
       ZOrder		      -11
       Port		      "2"
       IconDisplay	      "Port number"
     }
     Line {
       Name		      "qd*"
+      ZOrder		      1
       Labels		      [0, 0]
       SrcBlock		      "Signal\nGenerator"
       SrcPort		      1
       Points		      [95, 0]
       Branch {
+	ZOrder			2
 	DstBlock		"qd*"
 	DstPort			1
       }
       Branch {
+	ZOrder			3
 	Points			[50, 0]
 	Branch {
-	  Points		  [0, -45]
+	  ZOrder		  21
+	  Points		  [0, -50]
 	  DstBlock		  "Bus\nCreator"
 	  DstPort		  1
 	}
 	Branch {
-	  Points		  [10, 0]
+	  ZOrder		  15
 	  DstBlock		  "vloop"
 	  DstPort		  1
 	}
       }
     }
     Line {
+      ZOrder		      6
       SrcBlock		      "Bus\nCreator"
       SrcPort		      1
       DstBlock		      "qd*/qd"
       DstPort		      1
     }
     Line {
+      ZOrder		      7
       SrcBlock		      "tau_d"
       SrcPort		      1
       DstBlock		      "Gain"
       DstPort		      1
     }
     Line {
+      ZOrder		      17
       SrcBlock		      "vloop"
       SrcPort		      1
-      Points		      [0, -5; 60, 0]
+      Points		      [50, 0]
       Branch {
+	ZOrder			9
 	DstBlock		"Bus\nCreator"
 	DstPort			2
       }
       Branch {
+	ZOrder			10
 	Points			[0, 20]
 	DstBlock		"qd"
 	DstPort			1
       }
     }
     Line {
+      ZOrder		      18
       SrcBlock		      "vloop"
       SrcPort		      2
-      Points		      [190, 0]
+      Points		      [44, 0; 0, 15]
       DstBlock		      "qd error"
       DstPort		      1
     }
     Line {
+      ZOrder		      19
       SrcBlock		      "vloop"
       SrcPort		      3
-      Points		      [190, 0]
+      Points		      [124, 0; 0, 55]
       DstBlock		      "tau"
       DstPort		      1
     }
     Line {
+      ZOrder		      16
       Labels		      [3, 0]
       SrcBlock		      "Gain"
       SrcPort		      1
@@ -1122,22 +1191,74 @@ Model {
       DstPort		      2
     }
     Line {
+      ZOrder		      20
       SrcBlock		      "vloop"
       SrcPort		      4
-      Points		      [95, 0; 0, 85]
+      Points		      [85, 0; 0, 85]
       DstBlock		      "integral"
       DstPort		      1
     }
     Annotation {
+      SID		      "41"
+      Name		      "plot integral term"
+      Position		      [634, 254, 710, 266]
+      InternalMargins	      [0, 0, 0, 0]
+      FixedHeight	      off
+      FixedWidth	      off
+      HorizontalAlignment     "left"
+      VerticalAlignment	      "top"
+    }
+    Annotation {
       SID		      "33"
       Name		      "disturbance torque input"
-      Position		      [166, 227]
+      Position		      [166, 227, 275, 239]
+      InternalMargins	      [0, 0, 0, 0]
+      FixedHeight	      off
+      FixedWidth	      off
       ForegroundColor	      "red"
+      ZOrder		      -1
     }
     Annotation {
       SID		      "35"
       Name		      "vloop parameters for\nPuma560 shoulder joint\nwith link inertia\nRVC p.205"
-      Position		      [326, 239]
+      Position		      [326, 239, 432, 281]
+      InternalMargins	      [0, 0, 0, 0]
+      FixedHeight	      off
+      FixedWidth	      off
+      ZOrder		      -2
+    }
+    Annotation {
+      SID		      "38"
+      Name		      "plot motor torque due\nto feedback and feedfoward"
+      Position		      [625, 189, 750, 211]
+      InternalMargins	      [0, 0, 0, 0]
+      FixedHeight	      off
+      FixedWidth	      off
+      HorizontalAlignment     "left"
+      VerticalAlignment	      "top"
+      ZOrder		      -10
+    }
+    Annotation {
+      SID		      "39"
+      Name		      "plot error between desired and \nactual joint angle"
+      Position		      [625, 119, 765, 141]
+      InternalMargins	      [0, 0, 0, 0]
+      FixedHeight	      off
+      FixedWidth	      off
+      HorizontalAlignment     "left"
+      VerticalAlignment	      "top"
+      ZOrder		      -11
+    }
+    Annotation {
+      SID		      "40"
+      Name		      "plot desired and actual joint angle"
+      Position		      [630, 59, 780, 71]
+      InternalMargins	      [0, 0, 0, 0]
+      FixedHeight	      off
+      FixedWidth	      off
+      HorizontalAlignment     "left"
+      VerticalAlignment	      "top"
+      ZOrder		      -12
     }
   }
 }

@@ -7,7 +7,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.27"
+    ComputedModelVersion    "1.28"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -31,7 +31,7 @@ Model {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [759.0, 80.0, 1013.0, 745.0]
+      Location		      [483.0, 34.0, 1013.0, 745.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -67,9 +67,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun Nov 30 14:14:43 2014"
-  RTWModifiedTimeStamp	  339257681
-  ModelVersionFormat	  "1.%<AutoIncrement:27>"
+  LastModifiedDate	  "Sun Jan 04 19:38:20 2015"
+  RTWModifiedTimeStamp	  342301042
+  ModelVersionFormat	  "1.%<AutoIncrement:28>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -912,7 +912,7 @@ Model {
   }
   System {
     Name		    "sl_quadrotor"
-    Location		    [759, 80, 1772, 825]
+    Location		    [483, 34, 1496, 779]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -1062,7 +1062,7 @@ Model {
       Position		      [700, 47, 760, 358]
       ZOrder		      -8
       DropShadow	      on
-      LibraryVersion	      "1.67"
+      LibraryVersion	      "1.69"
       SourceBlock	      "roblocks/Dynamics/Control Mixer 4"
       SourceType	      ""
       ContentPreviewEnabled   off
@@ -1227,7 +1227,7 @@ Model {
       Position		      [810, 47, 870, 293]
       ZOrder		      -21
       DropShadow	      on
-      LibraryVersion	      "1.67"
+      LibraryVersion	      "1.69"
       SourceBlock	      "roblocks/Dynamics/Quadrotor"
       SourceType	      ""
       ContentPreviewEnabled   off
@@ -1241,11 +1241,13 @@ Model {
       Position		      [650, 422, 680, 468]
       ZOrder		      -22
       DropShadow	      on
-      LibraryVersion	      "1.67"
+      LibraryVersion	      "1.69"
       SourceBlock	      "roblocks/Robot Graphics/Quadrotor plot"
       SourceType	      ""
       ContentPreviewEnabled   off
-      x			      "0"
+      quad		      "quad"
+      xydim		      "2"
+      zdim		      "10"
     }
     Block {
       BlockType		      MATLABFcn
