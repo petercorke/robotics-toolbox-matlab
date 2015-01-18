@@ -10,7 +10,7 @@
 % exist then zero.
 %
 % Options::
-% 'eul'           Display tool orientation in Euler angles
+% 'eul'           Display tool orientation in Euler angles (default)
 % 'rpy'           Display tool orientation in roll/pitch/yaw angles
 % 'approach'      Display tool orientation as approach vector (z-axis)
 % '[no]deg'       Display angles in degrees (default true)
@@ -73,7 +73,7 @@ function teach(robot, varargin)
     
     %---- handle options
     opt.deg = true;
-    opt.orientation = {'approach', 'eul', 'rpy'};
+    opt.orientation = {'rpy', 'eul', 'approach'};
     opt.callback = [];    
     [opt,args] = tb_optparse(opt, varargin);
     
