@@ -4,11 +4,11 @@
 % compounding a number of elementary transformations defined by the string
 % S.  The string S comprises a number of tokens of the form X(ARG) where
 % X is one of Tx, Ty, Tz, Rx, Ry, or Rz.  ARG is the name of a variable in
-% main workspace or qJ where J is an integer in the range 1 to N that
+% MATLAB workspace or qJ where J is an integer in the range 1 to N that
 % selects the variable from the Jth column of the vector Q (1xN).
 %
 % For example:
-%        trchain('Rx(q1)Tx(a1)Ry(q2)Ty(a3)Rz(q3) Rx(pi/2)', [1 2 3])
+%        trchain('Rx(q1)Tx(a1)Ry(q2)Ty(a3)Rz(q3)', [1 2 3])
 %
 % is equivalent to computing:
 %        trotx(1) * transl(a1,0,0) * troty(2) * transl(0,a3,0) * trotz(3)
@@ -21,9 +21,9 @@
 %   define it first in the workspace: pi = sym('pi');
 %
 %
-% See also trchain2, trotx, troty, trotz, transl.
+% See also trchain2, trotx, troty, trotz, transl, SerialLink.trchain, ETS.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

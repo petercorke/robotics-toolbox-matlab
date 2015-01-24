@@ -1,12 +1,12 @@
 %Dstar D* navigation class
 %
-% A concrete subclass of the Navigation class that implements the D*
+% A concrete subclass of the abstract Navigation class that implements the D*
 % navigation algorithm.  This provides minimum distance paths and
 % facilitates incremental replanning.
 %
 % Methods::
 % plan              Compute the cost map given a goal and map
-% path              Compute a path to the goal
+% path              Compute a path to the goal (inherited from Navigation)
 % visualize         Display the obstacle map (deprecated)
 % plot              Display the obstacle map
 % costmap_modify    Modify the costmap

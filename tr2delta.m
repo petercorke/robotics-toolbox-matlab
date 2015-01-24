@@ -2,7 +2,7 @@
 %
 % D = TR2DELTA(T0, T1) is the differential motion (6x1) corresponding to 
 % infinitessimal motion from pose T0 to T1 which are homogeneous 
-% transformations. D=(dx, dy, dz, dRx, dRy, dRz) and is an approximation
+% transformations (4x4). D=(dx, dy, dz, dRx, dRy, dRz) and is an approximation
 % to the average spatial velocity multiplied by time.
 %
 % D = TR2DELTA(T) is the differential motion corresponding to the
@@ -17,7 +17,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

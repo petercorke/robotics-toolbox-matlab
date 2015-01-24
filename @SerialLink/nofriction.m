@@ -3,9 +3,9 @@
 % RNF = R.nofriction() is a robot object with the same parameters as R but 
 % with non-linear (Coulomb) friction coefficients set to zero.  
 %
-% RNF = R.nofriction('all') as above but all friction coefficients set to zero.
+% RNF = R.nofriction('all') as above but viscous and Coulomb friction coefficients set to zero.
 %
-% RNF = R.nofriction('viscous') as above but only viscous friction coefficients 
+% RNF = R.nofriction('viscous') as above but viscous friction coefficients 
 % are set to zero.
 %
 % Notes::
@@ -18,7 +18,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

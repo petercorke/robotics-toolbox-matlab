@@ -15,14 +15,20 @@
 % the linear segment which is normally computed automatically and a time
 % vector.
 %
+% LSPB(S0, SF, M, V) as above but plots S, SD and SDD versus time in a single
+% figure.
+%
 % Notes::
-% - If no output arguments are specified S, SD, and SDD are plotted.
 % - For some values of V no solution is possible and an error is flagged.
+%
+% References::
+% - Robotics, Vision & Control, Chap 3,
+%   P. Corke, Springer 2011.
 %
 % See also TPOLY, JTRAJ.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

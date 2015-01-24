@@ -1,12 +1,12 @@
 %DXform Distance transform navigation class
 %
-% A concrete subclass of the Navigation class that implements the distance 
+% A concrete subclass of the abstract Navigation class that implements the distance 
 % transform navigation algorithm which computes minimum distance paths.
 %
 % Methods::
 %
 % plan         Compute the cost map given a goal and map
-% path         Compute a path to the goal
+% path         Compute a path to the goal (inherited)
 % visualize    Display the obstacle map (deprecated)
 % plot         Display the distance function and obstacle map
 % plot3d       Display the distance function as a surface
@@ -39,7 +39,7 @@
 % See also Navigation, Dstar, PRM, distancexform.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -143,6 +143,9 @@ classdef DXform < Navigation
             %
             % Notes::
             % - This may take many seconds.
+            %
+            % See also Navigation.path.
+
 
             if nargin < 3
                 show = 0;
@@ -170,7 +173,7 @@ classdef DXform < Navigation
             % and shown in red.
             %
             % DX.plot(P) as above but also overlays a path given by the set
-            % of points P (Mx2).
+            % of points P (2xM).
             %
             % See also Navigation.plot.
 

@@ -23,19 +23,21 @@
 %
 % Examples::
 %
-%       trplot(T, 'frame', 'A')
-%       trplot(T, 'frame', 'A', 'color', 'b')
-%       trplot(T1, 'frame', 'A', 'text_opts', {'FontSize', 10, 'FontWeight', 'bold'})
+%       trplot2(T, 'frame', 'A')
+%       trplot2(T, 'frame', 'A', 'color', 'b')
+%       trplot2(T1, 'frame', 'A', 'text_opts', {'FontSize', 10, 'FontWeight', 'bold'})
 %
 % Notes::
-% - The arrow option requires the third party package arrow3.
-% - Generally it is best to set the axis bounds
+% - The arrow option requires the third party package arrow3 from File
+%   Exchange.
+% - When using the form TRPLOT(H, ...) to animate a frame it is best to set 
+%   the axis bounds.
 %
 % See also TRPLOT.
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

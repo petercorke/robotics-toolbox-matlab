@@ -1,4 +1,3 @@
-        function edit(r, dyn)
         %SerialLink.edit Edit kinematic and dynamic parameters of a seriallink manipulator
         %
         % R.edit displays the kinematic parameters of the robot as an editable
@@ -6,9 +5,12 @@
         %
         % R.edit('dyn') as above but also displays the dynamic parameters.
         %
-        % The 'Save' button copies the values from the table to the SerialLink
-        % manipulator object.  To exit the editor without updating the object just
-        % kill the figure window.
+        % Notes::
+        % - The 'Save' button copies the values from the table to the SerialLink
+        %   manipulator object.  
+        % - To exit the editor without updating the object just
+        %   kill the figure window.
+        function edit(r, dyn)
         
             isdyn = nargin > 1 && strcmp(dyn, 'dyn') == 1;
 
@@ -25,7 +27,7 @@
                 dh(j,4) = L.alpha;
                 dh(j,5) = L.sigma;
                 dh(j,6) = L.offset;
-                if isempty(L.qlim)
+                if ~isempty(L.qlim)
                     dh(j,7) = L.qlim(1);
                     dh(j,8) = L.qlim(2);
                 else

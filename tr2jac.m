@@ -2,13 +2,13 @@
 %
 % J = TR2JAC(T) is a Jacobian matrix (6x6) that maps spatial velocity or
 % differential motion from the world frame to the frame represented by 
-% the homogeneous transform T.
+% the homogeneous transform T (4x4).
 %
 % See also WTRANS, TR2DELTA, DELTA2TR.
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

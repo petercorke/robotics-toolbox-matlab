@@ -1,6 +1,6 @@
 %DELTA2TR Convert differential motion  to a homogeneous transform
 %
-% T = DELTA2TR(D) is a homogeneous transform representing differential 
+% T = DELTA2TR(D) is a homogeneous transform (4x4) representing differential 
 % translation and rotation. The vector D=(dx, dy, dz, dRx, dRy, dRz)
 % represents an infinitessimal motion, and is an approximation to the spatial 
 % velocity multiplied by time.
@@ -9,7 +9,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

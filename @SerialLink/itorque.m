@@ -1,8 +1,8 @@
 %SerialLink.itorque Inertia torque
 %
-% TAUI = R.itorque(Q, QDD) is the inertia force/torque vector (1xN) at the 
-% specified joint configuration Q (1xN) and acceleration QDD (1xN), that is,
-% TAUI = INERTIA(Q)*QDD.
+% TAUI = R.itorque(Q, QDD) is the inertia force/torque vector (1xN) at the
+% specified joint configuration Q (1xN) and acceleration QDD (1xN), and N
+% is the number of robot joints. TAUI = INERTIA(Q)*QDD.
 %
 % If Q and QDD are matrices (KxN), each row is interpretted as a joint state 
 % vector, and the result is a matrix (KxN) where each row is the corresponding
@@ -12,12 +12,12 @@
 % - If the robot model contains non-zero motor inertia then this will 
 %   included in the result.
 %
-% See also SerialLink.rne, SerialLink.inertia.
+% See also SerialLink.inertia, SerialLink.rne.
 
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

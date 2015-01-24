@@ -1,4 +1,4 @@
-%map Map of planar point features
+%MAP Map of planar point features
 %
 % A Map object represents a square 2D environment with a number of landmark
 % feature points.
@@ -31,7 +31,7 @@
 % See also RangeBearingSensor, EKF.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -66,7 +66,7 @@ classdef Map < handle
 
         % constructor
         function map = Map(nfeatures, varargin)
-        %Map.Map Map of point feature landmarks
+        %Map.Map Create a map of point feature landmarks
         %
         % M = Map(N, DIM, OPTIONS) is a Map object that represents N random point features
         % in a planar region bounded by +/-DIM in the x- and y-directions.
@@ -90,9 +90,9 @@ classdef Map < handle
         end
 
         function f = feature(map, k)
-            %Map.feature Return the specified map feature
+            %Map.feature Get landmarks from map
             %
-            % F = M.feature(K) is the coordinate (2x1) of the K'th feature.
+            % F = M.feature(K) is the coordinate (2x1) of the K'th map feature (landmark).
             f = map.map(:,k);
         end
 
@@ -103,7 +103,7 @@ classdef Map < handle
             % region with dimensions given by the M.dim property.  Each feature
             % is marked by a black diamond.
             %
-            % M.plot(LS) plots the feature map as above, but the arguments LS
+            % M.plot(LS) as above, but the arguments LS
             % are passed to plot and override the default marker style.
             %
             % Notes::
@@ -144,11 +144,11 @@ classdef Map < handle
         function display(map)
             %map.display Display map parameters
             %
-            % M.display() display map parameters in a compact
+            % M.display() displays map parameters in a compact
             % human readable form.
             %
             % Notes::
-            % - this method is invoked implicitly at the command line when the result
+            % - This method is invoked implicitly at the command line when the result
             %   of an expression is a Map object and the command has no trailing
             %   semicolon.
             %
@@ -162,7 +162,7 @@ classdef Map < handle
         end % display()
 
         function s = char(map)
-        %map.char Convert vehicle parameters and state to a string
+        %map.char Convert map parameters to a string
         %
         % s = M.char() is a string showing map parameters in 
         % a compact human readable format. 

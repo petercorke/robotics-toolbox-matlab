@@ -1,20 +1,21 @@
 %MDL_FANUC10L  Create kinematic model of Fanuc AM120iB/10L robot 
 %
-%      mdl_fanuc10L
-%
-% Script creates the workspace variable R which describes the 
-% kinematic characteristics of a Fanuc AM120iB/10L robot using standard 
-% DH conventions.
+% MDL_FANUC10L is a script that creates the workspace variable R which
+% describes the kinematic characteristics of a Fanuc AM120iB/10L robot
+% using standard DH conventions.
 %
 % Also defines the workspace vector:
 %   q0   mastering position.
+%
+% Notes::
+% - SI units of metres are used.
 %
 % Author::
 %  Wynand Swart,
 %  Mega Robots CC, P/O Box 8412, Pretoria, 0001, South Africa
 %  wynand.swart@gmail.com
 %
-% See also SerialLink, mdl_puma560akb, mdl_stanford, mdl_twolink.
+% See also SerialLink, mdl_irb140, mdl_m16, mdl_motomanHP6, mdl_puma560.
 
 % MODEL: Fanuc, AM120iB/10L, 6DOF, standard_DH
 

@@ -1,14 +1,14 @@
 %MDL_ONELINK Create model of a simple 1-link mechanism
 %
-%      mdl_onelink
-%
-% Script creates the workspace variable tl which describes the 
-% kinematic and dynamic characteristics of a simple planar 1-link mechanism.
+% MDL_ONELINK is a script that creates the workspace variable tl which
+% describes the kinematic and dynamic characteristics of a simple planar
+% 1-link mechanism.
 %
 % Also defines the vector:
 %   qz   corresponds to the zero joint angle configuration.
 %
 % Notes::
+% - SI units are used.
 % - It is a planar mechanism operating in the XY (horizontal) plane and is 
 %   therefore not affected by gravity.
 % - Assume unit length links with all mass (unity) concentrated at the joints.
@@ -16,11 +16,11 @@
 % References::
 %  - Based on Fig 3-6 (p73) of Spong and Vidyasagar (1st edition).  
 %
-% See also SerialLink, mdl_puma560, mdl_stanford.
+% See also SerialLink, mdl_twolink, mdl_planar1.
 
 % MODEL: generic, planar, 1DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

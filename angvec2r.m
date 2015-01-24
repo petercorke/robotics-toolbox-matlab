@@ -1,13 +1,13 @@
 %ANGVEC2R Convert angle and vector orientation to a rotation matrix
 %
-% R = ANGVEC2R(THETA, V) is an orthonormal rotation matrix, R, 
+% R = ANGVEC2R(THETA, V) is an orthonormal rotation matrix (3x3)
 % equivalent to a rotation of THETA about the vector V.
 %
-% See also eul2r, rpy2r.
+% See also eul2r, rpy2r, tr2angvec.
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

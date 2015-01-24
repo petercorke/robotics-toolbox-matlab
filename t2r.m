@@ -1,20 +1,19 @@
-%T2R Return rotational submatrix of a homogeneous transformation
+%T2R Rotational submatrix
 %
 % R = T2R(T) is the orthonormal rotation matrix component of homogeneous 
-% transformation matrix T:
+% transformation matrix T.  Works for T in SE(2) or SE(3)
+% - If T is 4x4, then R is 3x3.
+% - If T is 3x3, then R is 2x2.
 %
 % Notes::
-% - Works for T in SE(2) or SE(3)
-%   - If T is 4x4, then R is 3x3.
-%   - If T is 3x3, then R is  2x2.
-% - The validity of rotational part is not checked
 % - For a homogeneous transform sequence returns a rotation matrix sequence
+% - The validity of rotational part is not checked
 %
 % See also R2T, TR2RT, RT2TR.
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

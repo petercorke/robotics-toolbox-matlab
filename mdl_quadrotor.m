@@ -1,14 +1,13 @@
-%MDL_QUADCOPTER Dynamic parameters for a quadcopter.
+%MDL_QUADCOPTER Dynamic parameters for a quadrotor.
 %
-%     mdl_quadcopter
-%
-% Script creates the workspace variable quad which describes the 
-% dynamic characterstics of a quadcopter.
+% MDL_QUADCOPTER is a script creates the workspace variable quad which
+% describes the dynamic characterstics of a quadrotor flying robot.
 %
 % Properties::
 %
 % This is a structure with the following elements:
 %
+% nrotors   Number of rotors (1x1)
 % J         Flyer rotational inertia matrix (3x3)
 % h         Height of rotors above CoG (1x1)
 % d         Length of flyer arms (1x1)
@@ -36,17 +35,21 @@
 % gamma     Lock number (1x1)
 %
 %
+% Notes::
+% - SI units are used.
+%
 % References::
 % - Design, Construction and Control of a Large Quadrotor micro air vehicle.
 %   P.Pounds, PhD thesis, 
 %   Australian National University, 2007.
 %   http://www.eng.yale.edu/pep5/P_Pounds_Thesis_2008.pdf
+% - This is a heavy lift quadrotor
 %
-% See also sl_quadcopter.
+% See also sl_quadrotor.
 
 % MODEL: quadrotor
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -3,12 +3,12 @@
 % WT = WTRANS(T, W) is a wrench (6x1) in the frame represented by the homogeneous
 % transform T (4x4) corresponding to the world frame wrench W (6x1).  
 %
-% The wrenches W and WT are 6-vectors of the form [Fx Fy Fz Mx My Mz].
+% The wrenches W and WT are 6-vectors of the form [Fx Fy Fz Mx My Mz]'.
 %
 % See also TR2DELTA, TR2JAC.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

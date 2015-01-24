@@ -14,25 +14,19 @@
 %   randn       Normally distributed random number
 %   randi       Uniformly distributed random integer
 %
-% Abstract methods::
-% These methods must be implemented in a subclass
+% Properties (read only)::
+%   occgrid   Occupancy grid representing the navigation environment
+%   goal      Goal coordinate
+%   seed0     Random number state
 %
+% Methods that must be provided in subclass::
 %   plan      Generate a plan for motion to goal
 %   next      Returns coordinate of next point along path
 %
-% Method to overide::
-% These methods may be redfined in a subclass::
-%   goal_change     The goal has been changed by nav.goal = (a,b)
-%   navigate_init   Start of path planning
+% Methods that may be overriden in a subclass::
+%   goal_set        The goal has been changed by nav.goal = (a,b)
+%   navigate_init   Start of path planning.
 % 
-% Properties (read/write)::
-%   goal      Goal coordinate, column vector
-%
-% Properties (read only)::
-%   occgrid   Occupancy grid representing the navigation environment
-%   seed0     Random number state
-%
-%
 % Notes::
 % - Subclasses the MATLAB handle class which means that pass by reference semantics
 %   apply.
@@ -41,7 +35,7 @@
 % - The initial random number state is captured as seed0 to allow rerunning an
 %   experiment with an interesting outcome.
 %
-% See also Astar, Dstar, Dxform, PRM, RRT.
+% See also Dstar, Dxform, PRM, RRT.
 
 
 % Copyright (C) 1993-2014, by Peter I. Corke
@@ -72,12 +66,12 @@
 classdef Navigation < handle
 
     properties
-        occgrid     % occupancy grid; free space = 0, obstacle = 1
+        occgrid     % occupancy grid
         goal        % goal coordinate
-        
+
         navhook     % function handle, called on each navigation iteration
         verbose     % verbosity
-        seed        % current random seed
+        seed            % current random seed
         spincount
 
         randstream
@@ -104,9 +98,7 @@ classdef Navigation < handle
         %Navigation.Navigation Create a Navigation object
         %
         % N = Navigation(OCCGRID, OPTIONS) is a Navigation object that holds an
-        % occupancy grid OCCGRID.  A number of options can be be passed. If
-        % OCCGRID==0, an occupancy grid of random obstacles will be
-        % gnerated.
+        % occupancy grid OCCGRID.  A number of options can be be passed.
         %
         % Options::
         % 'navhook',F   Specify a function to be called at every step of path
@@ -122,20 +114,13 @@ classdef Navigation < handle
         % Notes::
         % - In the occupancy grid a value of zero means free space and non-zero means
         %   occupied (not driveable).
-        % - Obstacle inflation is performed with a round structuring element
-        %   (kcircle) with radius as given by the 'inflate' option.
+        % - Obstacle inflation is performed with a round structuring element (kcircle) 
+        %   with radius given by the 'inflate' option.
         % - The 'private' option creates a private random number stream for the methods 
         %   rand, randn and randi.  If not given the global stream is used.
 
-            if nargin >= 1 && isnumeric(varargin{1})
-                if varargin{1} == 0
-                    dim = [100 100];
-                    obs = 25; % fill 25% w/ obstacles
-                    free = [1 dim(1);1 dim(2)]; % free areas near corners for start/goal states
-                    nav.occgrid = Navigation.randGrid(dim,obs,free);                
-                else
-                    nav.occgrid = varargin{1};
-                end
+            if nargin >= 1 && isnumeric(varargin{1}) && ~isscalar(varargin{1})
+                nav.occgrid = varargin{1};
                 varargin = varargin(2:end);
             end
             
@@ -187,54 +172,62 @@ classdef Navigation < handle
         function r = rand(nav, varargin)
         %Navigation.rand Uniformly distributed random number
         %
-        % R = N.rand() is a uniformly distributed random number from
+        % R = N.rand() return a uniformly distributed random number from
         % a private random number stream.
         %
-        % R = N.rand(M) as above but returns a matrix (MxM) of random numbers.
+        % R = N.rand(M) as above but return a matrix (MxM) of random numbers.
         %
-        % R = N.rand(L,M) as above but returns a matrix (LxM) of random numbers.
+        % R = N.rand(L,M) as above but return a matrix (LxM) of random numbers.
         %
         % Notes::
         % - Accepts the same arguments as rand().
-        % - Random number seed is provided to Navigation constructor.
+        % - Seed is provided to Navigation constructor.
+        % - Provides an independent sequence of random numbers that does not
+        %   interfere with any other randomised algorithms that might be used.
         %
-        % See also rand, RandStream.
+        % See also Navigation.randi, Navigation.randn, rand, RandStream.
             r = nav.randstream.rand(varargin{:});
         end
 
         function r = randn(nav, varargin)
         %Navigation.randn Normally distributed random number
         %
-        % R = N.randn() is a normally distributed random number from
+        % R = N.randn() returns a normally distributed random number from
         % a private random number stream.
         %
-        % R = N.randn(M) as above but is a matrix (MxM) of random numbers.
+        % R = N.randn(M) as above but returns a matrix (MxM) of random numbers.
         %
-        % R = N.randn(L,M) as above is return a matrix (LxM) of random numbers.
+        % R = N.randn(L,M) as above but returns a matrix (LxM) of random numbers.
+        %
         %
         % Notes::
         % - Accepts the same arguments as randn().
-        % - Random number seed is provided to Navigation constructor.
+        % - Seed is provided to Navigation constructor.
+        % - Provides an independent sequence of random numbers that does not
+        %   interfere with any other randomised algorithms that might be used.
         %
-        % See also randn, RandStream.
+        % See also Navigation.rand, Navigation.randi, randn, RandStream.
             r = nav.randstream.randn(varargin{:});
         end
 
         function r = randi(nav, varargin)
         %Navigation.randi Integer random number
         %
-        % I = N.randi(RM) is a uniformly distributed random integer in the 
+        % I = N.randi(RM) returns a uniformly distributed random integer in the 
         % range 1 to RM from a private random number stream.
         %
-        % I = N.randi(RM, M) as above but is a matrix (MxM) of random integers.
+        % I = N.randi(RM, M) as above but returns a matrix (MxM) of random integers.
         %
-        % I = N.randn(RM, L,M) as above but is a matrix (LxM) of random integers.
+        % I = N.randn(RM, L,M) as above but returns a matrix (LxM) of random integers.
+        %
         %
         % Notes::
         % - Accepts the same arguments as randn().
-        % - Random number seed is provided to Navigation constructor.
+        % - Seed is provided to Navigation constructor.
+        % - Provides an independent sequence of random numbers that does not
+        %   interfere with any other randomised algorithms that might be used.
         %
-        % See also randn, RandStream.
+        % See also Navigation.rand, Navigation.randn, randi, RandStream.
             r = nav.randstream.randi(varargin{:});
         end
 
@@ -279,10 +272,10 @@ classdef Navigation < handle
             % The method performs the following steps:
             %
             %  - Get start position interactively if not given
-            %  - Initialize navigation, invoke method N.navigate_init(start)
+            %  - Initialize navigation, invoke method N.navigate_init()
             %  - Visualize the environment, invoke method N.plot()
             %  - Iterate on the next() method of the subclass until the goal is
-            %    reached.
+            %    achieved.
             %
             % See also Navigation.plot, Navigation.goal.
 
@@ -298,15 +291,8 @@ classdef Navigation < handle
                 fprintf('\n');
                 start = round([x;y]);
             end
+            start = start(:);
 
-            back = 0; % Check if search algorithm calls for backpropogation:
-            if length(start)==3 % backpropogation is specified
-                start = start(1:2);
-                back = 1;
-            else
-                start = start(:); % is this assignment ever necessary?????
-            end
-            
             % if no output arguments given, then display the world
             if nargout == 0
                 % render the world
@@ -316,14 +302,15 @@ classdef Navigation < handle
             
             nav.navigate_init(start);
 
-            p = []; % initialize the path
+            p = [];
             % robot is a column vector
-            if back==1
+            if nav.backProp()==1
+                % subclass algorithm calls for back propagation
                 robot = nav.goal(:);
             else
                 robot = start;
             end
-            
+                
             % iterate using the next() method until we reach the goal
             while true
                 if nargout == 0
@@ -331,7 +318,7 @@ classdef Navigation < handle
                     drawnow 
                 end
 
-                % move to next point on path; returns null if at goal
+                % move to next point on path
                 robot = nav.next(robot);
 
                 % are we there yet?
@@ -365,7 +352,7 @@ classdef Navigation < handle
         %
         % N.plot() displays the occupancy grid in a new figure.
         %
-        % N.plot(P) as above but overlays the points along the path (Mx2) matrix.
+        % N.plot(P) as above but overlays the points along the path (2xM) matrix.
         %
         % Options::
         %  'goal'         Superimpose the goal position if set
@@ -373,9 +360,11 @@ classdef Navigation < handle
         %                 a matrix of the same size as the occupancy grid.
         %
         % Notes::
-        % - Obstacles are displayed in red.
+        % - The distance field at a point encodes its distance from the goal, small
+        %   distance is dark, a large distance is bright.  Obstacles are encoded as
+        %   red.
             
-            opt.goal = true; % plot goal (line #401)
+            opt.goal = false;
             opt.distance = [];
             
             [opt,args] = tb_optparse(opt, varargin);
@@ -401,6 +390,7 @@ classdef Navigation < handle
                 
                 % create the color map
                 cmap = [1 0 0; gray(maxdist)];
+                
                 % ensure obstacles appear as red pixels
                 opt.distance(nav.occgrid > 0) = 0;
                 
@@ -435,9 +425,7 @@ classdef Navigation < handle
         function navigate_init(nav, start)
             %Navigation.navigate_init Notify start of path
             %
-            % N.navigate_init(start) is invoked when the path() method is invoked and
-            % is passed the start coordinate for the path (1x3).
-            %
+            % N.navigate_init(start) is called when the path() method is invoked.
             % Typically overriden in a subclass to take particular action such as
             % computing some path parameters. start is the initial position for this
             % path, and nav.goal is the final position.
@@ -517,37 +505,7 @@ classdef Navigation < handle
             nav.spincount = nav.spincount + 1;
             fprintf('\b%c', spinchars( mod(nav.spincount, length(spinchars))+1 ) );
         end
-        
+
     end % method
 
-    methods (Static)
-
-        function M = randGrid(dim,obs,free)
-            %Navigation.randGrid Create occupancy grid of random obstacles
-            %
-            % map = Navigate.randGrid(D, OBS, FREE) is a class method that returns a
-            % randomly generated occupancy grid (D(1)xD(2)).  The number of obstacles
-            % increases as OBS increases up to a maximum of max(D).  Regions of the
-            % obstacle grid are guaranteed free for a region around (X1,Y1) and (X2,
-            % Y2) as defined by FREE = [X1 X2; Y1 Y2].
-            
-            % Initialize matrix.
-            M = zeros(dim(1), dim(2), 'int32');
-            for col = 1:dim(2)
-                % Get random order of rows.
-                randRows = randperm(dim(1));
-                % Pick out 'obs'/total rows that will be set to 1.
-                rowsWithOne = randRows(1:100*(obs/dim(1)));
-                % Set those rows only to 1 for this column.
-                M(rowsWithOne, col) = 1;
-            end
-            % Open Start and Goal areas
-            row_buffer = round(dim(1)/20);
-            col_buffer = round(dim(2)/20);
-            M((free(1,1):(free(1,1) + row_buffer)), (free(2,1):(free(2,1) + col_buffer))) = 0;
-            M(((free(1,2) - row_buffer):free(1,2)), ((free(2,2) - col_buffer):free(2,2))) = 0;
-            M = double(M);
-        end
-        
-    end % static methods
-end % classdef
+end % classde

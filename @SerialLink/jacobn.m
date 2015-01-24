@@ -1,8 +1,9 @@
 %SerialLink.JACOBN Jacobian in end-effector frame
 %
-% JN = R.jacobn(Q, options) is the Jacobian matrix (6xN) for the robot in 
-% pose Q. The manipulator Jacobian matrix maps joint velocity to 
-% end-effector spatial velocity V = JN*QD in the end-effector frame.
+% JN = R.jacobn(Q, options) is the Jacobian matrix (6xN) for the robot in
+% pose Q, and N is the number of robot joints. The manipulator Jacobian
+% matrix maps joint velocity to end-effector spatial velocity V = JN*QD in
+% the end-effector frame.
 %
 % Options::
 % 'trans'   Return translational submatrix of Jacobian
@@ -11,18 +12,18 @@
 % Notes::
 % - This Jacobian is often referred to as the geometric Jacobian.
 %
-% Reference::
-%   Differential Kinematic Control Equations for Simple Manipulators,
-%   Paul, Shimano, Mayer,
-%   IEEE SMC 11(6) 1981,
-%   pp. 456-460
+% References::
+%  - Differential Kinematic Control Equations for Simple Manipulators,
+%    Paul, Shimano, Mayer,
+%    IEEE SMC 11(6) 1981,
+%    pp. 456-460
 %
 % See also SerialLink.jacob0, jsingu, delta2tr, tr2delta.
 
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

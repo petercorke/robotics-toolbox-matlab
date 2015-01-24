@@ -8,8 +8,8 @@
 % TRPLOT(H, T) moves the coordinate frame described by the handle H to
 % the pose T (4x4).
 %
-% TRPLOT(R, OPTIONS) draws a 3D coordinate frame represented by the orthonormal
-% rotation matrix R (3x3).
+% TRPLOT(R, OPTIONS) as above but the coordinate frame is rotated about the
+% origin according to the orthonormal rotation matrix R (3x3).
 %
 % H = TRPLOT(R, OPTIONS) as above but returns a handle.
 %
@@ -20,7 +20,7 @@
 % 'color',C          The color to draw the axes, MATLAB colorspec C
 % 'noaxes'           Don't display axes on the plot
 % 'axis',A           Set dimensions of the MATLAB axes to A=[xmin xmax ymin ymax zmin zmax]
-% 'frame',F          The frame is named {F} and the subscript on the axis labels is F.
+% 'frame',F          The coordinate frame is named {F} and the subscript on the axis labels is F.
 % 'text_opts', opt   A cell array of MATLAB text properties
 % 'handle',H         Draw in the MATLAB axes specified by the axis handle H
 % 'view',V           Set plot view parameters V=[az el] angles, or 'auto' 
@@ -31,16 +31,13 @@
 % 'thick',t          Thickness of lines (default 0.5)
 % '3d'               Plot in 3D using anaglyph graphics
 % 'anaglyph',A       Specify anaglyph colors for '3d' as 2 characters for 
-%                    left and right (default colors 'rc'):
-%                     'r'   red
-%                     'g'   green
-%                     'b'   green
-%                     'c'   cyan
-%                     'm'   magenta
+%                    left and right (default colors 'rc'): chosen from
+%                    r)ed, g)reen, b)lue, c)yan, m)agenta.
 % 'dispar',D         Disparity for 3d display (default 0.1)
 % 'text'             Enable display of X,Y,Z labels on the frame
 % 'labels',L         Label the X,Y,Z axes with the 1st, 2nd, 3rd character of the string L
 % 'rgb'              Display X,Y,Z axes in colors red, green, blue respectively
+% 'rviz'             Display chunky rviz style axes
 %
 % Examples::
 %
@@ -56,17 +53,22 @@
 %       trplot(T, '3d');
 %
 % Notes::
-% - The arrow option requires the third party package arrow3.
-% - The handle H is an hgtransform object.
-% - When using the form TRPLOT(H, ...) the axes are not rescaled.
+% - The 'rviz' option is equivalent to 'rgb', 'notext', 'noarrow', 
+%   'thick', 5.
+% - The arrow option requires the third party package arrow3 from File
+%   Exchange.
+% - The handle H is an hgtransform object. 
+% - When using the form TRPLOT(H, ...) to animate a frame it is best to set 
+%   the axis bounds.
 % - The '3d' option requires that the plot is viewed with anaglyph glasses.
-% - You cannot specify 'color' 
+% - You cannot specify 'color' and '3d' at the same time.
 %
 % See also TRPLOT2, TRANIMATE.
 
+%TODO:
+% 'rviz', chunky RGB lines, no arrows
 
-
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -133,8 +135,16 @@ function hout = trplot(T, varargin)
     opt.length = 1;
     opt.text = true;
     opt.lefty = false;
+    opt.rviz = false;
 
     opt = tb_optparse(opt, varargin);
+        
+    if opt.rviz
+        opt.thick = 5;
+        opt.arrow = false;
+        opt.rgb = true;
+        opt.text = false;
+    end
 
     if ~isempty(opt.color) && opt.d_3d
         error('cannot specify ''color'' and ''3d'', use ''anaglyph'' option');

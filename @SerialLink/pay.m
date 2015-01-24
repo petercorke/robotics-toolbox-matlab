@@ -1,14 +1,15 @@
 %SerialLink.PAY Joint forces due to payload
 %
 % TAU = R.PAY(W, J) returns the generalised joint force/torques due to a
-% payload wrench W (1x6) and where the manipulator Jacobian is J (6xN). 
+% payload wrench W (1x6) and where the manipulator Jacobian is J (6xN), and
+% N is the number of robot joints.
 %
 % TAU = R.PAY(Q, W, F) as above but the Jacobian is calculated at pose Q
 % (1xN) in the frame given by F which is '0' for world frame, 'n' for
 % end-effector frame.
 %
 % Uses the formula TAU = J'W, where W is a wrench vector applied at the end
-% effector, W = [Fx Fy Fz Mxx Myy Mzz]'.
+% effector, W = [Fx Fy Fz Mx My Mz]'.
 %
 % Trajectory operation::
 %
@@ -25,7 +26,7 @@
 %
 % See also SerialLink.paycap, SerialLink.jacob0, SerialLink.jacobn.
 
-% Copyright (C) Bryan Moutrie, 2013-2014
+% Copyright (C) Bryan Moutrie, 2013-2015
 % Licensed under the GNU Lesser General Public License
 % see full file for full statement
 %

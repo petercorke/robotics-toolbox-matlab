@@ -1,8 +1,8 @@
-%Prismatic Robot manipulator Prismatic link class
+%Prismatic Robot manipulator prismatic link class
 %
-% A subclass of the Link class: holds all information related to a robot 
-% link such as kinematics parameters, rigid-body inertial parameters, motor
-% and transmission parameters.
+% A subclass of the Link class: holds all information related to a
+% prismatic (sliding) robot link such as kinematics parameters, rigid-body
+% inertial parameters, motor and transmission parameters.
 %
 % Notes::
 % - This is reference class object
@@ -15,7 +15,7 @@
 % See also Link, Revolute, SerialLink.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

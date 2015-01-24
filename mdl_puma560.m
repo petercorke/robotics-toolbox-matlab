@@ -1,11 +1,8 @@
 %MDL_PUMA560 Create model of Puma 560 manipulator
 %
-%      mdl_puma560
-%
-% Script creates the workspace variable p560 which describes the 
-% kinematic and dynamic characteristics of a Unimation Puma 560 manipulator
-% using standard DH conventions.
-% The model includes armature inertia and gear ratios.
+% MDL_PUMA560 is a script that creates the workspace variable p560 which
+% describes the kinematic and dynamic characteristics of a Unimation Puma
+% 560 manipulator using standard DH conventions. 
 %
 % Also define the workspace vectors:
 %   qz         zero joint angle configuration
@@ -13,13 +10,17 @@
 %   qstretch   arm is stretched out in the X direction
 %   qn         arm is at a nominal non-singular configuration
 %
+% Notes::
+% - SI units are used.
+% - The model includes armature inertia and gear ratios.
+%
 % Reference::
 % - "A search for consensus among model parameters reported for the PUMA 560 robot",
 %   P. Corke and B. Armstrong-Helouvry, 
 %   Proc. IEEE Int. Conf. Robotics and Automation, (San Diego), 
 %   pp. 1608-1613, May 1994.
 %
-% See also SerialRevolute, mdl_puma560akb, mdl_stanford, mdl_twolink.
+% See also SerialRevolute, mdl_puma560akb, mdl_stanford.
 
 % MODEL: Unimation, Puma560, dynamics, 6DOF, standard_DH
 
@@ -47,7 +48,7 @@
 % Revision 1.4  2008/04/27 11:36:54  cor134
 % Add nominal (non singular) pose qn
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

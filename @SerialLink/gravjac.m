@@ -1,8 +1,8 @@
-%SerialLink.GRAVJAC Quick non-mex gravload and jacob0 for SerialLink objects
+%SerialLink.GRAVJAC Fast gravity load and Jacobian
 % 
 % [TAU,JAC0] = R.gravjac(Q) is the generalised joint force/torques due to
-% gravity (1x6) and the manipulator Jacobian in the base frame (6xN) for
-% robot pose Q (1xN).
+% gravity (1xN) and the manipulator Jacobian in the base frame (6xN) for
+% robot pose Q (1xN), where N is the number of robot joints.
 %
 % [TAU,JAC0] = R.gravjac(Q,GRAV) as above but gravity is given explicitly
 % by GRAV (3x1).
@@ -16,14 +16,15 @@
 %
 % Notes::
 % - The gravity vector is defined by the SerialLink property if not explicitly given.
-% - Faster than computing gravity and Jacobian separately
+% - Does not use inverse dynamics function RNE.
+% - Faster than computing gravity and Jacobian separately.
 %
 % Author::
 % Bryan Moutrie
 %
 % See also SerialLink.pay, SerialLink, SerialLink.gravload, SerialLink.jacob0.
 
-% Copyright (C) Bryan Moutrie, 2013-2014
+% Copyright (C) Bryan Moutrie, 2013-2015
 % Licensed under the GNU Lesser General Public License
 % see full file for full statement
 %

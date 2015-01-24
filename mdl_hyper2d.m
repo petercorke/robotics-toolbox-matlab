@@ -1,8 +1,8 @@
 %MDL_HYPER2D Create model of a hyper redundant planar manipulator
 %
-% MDL_HYPER2D  creates the workspace variable h2d which describes the 
-% kinematic characteristics of a serial link manipulator which at zero angles
-% is a straight line in the XY plane.  By default has 10 joints.
+% MDL_HYPER2D creates the workspace variable h2d which describes the
+% kinematic characteristics of a serial link manipulator with 10 joints
+% which at zero angles is a straight line in the XY plane.
 %
 % MDL_HYPER2D(N) as above but creates a manipulator with N joints.
 %
@@ -19,11 +19,11 @@
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, mdl_hyper3d, mdl_puma560akb, mdl_stanford, mdl_twolink, mdl_coil.
+% See also SerialLink, mdl_hyper3d, mdl_coil, mdl_ball, mdl_twolink.
 
 % MODEL: planar, hyper redundant, 10DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -1,9 +1,7 @@
 %MDL_MICO Create model of Kinova Mico manipulator
 %
-%      mdl_mico
-%
-% Script creates the workspace variable mico which describes the 
-% kinematic characteristics of a Kinova Mico manipulator
+% MDL_MICO is a script that creates the workspace variable mico which
+% describes the kinematic characteristics of a Kinova Mico manipulator
 % using standard DH conventions.
 %
 % Also define the workspace vectors:
@@ -15,6 +13,7 @@
 %   Kinova
 %
 % Notes::
+% - SI units of metres are used.
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
@@ -23,7 +22,7 @@
 % MODEL: Kinova, Mico, 6DOF, standard_DH
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -1,7 +1,7 @@
-%SERIALLINK.TRCHAIN Display kinematic parameters as a chain of 3D transforms
+%SERIALLINK.TRCHAIN Convert to elementary transform sequence
 %
-% S = R.TRCHAIN(OPTIONS) is a string of elementary transforms that describe the
-% kinematics of the seriallink robot arm.  The string S comprises a number
+% S = R.TRCHAIN(OPTIONS) is a sequence of elementary transforms that describe the
+% kinematics of the serial link robot arm.  The string S comprises a number
 % of tokens of the form X(ARG) where X is one of Tx, Ty, Tz, Rx, Ry, or Rz.
 % ARG is a joint variable, or a constant angle or length dimension.
 %
@@ -18,7 +18,7 @@
 %
 % See also trchain, trotx, troty, trotz, transl.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

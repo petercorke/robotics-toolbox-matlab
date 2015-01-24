@@ -1,4 +1,4 @@
-%JTRAJ Compute a joint space trajectory between two points
+%JTRAJ Compute a joint space trajectory between two configurations
 %
 % [Q,QD,QDD] = JTRAJ(Q0, QF, M) is a joint space trajectory Q (MxN) where the joint
 % coordinates vary from Q0 (1xN) to QF (1xN).  A quintic (5th order) polynomial is used 
@@ -17,11 +17,11 @@
 % [Q,QD,QDD] = JTRAJ(Q0, QF, T, QD0, QDF) as above but specifies initial and 
 % final joint velocity for the trajectory and a time vector.
 %
-% See also CTRAJ, SerialLink.jtraj.
+% See also QPLOT, CTRAJ, SerialLink.jtraj.
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -4,7 +4,7 @@
 % compounding a number of elementary transformations defined by the string
 % S.  The string S comprises a number of tokens of the form X(ARG) where
 % X is one of Tx, Ty or R.  ARG is the name of a variable in
-% main workspace or qJ where J is an integer in the range 1 to N that
+% MATLAB workspace or qJ where J is an integer in the range 1 to N that
 % selects the variable from the Jth column of the vector Q (1xN).
 %
 % For example:
@@ -22,7 +22,7 @@
 %
 % See also trchain, trot2, transl2.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

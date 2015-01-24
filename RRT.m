@@ -1,6 +1,6 @@
 %RRT Class for rapidly-exploring random tree navigation
 %
-% A concrete subclass of the Navigation class that implements the rapidly
+% A concrete subclass of the abstract Navigation class that implements the rapidly
 % exploring random tree (RRT) algorithm.  This is a kinodynamic planner
 % that takes into account the motion constraints of the vehicle.
 %
@@ -40,7 +40,7 @@
 %
 % See also Navigation, PRM, DXform, Dstar, PGraph.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -88,7 +88,7 @@ classdef RRT < Navigation
     methods
 
         function rrt = RRT(map, vehicle, varargin)
-        %RRT.RRT Create a RRT navigation object
+        %RRT.RRT Create an RRT navigation object
         %
         % R = RRT.RRT(MAP, VEH, OPTIONS) is a rapidly exploring tree navigation
         % object for a region with obstacles defined by the map object MAP.
@@ -98,21 +98,22 @@ classdef RRT < Navigation
         % RVC book.
         %
         % Options::
-        % 'npoints',N    Number of nodes in the tree
-        % 'time',T       Period to simulate dynamic model toward random point
+        % 'npoints',N    Number of nodes in the tree (default 500)
+        % 'time',T       Interval over which to simulate dynamic model toward 
+        %                random point (default 0.5s)
         % 'range',R      Specify rectangular bounds
         %                - R scalar; X: -R to +R, Y: -R to +R
         %                - R (1x2); X: -R(1) to +R(1), Y: -R(2) to +R(2)
         %                - R (1x4); X: R(1) to R(2), Y: R(3) to R(4)
         % 'goal',P       Goal position (1x2) or pose (1x3) in workspace
         % 'speed',S      Speed of vehicle [m/s] (default 1)
-        % 'steermax',S   Maximum steer angle of vehicle [rad] (default 1.2)
+        % 'steermax',S   Steering angle of vehicle in the range -S to +S [rad] (default 1.2)
         %
         % Notes::
         % - Does not (yet) support obstacles, ie. MAP is ignored but must be given.
         % - 'steermax' selects the range of steering angles that the vehicle will
         %   be asked to track.  If not given the steering angle range of the vehicle
-        %   will be used.
+        %   object will be used.
         % - There is no check that the steering range or speed is within the limits
         %   of the vehicle object.
         %
@@ -175,15 +176,24 @@ classdef RRT < Navigation
         %
         % Options::
         % 'goal',P        Goal pose (1x3)
+        % 'ntrials',N     Number of path trials (default 50)
         % 'noprogress'    Don't show the progress bar
-        % 'samples'       Show samples
+        % 'samples'       Show progress in a plot of the workspace
         %                 - '.' for each random point x_rand
         %                 - 'o' for the nearest point which is added to the tree
         %                 - red line for the best path
+        %
+        % Notes::
+        % - At each iteration we need to find a vehicle path/control that moves it
+        %   from a random point towards a point on the graph.  We sample ntrials of
+        %   random steer angles and velocities and choose the one that gets us
+        %   closest (computationally slow, since each path has to be integrated
+        %   over time).
 
             opt.progress = true;
             opt.samples = false;
             opt.goal = [];
+            opt.ntrials = 50;
             
             opt = tb_optparse(opt, varargin);
 
@@ -268,10 +278,8 @@ classdef RRT < Navigation
 
                 % Step 5
                 % figure how to drive the robot from xnear to xrand
-                
-                ntrials = 50;
-                
-                best = rrt.bestpath(xnear, xrand, ntrials);
+                                
+                best = rrt.bestpath(xnear, xrand, opt.ntrials);
                 
                 xnew = best.path(:,best.k);
                 if opt.samples
@@ -301,12 +309,12 @@ classdef RRT < Navigation
         end
 
         function p_ = path(rrt, xstart, xgoal)
-        %PRM.path Find a path between two points
+        %RRT.path Find a path between two points
         %
         % X = R.path(START, GOAL) finds a path (Nx3) from state START (1x3) 
         % to the GOAL (1x3).
         %
-        % P.path(START, GOAL) as above but plots the path in 3D.  The nodes
+        % R.path(START, GOAL) as above but plots the path in 3D.  The nodes
         % are shown as circles and the line segments are blue for forward motion
         % and red for backward motion.
         %
@@ -314,6 +322,8 @@ classdef RRT < Navigation
         % - The path starts at the vertex closest to the START state, and ends
         %   at the vertex closest to the GOAL state.  If the tree is sparse this
         %   might be a poor approximation to the desired start and end.
+        %
+        % See also RRT.plot.
 
             g = rrt.graph;
             vstart = g.closest(xstart);
@@ -403,6 +413,7 @@ classdef RRT < Navigation
         % R.char() is a string representing the state of the RRT
         % object in human-readable form.
         %
+        
             % invoke the superclass char() method
             s = char@Navigation(rrt);
 

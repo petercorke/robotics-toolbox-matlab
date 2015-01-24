@@ -1,4 +1,4 @@
-%SerialLink.IKCON Inverse manipulator kinematics considering joint limits
+%SerialLink.IKCON Numerical inverse kinematics with joint limits
 %
 % Q = R.ikcon(T) are the joint coordinates (1xN) corresponding to the robot 
 % end-effector pose T (4x4) which is a homogenenous transform.
@@ -27,11 +27,11 @@
 % for the corresponding trajectory step.
 %
 % Notes::
-% - Requires fmincon from the optimization toolbox.
+% - Requires fmincon from the Optimization Toolbox.
 % - Joint limits are considered in this solution.
 % - Can be used for robots with arbitrary degrees of freedom.
 % - In the case of multiple feasible solutions, the solution returned
-%   depends on the initial choice of Q0
+%   depends on the initial choice of Q0.
 % - Works by minimizing the error between the forward kinematics of the
 %   joint angle solution and the end-effector frame as an optimisation.
 %   The objective function (error) is described as:
@@ -41,9 +41,9 @@
 % Author::
 % Bryan Moutrie
 %
-% See also fmincon, SerialLink.ikunc, SerialLink.ikine, SerialLink.fkine.
+% See also SerialLink.ikunc, fmincon, SerialLink.ikine, SerialLink.fkine.
 
-% Copyright (C) Bryan Moutrie, 2013-2014
+% Copyright (C) Bryan Moutrie, 2013-2015
 % Licensed under the GNU Lesser General Public License
 % see full file for full statement
 %

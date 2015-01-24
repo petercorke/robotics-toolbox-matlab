@@ -1,23 +1,21 @@
 %MDL_PLANAR1 Create model of a simple planar 1-link mechanism
 %
-%      mdl_planar1
-%
-% Script creates the workspace variable p1 which describes the 
-% kinematic and dynamic characteristics of a simple planar 1-link mechanism.
+% MDL_PLANAR1 is a script that creates the workspace variable p1 which
+% describes the kinematic characteristics of a simple planar 1-link
+% mechanism.
 %
 % Also defines the vector:
 %   qz   corresponds to the zero joint angle configuration.
 %
 % Notes::
-% - It is a planar mechanism operating in the XY (horizontal) plane and is 
-%   therefore not affected by gravity.
-% - No dynamics in this model
+% - Moves in the XY plane.
+% - No dynamics in this model.
 %
-% See also SerialLink, mdl_twolink.
+% See also SerialLink, mdl_onelink, mdl_planar2, mdl_planar3.
 
 % MODEL: generic, planar, 1DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

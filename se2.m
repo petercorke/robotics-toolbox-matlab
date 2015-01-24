@@ -1,6 +1,6 @@
 %SE2 Create planar translation and rotation transformation
 %
-% T = SE2(X, Y, THETA) is a 3x3 homogeneous transformation SE(2) 
+% T = SE2(X, Y, THETA) is an SE(2) homogeneous transformation (3x3) 
 % representing translation X and Y, and rotation THETA in the plane.
 %
 % T = SE2(XY) as above where XY=[X,Y] and rotation is zero
@@ -12,7 +12,7 @@
 % See also TRANSL2, ROT2, ISHOMOG2, ISROT2, TRPLOT2.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -1,17 +1,21 @@
-%TRANSL2 Create an SE2 translational transform
+%TRANSL2 Create or unpack an SE2 translational transform
 %
-% T = TRANSL2(X, Y) is an SE2 homogeneous transform (3x3)representing a 
+% Create a translational transformation matrix::
+%
+% T = TRANSL2(X, Y) is an SE2 homogeneous transform (3x3) representing a
 % pure translation.
 %
-% T = TRANSL2(P) is a homogeneous transform representing a translation or 
-% point P=[X,Y]. If P (Mx2) it represents a sequence and T (3x3xM)
-% is a sequence of homogenous transforms such that T(:,:,i) corresponds to
-% the i'th row of P.
+% T = TRANSL2(P) is a homogeneous transform representing a translation or
+% point P=[X,Y]. If P (Mx2) it represents a sequence and T (3x3xM) is a
+% sequence of homogenous transforms such that T(:,:,i) corresponds to the
+% i'th row of P.
 %
-% P = TRANSL2(T) is the translational part of a homogeneous transform as a 
-% 2-element column vector.  If T (3x3xM) is a homogeneous transform sequence 
-% the rows of P (Mx2) are the translational component of the corresponding 
-% transform in the sequence.
+% Unpack the translational part of a transformation matrix::
+%
+% P = TRANSL2(T) is the translational part of a homogeneous transform as a
+% 2-element column vector.  If T (3x3xM) is a homogeneous transform
+% sequence the rows of P (Mx2) are the translational component of the
+% corresponding transform in the sequence.
 %
 % Notes::
 % - Somewhat unusually this function performs a function and its inverse.  An
@@ -21,7 +25,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -1,15 +1,15 @@
 %TR2RPY Convert a homogeneous transform to roll-pitch-yaw angles
 %
-% RPY = TR2RPY(T, options) are the roll-pitch-yaw angles expressed as a row 
-% vector corresponding to the rotation part of a homogeneous transform T.
-% The 3 angles RPY=[R,P,Y] correspond to sequential rotations about 
-% the X, Y and Z axes respectively.
+% RPY = TR2RPY(T, options) are the roll-pitch-yaw angles (1x3)
+% corresponding to the rotation part of a homogeneous transform T. The 3
+% angles RPY=[R,P,Y] correspond to sequential rotations about the X, Y and
+% Z axes respectively.
 %
-% RPY = TR2RPY(R, options) are the roll-pitch-yaw angles expressed as a row 
-% vector corresponding to the orthonormal rotation matrix R.
+% RPY = TR2RPY(R, options) as above but the input is an orthonormal
+% rotation matrix R (3x3).
 %
-% If R or T represents a trajectory (has 3 dimensions), then each row of RPY
-% corresponds to a step of the trajectory.
+% If R (3x3xK) or T (4x4xK) represent a sequence then each row of RPY
+% corresponds to a step of the sequence.
 %
 % Options::
 %  'deg'   Compute angles in degrees (radians default)
@@ -24,7 +24,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -1,16 +1,14 @@
 %MDL_NAO Create model of Aldebaran NAO humanoid robot
 %
-%      mdl_nao
-%
-% Script creates several workspace variables
+% MDL_NAO is a script that creates several workspace variables
 %
 %   leftarm         left-arm kinematics (4DOF)
 %   rightarm        right-arm kinematics (4DOF)
 %   leftleg         left-leg kinematics (6DOF)
 %   rightleg        right-leg kinematics (6DOF)
 %
-% which describes the kinematic characteristics of the arms and legs of 
-% the NAO humanoid.
+% which are each SerialLink objects that describe the kinematic
+% characteristics of the arms and legs of the NAO humanoid.
 %
 % Reference::
 % - "Forward and Inverse Kinematics for the NAO Humanoid Robot",
@@ -22,11 +20,12 @@
 %   IROS 2009, pp. 769-774.
 %
 % Notes::
-% - the base transform of arms and legs are constant with respect to the 
+% - SI units of metres are used.
+% - The base transform of arms and legs are constant with respect to the 
 %   torso frame, which is assumed to be the constant value when the robot 
 %   is upright.  Clearly if the robot is walking these base transforms 
 %   will be dynamic.
-% - the first reference uses Modified DH notation, but doesn't explicitly
+% - The first reference uses Modified DH notation, but doesn't explicitly
 %   mention this, and the parameter tables have the wrong column headings
 %   for Modified DH parameters.
 % - TODO; add joint limits
@@ -37,7 +36,7 @@
 % MODEL: Aldebaran, NAO, humanoid, 4DOF, standard_DH
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

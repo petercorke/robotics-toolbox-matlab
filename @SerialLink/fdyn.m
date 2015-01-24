@@ -1,22 +1,33 @@
 %SerialLink.fdyn Integrate forward dynamics
 %
-% [T,Q,QD] = R.fdyn(T1, TORQFUN) integrates the dynamics of the robot over 
-% the time  interval 0 to T and returns vectors of time TI, joint position Q
+% [T,Q,QD] = R.fdyn(T, TORQFUN) integrates the dynamics of the robot over 
+% the time  interval 0 to T and returns vectors of time T, joint position Q
 % and joint velocity QD.  The initial joint position and velocity are zero.
-% The torque applied to the joints is computed by the user function TORQFUN:
+% The torque applied to the joints is computed by the user-supplied control
+% function TORQFUN:
 %
-% [TI,Q,QD] = R.fdyn(T, TORQFUN, Q0, QD0) as above but allows the initial
-% joint position and velocity to be specified.
-%
-% The control torque is computed by a user defined function
-%
-%        TAU = TORQFUN(T, Q, QD, ARG1, ARG2, ...)
+%        TAU = TORQFUN(T, Q, QD)
 %
 % where Q and QD are the manipulator joint coordinate and velocity state 
 % respectively, and T is the current time. 
 %
+% [TI,Q,QD] = R.fdyn(T, TORQFUN, Q0, QD0) as above but allows the initial
+% joint position and velocity to be specified.
+%
 % [T,Q,QD] = R.fdyn(T1, TORQFUN, Q0, QD0, ARG1, ARG2, ...) allows optional 
-% arguments to be passed through to the user function.
+% arguments to be passed through to the user-supplied control function:
+%
+%        TAU = TORQFUN(T, Q, QD, ARG1, ARG2, ...)
+%
+% For example, if the robot was controlled by a PD controller we can define
+% a function to compute the control
+%
+%         function tau = mytorqfun(t, q, qd, qstar, P, D)
+%           tau = P*(qstar-q) + D*qd;
+%
+% and then integrate the robot dynamics with the control
+%
+%         [t,q] = robot.fdyn(10, @mytorqfun, qstar, P, D);
 %
 % Note::
 % - This function performs poorly with non-linear joint friction, such as
@@ -31,7 +42,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

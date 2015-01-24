@@ -1,7 +1,8 @@
-%VREP_camera V-REP mirror of vision sensor object
+%VREP_camera Mirror of V-REP vision sensor object
 %
-% Mirror objects are MATLAB objects that reflect objects in the V-REP
-% environment.  Methods allow the V-REP state to be examined or changed.
+% Mirror objects are MATLAB objects that reflect the state of objects in
+% the V-REP environment.  Methods allow the V-REP state to be examined or
+% changed.
 %
 % This is a concrete class, derived from VREP_mirror, for all V-REP vision 
 % sensor objects and allows access to images and image parameters.
@@ -23,26 +24,29 @@
 %  setclipping        set clipping boundaries
 %
 % Superclass methods (VREP_obj)::
-%  getpos              return position of object given handle
-%  setpos              set position of object given handle
-%  getorient           return orientation of object given handle
-%  setorient           set orientation of object given handle
-%  getpose             return pose of object given handle
-%  setpose             set pose of object given handle
+%  getpos              get position of object 
+%  setpos              set position of object 
+%  getorient           get orientation of object 
+%  setorient           set orientation of object
+%  getpose             get pose of object
+%  setpose             set pose of object
 %
 % can be used to set/get the pose of the robot base.
 %
-% Superclass methods (VREP_base)::
-%  setobjparam_bool    set object boolean parameter
-%  setobjparam_int     set object integer parameter
-%  setobjparam_float   set object float parameter
+% Superclass methods (VREP_mirror)::
+%  getname          get object name
+%-
+%  setparam_bool    set object boolean parameter
+%  setparam_int     set object integer parameter
+%  setparam_float   set object float parameter
 %
-% Properties::
-%  n     Number of joints
+%  getparam_bool    get object boolean parameter
+%  getparam_int     get object integer parameter
+%  getparam_float   get object float parameter
 %
 % See also VREP_mirror, VREP_obj, VREP_arm, VREP_camera, VREP_hokuyo.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -68,10 +72,10 @@ classdef VREP_camera < VREP_obj
     
     methods
         function obj = VREP_camera(vrep, name)
-                        %VREP_camera.VREP_camera Create a camera mirror object
+            %VREP_camera.VREP_camera Create a camera mirror object
             %
             % C = VREP_camera(NAME, OPTIONS) is a mirror object that corresponds to the
-            % a vision senor named NAME in the V-REP environment.
+            % vision senor named NAME in the V-REP environment.
             %
             % Options::
             % 'fov',A           Specify field of view in degreees (default 60)
@@ -79,7 +83,9 @@ classdef VREP_camera < VREP_obj
             % 'clipping',Z      Specify near Z(1) and far Z(2) clipping boundaries
             %
             % Notes::
-            % - Default parameters are set in the V-REP environment
+            % - Default parameters are set in the V-REP environmen
+            % - Can be applied to "DefaultCamera" which controls the view in the
+            %   simulator GUI.
             %
             % See also VREP_obj.
             obj = obj@VREP_obj(vrep, name);
@@ -91,9 +97,11 @@ classdef VREP_camera < VREP_obj
              % C.setclipping(NEAR, FAR) set clipping boundaries to the
              % range of Z from NEAR to FAR.  Objects outside this range
              % will not be rendered.
+             %
+             % See also VREP_camera.getclipping.
 
-             obj.vrep.setobjparam_float(obj.h, 1000, near);
-             obj.vrep.setobjparam_float(obj.h, 1001, far);
+             obj.setparam_float(1000, near);
+             obj.setparam_float(1001, far);
         end
         
         function clip = getclipping(obj)
@@ -101,9 +109,11 @@ classdef VREP_camera < VREP_obj
              %
              % C.getclipping() is the near and far clipping boundaries (1x2) in the
              % Z-direction as a 2-vector [NEAR,FAR]. 
-
-             clip(1) = obj.vrep.getobjparam_float(obj.h, 1000);
-             clip(2) = obj.vrep.getobjparam_float(obj.h, 1001);
+             %
+             % See also VREP_camera.setclipping.
+             
+             clip(1) = obj.getparam_float(1000);
+             clip(2) = obj.getparam_float(1001);
         end
         
         function im = setangle(obj, angle)
@@ -111,8 +121,10 @@ classdef VREP_camera < VREP_obj
             %
             % C.setangle(FOV) set the field-of-view angle to FOV in
             % radians.
+            %
+            % See also VREP_camera.getangle.
             
-            obj.vrep.setobjparam_float(obj.h, 1004, angle);
+            obj.setparam_float(1004, angle);
         end
         
         function fov = getangle(obj)
@@ -120,8 +132,10 @@ classdef VREP_camera < VREP_obj
             %
             % FOV = C.getangle(FOV) is the field-of-view angle to FOV in
             % radians.
+            %
+            % See also VREP_camera.setangle.
             
-            fov = obj.vrep.getobjparam_float(obj.h, 1004);
+            fov = obj.getparam_float(1004);
         end
         
         function setresolution(obj, res)
@@ -129,14 +143,19 @@ classdef VREP_camera < VREP_obj
             %
             % C.setresolution(R) set image resolution to RxR if R is a scalar or
             % R(1)xR(2) if it is a 2-vector.
-            
+            %
+            % Notes::
+            % - By default V-REP cameras seem to have very low (32x32) resolution.
+            % - Frame rate will decrease as frame size increases.
+            %
+            % See also VREP_camera.getresolution.            
             if isscalar(res)
                 rx = res; ry = res;
             else
                 rx = res(1); ry = res(2);
             end
-            obj.vrep.setobjparam_int(obj.h, 1002, rx);
-            obj.vrep.setobjparam_int(obj.h, 1003, ry);
+            obj.setparam_int(1002, rx);
+            obj.setparam_int(1003, ry);
         end
         
         function res = getresolution(obj)
@@ -144,10 +163,11 @@ classdef VREP_camera < VREP_obj
             %
             % R = C.getresolution() is the image resolution (1x2) of the
             % vision sensor R(1)xR(2).
+            %
+            % See also VREP_camera.setresolution.             
             
-            
-            res(1) = obj.vrep.getobjparam_int(obj.h, 1002);
-            res(2) = obj.vrep.getobjparam_int(obj.h, 1003);
+            res(1) = obj.getparam_int(1002);
+            res(2) = obj.getparam_int(1003);
         end
         
         function im = grab(obj, varargin)
@@ -163,31 +183,44 @@ classdef VREP_camera < VREP_obj
             % 'grey'     Return a greyscale image (default color).
             %
             % Notes::
-            % - V-REP simulator must be running
-            % - Very slow, ie. seconds to grab a 256x256 image
-            % - Color images can be quite dark, ensure good light sources
+            % - V-REP simulator must be running.
+            % - Color images can be quite dark, ensure good light sources.
             % - Uses the signal 'handle_rgb_sensor' to trigger a single
             %   image generation.
             %
-            % See also idisp.
+            % See also idisp, VREP.simstart.
             
             opt.grey = false;
             opt = tb_optparse(opt, varargin);
             
             % Ask the sensor to turn itself on, take A SINGLE 3D IMAGE, and turn itself off again
             obj.vrep.signal_int('handle_rgb_sensor', 1);
-            fprintf('Capturing image...\n');
-            [s,res,image] = obj.vrep.vrep.simxGetVisionSensorImage2(obj.vrep.client, obj.h, opt.grey, obj.vrep.mode);
+            %fprintf('Capturing image...\n');
+            [s,res,image] = obj.vrep.vrep.simxGetVisionSensorImage2(obj.vrep.client, obj.h, opt.grey, obj.vrep.vrep.simx_opmode_oneshot_wait);
             if s ~= 0
                 throw( obj.except(s) );
             end
-            fprintf('Captured %dx%d image\n', res(1), res(2));
+            %fprintf('Captured %dx%d image\n', res(1), res(2));
             
             if nargout == 0
                 idisp(image);
             elseif nargout > 0
                 im = image;
             end
+        end
+        
+        function s = char(obj)
+            %VREP_camera.char Convert to string
+            %
+            % V.char() is a string representation the VREP parameters in human
+            % readable foramt.
+            %
+            % See also VREP.display.
+            
+            s = sprintf('VREP camera object: %s', obj.name);
+            s = strvcat(s, sprintf('resolution: %d x %d', obj.getresolution()));
+            s = strvcat(s, sprintf('clipping: %g to %g', obj.getclipping()));
+            
         end
     end
 end

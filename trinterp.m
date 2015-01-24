@@ -1,20 +1,19 @@
 %TRINTERP Interpolate homogeneous transformations
 %
-% T = TRINTERP(T0, T1, S) is a homogeneous transform interpolation 
-% between T0 when S=0 to T1 when S=1.  Rotation is interpolated using 
-% quaternion spherical linear interpolation.  If S (Nx1) then T (4x4xN)
-% is a sequence of homogeneous transforms corresponding to the interpolation 
-% values in S.
+% T = TRINTERP(T0, T1, S) is a homogeneous transform (4x4) interpolated
+% between T0 when S=0 and T1 when S=1.  T0 and T1 are both homogeneous
+% transforms (4x4).  Rotation is interpolated using quaternion spherical
+% linear interpolation (slerp).  If S (Nx1) then T (4x4xN) is a sequence of
+% homogeneous transforms corresponding to the interpolation values in S.
 %
-% T = TRINTERP(T, S) is a transform that varies from the identity matrix when
-% S=0 to T when R=1.  If S (Nx1) then T (4x4xN) is a sequence of homogeneous 
-% transforms corresponding to the interpolation values in S.
+% T = TRINTERP(T1, S) as above but interpolated between the identity matrix
+% when S=0 to T1 when S=1.
 %
 % See also CTRAJ, QUATERNION.
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

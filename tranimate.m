@@ -1,15 +1,15 @@
 %TRANIMATE Animate a coordinate frame
 %
-% TRANIMATE(P1, P2, OPTIONS) animates a 3D coordinate frame moving from pose P1
-% to pose P2.  Poses P1 and P2 can be represented by:
+% TRANIMATE(P1, P2, OPTIONS) animates a 3D coordinate frame moving from pose X1
+% to pose X2.  Poses X1 and X2 can be represented by:
 %   - homogeneous transformation matrices (4x4)
 %   - orthonormal rotation matrices (3x3)
 %   - Quaternion
 %
-% TRANIMATE(P, OPTIONS) animates a coordinate frame moving from the identity pose
-% to the pose P represented by any of the types listed above.
+% TRANIMATE(X, OPTIONS) animates a coordinate frame moving from the identity pose
+% to the pose X represented by any of the types listed above.
 %
-% TRANIMATE(PSEQ, OPTIONS) animates a trajectory, where PSEQ is any of
+% TRANIMATE(XSEQ, OPTIONS) animates a trajectory, where XSEQ is any of
 %   - homogeneous transformation matrix sequence (4x4xN)
 %   - orthonormal rotation matrix sequence (3x3xN)
 %   - Quaternion vector (Nx1)
@@ -20,16 +20,19 @@
 %  'axis',A      Axis bounds [xmin, xmax, ymin, ymax, zmin, zmax]
 %  'movie',M     Save frames as files in the folder M
 %
+%  Additional options are passed through to TRPLOT.
+%
 % Notes::
+% - Uses the Animate helper class to record the frames.
+% - Poses X1 and X2 must both be of the same type
 % - The 'movie' options saves frames as files NNNN.png.
-% - When using 'movie' option ensure that the window is fully visible.
 % - To convert frames to a movie use a command like:
 %        ffmpeg -r 10 -i %04d.png out.avi
 %
-% See also TRPLOT.
+% See also TRPLOT, Animate.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -60,8 +63,7 @@ function tranimate(P2, varargin)
     [opt, args] = tb_optparse(opt, varargin);
     
     if ~isempty(opt.movie)
-        mkdir(opt.movie);
-        framenum = 1;
+        anim = Animate(opt.movie);
     end
     P1 = [];
 
@@ -133,9 +135,7 @@ function tranimate(P2, varargin)
         trplot(hg, T);
         
         if ~isempty(opt.movie)
-            f = getframe;
-            imwrite(f.cdata, sprintf('%s/%04d.png', opt.movie, framenum));
-            framenum = framenum+1;
+            anim.add();
         end
         
         pause(1/opt.fps);

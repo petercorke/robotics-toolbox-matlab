@@ -5,8 +5,8 @@
 % joints.  The product C*QD is the vector of joint force/torque due to velocity
 % coupling.  The diagonal elements are due to centripetal effects and the 
 % off-diagonal elements are due to Coriolis effects.  This matrix is also 
-% known as the velocity coupling matrix, since gives the disturbance forces
-% on all joints due to velocity of any joint.
+% known as the velocity coupling matrix, since it describes the disturbance forces
+% on any joint due to velocity of all other joints.
 %
 % If Q and QD are matrices (KxN), each row is interpretted as a joint state 
 % vector, and the result (NxNxK) is a 3d-matrix where each plane corresponds
@@ -15,7 +15,7 @@
 % C = R.coriolis( QQD) as above but the matrix QQD (1x2N) is [Q QD].
 %
 % Notes::
-% - Joint friction is also a joint force proportional to velocity but it is
+% - Joint viscous friction is also a joint force proportional to velocity but it is
 %   eliminated in the computation of this value.
 % - Computationally slow, involves N^2/2 invocations of RNE.
 %
@@ -25,7 +25,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

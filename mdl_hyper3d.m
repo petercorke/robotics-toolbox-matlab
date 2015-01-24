@@ -1,10 +1,8 @@
 %MDL_HYPER3D Create model of a hyper redundant 3D manipulator
 %
-%
-% MDL_HYPER3D  creates the workspace variable h3d which describes the 
-% kinematic characteristics of a serial link manipulator which at zero angles
-% is a straight line in the XY plane.  By default has 10 joints.
-%
+% MDL_HYPER3D is a script that creates the workspace variable h3d which
+% describes the kinematic characteristics of a serial link manipulator with
+% 10 joints which at zero angles is a straight line in the XY plane.
 %
 % MDL_HYPER3D(N) as above but creates a manipulator with N joints.
 %
@@ -15,17 +13,16 @@
 %
 % [R,QZ] = MDL_HYPER3D(N) as above but also returns a vector of zero joint angles.
 %
-%
 % Notes::
 % - The manipulator in default pose is a straight line 1m long.
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, mdl_hyper2d, mdl_puma560akb, mdl_stanford, mdl_twolink, mdl_coil.
+% See also SerialLink, mdl_hyper2d, mdl_ball, mdl_coil.
 
 % MODEL: hyper redundant, 10DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

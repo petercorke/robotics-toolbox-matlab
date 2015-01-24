@@ -1,14 +1,15 @@
 %SerialLink.COLLISIONS Perform collision checking
 %
-% C = R.collisions(Q, MODEL) returns true if the SerialLink object R at
-% pose Q (1xN) will intersect the solid model MODEL which belongs to the
-% class CollisionModel.
+% C = R.collisions(Q, MODEL) is true if the SerialLink object R at
+% pose Q (1xN) intersects the solid model MODEL which belongs to the
+% class CollisionModel.  The model comprises a number of geometric
+% primitives and associate pose.
 %
 % C = R.collisions(Q, MODEL, DYNMODEL, TDYN) as above but also checks
 % dynamic collision model DYNMODEL whose elements are at pose TDYN.
-% TDYN is a 4x4xP array of transformation matrices, where
-% P = length(DYNMODEL.primitives). The pth plane of TDYN transforms the
-% pth primitive of DYNMODEL before its own transform property.
+% TDYN is an array of transformation matrices (4x4xP), where
+% P = length(DYNMODEL.primitives). The P'th plane of TDYN premultiplies the
+% pose of the P'th primitive of DYNMODEL.
 %
 % C = R.collisions(Q, MODEL, DYNMODEL) as above but assumes TDYN is the
 % robot's tool frame.
@@ -31,7 +32,7 @@
 %
 % See also CollisionModel, SerialLink.
 
-% Copyright (C) Bryan Moutrie, 2013-2014
+% Copyright (C) Bryan Moutrie, 2013-2015
 % Licensed under the GNU Lesser General Public License
 % see full file for full statement
 %

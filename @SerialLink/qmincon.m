@@ -1,7 +1,8 @@
-%SerialLink.QMINCON Resolve redundancy in robots by avoiding joint limits
+%SerialLink.QMINCON Use redundancy to avoid joint limits
 %
-% QS = R.qmincon(Q) exploits null space motion and returns a set of joint angles QS (1xN) that result in
-% the same end-effector pose but are away from the joint coordinate limits.
+% QS = R.qmincon(Q) exploits null space motion and returns a set of joint
+% angles QS (1xN) that result in the same end-effector pose but are away
+% from the joint coordinate limits.  N is the number of robot joints.
 %
 % [Q,ERR] = R.qmincon(Q) as above but also returns ERR which is the
 % scalar final value of the objective function.
@@ -19,7 +20,7 @@
 % for the corresponding trajectory step.
 %
 % Notes::
-% - Requires fmincon from the optimization toolbox.
+% - Requires fmincon from the Optimization Toolbox.
 % - Robot must be redundant.
 %
 % Author::
@@ -27,7 +28,7 @@
 %
 % See also SerialLink.ikcon, SerialLink.ikunc, SerialLink.jacob0.
 
-% Copyright (C) Bryan Moutrie, 2013-2014
+% Copyright (C) Bryan Moutrie, 2013-2015
 % Licensed under the GNU Lesser General Public License
 % see full file for full statement
 %
@@ -49,6 +50,7 @@
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 function [qstar, error, exitflag] = qmincon(robot, q)
+    
     % check if Optimization Toolbox exists, we need it
     if ~exist('fmincon')
         error('rtb:qmincon:nosupport', 'Optimization Toolbox required');

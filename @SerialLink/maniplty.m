@@ -1,18 +1,19 @@
 %SerialLink.MANIPLTY Manipulability measure
 %
-% M = R.maniplty(Q, OPTIONS) is the manipulability index measure for the robot
-% at the joint configuration Q.  It indicates dexterity, that is, how isotropic 
-% the robot's motion is with respect to the 6 degrees of Cartesian motion.
-% The measure is high when the manipulator is capable of equal motion in all
-% directions and low when the manipulator is close to a singularity.
+% M = R.maniplty(Q, OPTIONS) is the manipulability index (scalar) for the
+% robot at the joint configuration Q (1xN) where N is the number of robot
+% joints.  It indicates dexterity, that is, how isotropic the robot's
+% motion is with respect to the 6 degrees of Cartesian motion. The measure
+% is high when the manipulator is capable of equal motion in all directions
+% and low when the manipulator is close to a singularity.
 %
 % If Q is a matrix (MxN) then M (Mx1) is a vector of  manipulability 
-% indices for each pose specified by a row of Q.
+% indices for each joint configuration specified by a row of Q.
 %
 % [M,CI] = R.maniplty(Q, OPTIONS) as above, but for the case of the Asada
 % measure returns the Cartesian inertia matrix CI.
 %
-% Two measures can be selected:
+% Two measures can be computed:
 % - Yoshikawa's manipulability measure is based on the shape of the velocity
 %   ellipsoid and depends only on kinematic parameters.
 % - Asada's manipulability measure is based on the shape of the acceleration
@@ -53,7 +54,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

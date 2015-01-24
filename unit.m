@@ -1,13 +1,13 @@
 %UNIT Unitize a vector
 %
-% VN = UNIT(V) is a unit vector parallel to V.
+% VN = UNIT(V) is a unit-vector parallel to V.
 %
 % Note::
 % - Reports error for the case where norm(V) is zero.
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

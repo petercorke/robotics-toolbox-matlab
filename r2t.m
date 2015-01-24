@@ -1,7 +1,8 @@
 %R2T Convert rotation matrix to a homogeneous transform
 %
-% T = R2T(R) is a homogeneous transform equivalent to an orthonormal 
-% rotation matrix R with a zero translational component.
+% T = R2T(R) is an SE(2) or SE(3) homogeneous transform equivalent to an
+% SO(2) or SO(3) orthonormal rotation matrix R with a zero translational
+% component.
 %
 % Notes::
 % - Works for T in either SE(2) or SE(3)
@@ -15,7 +16,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

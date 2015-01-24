@@ -1,11 +1,20 @@
-%TRNORM Normalize a homogeneous transform
+%TRNORM Normalize a rotation matrix
 %
-% TN = TRNORM(T) is a normalized homogeneous transformation matrix in which 
-% the rotation submatrix R = [N,O,A] is guaranteed to be a proper orthogonal 
-% matrix. The O and A vectors are normalized and the normal vector is formed from
-% N = O x A, and then we ensure that O and A are orthogonal by O = A x N.
+% RN = TRNORM(R) is guaranteed to be a proper orthogonal matrix rotation
+% matrix (3x3) which is "close" to the non-orthogonal matrix R (3x3). If R
+% = [N,O,A] the O and A vectors are made unit length and the normal vector
+% is formed from N = O x A, and then we ensure that O and A are orthogonal
+% by O = A x N.
+%
+% TN = TRNORM(T) as above but the rotational submatrix of the homogeneous
+% transformation T (4x4) is normalised while the translational part is
+% passed unchanged.
+%
+% If R (3x3xK) or T (4x4xK) represent a sequence then RN and TN have the
+% same dimension and normalisation is performed on each plane.
 %
 % Notes::
+% - Only the direction of A (the z-axis) is unchanged.
 % - Used to prevent finite word length arithmetic causing transforms to 
 %   become `unnormalized'.
 %
@@ -13,7 +22,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

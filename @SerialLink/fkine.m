@@ -1,15 +1,19 @@
 %SerialLink.fkine Forward kinematics
 %
-% T = R.fkine(Q) is the pose (4x4) of the robot end-effector as a homogeneous
-% transformation for the joint configuration Q (1xN).
+% T = R.fkine(Q, OPTIONS) is the pose of the robot end-effector as an SE(3)
+% homogeneous transformation (4x4) for the joint configuration Q (1xN).
 %
-% If Q is a matrix (KxN) the rows are interpretted as the generalized
-% joint coordinates for a sequence of points along a trajectory.  Q(i,j) is
-% the j'th joint parameter for the i'th trajectory point.  In this case
-% T is a 3d matrix (4x4xK) where the last subscript is the index along the path.
+% If Q is a matrix (KxN) the rows are interpreted as the generalized joint
+% coordinates for a sequence of points along a trajectory.  Q(i,j) is the
+% j'th joint parameter for the i'th trajectory point.  In this case T is a
+% 3d matrix (4x4xK) where the last subscript is the index along the path.
 %
 % [T,ALL] = R.fkine(Q) as above but ALL (4x4xN) is the pose of the link
 % frames 1 to N, such that ALL(:,:,k) is the pose of link frame k.
+%
+% Options::
+%  'deg'    Assume that revolute joint coordinates are in degrees not
+%           radians
 %
 % Note::
 % - The robot's base or tool transform, if present, are incorporated into the
@@ -20,7 +24,7 @@
 % See also SerialLink.ikine, SerialLink.ikine6s.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -39,7 +43,7 @@
 %
 % http://www.petercorke.com
 
-function [t allt] = fkine(robot, q)
+function [t allt] = fkine(robot, q, varargin)
     
 %
 % evaluate fkine for each point on a trajectory of
@@ -47,6 +51,16 @@ function [t allt] = fkine(robot, q)
 %
 
 n = robot.n;
+
+opt.deg = false;
+
+opt = tb_optparse(opt, varargin);
+
+if opt.deg
+    % in degrees mode, scale the columns corresponding to revolute axes
+    k = ~robot.links.isprismatic;
+    q(:,k) = q(:,k) * pi/180;
+end
 
 if nargout > 1
     allt = zeros(4,4,n);

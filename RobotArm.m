@@ -5,56 +5,36 @@
 % Methods::
 %
 %  plot          display graphical representation of robot
-%
+%-
 %  teach         drive the physical and graphical robots
 %  mirror        use the robot as a slave to drive graphics
-%
+%-
 %  jmove         joint space motion of the physical robot
 %  cmove         Cartesian space motion of the physical robot
 %
-%  isspherical   test if robot has spherical wrist
-%  islimit       test if robot at joint limit
+% plus all other methods of SerialLink
 %
-%  fkine         forward kinematics
-%  ikine6s       inverse kinematics for 6-axis spherical wrist revolute robot
-%  ikine3        inverse kinematics for 3-axis revolute robot
-%  ikine         inverse kinematics using iterative method
-%  jacob0        Jacobian matrix in world frame
-%  jacobn        Jacobian matrix in tool frame
+% Properties::
 %
-% Properties (read/write)::
-%
-%  links      vector of Link objects (1xN)
-%  gravity    direction of gravity [gx gy gz]
-%  base       pose of robot's base (4x4 homog xform)
-%  tool       robot's tool transform, T6 to tool tip (4x4 homog xform)
-%  qlim       joint limits, [qmin qmax] (Nx2)
-%  offset     kinematic joint coordinate offsets (Nx1)
-%  name       name of robot, used for graphical display
-%  manuf      annotation, manufacturer's name
-%  comment    annotation, general comment
-%  plotopt    options for plot() method (cell array)
-%
-% Object properties (read only)::
-%
-%  n           number of joints
-%  config      joint configuration string, eg. 'RRRRRR'
-%  mdh         kinematic convention boolean (0=DH, 1=MDH)
+% as per SerialLink class
 %
 % Note::
+%  - the interface to a physical robot, the machine, should be an abstract
+%  superclass but right now it isn't
 %  - RobotArm is a subclass of SerialLink.
-%  - RobotArm is a handle subclass object.
+%  - RobotArm is a reference (handle subclass) object.
 %  - RobotArm objects can be used in vectors and arrays
 %
 % Reference::
+% - http://www.petercorke.com/doc/robotarm.pdf
 % - Robotics, Vision & Control, Chaps 7-9,
 %   P. Corke, Springer 2011.
 % - Robot, Modeling & Control,
 %   M.Spong, S. Hutchinson & M. Vidyasagar, Wiley 2006.
 %
-% See also SerialLink, Link, DHFactor.
+% See also Machine, SerialLink, Link, DHFactor.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -84,8 +64,9 @@ classdef RobotArm < SerialLink
         function ra = RobotArm(robot, machine, varargin)
             %RobotArm.RobotArm Construct a RobotArm object
             %
-            % RA = RobotArm(L, M, OPTIONS) is a robot object defined by a vector 
-            % of Link objects L with a physical robot (machine) interface M.
+            % RA = RobotArm(L, M, OPTIONS) is a robot object defined by a vector of
+            % Link objects L with a physical robot interface M represented by an object
+            % of class Machine.
             %
             % Options::
             %
@@ -108,12 +89,13 @@ classdef RobotArm < SerialLink
         function delete(ra)
             %RobotArm.delete Destroy the RobotArm object
             %
-            % RA.delete() destroys the machine interface and the RobotArm
+            % RA.delete() closes and destroys the machine interface object and the RobotArm
             % object.
             
             % attempt to destroy the machine interfaace
             try
-                ra.machine.delete(ra.machine);
+                ra.machine.disconnect();
+                delete(ra.machine);
             catch
             end
             
@@ -130,7 +112,7 @@ classdef RobotArm < SerialLink
             % RA.jmove(QD, T) as above but the total move takes T seconds.
             %
             % Notes::
-            % - A trajectory is computed from the current configuration to QD.
+            % - A joint-space trajectory is computed from the current configuration to QD.
             %
             % See also RobotArm.cmove, Arbotix.setpath.
             
@@ -149,9 +131,12 @@ classdef RobotArm < SerialLink
             %
             % RA.cmove(T) moves the robot arm to the pose specified by
             % the homogeneous transformation (4x4).
-            %            %
+            %
             % Notes::
-            % - A trajectory is computed from the current configuration to QD.
+            % - A joint-space trajectory is computed from the current configuration to
+            %   QD using the jmove() method.
+            % - If the robot is 6-axis with a spherical wrist inverse kinematics are
+            %   computed using ikine6s() otherwise numerically using ikine().
             %
             % See also RobotArm.jmove, Arbotix.setpath.
             if ra.isspherical()
@@ -165,7 +150,7 @@ classdef RobotArm < SerialLink
         function q = getq(ra)
             %RobotArm.getq Get the robot joint angles
             %
-            % Q = RA.getq() are a vector of robot joint angles.
+            % Q = RA.getq() is a vector (1xN) of robot joint angles.
             %
             % Notes::
             % - If the robot has a gripper, its value is not included in this vector.

@@ -1,12 +1,13 @@
-%TRSCALE Create a homogeneous matrix corresponding to pure scale
+%TRSCALE Homogeneous transformation for pure scale
 %
-% T = TRSCALE(S) is a 4x4 homogeneous transform corresponding to a 
-% pure scale change.  If S is a scalar the same scale factor is used for x,y,z,
-% else it can be a 3-vector.
+% T = TRSCALE(S) is a homogeneous transform (4x4) corresponding to a pure
+% scale change.  If S is a scalar the same scale factor is used for x,y,z,
+% else it can be a 3-vector specifying scale in the x-, y- and
+% z-directions.
 %
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

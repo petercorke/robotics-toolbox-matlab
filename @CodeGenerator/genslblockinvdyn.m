@@ -7,7 +7,7 @@
 % - Is called by CodeGenerator.geninvdyn if cGen has active flag genslblock
 % - The generated Simulink block is composed of previously generated blocks
 %   for the inertia matrix, coriolis matrix, vector of gravitational load and 
-%   joint friction vector.% The block recombines these components to compute 
+%   joint friction vector. The block recombines these components to compute 
 %   the forward dynamics.
 % - The Simulink blocks are generated and stored in a robot specific block 
 %   library cGen.slib in the directory cGen.basepath.

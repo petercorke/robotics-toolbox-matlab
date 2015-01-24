@@ -1,8 +1,9 @@
 %Vehicle Car-like vehicle class
 %
-% This class models the kinematics of a car-like vehicle (bicycle model).  For
-% given steering and velocity inputs it updates the true vehicle state and returns
-% noise-corrupted odometry readings.
+% This class models the kinematics of a car-like vehicle (bicycle model) on
+% a plane that moves in SE(2).  For given steering and velocity inputs it
+% updates the true vehicle state and returns noise-corrupted odometry
+% readings.
 %
 % Methods::
 %   init         initialize vehicle state
@@ -20,11 +21,11 @@
 %   display      display state/parameters in human readable form
 %   char         convert to string
 %
-% Static methods::
+% Class methods::
 %   plotv        plot/animate a pose on current figure
 %
 % Properties (read/write)::
-%   x               true vehicle state (3x1)
+%   x               true vehicle state: x, y, theta (3x1)
 %   V               odometry covariance (2x2)
 %   odometry        distance moved in the last interval (2x1)
 %   rdim             dimension of the robot (for drawing)
@@ -53,8 +54,8 @@
 % which will move the vehicle within the region -10<x<10, -10<y<10 which we
 % can see by
 %      v.run(1000)
-% which shows an animation of the vehicle moving between randomly
-% selected wayoints.
+% which shows an animation of the vehicle moving for 1000 time steps
+% between randomly selected wayoints.
 %
 % Notes::
 % - Subclasses the MATLAB handle class which means that pass by reference semantics
@@ -62,14 +63,14 @@
 %
 % Reference::
 %
-%   Robotics, Vision & Control,
+%   Robotics, Vision & Control, Chap 6
 %   Peter Corke,
 %   Springer 2011
 %
 % See also RandomPath, EKF.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -121,7 +122,7 @@ classdef Vehicle < handle
         % covariance V_ACT (2x2) matrix corresponding to the odometry vector [dx dtheta].
         %
         % Options::
-        % 'stlim',A       Steering angle limit (default 0.5 rad)
+        % 'stlim',A       Steering angle limited to -A to +A (default 0.5 rad)
         % 'vmax',S        Maximum speed (default 5m/s)
         % 'L',L           Wheel base (default 1m)
         % 'x0',x0         Initial state (default (0,0,0) )
@@ -199,8 +200,8 @@ classdef Vehicle < handle
         function xnext = f(veh, x, odo, w)
             %Vehicle.f Predict next state based on odometry
             %
-            % XN = V.f(X, ODO) predict next state XN (1x3) based on current state X (1x3) and
-            % odometry ODO (1x2) is [distance,change_heading].
+            % XN = V.f(X, ODO) is the predicted next state XN (1x3) based on current
+            % state X (1x3) and odometry ODO (1x2) = [distance, heading_change].
             %
             % XN = V.f(X, ODO, W) as above but with odometry noise W.
             %
@@ -250,7 +251,7 @@ classdef Vehicle < handle
         %Vehicle.Fx  Jacobian df/dx
         %
         % J = V.Fx(X, ODO) is the Jacobian df/dx (3x3) at the state X, for
-        % odometry input ODO.
+        % odometry input ODO (1x2) = [distance, heading_change].
         %
         % See also Vehicle.f, Vehicle.Fv.
             dd = odo(1); dth = odo(2);
@@ -266,8 +267,8 @@ classdef Vehicle < handle
         function J = Fv(veh, x, odo)
             %Vehicle.Fv  Jacobian df/dv
             %
-            % J = V.Fv(X, ODO) returns the Jacobian df/dv (3x2) at the state X, for
-            % odometry input ODO.
+            % J = V.Fv(X, ODO) is the Jacobian df/dv (3x2) at the state X, for
+            % odometry input ODO (1x2) = [distance, heading_change].
             %
             % See also Vehicle.F, Vehicle.Fx.
             dd = odo(1); dth = odo(2);
@@ -312,13 +313,13 @@ classdef Vehicle < handle
         function u = control(veh, speed, steer)
             %Vehicle.control Compute the control input to vehicle
             %
-            % U = V.control(SPEED, STEER) returns a control input (speed,steer)
-            % based on provided controls SPEED,STEER to which speed and steering
-            % angle limits have been applied.
+            % U = V.control(SPEED, STEER) is a control input (1x2) = [speed,steer]
+            % based on provided controls SPEED,STEER to which speed and steering angle
+            % limits have been applied.
             %
-            % U = V.control() returns a control input (speed,steer) from a "driver"
-            % if one is attached, the driver's DEMAND() method is invoked. If no driver is attached
-            % then speed and steer angle are assumed to be zero.
+            % U = V.control() as above but demand originates with a "driver" object if
+            % one is attached, the driver's DEMAND() method is invoked. If no driver is
+            % attached then speed and steer angle are assumed to be zero.
             %
             % See also Vehicle.step, RandomPath.
             if nargin < 2
@@ -376,7 +377,7 @@ classdef Vehicle < handle
         % TODO run and run2 should become superclass methods...
 
         function p = run2(veh, T, x0, speed, steer)
-            %Vehicle.run2 Run the vehicle simulation
+            %Vehicle.run2 Run the vehicle simulation with control inputs
             %
             % P = V.run2(T, X0, SPEED, STEER) runs the vehicle model for a time T with
             % speed SPEED and steering angle STEER.  P (Nx3) is the path followed and
@@ -384,8 +385,9 @@ classdef Vehicle < handle
             %
             % Notes::
             % - Faster and more specific version of run() method.
+            % - Used by the RRT planner.
             %
-            % See also Vehicle.run, Vehicle.step.
+            % See also Vehicle.run, Vehicle.step, RRT.
             veh.init(x0);
 
             for i=1:(T/veh.dt)
@@ -403,7 +405,7 @@ classdef Vehicle < handle
         % travels "point first" and has a length V.rdim.
         %
         % V.plot(X, OPTIONS) plots the vehicle on the current axes at the pose X.
-
+        %
         % H = V.plotv(X, OPTIONS) draws a representation of a ground robot as an 
         % oriented triangle with pose X (1x3) [x,y,theta].  H is a graphics handle.
         %
@@ -488,7 +490,7 @@ classdef Vehicle < handle
         function s = char(veh)
         %Vehicle.char Convert to a string
         %
-        % s = V.char() is a string showing vehicle parameters and state in in 
+        % s = V.char() is a string showing vehicle parameters and state in 
         % a compact human readable format. 
         %
         % See also Vehicle.display.
@@ -543,7 +545,9 @@ classdef Vehicle < handle
         %         Vehicle.plotv(p);
         %
         % Notes::
-        % - This is a static method.
+        % - This is a class method.
+        %
+        % See also Vehicle.plot.
 
             if isscalar(x) && ishandle(x)
                 % plotv(h, x)

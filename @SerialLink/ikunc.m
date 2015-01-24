@@ -1,7 +1,8 @@
-%SerialLink.IKUNC Inverse manipulator kinematics without considering joint limits
+%SerialLink.IKUNC Numerical inverse manipulator without joint limits
 %
 % Q = R.ikunc(T) are the joint coordinates (1xN) corresponding to the robot 
-% end-effector pose T (4x4) which is a homogenenous transform.
+% end-effector pose T (4x4) which is a homogenenous transform, and N is the
+% number of robot joints.
 %
 % [Q,ERR] = robot.ikunc(T) as above but also returns ERR which is the
 % scalar final value of the objective function.
@@ -27,7 +28,7 @@
 % for the corresponding trajectory step.
 %
 % Notes::
-% - Requires fminunc from the optimization toolbox.
+% - Requires fminunc from the Optimization Toolbox.
 % - Joint limits are not considered in this solution.
 % - Can be used for robots with arbitrary degrees of freedom.
 % - In the case of multiple feasible solutions, the solution returned
@@ -41,9 +42,9 @@
 % Author::
 % Bryan Moutrie
 %
-% See also fmincon, SerialLink.ikcon, SerialLink.ikine, SerialLink.fkine.
+% See also SerialLink.ikcon, fmincon, SerialLink.ikine, SerialLink.fkine.
 
-% Copyright (C) Bryan Moutrie, 2013-2014
+% Copyright (C) Bryan Moutrie, 2013-2015
 % Licensed under the GNU Lesser General Public License
 % see full file for full statement
 %

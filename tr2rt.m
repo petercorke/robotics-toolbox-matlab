@@ -1,22 +1,24 @@
 %TR2RT Convert homogeneous transform to rotation and translation 
 %
-% [R,t] = TR2RT(TR) split a homogeneous transformation matrix (NxN) into an 
+% [R,t] = TR2RT(TR) splits a homogeneous transformation matrix (NxN) into an 
 % orthonormal rotation matrix R (MxM) and a translation vector t (Mx1), where
 % N=M+1.
+%
+% Works for TR in SE(2) or SE(3)
+%  - If TR is 4x4, then R is 3x3 and T is 3x1.
+%  - If TR is 3x3, then R is 2x2 and T is 2x1.
 %
 % A homogeneous transform sequence TR (NxNxK) is split into rotation matrix 
 % sequence R (MxMxK) and a translation sequence t (KxM).
 %
+%
 % Notes::
-% - Works for TR in SE(2) or SE(3)
-%  - If TR is 4x4, then R is 3x3 and T is 3x1.
-%  - If TR is 3x3, then R is 2x2 and T is 2x1.
 % - The validity of R is not checked.
 %
 % See also RT2TR, R2T, T2R.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -1,21 +1,22 @@
 %MDL_PLANAR3 Create model of a simple planar 3-link mechanism
 %
-%      mdl_planar3
-%
-% Script creates the workspace variable p3 which describes the 
-% kinematic and dynamic characteristics of a simple planar 3-link mechanism.
+% MDL_PLANAR2 is a script that creates the workspace variable p3 which
+% describes the kinematic characteristics of a simple redundant planar
+% 3-link mechanism.
 %
 % Also defines the vector:
 %   qz   corresponds to the zero joint angle configuration.
 %
-% Notes::
-% - No dynamics in this model
 %
-% See also SerialLink, mdl_twolink.
+% Notes::
+% - Moves in the XY plane.
+% - No dynamics in this model.
+%
+% See also SerialLink, mdl_twolink, mdl_planar1, mdl_planar2.
 
 % MODEL: generic, planar, 3DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

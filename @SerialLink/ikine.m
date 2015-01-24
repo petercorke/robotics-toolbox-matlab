@@ -1,4 +1,4 @@
-%SerialLink.ikine Inverse manipulator kinematics
+%SerialLink.ikine Numerical inverse kinematics
 %
 % Q = R.ikine(T) are the joint coordinates (1xN) corresponding to the robot 
 % end-effector pose T (4x4) which is a homogenenous transform.
@@ -46,6 +46,10 @@
 % 'verbose=2'    show state at each iteration
 % 'plot'         plot iteration state versus time
 %
+% References::
+% - Robotics, Vision & Control, Section 8.4,
+%   P. Corke, Springer 2011.
+%
 % Notes::
 % - Solution is computed iteratively.
 % - Solution is sensitive to choice of initial gain.  The variable
@@ -71,10 +75,10 @@
 %   generate Q.
 % - Joint limits are not considered in this solution.
 %
-% See also SerialLink.fkine, SerialLink.ikinem, tr22angvec, SerialLink.jacob0, SerialLink.ikine6s.
+% See also SerialLink.ikcon, SerialLink.ikunc, SerialLink.fkine, SerialLink.ikine6s.
  
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

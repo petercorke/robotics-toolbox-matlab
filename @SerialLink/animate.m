@@ -1,17 +1,15 @@
 %SerialLink.animate   Update a robot animation
 %
 % R.animate(q) updates an existing animation for the robot R.  This will have
-% been created using R.plot().
-%
-% Updates graphical instances of this robot in all figures.
+% been created using R.plot(). Updates graphical instances of this robot in all figures.
 %
 % Notes::
-% - Called by plot() and plot3d() to actually move the arm models
+% - Called by plot() and plot3d() to actually move the arm models.
 % - Used for Simulink robot animation.
 %
 % See also SerialLink.plot.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

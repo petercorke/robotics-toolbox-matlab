@@ -33,22 +33,27 @@
 %  B        dynamic: link viscous friction (motor referred)
 %  Tc       dynamic: link Coulomb friction
 %-
-%  S
 %  G        actuator: gear ratio
 %  Jm       actuator: motor inertia (motor referred)
 %
+% Examples::
+%
+%         L = Link([0 1.2 0.3 pi/2]);
+%         L = Link('revolute', 'd', 1.2, 'a', 0.3, 'alpha', pi/2);
+%         L = Revolute('d', 1.2, 'a', 0.3, 'alpha', pi/2);
+%
 % Notes::
-% - This is a reference class object
-% - Link objects can be used in vectors and arrays
+% - This is a reference class object.
+% - Link objects can be used in vectors and arrays.
 %
 % References::
 % - Robotics, Vision & Control, Chap 7,
-%   P. Corke, SprinSger 2011.
+%   P. Corke, Springer 2011.
 %
-% See also Link, Revolute, Prismatic, SerialLink.
+% See also Link, Revolute, Prismatic, SerialLink, RevoluteMDH, PrismaticMDH.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -96,39 +101,39 @@ classdef Link < handle
         function l = Link(varargin)
             %LINK Create robot link object
             %
-            % This is class constructor function which has several call signatures.
+            % This the class constructor which has several call signatures.
             %
             % L = Link() is a Link object with default parameters.
             %
-            % L = Link(L1) is a Link object that is a deep copy of the link
-            % object L1.
+            % L = Link(LNK) is a Link object that is a deep copy of the link
+            % object LNK.
             %
             % L = Link(OPTIONS) is a link object with the kinematic and dynamic
             % parameters specified by the key/value pairs.
             %
-            % Key/value pairs::
-            % 'theta',TH   joint angle, if not specified joint is revolute
-            % 'd',D        joint extension, if not specified joint is prismatic
-            % 'a',A        joint offset (default 0)
-            % 'alpha',A    joint twist (default 0)
-            % 'standard'   defined using standard D&H parameters (default).
-            % 'modified'   defined using modified D&H parameters.
-            % 'offset',O   joint variable offset (default 0)
-            % 'qlim',L     joint limit (default [])
-            % 'I',I        link inertia matrix (3x1, 6x1 or 3x3)
-            % 'r',R        link centre of gravity (3x1)
-            % 'm',M        link mass (1x1)
-            % 'G',G        motor gear ratio (default 1)
-            % 'B',B        joint friction, motor referenced (default 0)
-            % 'Jm',J       motor inertia, motor referenced (default 0)
-            % 'Tc',T       Coulomb friction, motor referenced (1x1 or 2x1), (default [0 0])
-            % 'revolute'   for a revolute joint (default)
-            % 'prismatic'  for a prismatic joint 'p'
-            % 'standard'   for standard D&H parameters (default).
-            % 'modified'   for modified D&H parameters.
-            % 'sym'        consider all parameter values as symbolic not numeric
+            % Options::
+            % 'theta',TH    joint angle, if not specified joint is revolute
+            % 'd',D         joint extension, if not specified joint is prismatic
+            % 'a',A         joint offset (default 0)
+            % 'alpha',A     joint twist (default 0)
+            % 'standard'    defined using standard D&H parameters (default).
+            % 'modified'    defined using modified D&H parameters.
+            % 'offset',O    joint variable offset (default 0)
+            % 'qlim',L      joint limit (default [])
+            % 'I',I         link inertia matrix (3x1, 6x1 or 3x3)
+            % 'r',R         link centre of gravity (3x1)
+            % 'm',M         link mass (1x1)
+            % 'G',G         motor gear ratio (default 1)
+            % 'B',B         joint friction, motor referenced (default 0)
+            % 'Jm',J        motor inertia, motor referenced (default 0)
+            % 'Tc',T        Coulomb friction, motor referenced (1x1 or 2x1), (default [0 0])
+            % 'revolute'    for a revolute joint (default)
+            % 'prismatic'   for a prismatic joint 'p'
+            % 'standard'    for standard D&H parameters (default).
+            % 'modified'    for modified D&H parameters.
+            % 'sym'         consider all parameter values as symbolic not numeric
             %
-            % - It is an error to specify 'theta' and 'd'
+            % - It is an error to specify both 'theta' and 'd'
             % - The link inertia matrix (3x3) is symmetric and can be specified by giving
             %   a 3x3 matrix, the diagonal elements [Ixx Iyy Izz], or the moments and products
             %   of inertia [Ixx Iyy Izz Ixy Iyz Ixz].
@@ -147,10 +152,10 @@ classdef Link < handle
             %
             % Options::
             %
-            % 'standard'   for standard D&H parameters (default).
-            % 'modified'   for modified D&H parameters.
-            % 'revolute'   for a revolute joint, can be abbreviated to 'r' (default)
-            % 'prismatic'  for a prismatic joint, can be abbreviated to 'p'
+            % 'standard'    for standard D&H parameters (default).
+            % 'modified'    for modified D&H parameters.
+            % 'revolute'    for a revolute joint, can be abbreviated to 'r' (default)
+            % 'prismatic'   for a prismatic joint, can be abbreviated to 'p'
             %
             % Examples::
             % A standard Denavit-Hartenberg link
@@ -187,9 +192,11 @@ classdef Link < handle
             %   configuration.
             % - The link dynamic (inertial and motor) parameters are all set to
             %   zero.  These must be set by explicitly assigning the object
-            %   properties: m, r, I, Jm, B, Tc, G.
+            %   properties: m, r, I, Jm, B, Tc.
+            % - The gear ratio is set to 1 by default, meaning that motor friction and
+            %   inertia will be considered if they are non-zero.
             %
-            % See also: Revolute, Prismatic.
+            % See also Revolute, Prismatic.
             
             %TODO eliminate legacy dyn matrix
             
@@ -386,12 +393,14 @@ classdef Link < handle
             % F = L.friction(QD) is the joint friction force/torque for link velocity QD.
             %
             % Notes::
-            % - Friction values are referred to the motor, not the load.
-            % - Viscous friction is scaled up by G^2.
-            % - Coulomb friction is scaled up by G.
-            % - The sign of the gear ratio is used to determine the appropriate
-            %   Coulomb friction value in the non-symmetric case.
+            % - The returned friction value is referred to the output of the gearbox.
+            % - The friction parameters in the Link object are referred to the motor.
+            % - Motor viscous friction is scaled up by G^2.
+            % - Motor Coulomb friction is scaled up by G.
+            % - The appropriate Coulomb friction value to use in the non-symmetric case
+            %   depends on the sign of the joint velocity, not the motor velocity.
             
+                
             tau = l.B * abs(l.G) * qd;
             
             if issym(l)
@@ -403,6 +412,20 @@ classdef Link < handle
             end
             tau = -abs(l.G) * tau;     % friction opposes motion
         end % friction()
+        
+        function tau = friction2(l, qd)
+            
+                    % experimental code
+            qdm = qd / l.G;
+            taum = -l.B * qdm;
+            if qdm  > 0
+                taum = taum - l.Tc(1);
+            elseif qdm < 0
+                taum = taum - l.Tc(2);
+            end
+            tau = taum * l.G;
+        end
+
         
         function  l2 = nofriction(l, only)
             %Link.nofriction Remove friction
@@ -458,7 +481,7 @@ classdef Link < handle
         function set.r(l, v)
             %Link.r Set centre of gravity
             %
-            % L.r = R set the link centre of gravity (COG) to R (3-vector).
+            % L.r = R sets the link centre of gravity (COG) to R (3-vector).
             %
             if isempty(v)
                 return;
@@ -472,11 +495,18 @@ classdef Link < handle
         function set.Tc(l, v)
             %Link.Tc Set Coulomb friction
             %
-            % L.Tc = F set Coulomb friction parameters to [F -F], for a symmetric
+            % L.Tc = F sets Coulomb friction parameters to [F -F], for a symmetric
             % Coulomb friction model.
             %
-            % L.Tc = [FP FM] set Coulomb friction to [FP FM], for an asymmetric
-            % Coulomb friction model. FP>0 and FM<0.
+            % L.Tc = [FP FM] sets Coulomb friction to [FP FM], for an asymmetric
+            % Coulomb friction model. FP>0 and FM<0.  FP is applied for a positive
+            % joint velocity and FM for a negative joint velocity.
+            %
+            % Notes::
+            % - The friction parameters are defined as being positive for a positive
+            %   joint velocity, the friction force computed by Link.friction uses the
+            %   negative of the friction parameter, that is, the force opposing motion of
+            %   the joint.
             %
             % See also Link.friction.
             if isempty(v)
@@ -504,9 +534,9 @@ classdef Link < handle
         function set.I(l, v)
             %Link.I Set link inertia
             %
-            % L.I = [Ixx Iyy Izz] set link inertia to a diagonal matrix.
+            % L.I = [Ixx Iyy Izz] sets link inertia to a diagonal matrix.
             %
-            % L.I = [Ixx Iyy Izz Ixy Iyz Ixz] set link inertia to a symmetric matrix with
+            % L.I = [Ixx Iyy Izz Ixy Iyz Ixz] sets link inertia to a symmetric matrix with
             % specified inertia and product of intertia elements.
             %
             % L.I = M set Link inertia matrix to M (3x3) which must be symmetric.
@@ -803,6 +833,10 @@ classdef Link < handle
         end
         
         function res = issym(l)
+            %Link.issym Check if link is a symbolic model
+            %
+            % res = L.issym() is true if the Link L has symbolic parameters.
+ 
             res = isa(l.alpha,'sym');
         end
         

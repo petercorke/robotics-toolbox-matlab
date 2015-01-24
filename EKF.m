@@ -1,5 +1,9 @@
 %EKF Extended Kalman Filter for navigation
 %
+% Extended Kalman filter for optimal estimation of state from noisy
+% measurments given a non-linear dynamic model.  This class is specific to
+% the problem of state estimation for a vehicle moving in SE(2).
+%
 % This class can be used for:
 %   - dead reckoning localization
 %   - map-based localization
@@ -138,11 +142,15 @@
 % and overlay the estimated map with 3 sigma ellipses
 %    ekf.plot_map(3, 'g');
 %
-% Reference::
+% References::
 %
 %   Robotics, Vision & Control, Chap 6,
 %   Peter Corke,
 %   Springer 2011
+%
+%   Stochastic processes and filtering theory,
+%   AH Jazwinski
+%   Academic Press 1970
 %
 % Acknowledgement::
 % 
@@ -152,7 +160,7 @@
 % See also Vehicle, RandomPath, RangeBearingSensor, Map, ParticleFilter.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -409,7 +417,7 @@ classdef EKF < handle
         % E.plot_xy(LS) as above but the optional line style arguments
         % LS are passed to plot.
         %
-        % P = E.plot_xy() returns the estimated vehicle pose trajectory
+        % P = E.plot_xy() is the estimated vehicle pose trajectory
         % as a matrix (Nx3) where each row is x, y, theta.
         %
         % See also EKF.plot_error, EKF.plot_ellipse, EKF.plot_P.
@@ -523,7 +531,7 @@ classdef EKF < handle
         % E.plot_map(LS) as above but pass line style arguments
         % LS to plot_ellipse.
         %
-        % P = E.plot_map() returns the estimated landmark locations (2xN)
+        % P = E.plot_map() is the estimated landmark locations (2xN)
         % and column I is the I'th map feature.  If the landmark was not
         % estimated the corresponding column contains NaNs.
         %
@@ -572,7 +580,7 @@ classdef EKF < handle
         % E.plot_P(LS) as above but the optional line style arguments
         % LS are passed to plot.
         %
-        % M = E.plot_P() returns the estimated covariance magnitude at
+        % M = E.plot_P() is the estimated covariance magnitude at
         % all time steps as a vector.
             p = zeros(length(ekf.history),1);
             for i=1:length(ekf.history)

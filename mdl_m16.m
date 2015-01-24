@@ -1,10 +1,8 @@
 %MDL_M16 Create model of Fanuc M16 manipulator
 %
-%      mdl_m16
-%
-% Script creates the workspace variable mico which describes the 
-% kinematic characteristics of a Fanuc M16 manipulator
-% using standard DH conventions.
+% MDL_M16 is a script that creates the workspace variable mico which
+% describes the kinematic characteristics of a Fanuc M16 manipulator using
+% standard DH conventions.
 %
 % Also define the workspace vectors:
 %   qz         zero joint angle configuration
@@ -18,15 +16,16 @@
 %    A. Djuric and R. J. Urbanic
 %
 % Notes::
+% - SI units of metres are used.
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, Revolute, mdl_irb140, mdl_puma560, mdl_twolink.
+% See also SerialLink, mdl_irb140, mdl_fanuc10l, mdl_motomanHP6, mdl_S4ABB2p8, mdl_puma560.
 
 
 % MODEL: Fanuc, M16, 6DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

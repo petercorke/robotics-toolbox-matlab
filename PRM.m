@@ -1,9 +1,9 @@
 %PRM Probabilistic RoadMap navigation class
 %
-% A concrete subclass of the Navigation class that implements the probabilistic
-% roadmap navigation algorithm.  This performs goal independent planning of
-% roadmaps, and at the query stage finds paths between specific start and
-% goal points.
+% A concrete subclass of the abstract Navigation class that implements the
+% probabilistic roadmap navigation algorithm over an occupancy grid.  This
+% performs goal independent planning of roadmaps, and at the query stage
+% finds paths between specific start and goal points.
 %
 % Methods::
 %
@@ -34,7 +34,7 @@
 % See also Navigation, DXform, Dstar, PGraph.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

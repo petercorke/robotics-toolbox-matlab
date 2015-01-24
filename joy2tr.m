@@ -1,7 +1,7 @@
 %JOY2TR Update transform from joystick
 %
-% T = JOY2TR(T, OPTIONS) updates the homogeneous transform according to a
-% connected joystick device.
+% T = JOY2TR(T, OPTIONS) updates the SE(3) homogeneous transform (4x4)
+% according to spatial velocities sourced from a connected joystick device.
 %
 % Options::
 % 'delay',D     Pause for D seconds after reading (default 0.1)
@@ -20,7 +20,7 @@
 %
 % See also joystick.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

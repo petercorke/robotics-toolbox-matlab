@@ -5,7 +5,7 @@
 %
 % Notes::
 % - Useful for operational space control XDD = J(Q)QDD + JDOT(Q)QD
-% - Written as per the text and not very efficient.
+% - Written as per the reference and not very efficient.
 %
 % References::
 % - Fundamentals of Robotics Mechanical Systems (2nd ed)
@@ -14,7 +14,7 @@
 % See also SerialLink.jacob0, diff2tr, tr2diff.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

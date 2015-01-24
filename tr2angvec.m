@@ -1,14 +1,18 @@
 %TR2ANGVEC Convert rotation matrix to angle-vector form
 %
-% [THETA,V] = TR2ANGVEC(R) converts an orthonormal rotation matrix R into a 
-% rotation of THETA (1x1) about the axis V (1x3).
+% [THETA,V] = TR2ANGVEC(R, OPTIONS) is rotation expressed in terms of an
+% angle THETA (1x1) about the axis V (1x3) equivalent to the orthonormal rotation
+% matrix R (3x3).
 %
-% [THETA,V] = TR2ANGVEC(T) as above but uses the rotational part of the
-% homogeneous transform T.
+% [THETA,V] = TR2ANGVEC(T, OPTIONS) as above but uses the rotational part of the
+% homogeneous transform T (4x4).
 %
 % If R (3x3xK) or T (4x4xK) represent a sequence then THETA (Kx1)is a vector 
 % of angles for corresponding elements of the sequence and V (Kx3) are the 
 % corresponding axes, one per row.
+%
+% Options::
+% 'deg'   Return angle in degrees
 %
 % Notes::
 % - If no output arguments are specified the result is displayed.
@@ -17,7 +21,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -36,8 +40,12 @@
 %
 % http://www.petercorke.com
 
-function [theta_, n_] = tr2angvec(R)
+function [theta_, n_] = tr2angvec(R, varargin)
 
+    opt.deg = false;
+    
+    opt = tb_optparse(opt, varargin);
+    
     % get the rotation submatrix(s)
     if ~isrot(R)
         R = t2r(R);
@@ -113,7 +121,11 @@ function [theta_, n_] = tr2angvec(R)
         
         if nargout == 0
             % if no output arguments display the angle and vector
-            fprintf('Rotation: %f rad x [%f %f %f]\n', theta(i), n(i,1), n(i,2), n(i,3));
+            if opt.deg
+                fprintf('Rotation: %f deg x [%f %f %f]\n', theta(i)*180/pi, n(i,1), n(i,2), n(i,3));
+            else
+                fprintf('Rotation: %f rad x [%f %f %f]\n', theta(i), n(i,1), n(i,2), n(i,3));
+            end
         end
     end
     

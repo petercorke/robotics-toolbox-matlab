@@ -47,7 +47,7 @@
 % - Solid models of the robot links are required as STL ascii format files,
 %   with extensions .stl
 % - Suitable STL files can be found in the package ARTE: A ROBOTICS TOOLBOX
-%   FOR EDUCATION by Arturo Gil
+%   FOR EDUCATION by Arturo Gil, https://arvc.umh.es/arte
 % - The root of the solid models is an installation of ARTE with an empty
 %   file called arte.m at the top level
 % - Each STL model is called 'linkN'.stl where N is the link number 0 to N
@@ -67,7 +67,7 @@
 %
 % See also SerialLink.plot, plotbotopt3d, SerialLink.animate, SerialLink.teach, SerialLink.fkine.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -402,6 +402,7 @@ end
 % POSSIBILITY OF SUCH DAMAGE.
 
 function [fout, vout, cout] = rndread(filename)
+    
     % Reads CAD STL ASCII files, which most CAD programs can export.
     % Used to create Matlab patches of CAD 3D data.
     % Returns a vertex list and face list, for Matlab patch command.

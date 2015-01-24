@@ -1,9 +1,7 @@
 %MDL_IRB140 Create model of ABB IRB 140 manipulator
 %
-%      mdl_irb140
-%
-% Script creates the workspace variable robot which describes the 
-% kinematic characteristics of an ABB IRB 140 manipulator
+% MDL_IRB140 is a script that creates the workspace variable robot which
+% describes the kinematic characteristics of an ABB IRB 140 manipulator
 % using standard DH conventions.
 %
 % Also define the workspace vectors:
@@ -14,19 +12,20 @@
 % Reference::
 % - "IRB 140 data sheet", ABB Robotics.
 % - "Utilizing the Functional Work Space Evaluation Tool for Assessing a 
-%    System Design and Reconfiguration Alternatives"
-%    A. Djuric and R. J. Urbanic
+%   System Design and Reconfiguration Alternatives"
+%   A. Djuric and R. J. Urbanic
 %
 % Notes::
+% - SI units of metres are used.
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, Revolute, mdl_puma560, mdl_twolink.
+% See also SerialLink, mdl_fanuc10l, mdl_m16, mdl_motormanHP6, mdl_S4ABB2p8, mdl_puma560.
 
 % MODEL: ABB, IRB140, 6DOF, standard_DH
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

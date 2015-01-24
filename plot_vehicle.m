@@ -1,16 +1,17 @@
-%plot_vehicle Plot ground vehicle pose
+%plot_vehicle Draw ground vehicle pose
 %
-% plot_vehicle(X,OPTIONS) draw representation of ground robot as an 
-% oriented triangle with pose X (1x3) [x,y,theta] or X (3x3) as homogeneous
-% transform in SE(2).
+% PLOT_VEHICLE(X,OPTIONS) draws a representation of ground robot as an
+% oriented triangle with pose X (1x3) = [x,y,theta] or X (3x3) as an SE(2)
+% homogeneous transform.
 %
 % Options::
-% 'scale',S    Draw vehicle with length S x maximum axis dimension
+% 'scale',S    Draw vehicle with length S x maximum axis dimension (default
+%              1/60)
 % 'size',S     Draw vehicle with length S
 %
 % See also Vehicle.plot.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

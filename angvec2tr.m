@@ -1,16 +1,16 @@
 %ANGVEC2TR Convert angle and vector orientation to a homogeneous transform
 %
-% T = ANGVEC2TR(THETA, V) is a homogeneous transform matrix equivalent to a 
+% T = ANGVEC2TR(THETA, V) is a homogeneous transform matrix (4x4) equivalent to a
 % rotation of THETA about the vector V.
 %
 % Note::
 % - The translational part is zero.
 %
-% See also EUL2TR, RPY2TR, ANGVEC2R.
+% See also EUL2TR, RPY2TR, ANGVEC2R, TR2ANGVEC.
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

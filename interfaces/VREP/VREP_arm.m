@@ -1,7 +1,8 @@
-%VREP_arm V-REP mirror of robot arm object
+%VREP_arm Mirror of V-REP robot arm object
 %
-% Mirror objects are MATLAB objects that reflect objects in the V-REP
-% environment.  Methods allow the V-REP state to be examined or changed.
+% Mirror objects are MATLAB objects that reflect the state of objects in
+% the V-REP environment.  Methods allow the V-REP state to be examined or
+% changed.
 %
 % This is a concrete class, derived from VREP_mirror, for all V-REP robot
 % arm objects and allows access to joint variables.
@@ -17,31 +18,39 @@
 %   
 % Methods::
 %
-%  getq              return joint coordinates
+%  getq              get joint coordinates
 %  setq              set joint coordinates
+%  setjointmode      set joint control parameters
 %  animate           animate a joint coordinate trajectory
+%  teach             graphical teach pendant
 %
 % Superclass methods (VREP_obj)::
-%  getpos              return position of object given handle
-%  setpos              set position of object given handle
-%  getorient           return orientation of object given handle
-%  setorient           set orientation of object given handle
-%  getpose             return pose of object given handle
-%  setpose             set pose of object given handle
+%  getpos              get position of object
+%  setpos              set position of object 
+%  getorient           get orientation of object
+%  setorient           set orientation of object
+%  getpose             get pose of object given
+%  setpose             set pose of object
 %
 % can be used to set/get the pose of the robot base.
 %
-% Superclass methods (VREP_base)::
-%  setobjparam_bool    set object boolean parameter
-%  setobjparam_int     set object integer parameter
-%  setobjparam_float   set object float parameter
+% Superclass methods (VREP_mirror)::
+%  getname          get object name
+%-
+%  setparam_bool    set object boolean parameter
+%  setparam_int     set object integer parameter
+%  setparam_float   set object float parameter
+%
+%  getparam_bool    get object boolean parameter
+%  getparam_int     get object integer parameter
+%  getparam_float   get object float parameter
 %
 % Properties::
 %  n     Number of joints
 %
 % See also VREP_mirror, VREP_obj, VREP_arm, VREP_camera, VREP_hokuyo.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -75,7 +84,7 @@ classdef VREP_arm < VREP_obj
         function arm = VREP_arm(vrep, name, varargin)
             %VREP_arm.VREP_arm Create a robot arm mirror object
             %
-            % R = VREP_arm(NAME, OPTIONS) is a mirror object that corresponds to the
+            % ARM = VREP_arm(NAME, OPTIONS) is a mirror object that corresponds to the
             % robot arm named NAME in the V-REP environment.
             %
             % Options::
@@ -88,6 +97,7 @@ classdef VREP_arm < VREP_obj
             %
             % See also VREP.arm.
             
+
             h = vrep.gethandle(name);
             if h == 0
                 error('no such object as %s in the scene', name);
@@ -123,8 +133,10 @@ classdef VREP_arm < VREP_obj
         function q = getq(arm)
             %VREP_arm.getq  Get joint angles of V-REP robot
             %
-            % R.getq() is the vector of joint angles (1xN) from the corresponding
+            % ARM.getq() is the vector of joint angles (1xN) from the corresponding
             % robot arm in the V-REP simulation.
+            %
+            % See also VREP_arm.setq.
             for j=1:arm.n
                 q(j) = arm.vrep.getjoint(arm.joint(j));
             end
@@ -133,19 +145,44 @@ classdef VREP_arm < VREP_obj
         function setq(arm, q)
             %VREP_arm.setq  Set joint angles of V-REP robot
             %
-            % R.setq(Q) sets the joint angles of the corresponding
+            % ARM.setq(Q) sets the joint angles of the corresponding
             % robot arm in the V-REP simulation to Q (1xN).
+            %
+            % See also VREP_arm.getq.
             for j=1:arm.n
                 arm.vrep.setjoint(arm.joint(j), q(j));
             end
         end
         
+        function setqt(arm, q)
+            %VREP_arm.setq  Set joint angles of V-REP robot
+            %
+            % ARM.setq(Q) sets the joint angles of the corresponding
+            % robot arm in the V-REP simulation to Q (1xN).
+            for j=1:arm.n
+                arm.vrep.setjointtarget(arm.joint(j), q(j));
+            end
+        end
+        
+        function setjointmode(arm, motor, control)
+            %VREP_arm.setjointmode Set joint mode
+            %
+            % ARM.setjointmode(M, C) sets the motor enable M (0 or 1) and motor control
+            % C (0 or 1) parameters for all joints of this robot arm.
+            
+            for j=1:arm.n
+                arm.vrep.setobjparam_int(arm.joint(j), 2000, 1);  %motor enable
+                arm.vrep.setobjparam_int(arm.joint(j), 2001, 1);  %motor control enable
+                
+            end
+
+        end
         function animate(arm, qt, varargin)
             %VREP_arm.setq  Animate V-REP robot
             %
-            % R.animate(QT, OPTIONS) animate the corresponding V-REP robot with
-            % configurations taken consecutive rows of QT (MxN) which represents 
-            % an M-point trajectory.
+            % R.animate(QT, OPTIONS) animates the corresponding V-REP robot with
+            % configurations taken from consecutive rows of QT (MxN) which represents
+            % an M-point trajectory and N is the number of robot joints.
             %
             % Options::
             % 'delay',D         Delay (s) betwen frames for animation (default 0.1)
@@ -277,7 +314,7 @@ classdef VREP_arm < VREP_obj
                 'HorizontalAlignment', 'center', ...
                 'Position', [0.05 1-height*1.5 0.9 height], ...
                 'BackgroundColor', 'white', ...
-                'String', 'bobbot');
+                'String', obj.name);
             
             handles.arm = obj;
             

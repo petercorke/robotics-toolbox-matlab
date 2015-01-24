@@ -1,22 +1,25 @@
 %MDL_PLANAR2 Create model of a simple planar 2-link mechanism
 %
-%      mdl_planar2
+% MDL_PLANAR2 is a script that creates the workspace variable p2 which
+% describes the kinematic characteristics of a simple planar 2-link
+% mechanism.
 %
-% Script creates the workspace variable p2 which describes the 
-% kinematic and dynamic characteristics of a simple planar 2-link mechanism.
+% Also defines the vector:
+%   qz   corresponds to the zero joint angle configuration.
 %
 % Also defines the vector:
 %   qz   corresponds to the zero joint angle configuration.
 %
 % Notes::
-% - No dynamics in this model
+% - Moves in the XY plane.
+% - No dynamics in this model.
 %
-% See also SerialLink, mdl_twolink.
+% See also SerialLink, mdl_twolink, mdl_planar1, mdl_planar3.
 
 
 % MODEL: generic, planar, 2DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

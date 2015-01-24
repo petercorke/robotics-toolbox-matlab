@@ -1,7 +1,7 @@
 %CODEGENERATOR Class for code generation
 %
 % Objects of the CodeGenerator class automatcally generate robot specific
-% code, as either M-functions, C-functions, C-MEX functions, real-time 
+% code, as either M-functions, C-functions, C-MEX functions, or real-time 
 % capable Simulink blocks.
 %
 % The various methods return symbolic expressions for robot kinematic and
@@ -65,11 +65,11 @@
 %  genmex         generate MEX-functions as replacement for M-functions (logical)
 %  compilemex     automatically compile MEX-functions after generation (logical)
 %
-% Object properties (read only)::
+% Properties (read only)::
 %  rob            SerialLink object to generate code for (1x1).
 %
 % Notes::
-%  - Requires the MATLAB Symbolic Toolbox
+%  - Requires the MATLAB Symbolic Toolbox.
 %  - For robots with > 3 joints the symbolic expressions are massively
 %    complex, they are slow and you may run out of memory.
 %  - As much as possible the symbolic calculations are down row-wise to
@@ -136,14 +136,14 @@ classdef CodeGenerator
         function CGen = CodeGenerator(rob,varargin)
         %CodeGenerator.CodeGenerator Construct a code generator object
         %
-        % cGen = CodeGenerator(ROB) is a code generator object for the SerialLink
+        % cGen = CodeGenerator(ROB, OPTIONS) is a code generator object for the SerialLink
         % object ROB.
         %
-        % cGen = CodeGenerator(ROB, OPTIONS) as above but with options described below.
         %
         % Options::
         %
-        % The following option sets can be passed as an optional parameter:
+        % CodeGenerator has many options, and useful sets of options are called
+        % optionSets, and the following are recognized:
         %
         %  'default'     set the options: verbose, saveResult, genMFun, genSLBlock
         %  'debug'       set the options: verbose, saveResult, genMFun, genSLBlock 
@@ -156,7 +156,9 @@ classdef CodeGenerator
         %  'ccode'       set the options: verbose, saveResult, genCcode
         %  'mex'         set the options: verbose, saveResult, genMEX
         %
-        % If 'optionSet' is ommitted, then 'default' is used. The options control the code generation and user information: 
+        % If no optionSet is provided, then 'default' is used. 
+        %
+        % The options themselves control the code generation and user information: 
         %
         %  'verbose'           write code generation progress to command window
         %  'saveResult         save results to hard disk (always enabled, when genMFun and genSLBlock are set)

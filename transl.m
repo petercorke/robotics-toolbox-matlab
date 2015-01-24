@@ -1,21 +1,26 @@
-%TRANSL Create translational transform
+%TRANSL Create or unpack an SE3 translational transform
 %
-% T = TRANSL(X, Y, Z) is an SE(3) homogeneous transform (4x4)representing a 
-% pure translation.
+% Create a translational transformation matrix::
 %
-% T = TRANSL(P) is an SE(3) homogeneous transform representing a translation or 
-% point P=[X,Y,Z]. If P (Mx3) it represents a sequence and T (4x4xM)
-% is a sequence of homogenous transforms such that T(:,:,i) corresponds to
-% the i'th row of P.
+% T = TRANSL(X, Y, Z) is an SE(3) homogeneous transform (4x4) representing
+% a pure translation of X, Y and Z.
 %
-% P = TRANSL(T) is the translational part of a homogeneous transform T as a 
-% 3-element column vector.  If T (4x4xM) is a homogeneous transform sequence 
-% the rows of P (Mx3) are the translational component of the corresponding 
+% T = TRANSL(P) is an SE(3) homogeneous transform (4x4) representing a
+% translation of P=[X,Y,Z]. If P (Mx3) it represents a sequence and T
+% (4x4xM) is a sequence of homogeneous transforms such that T(:,:,i)
+% corresponds to the i'th row of P.
+%
+% Unpack the translational part of a transformation matrix::
+%
+% P = TRANSL(T) is the translational part of a homogeneous transform T as a
+% 3-element column vector.  If T (4x4xM) is a homogeneous transform
+% sequence the rows of P (Mx3) are the translational component of the
+% corresponding transform in the sequence.
+%
+% [X,Y,Z] = TRANSL(T) is the translational part of a homogeneous transform
+% T as three components.  If T (4x4xM) is a homogeneous transform sequence
+% then X,Y,Z (1xM) are the translational components of the corresponding
 % transform in the sequence.
-%
-% [X,Y,Z] = TRANSL(T) is the translational part of a homogeneous transform T as three
-% components.  If T (4x4xM) is a homogeneous transform sequence then X,Y,Z (1xM) are
-% the translational components of the corresponding transform in the sequence.
 %
 % Notes::
 % - Somewhat unusually this function performs a function and its inverse.  An
@@ -25,7 +30,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

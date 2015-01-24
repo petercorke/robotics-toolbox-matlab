@@ -1,18 +1,16 @@
 %MDL_PHANTOMX Create model of PhantomX pincher manipulator
 %
-%      mdl_phantomx
-%
-% Script creates the workspace variable px which describes the 
-% kinematic characteristics of a PhantomX Pincher Robot, a 4 joint hobby
-% class  manipulator by Trossen Robotics.
+% MDL_PHANTOMX is a script that creates the workspace variable px which
+% describes the kinematic characteristics of a PhantomX Pincher Robot, a 4
+% joint hobby class  manipulator by Trossen Robotics.
 %
 % Also define the workspace vectors:
 %   qz         zero joint angle configuration
 %
 % Notes::
-% - uses standard DH conventions.
-% - Tool centrepoint is middle of the fingertips
-% - all translational units in mm
+% - Uses standard DH conventions.
+% - Tool centrepoint is middle of the fingertips.
+% - All translational units in mm.
 %
 % Reference::
 %
@@ -20,7 +18,7 @@
 
 % MODEL: Trossen Robotics, PhantomX Pincher, 4DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -1,10 +1,8 @@
 %MDL_P8 Create model of Puma robot on an XY base
 %
-%      mdl_p8
-%
-% Script creates the workspace variable p8 which is an 8-axis robot
-% comprising a Puma 560 robot on an XY base.  Joints 1 and 2 are the base,
-% joints 3-8 are the robot arm.
+% MDL_P8 is a script that creates the workspace variable p8 which is an
+% 8-axis robot comprising a Puma 560 robot on an XY base.  Joints 1 and 2
+% are the base, joints 3-8 are the robot arm.
 %
 % Also define the workspace vectors:
 %   qz         zero joint angle configuration
@@ -12,11 +10,18 @@
 %   qstretch   arm is stretched out in the X direction
 %   qn         arm is at a nominal non-singular configuration
 %
+% Notes::
+% - SI units of metres are used.
+%
+% References::
+% - Robotics, Vision & Control, Sec 7.3.4,
+%   P. Corke, Springer 2011.
+%
 % See also SerialLink, mdl_puma560.
 
 % MODEL: Unimation, Puma560, on XY base, redundant, 8DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

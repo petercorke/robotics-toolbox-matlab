@@ -4,14 +4,21 @@
 % smoothly from S0 to SF in M steps using a quintic (5th order) polynomial.
 % Velocity and acceleration can be optionally returned as SD (Mx1) and SDD (Mx1).
 %
+% TPOLY(S0, SF, M) as above but plots S, SD and SDD versus time in a single
+% figure.
+%
 % [S,SD,SDD] = TPOLY(S0, SF, T) as above but specifies the trajectory in 
 % terms of the length of the time vector T (Mx1).
 %
-% Notes::
-% - If no output arguments are specified S, SD, and SDD are plotted.
+% Reference:
+%  Robotics, Vision & Control
+%  Chap 3
+%  Springer 2011
+%
+% See also LSPB, JTRAJ.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

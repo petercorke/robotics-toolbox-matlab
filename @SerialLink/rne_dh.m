@@ -13,7 +13,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -99,9 +99,12 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
             pstarm = [];
         end
         Rm = [];
-        w = zeros(3,1);
-        wd = zeros(3,1);
-        vd = grav(:);
+        
+        % rotate base velocity and acceleration into L1 frame
+        Rb = t2r(robot.base)';
+        w = Rb*zeros(3,1);
+        wd = Rb*zeros(3,1);
+        vd = Rb*grav(:);
 
     %
     % init some variables, compute the link rotation matrices
@@ -115,11 +118,9 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
                 d = q(j);
             end
             alpha = link.alpha;
+            % O_{j-1} to O_j in {j}, negative inverse of link xform
             pstar = [link.a; d*sin(alpha); d*cos(alpha)];
-            if j == 1
-                pstar = t2r(robot.base) * pstar;
-                Tj = robot.base * Tj;
-            end
+
             pstarm(:,j) = pstar;
             Rm{j} = t2r(Tj);
             if debug>1
@@ -169,10 +170,10 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
             Nm = [Nm N];
 
             if debug
-                fprintf('w: '); fprintf('%.3f ', w)
-                fprintf('\nwd: '); fprintf('%.3f ', wd)
-                fprintf('\nvd: '); fprintf('%.3f ', vd)
-                fprintf('\nvdbar: '); fprintf('%.3f ', vhat)
+                fprintf('w: '); disp( w)
+                fprintf('\nwd: '); disp( wd)
+                fprintf('\nvd: '); disp( vd)
+                fprintf('\nvdbar: '); disp( vhat)
                 fprintf('\n');
             end
         end
@@ -204,15 +205,14 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
                 Nm(:,j);
             f = R*f + Fm(:,j);
             if debug
-                fprintf('f: '); fprintf('%.3f ', f)
-                fprintf('\nn: '); fprintf('%.3f ', nn)
+                fprintf('f: '); disp( f)
+                fprintf('\nn: '); disp( nn)
                 fprintf('\n');
             end
 
             R = Rm{j};
             if link.RP == 'R'
                 % revolute
-                %tau(p,j) = nn.'*(R.'*z0) + ...
                 t = nn.'*(R.'*z0) + ...
                     link.G^2 * link.Jm*qdd(j) - ...
                      link.friction(qd(j));

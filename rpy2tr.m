@@ -1,15 +1,18 @@
 %RPY2TR Roll-pitch-yaw angles to homogeneous transform
 %
-% T = RPY2TR(RPY, OPTIONS) is a homogeneous transformation equivalent to the 
-% specified roll, pitch, yaw angles which correspond to rotations about the 
-% X, Y, Z axes respectively. If RPY has multiple rows they are assumed to 
-% represent a trajectory and T is a three dimensional matrix, where the last index  
-% corresponds to the rows of RPY.
+% T = RPY2TR(ROLL, PITCH, YAW, OPTIONS) is an SE(3) homogeneous
+% transformation matrix (4x4) equivalent to the specified roll, pitch, yaw
+% angles angles. These correspond to rotations about the X, Y, Z axes
+% respectively. If ROLL, PITCH, YAW are column vectors (Nx1) then they are
+% assumed to represent a trajectory and R is a three-dimensional matrix
+% (4x4xN), where the last index corresponds to rows of ROLL, PITCH, YAW.
 %
-% T = RPY2TR(ROLL, PITCH, YAW, OPTIONS) as above but the roll-pitch-yaw angles 
-% are passed as separate arguments. If ROLL, PITCH and YAW are column vectors 
-% they are assumed to represent a trajectory and T is a three dimensional matrix,
-% where the last index corresponds to the rows of ROLL, PITCH, YAW.
+% T = RPY2TR(RPY, OPTIONS) as above but the roll, pitch, yaw angles angles
+% angles are taken from consecutive columns of the passed matrix RPY =
+% [ROLL, PITCH, YAW].  If RPY is a matrix (Nx3) then they are assumed to
+% represent a trajectory and T is a three-dimensional matrix (4x4xN), where
+% the last index corresponds to rows of RPY which are assumed to be [ROLL,
+% PITCH, YAW].
 %
 % Options::
 %  'deg'   Compute angles in degrees (radians default)
@@ -23,7 +26,7 @@
 % See also TR2RPY, RPY2R, EUL2TR.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -9,11 +9,11 @@
 % Notes::
 % - Used in the creation of an analytical Jacobian.
 %
-% See also RPY2JAC, SERIALlINK.JACOBN.
+% See also RPY2JAC, SerialLink.JACOBN.
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

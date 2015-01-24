@@ -1,10 +1,11 @@
 %RandomPath Vehicle driver class
 %
-% Create a "driver" object capable of driving a Vehicle object through random 
+% Create a "driver" object capable of steering a Vehicle object through random 
 % waypoints within a rectangular region and at constant speed.
 %
-% The driver object is attached to a Vehicle object by the latter's
-% add_driver() method.
+% The driver object is connected to a Vehicle object by the latter's
+% add_driver() method.  The driver's demand() method is invoked on every
+% call to the Vehicle's step() method.
 %
 % Methods::
 %  init       reset the random number generator
@@ -13,7 +14,7 @@
 %  char       convert to string
 %      
 % Properties::
-%  goal          current goal coordinate
+%  goal          current goal/waypoint coordinate
 %  veh           the Vehicle object being controlled
 %  dim           dimensions of the work space (2x1) [m]
 %  speed         speed of travel [m/s]
@@ -42,7 +43,7 @@
 % See also Vehicle.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -60,6 +61,10 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+% TODO
+%  should be a subclass of VehicleDriver
+%  Vehicle should be an abstract superclass
 
 classdef RandomPath < handle
     properties

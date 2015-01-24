@@ -1,15 +1,15 @@
 %TR2EUL Convert homogeneous transform to Euler angles
 %
-% EUL = TR2EUL(T, OPTIONS) are the ZYZ Euler angles expressed as a row vector
-% corresponding to the rotational part of a homogeneous transform T.
-% The 3 angles EUL=[PHI,THETA,PSI] correspond to sequential rotations about 
-% the Z, Y and Z axes respectively.
+% EUL = TR2EUL(T, OPTIONS) are the ZYZ Euler angles (1x3) corresponding to
+% the rotational part of a homogeneous transform T (4x4). The 3 angles
+% EUL=[PHI,THETA,PSI] correspond to sequential rotations about the Z, Y and
+% Z axes respectively.
 %
-% EUL = TR2EUL(R, OPTIONS) are the ZYZ Euler angles expressed as a row vector
-% corresponding to the orthonormal rotation matrix R.
+% EUL = TR2EUL(R, OPTIONS) as above but the input is an orthonormal
+% rotation matrix R (3x3).
 %
-% If R or T represents a trajectory (has 3 dimensions), then each row of EUL
-% corresponds to a step of the trajectory.
+% If R (3x3xK) or T (4x4xK) represent a sequence then each row of EUL
+% corresponds to a step of the sequence.
 %
 % Options::
 %  'deg'      Compute angles in degrees (radians default)
@@ -23,7 +23,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

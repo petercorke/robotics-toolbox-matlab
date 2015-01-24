@@ -1,9 +1,7 @@
 %MDL_SIMPLE6 A minimalistic 6DOF robot arm
 %
-%      mdl_simple6
-%
-% Script creates the workspace variable s6 which describes the 
-% kinematic characteristics of a simple arm manipulator with a
+% MDL_SIMPLE6 is a script creates the workspace variable s6 which describes
+% the kinematic characteristics of a simple arm manipulator with a
 % spherical wrist and no shoulder offset, using standard DH conventions.
 %
 % Also define the workspace vectors:
@@ -13,11 +11,11 @@
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, Revolute, mdl_offset6, mdl_puma560, mdl_twolink.
+% See also SerialLink, mdl_offset6, mdl_puma560.
 
 % MODEL: generic, 6DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -1,6 +1,6 @@
 %BUG2 Bug navigation class
 %
-% A concrete subclass of the Navigation class that implements the bug2 
+% A concrete subclass of the abstract Navigation class that implements the bug2 
 % navigation algorithm.  This is a simple automaton that performs local 
 % planning, that is, it can only sense the immediate presence of an obstacle.
 %
@@ -12,10 +12,10 @@
 %   char        Convert to string
 %
 % Example::
-%    load map1             % load the map
-%    bug = Bug2(map);      % create navigation object
-%    bug.goal = [50, 35];  % set the goal
-%    bug.path([20, 10]);   % animate path to (20,10)
+%         load map1             % load the map
+%         bug = Bug2(map);      % create navigation object
+%         bug.goal = [50, 35];  % set the goal
+%         bug.path([20, 10]);   % animate path to (20,10)
 %
 % Reference::
 % -  Dynamic path planning for a mobile automaton with limited information on the environment,,
@@ -27,7 +27,7 @@
 % See also Navigation, DXform, Dstar, PRM.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

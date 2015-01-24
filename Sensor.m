@@ -1,6 +1,6 @@
 %Sensor Sensor superclass
 %
-% An abstact superclass to represent robot navigation sensors.
+% A superclass to represent robot navigation sensors.
 %
 % Methods::
 %   plot        plot a line from robot to map feature
@@ -17,10 +17,10 @@
 %   Peter Corke,
 %   Springer 2011
 %
-% See also EKF, Vehicle, Map.
+% See also RangeBearing, EKF, Vehicle, Map.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -62,20 +62,14 @@ classdef Sensor < handle
         function s = Sensor(robot, map, varargin)
         %Sensor.Sensor Sensor object constructor
         %
-        % S = Sensor(VEHICLE, MAP, OPTIONS) is a sensor mounted on the Vehicle object
-        % VEHICLE and observing the landmark map MAP.
-        %
-        % S = Sensor(VEHICLE, MAP, R, OPTIONS) is an instance of the Sensor object mounted
-        % on a vehicle represented by the object VEHICLE and observing features in the
-        % world represented by the object MAP.
+        % S = Sensor(VEHICLE, MAP, OPTIONS) is a sensor mounted on a vehicle described by the Vehicle class object
+        % VEHICLE and observing landmarks in a map described by the Map class object MAP.
         %
         % Options::
-        % 'animate'              animate the action of the laser scanner
-        % 'ls',LS                laser scan lines drawn with style ls (default 'r-')
-        % 'skip', I              return a valid reading on every I'th
-        %                        call
-        % 'fail', [TMIN TMAX     sensor simulates failure between
-        %                        timesteps TMIN and TMAX
+        % 'animate'    animate the action of the laser scanner
+        % 'ls',LS      laser scan lines drawn with style ls (default 'r-')
+        % 'skip', I    return a valid reading on every I'th call
+        % 'fail',T     sensor simulates failure between timesteps T=[TMIN,TMAX]
         %
         
             opt.skip = 1;
@@ -99,7 +93,7 @@ classdef Sensor < handle
         function plot(s, jf)
         %Sensor.plot Plot sensor reading
         %
-        % S.plot(J) draws a line from the robot to the map feature J.
+        % S.plot(J) draws a line from the robot to the J'th map feature.
         %
         % Notes::
         % - The line is drawn using the linestyle given by the property ls

@@ -1,18 +1,18 @@
 %IKINE_SYM  Symbolic inverse kinematics
 %
-% Q = R.IKINE_SYM(N, OPTIONS) is a cell array (Cx1) of inverse kinematic
+% Q = R.IKINE_SYM(K, OPTIONS) is a cell array (Cx1) of inverse kinematic
 % solutions of the SerialLink object ROBOT.  The cells of Q represent the
 % different possible configurations.  Each cell of Q is a vector (Nx1), and
 % element J is the symbolic expressions for the J'th joint angle.  The
 % solution is in terms of the desired end-point pose of the robot which is
-% represented by the symbolic matrix and elements
+% represented by the symbolic matrix (3x4) with elements
 %      nx ox ax tx
 %      ny oy ay ty
 %      nz oz az tz
 % where the first three columns specify orientation and the last column
 % specifies translation.
 %
-% N can have only specific values:
+% K <= N can have only specific values:
 %  - 2 solve for translation tx and ty
 %  - 3 solve for translation tx, ty and tz
 %  - 6 solve for translation and orientation
@@ -24,7 +24,7 @@
 % Example::
 %
 %         mdl_planar2
-%         sol = p2.ikine_sym();
+%         sol = p2.ikine_sym(2);
 %         length(sol)
 %         ans = 
 %               2       % there are 2 solutions
@@ -33,10 +33,11 @@
 %         q2 = s1(2);      % the expression for q2
 %
 % Notes::
-% - This code is experimental and has a lot of diagnostic prints
-% - Based on the classical approach using Pieper's method
+% - Requires the Symbolic Toolbox for MATLAB.
+% - This code is experimental and has a lot of diagnostic prints.
+% - Based on the classical approach using Pieper's method.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

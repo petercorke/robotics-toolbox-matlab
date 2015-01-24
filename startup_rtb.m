@@ -3,7 +3,7 @@
 % Adds demos, examples to the MATLAB path, and adds also to 
 % Java class path.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -30,6 +30,7 @@ addpath( fullfile(tbpath, 'demos') );
 addpath( fullfile(tbpath, 'examples') );
 addpath( fullfile(tbpath, 'mex') );
 javaaddpath( fullfile(tbpath, 'DH.jar') );
+addpath( fullfile(tbpath, 'interfaces', 'VREP') );
 % add the contrib code to the path
 a = fullfile(rvcpath, 'contrib', 'arte');
 if exist(a, 'dir')
@@ -54,3 +55,4 @@ if status == 1
     end
 end
 clear status release currentversion tbpath
+disp('Run rtbdemo to explore the toolbox');

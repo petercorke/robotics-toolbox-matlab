@@ -1,8 +1,8 @@
 %MDL_BALL Create model of a ball manipulator
 %
-% MDL_BALL  creates the workspace variable ball which describes the 
-% kinematic characteristics of a serial link manipulator that folds into
-% a ball shape.  By default has 50 joints.
+% MDL_BALL creates the workspace variable ball which describes the
+% kinematic characteristics of a serial link manipulator with 50 joints
+% that folds into a ball shape.
 %
 % MDL_BALL(N) as above but creates a manipulator with N joints.
 %
@@ -18,11 +18,11 @@
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, mdl_puma560akb, mdl_stanford, mdl_twolink, mdl_coil.
+% See also SerialLink, mdl_coil.
 
 % MODEL: generic, ball shape, hyper redundant, 50DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

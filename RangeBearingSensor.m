@@ -12,8 +12,8 @@
 % Hx        Jacobian matrix dh/dxv 
 % Hxf       Jacobian matrix dh/dxf 
 % Hw        Jacobian matrix dh/dw
-%
-% g         feature positin given vehicle pose and observation
+%-
+% g         feature position given vehicle pose and observation
 % Gx        Jacobian matrix dg/dxv 
 % Gz        Jacobian matrix dg/dz
 %
@@ -30,7 +30,7 @@
 % See also Sensor, Vehicle, Map, EKF.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -72,7 +72,7 @@ classdef RangeBearingSensor < Sensor
             % S = RangeBearingSensor(VEHICLE, MAP, W, OPTIONS) is an object representing
             % a range and bearing angle sensor mounted on the Vehicle object
             % VEHICLE and observing an environment of known landmarks represented by the
-            % map object MAP.  The sensor covariance is R (2x2) representing range and bearing
+            % map object MAP.  The sensor covariance is W (2x2) representing range and bearing
             % covariance.
             %
             % Options::
@@ -86,7 +86,9 @@ classdef RangeBearingSensor < Sensor
             % 'fail', [TMIN TMAX]      sensor simulates failure between 
             %                          timesteps TMIN and TMAX
             %
-            % See also Sensor, Vehicle, Map, EKF.
+            % See also options for Sensor constructor.
+            %
+            % See also Sensor.Sensor, Vehicle, Map, EKF.
 
 
             % call the superclass constructor
@@ -127,12 +129,14 @@ classdef RangeBearingSensor < Sensor
             %
             % [Z,K] = S.reading() is an observation of a random landmark where
             % Z=[R,THETA] is the range and bearing with additive Gaussian noise
-            % of covariance R (specified to the constructor). K is the index of 
+            % of covariance W (property W). K is the index of 
             % the map feature that was observed. If no valid measurement, ie. no
             % features within range, interval subsampling enabled or simulated 
             % failure the return is Z=[] and K=NaN.
             %
             % See also RangeBearingSensor.h.
+            
+            % TODO probably should return K=0 to indicated invalid
             
             % model a sensor that emits readings every interval samples
             s.count = s.count + 1;
@@ -201,16 +205,16 @@ classdef RangeBearingSensor < Sensor
         function z = h(s, xv, jf)
             %RangeBearingSensor.h Landmark range and bearing
             %
-            % Z = S.h(XV, J) is a sensor observation (1x2), range and bearing, from vehicle at 
-            % pose XV (1x3) to the map feature K.
+            % Z = S.h(XV, K) is a sensor observation (1x2), range and bearing, from vehicle at 
+            % pose XV (1x3) to the K'th map feature.
             %
             % Z = S.h(XV, XF) as above but compute range and bearing to a feature at coordinate XF.
             %
-            % Z = s.h(XV) as above but computer range and bearing to all
+            % Z = s.h(XV) as above but computes range and bearing to all
             % map features.  Z has one row per feature.
             %
             % Notes::
-            % - Noise with covariance W is added to each row of Z.
+            % - Noise with covariance W (propertyW) is added to each row of Z.
             % - Supports vectorized operation where XV (Nx3) and Z (Nx2).
             %
             % See also RangeBearingSensor.Hx, RangeBearingSensor.Hw, RangeBearingSensor.Hxf.

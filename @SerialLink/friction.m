@@ -4,7 +4,7 @@
 % robot moving with joint velocities QD.  
 %
 % The friction model includes:
-% - viscous friction which is linear with velocity;
+% - Viscous friction which is a linear function of velocity.
 % - Coulomb friction which is proportional to sign(QD).
 %
 % See also Link.friction.
@@ -12,7 +12,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

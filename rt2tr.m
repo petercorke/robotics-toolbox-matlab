@@ -4,7 +4,7 @@
 % orthonormal rotation matrix R (NxN) and a translation vector t (Nx1) where
 % M=N+1.
 %
-% For a sequence R (NxNxK) and t (kxN) results in a transform sequence (NxNxk).
+% For a sequence R (NxNxK) and t (NxK) results in a transform sequence (MxMxK).
 %
 % Notes::
 % - Works for R in SO(2) or SO(3)
@@ -15,7 +15,7 @@
 % See also T2R, R2T, TR2RT.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

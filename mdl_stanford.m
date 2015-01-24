@@ -9,6 +9,7 @@
 %   qz   zero joint angle configuration.
 %
 % Note::
+% - SI units are used.
 % - Gear ratios not currently known, though reflected armature inertia 
 %   is known, so gear ratios are set to 1.
 %
@@ -20,12 +21,12 @@
 % - Dobrotin & Scheinman, "Design of a computer controlled manipulator for
 %   robot research", IJCAI, 1973.
 % 
-% See also SerialLink, mdl_puma560, mdl_puma560akb, mdl_twolink.
+% See also SerialLink, mdl_puma560, mdl_puma560akb.
 
 
 % MODEL: Stanford, Stanford Arm, prismatic, 6DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -1,10 +1,8 @@
 %MDL_OFFSET6 A minimalistic 6DOF robot arm with shoulder offset
 %
-%      mdl_offset6
-%
-% Script creates the workspace variable off6 which describes the 
-% kinematic characteristics of a simple arm manipulator with a
-% spherical wrist and a shoulder offset, using standard DH conventions.
+% MDL_OFFSET6 is a script that creates the workspace variable off6 which
+% describes the kinematic characteristics of a simple arm manipulator with
+% a spherical wrist and a shoulder offset, using standard DH conventions.
 %
 % Also define the workspace vectors:
 %   qz         zero joint angle configuration
@@ -13,11 +11,11 @@
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, Revolute, mdl_simple6, mdl_puma560, mdl_twolink.
+% See also SerialLink, mdl_simple6, mdl_puma560, mdl_twolink.
 
 % MODEL: generic, 6DOF, standard_DH
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

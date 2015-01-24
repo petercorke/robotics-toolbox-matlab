@@ -2,10 +2,10 @@
 %
 % D = DISTANCEXFORM(WORLD, GOAL) is the distance transform of the occupancy 
 % grid WORLD with respect to the specified goal point GOAL = [X,Y].  The
-% elements of the grid are 0 from free space and 1 for occupied.
+% cells of the grid have values of 0 for free space and 1 for obstacle.
 %
 % D = DISTANCEXFORM(WORLD, GOAL, METRIC) as above but specifies the distance
-% metric as  either 'cityblock' or 'Euclidean'
+% metric as  either 'cityblock' or 'Euclidean' (default).
 %
 % D = DISTANCEXFORM(WORLD, GOAL, METRIC, SHOW) as above but shows an animation
 % of the distance transform being formed, with a delay of SHOW seconds between
@@ -13,12 +13,12 @@
 %
 % Notes::
 % - The Machine Vision Toolbox function imorph is required.
-% - The goal is [X,Y] not MATLAB [row,col]
+% - The goal is [X,Y] not MATLAB [row,col].
 %
 % See also IMORPH, DXform.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

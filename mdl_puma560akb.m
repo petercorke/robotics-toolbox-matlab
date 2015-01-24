@@ -1,27 +1,28 @@
 %MDL_PUMA560AKB Create model of Puma 560 manipulator
 %
-%      mdl_puma560akb
-%
-% Script creates the workspace variable p560m which describes the 
-% kinematic and dynamic characterstics of a Unimation Puma 560 manipulator 
-% modified DH conventions.
+% MDL_PUMA560AKB is a script that creates the workspace variable p560m
+% which describes the kinematic and dynamic characterstics of a Unimation
+% Puma 560 manipulator modified DH conventions.
 %
 % Also defines the workspace vectors:
 %   qz         zero joint angle configuration
 %   qr         vertical 'READY' configuration
 %   qstretch   arm is stretched out in the X direction
 %
+% Notes::
+% - SI units are used.
+%
 % References::
 % -  "The Explicit Dynamic Model and Inertial Parameters of the Puma 560 Arm"
 %    Armstrong, Khatib and Burdick
 %    1986
 %
-% See also SerialLink, mdl_puma560, mdl_stanford, mdl_twolink.
+% See also SerialLink, mdl_puma560, mdl_stanford_mdh.
 
 % MODEL: Unimation, Puma560, dynamics, 6DOF, modified_DH
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

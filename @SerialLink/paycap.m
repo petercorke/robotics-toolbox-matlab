@@ -21,7 +21,7 @@
 %
 % See also SerialLink.pay, SerialLink.gravjac, SerialLink.gravload.
 
-% Copyright (C) Bryan Moutrie, 2013-2014
+% Copyright (C) Bryan Moutrie, 2013-2015
 % Licensed under the GNU Lesser General Public License
 % see full file for full statement
 %

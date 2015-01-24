@@ -1,4 +1,4 @@
-%SerialLink.IKINEM Inverse manipulator kinematics by minimization
+%SerialLink.IKINEM Numerical inverse kinematics by minimization
 %
 % Q = R.ikinem(T) is the joint coordinates corresponding to the robot
 % end-effector pose T which is a homogenenous transform.
@@ -49,7 +49,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
