@@ -77,11 +77,12 @@ W = 0.1; L = 0.2;
 % make the animation fast: turn off annotations like wrist axes, ground
 % shadow, joint axes, no smooth shading.  Rather than parse the switches 
 % each cycle we pre-digest them here into a plotopt struct.
-plotopt = leg.plot({'noraise', 'nobase', 'noshadow', ...
-    'nowrist', 'nojaxes'});
+% plotopt = leg.plot({'noraise', 'nobase', 'noshadow', ...
+%     'nowrist', 'nojaxes'});
 % plotopt = leg.plot({'noraise', 'norender', 'nobase', 'noshadow', ...
 %     'nowrist', 'nojaxes', 'ortho'});
 
+plotopt = {'noraise', 'nobase', 'noshadow', 'nowrist', 'nojaxes', 'delay', 0};
 
 % create 4 leg robots.  Each is a clone of the leg robot we built above,
 % has a unique name, and a base transform to represent it's position
@@ -99,17 +100,20 @@ patch([0 -L -L 0], [0 0 -W -W], [0 0 0 0], ...
     'FaceColor', 'r', 'FaceAlpha', 0.5)
 % instantiate each robot in the axes
 for i=1:4
-    legs(i).plot(qcycle(1,:), plotopt);
+    legs(i).plot(qcycle(1,:), plotopt{:});
 end
 hold off
 
 % walk!
 k = 1;
-while 1
-    legs(1).plot( gait(qcycle, k, 0,   0), plotopt);
-    legs(2).plot( gait(qcycle, k, 100, 0), plotopt);
-    legs(3).plot( gait(qcycle, k, 200, 1), plotopt);
-    legs(4).plot( gait(qcycle, k, 300, 1), plotopt);
+%A = Animate('walking');
+%while 1
+for i=1:500
+    legs(1).animate( gait(qcycle, k, 0,   0));
+    legs(2).animate( gait(qcycle, k, 100, 0));
+    legs(3).animate( gait(qcycle, k, 200, 1));
+    legs(4).animate( gait(qcycle, k, 300, 1));
     drawnow
     k = k+1;
+    %A.add();
 end
