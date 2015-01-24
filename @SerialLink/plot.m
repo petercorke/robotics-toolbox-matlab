@@ -43,7 +43,8 @@
 % 'shadowcolor',C   Colorspec of shadow, [r g b]
 % 'shadowwidth',W   Width of shadow line (default 6)
 %-
-% '[no]jaxes'       Enable display of joint axes (default true)
+% '[no]jaxes'       Enable display of joint axes (default false)
+% '[no]jvec'        Enable display of joint axis vectors (default false)
 % '[no]joints'      Enable display of joints
 % 'jointcolor',C    Colorspec for joint cylinders (default [0.7 0 0])
 % 'jointdiam',D     Diameter of joint cylinder in scale units (default 5)
@@ -168,7 +169,7 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -191,6 +192,7 @@
 % deal with base transform and tool
 % more consistent option names, scale, mag etc.
 function plot(robot, qq, varargin)
+    
     % check the joint angle data matches the robot
     n = robot.n;
     if numcols(qq) ~= n
@@ -411,6 +413,9 @@ function h = create_robot(robot, opt)
             end
         end
         
+        if opt.jaxes && opt.jvec
+            error('RTB:plot:badopt', 'Can''t specify ''jaxes'' and ''jvec''')
+        end
         % create the joint axis line
         if opt.jaxes
             line('XData', [0 0], ...
@@ -421,8 +426,16 @@ function h = create_robot(robot, opt)
             % create the joint axis label
             text(0, 0, 12*s, sprintf('q%d', L), 'Parent', h.link(L))
         end
+         % create the joint axis vector
+        if opt.jvec
+            daspect([1 1 1]);
+            ha = arrow3([0 0 -12*s], [0 0 20*s]);
+            set(ha, 'Parent', h.link(L));
+            
+            % create the joint axis label
+            text(0, 0, -12*s, sprintf('q%d', L), 'Parent', h.link(L))
+        end
     end
-    
     if opt.debug
         fprintf('create graphics for tool\n');
     end
@@ -648,6 +661,7 @@ function opt = plot_options(robot, optin)
     
     % joint rotation axes
     opt.jaxes = false;
+    opt.jvec = false;
     
     % joint cylinders
     opt.joints = true;
