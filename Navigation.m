@@ -304,13 +304,14 @@ classdef Navigation < handle
 
             p = [];
             % robot is a column vector
-            if nav.backProp()==1
-                % subclass algorithm calls for back propagation
-                robot = nav.goal(:);
-            else
-                robot = start;
-            end
-                
+%             if nav.backProp()==1
+%                 % subclass algorithm calls for back propagation
+%                 robot = nav.goal(:);
+%             else
+%                 robot = start;
+%             end
+robot = start;
+
             % iterate using the next() method until we reach the goal
             while true
                 if nargout == 0
