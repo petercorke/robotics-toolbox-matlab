@@ -1,7 +1,8 @@
-function test_suite = LocnTest
-  initTestSuite;
+function tests = LocnTest
+  tests = functiontests(localfunctions);
+end
 
-function Vehicle_test
+function Vehicle_test(testCase)
     randinit
     V = diag([0.005, 0.5*pi/180].^2);
 
@@ -14,8 +15,9 @@ function Vehicle_test
 
     J = v.Fx(v.x, [.1 .2]);
     J = v.Fv(v.x, [.1 .2]);
+end
 
-function DeadReckoning_test
+function DeadReckoning_test(testCase)
     randinit
     V = diag([0.005, 0.5*pi/180].^2);
     P0 = diag([0.005, 0.005, 0.001].^2);
@@ -36,8 +38,9 @@ function DeadReckoning_test
 
     ekf.plot_ellipse([], 'g')
     ekf.plot_P()
+end
 
-function MapLocalization_test
+function MapLocalization_test(testCase)
     randinit
     W = diag([0.1, 1*pi/180].^2);
     P0 = diag([0.005, 0.005, 0.001].^2);
@@ -67,8 +70,9 @@ function MapLocalization_test
 
     clf
     ekf.plot_P()
+end
 
-function Mapping_test
+function Mapping_test(testCase)
     randinit
     W = diag([0.1, 1*pi/180].^2);
     V = diag([0.005, 0.5*pi/180].^2);
@@ -84,7 +88,7 @@ function Mapping_test
     ekf = EKF(veh, [], [], sensor, W, []);
     ekf.run(1000);
     
-    assertEqual(numcols(ekf.features), 20);
+    verifyEqual(testCase, numcols(ekf.features), 20);
 
     clf
     map.plot()
@@ -92,8 +96,9 @@ function Mapping_test
     ekf.plot_map('g');
     grid on
     xyzlabel
+end
 
-function SLAM_test
+function SLAM_test(testCase)
     randinit
     W = diag([0.1, 1*pi/180].^2);
     P0 = diag([0.005, 0.005, 0.001].^2);
@@ -111,7 +116,7 @@ function SLAM_test
     ekf.verbose = false;
     ekf.run(1000);
 
-    assertEqual(numcols(ekf.features), 20);
+    verifyEqual(testCase, numcols(ekf.features), 20);
 
     clf
     map.plot()
@@ -127,8 +132,9 @@ function SLAM_test
     clf
     map.plot();
     ekf.plot_map(5,'g');
+end
 
-function ParticleFilter_test
+function ParticleFilter_test(testCase)
 
     randinit
     map = Map(20);
@@ -154,8 +160,9 @@ function ParticleFilter_test
     pf.plot_pdf();
     clf
     pf.plot_xy();
+end
 
-function RRT_test
+function RRT_test(testCase)
 
     randinit
     veh = Vehicle([], 'stlim', 1.2);
@@ -167,3 +174,4 @@ function RRT_test
 
     p = rrt.path([0 0 0], [0 2 0]);
     rrt.path([0 0 0], [0 2 0]);
+end

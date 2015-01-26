@@ -1,10 +1,11 @@
 %% This is for testing the SerialLink functions in the robotics Toolbox
-function test_suite = TestRobotToolboxSerialLink
-  initTestSuite;
-  
+function tests = SerialLinkTest
+  tests = functiontests(localfunctions);
+end
+
 %% Serial-link manipulator
 %    SerialLink                 - construct a serial-link robot object
-function SerialLink_test
+function SerialLink_test(testCase)
     % test making a robot from links 
     L(1)=Link([1 1 1 1 1]);
     L(2)=Link([0 1 0 1 0]);
@@ -13,23 +14,25 @@ function SerialLink_test
     % test makin a robot from DH matrix
     DH = [pi/2 0 0 1; 0 2 0 0];
     R2 = SerialLink(DH,'name','Robot2');
+end
     
-function SerialLinkMDH_test
+function SerialLinkMDH_test(testCase)
     % minimalistic test of modified DH functionality
     %  most code is common, need to exercise MDH code in Link and also for
     %  RNE
 
     mdl_puma560akb
-    
-    % qr is not set by the script, it clashes with the builtin function QR
+
+    % qr is not set by the script, it clashes with the builtin function QR(testCase)
     qz = [0 0 0 0 0 0];
    
     T = p560m.fkine(qz);
     J = p560m.jacobn(qz);
     tau = p560m.rne(qz, qz, qz);
+end
         
 %    *                          - compound two robots
-function compound_test
+function compound_test(testCase)
     L(1)=Link([1 1 1 1 1]);
     L(2)=Link([0 1 0 1 0]);
     R1 = SerialLink(L,'name','robot1','comment', 'test robot','manufacturer', 'test',...
@@ -39,11 +42,12 @@ function compound_test
     %Test two different compunding situations 
     R3 = R1*R2;
     R4 = R1*R3;
+end
 
 
 %%     Kinematic methods
 %        fkine                  - forward kinematics
-function fkine_test
+function fkine_test(testCase)
     L(1)=Link([1 1 1 1 1]);
     L(2)=Link([0 1 0 1 0]);
     R1 = SerialLink(L,'name','robot1','comment', 'test robot','manufacturer', 'test',...
@@ -53,25 +57,27 @@ function fkine_test
                     -0.0847   -0.8616    0.5004    0.3868
                      0.7651    0.2654    0.5866    2.5403
                           0         0         0    1.0000];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
     
     mdl_puma560
     q=[0 0 0 0 0 0; 0 0.03 -0.0365 0 0 0];
     T=p560.fkine(q);
     expected_out = [4 4 2];
-    assertElementsAlmostEqual(size(T),expected_out,'absolute',1e-4);
+    verifyEqual(testCase, size(T),expected_out,'absTol',1e-4);
+end
     
 %    plot                       - plot/animate robot
-function SerialLink_plot_test
+function SerialLink_plot_test(testCase)
     L(1)=Link([1 1 1 1 0]);
     L(1).qlim = [-5 5];
     L(2)=Link([0 1 0 1 0]);
     R1 = SerialLink(L,'name','robot1','comment', 'test robot','manufacturer', 'test',...
     'base', eye(4,4), 'tool', eye(4,4), 'offset', [1 1 0 0 0 0 ] );
     R1.plot([1 1]);
+end
 
 %    teach                      - drive a graphical  robot
-function teach_test
+function teach_test(testCase)
     L(1)=Link([1 1 1 1 0]);
     L(2)=Link([0 1 0 1 0]);
     L(1).qlim = [-5 5];
@@ -79,35 +85,38 @@ function teach_test
     'base', eye(4,4), 'tool', eye(4,4), 'offset', [1 1 0 0 0 0 ] );
     R1.teach;
     pause(0.5);
+end
 
 %        ikine                  - inverse kinematics (numeric)
-function ikine_test
+function ikine_test(testCase)
     mdl_puma560;
     qn = [0 pi/4 -pi 0 pi/4 0];
     T = p560.fkine(qn);
     out = p560.ikine(T, [0 0 3 0 0 0]);
     % example from RVC p 149
     expected_out = [-0.0000    0.7854    3.1416    0.0000    0.7854   -0.0000];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
 
-    assertTrue( all(all( abs(p560.fkine(out) - T) < 1e-4)) );
+    verifyTrue(testCase,  all(all( abs(p560.fkine(out) - T) < 1e-4)) );
+end
 
 %        ikine6s                - inverse kinematics for 6-axis arm with sph.wrist
-function ikine6s_test
+function ikine6s_test(testCase)
     mdl_puma560;
     qn = [0 pi/4 -pi 1 pi/4 0];
     T = p560.fkine(qn);
     out = p560.ikine6s(T,'ru');
     expected_out = [2.6486   -2.3081    3.1416    2.9483   -0.9810    0.8044];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-3);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-3);
     
     T = p560.fkine(qn);
     out = p560.ikine6s(T,'ld');
     expected_out = [-0.0000   -0.8335    0.0940   -0.6880   -1.2140    1.1131];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-3);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-3);
+end
 
 %        jacob0                 - Jacobian in base coordinate frame
-function jacob0_test
+function jacob0_test(testCase)
     mdl_puma560;
     qz = [0 1 0 0 2 0];
     qn = [0 pi/4 -pi 1 pi/4 0];
@@ -118,7 +127,7 @@ function jacob0_test
                          0   -0.0000   -0.0000   -0.8415   -0.0000   -0.1411
                     0.0000   -1.0000   -1.0000   -0.0000   -1.0000   -0.0000
                     1.0000    0.0000    0.0000    0.5403    0.0000   -0.9900];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
     out = p560.jacob0(qn);
     expected_out = [0.1501    0.0144    0.3197         0         0         0
                     0.5963   -0.0000   -0.0000         0         0         0
@@ -126,10 +135,11 @@ function jacob0_test
                     0.0000   -0.0000   -0.0000    0.7071   -0.5950    0.7702
                    -0.0000   -1.0000   -1.0000         0   -0.5403   -0.5950
                     1.0000    0.0000    0.0000   -0.7071   -0.5950   -0.2298];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
+end
     
 %        jacobn                 - Jacobian in end-effector coordinate frame
-function jacobn_test
+function jacobn_test(testCase)
     mdl_puma560;
     qz = [0 1 0 0 2 0];
     qn = [0 pi/4 -pi 1 pi/4 0];
@@ -140,7 +150,7 @@ function jacobn_test
                      0.1411         0         0    0.9093         0         0
                     -0.0000   -1.0000   -1.0000   -0.0000   -1.0000         0
                     -0.9900    0.0000    0.0000   -0.4161    0.0000    1.0000];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
     out = p560.jacobn(qn);
     expected_out = [0.3893   -0.4559   -0.1506         0         0         0
                     0.4115    0.3633    0.3633         0         0         0
@@ -148,21 +158,23 @@ function jacobn_test
                    -0.7702   -0.5950   -0.5950    0.7071         0         0
                     0.5950   -0.5403   -0.5403   -0.0000   -1.0000         0
                    -0.2298    0.5950    0.5950    0.7071    0.0000    1.0000];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
+end
 
 %    maniplty                   - compute manipulability
-function maniplty_test
+function maniplty_test(testCase)
     mdl_puma560;
     q = [0 pi/4 -pi 1 pi/4 0];
-    assertElementsAlmostEqual(p560.maniplty(q), 0.1112, 'absolute',1e-4);
-    assertElementsAlmostEqual(p560.maniplty(q, 'T'), 0.1112, 'absolute',1e-4);
-    assertElementsAlmostEqual(p560.maniplty(q, 'R'), 2.5936, 'absolute',1e-4);
-    assertElementsAlmostEqual(p560.maniplty(q, 'asada'), 0.2733, 'absolute',1e-4);
+    verifyEqual(testCase, p560.maniplty(q), 0.1112, 'absTol',1e-4);
+    verifyEqual(testCase, p560.maniplty(q, 'T'), 0.1112, 'absTol',1e-4);
+    verifyEqual(testCase, p560.maniplty(q, 'R'), 2.5936, 'absTol',1e-4);
+    verifyEqual(testCase, p560.maniplty(q, 'asada'), 0.2733, 'absTol',1e-4);
+end
 
 %
 %%     Dynamics methods
 %        accel                  - forward dynamics
-function accel_test
+function accel_test(testCase)
     mdl_puma560;
     qd = 0.5 * [1 1 1 1 1 1];
     qz = [0 1 0 0 2 0];
@@ -170,13 +182,13 @@ function accel_test
     out = p560.accel(qz, qd, Q);
     expected_out = [  -9.3397 4.9666 1.6095 -5.4305 5.9885 -2.1228]';
 
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
 
     out = p560.accel([qz, qd,Q]);
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
 
     out = p560.accel([qz, qd,Q]');
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
 
     
     qd = [0.1 0.1 0.1 0.1 0.1 0.1;0.2 0.2 0.2 0.2 0.2 0.2];
@@ -197,10 +209,11 @@ function accel_test
     expected_out = [
        -8.2760    5.8119    3.1487   -4.6392    6.9558   -1.6774
           -8.3467   -4.8514    6.0575   -4.9232    3.1244   -1.7861 ];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
+end
 
 %        cinertia               - Cartesian manipulator inertia matrix
-function cinertia_test
+function cinertia_test(testCase)
     mdl_puma560;
     qn = [0 pi/4 -pi 1 pi/4 0];
     out = p560.cinertia(qn);
@@ -210,11 +223,12 @@ function cinertia_test
                     -0.0283   -0.0750   -0.0300    0.1377   -0.0171    0.0492
                      0.7541    0.2214    0.7525   -0.0171    0.4612   -0.2461
                     -0.4015   -0.4733   -0.4032    0.0492   -0.2461    0.3457];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);;
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);;
+end
  
 
 %        coriolis               - centripetal/coriolis torque
-function coriolis_test
+function coriolis_test(testCase)
     mdl_puma560;
     qd = 0.5 * [1 1 1 1 1 1];
     qn = [0 pi/4 -pi 1 pi/4 0];
@@ -227,7 +241,7 @@ function coriolis_test
    -0.0004    0.0005    0.0005   -0.0003   -0.0000   -0.0000
     0.0000    0.0000    0.0000   -0.0000    0.0000         0
                           ];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
     
     qd = [0.1 0.1 0.1 0.1 0.1 0.1;0.2 0.2 0.2 0.2 0.2 0.2];
     qn = [0 pi/4 -pi 1 pi/4 0; 0 pi/2 -pi 1 pi/2 0];
@@ -249,26 +263,28 @@ function coriolis_test
        -0.0000    0.0000    0.0000   -0.0000   -0.0000         0
                                  ];
     
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
+end
     
     
 %        gravload               - gravity loading
-function gravload_test
+function gravload_test(testCase)
     mdl_puma560;
     qn = [0 pi/4 -pi 1 pi/4 0];
     out = p560.gravload(qn);
     expected_out = [-0.0000 31.6334 6.0286 -0.0119 0.0218 0];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
     
     mdl_puma560;
     qn = [0 pi/4 -pi 1 pi/4 0; 0 pi/2 -pi 1 pi/2 0];
     out = p560.gravload(qn);
     expected_out = [-0.0000   31.6334    6.0286   -0.0119    0.0218         0
                      0.0000    7.7198    8.7439   -0.0238   -0.0000         0];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
+end
 
 %        inertia                - manipulator inertia matrix
-function inertia_test
+function inertia_test(testCase)
     mdl_puma560;
     qn = [0 pi/4 -pi 1 pi/4 0];
     out = p560.inertia(qn);
@@ -278,7 +294,7 @@ function inertia_test
                    -0.0021   -0.0008   -0.0008    0.1925    0.0000    0.0000
                    -0.0015    0.0017    0.0008    0.0000    0.1713    0.0000
                    -0.0000    0.0000    0.0000    0.0000    0.0000    0.1941];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
     
     qn = [0 pi/4 -pi 1 pi/4 0; 0 pi/2 -pi 1 pi/2 0];
     out = p560.inertia(qn);
@@ -294,25 +310,27 @@ function inertia_test
                           -0.0007   -0.0010   -0.0010    0.1926    0.0000    0.0000
                           -0.0010    0.0015    0.0003    0.0000    0.1713    0.0000
                            0.0000    0.0000    0.0000    0.0000    0.0000    0.1941];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
+end
     
 %        itorque                - inertia torque
-function itorque_test
+function itorque_test(testCase)
     mdl_puma560;
     qn = [0 pi/4 -pi 1 pi/4 0];
     qdd = 0.5 * [1 1 1 1 1 1];
     out = p560.itorque(qn,qdd);
     expected_out = [1.6763    2.1799    0.6947    0.0944    0.0861    0.0971];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
 
 %        rne                    - inverse dynamics
-function rne_test
+end
+function rne_test(testCase)
     mdl_puma560;
     qz = [0 1 0 0 2 0];
     qn = [0 pi/4 -pi 1 pi/4 0];
     out = p560.rne(qn,qz,qz);
     expected_out = [-0.9748   59.1306    5.9889   -0.0108    1.8872    0.0001];
-    assertElementsAlmostEqual(out,expected_out,'absolute',1e-4);
+    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
 
     pnf = p560.nofriction('all');
 
@@ -322,10 +340,11 @@ function rne_test
 
     tau1 = pnf.rne(q,qd,qdd);
     tau2 = pnf.inertia(q)*qdd' +pnf.coriolis(q,qd)*qd' + pnf.gravload(q)';
-    assertElementsAlmostEqual(tau1', tau2, 'absolute', 1e-6);
+    verifyEqual(testCase, tau1', tau2, 'absTol', 1e-6);
+end
 
 %        fdyn                   - forward dynamics
-function fdyn_test
+function fdyn_test(testCase)
     mdl_puma560;
     qn = [0 pi/4 -pi 1 pi/4 0];
     qd = 0.5 * [1 1 1 1 1 1];
@@ -335,18 +354,19 @@ function fdyn_test
     p560 = p560.nofriction();
     
     [TI,Q,QD] = p560.fdyn(T, 0, qn, qdo);
+end
 
-
-function nofriction_test
+function nofriction_test(testCase)
     mdl_puma560;
-    assertFalse( p560.links(3).B == 0);
-    assertFalse( all(p560.links(3).Tc == 0) );
+    verifyFalse(testCase,  p560.links(3).B == 0);
+    verifyFalse(testCase,  all(p560.links(3).Tc == 0) );
 
     nf = p560.nofriction();
-    assertFalse( nf.links(3).B == 0);
-    assertTrue( all(nf.links(3).Tc == 0) );
+    verifyFalse(testCase,  nf.links(3).B == 0);
+    verifyTrue(testCase,  all(nf.links(3).Tc == 0) );
 
     mdl_puma560;
     nf = p560.nofriction('all');
-    assertTrue( nf.links(3).B == 0);
-    assertTrue( all(nf.links(3).Tc == 0) );
+    verifyTrue(testCase,  nf.links(3).B == 0);
+    verifyTrue(testCase,  all(nf.links(3).Tc == 0) );
+end

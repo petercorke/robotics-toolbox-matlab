@@ -1,32 +1,40 @@
 %% This is for testing the Utility functions in the robotics Toolbox
-function test_suite = UtilityTest
-  initTestSuite;
+function tests = UtilityTest
+  tests = functiontests(localfunctions);
+end
+
 %% Utility
 %    about                      - summary of object size and type
-function ab_testout
+function ab_testout(testCase)
     a = [1 2 3; 4 5 6];
     about(a);
     about a;
+end
 
 %    angdiff                    - subtract 2 angles modulo 2pi
-function an_testgdiff
-    assertElementsAlmostEqual(angdiff(pi/2,pi), -1.5708, 'absolute',1e-4);
+function an_testgdiff(testCase)
+    verifyEqual(testCase, angdiff(pi/2,pi), -1.5708, 'absTol',1e-4);
+end
+
 %    circle                     - compute/draw points on a circle
-function ci_testrcle
+function ci_testrcle(testCase)
     x= circle([1 2],5,'n', 5 );
-    assertElementsAlmostEqual(x, [6.0000    2.5451   -3.0451   -3.0451    2.5451
+    verifyEqual(testCase, x, [6.0000    2.5451   -3.0451   -3.0451    2.5451
                                   2.0000    6.7553    4.9389   -0.9389   -2.7553],...
-                                  'absolute',1e-4);
+                                  'absTol',1e-4);
+end
+
 %    colnorm                    - columnwise norm of matrix
-function co_testlnorm
+function co_testlnorm(testCase)
     x= [6.0000    2.5451   -3.0451   -3.0451    2.5451
         2.0000    6.7553    4.9389   -0.9389   -2.7553];
     cn = colnorm(x);
-    assertElementsAlmostEqual(cn, [6.3246    7.2188    5.8022    3.1866    3.7509],...
-                                  'absolute',1e-4);
+    verifyEqual(testCase, cn, [6.3246    7.2188    5.8022    3.1866    3.7509],...
+                                  'absTol',1e-4);
+end
     
 %    ishomog                    - true if argument is a 4x4 matrix
-function is_testhomog
+function is_testhomog(testCase)
     tr = [0.9363   -0.2896    0.1987         0
          0.3130    0.9447   -0.0978         0
         -0.1593    0.1538    0.9752         0
@@ -34,15 +42,16 @@ function is_testhomog
     r = [0.9363   -0.2896    0.1987
          0.3130    0.9447   -0.0978
         -0.1593    0.1538    0.9752];
-    assertTrue(ishomog(tr));
-    assertTrue(ishomog(cat(3, tr, tr)));
-    assertTrue(ishomog(tr),'valid');
-    assertFalse(ishomog(r));
-    assertFalse(ishomog(1));
-    assertFalse(ishomog(ones(4,4),'valid'));
+    verifyTrue(testCase, ishomog(tr));
+    verifyTrue(testCase, ishomog(cat(3, tr, tr)));
+    verifyTrue(testCase, ishomog(tr),'valid');
+    verifyFalse(testCase, ishomog(r));
+    verifyFalse(testCase, ishomog(1));
+    verifyFalse(testCase, ishomog(ones(4,4),'valid'));
+end
    
 %    isrot                      - true if argument is a 3x3 matrix
- function is_testrot
+ function is_testrot(testCase)
     tr = [0.9363   -0.2896    0.1987         0
          0.3130    0.9447   -0.0978         0
         -0.1593    0.1538    0.9752         0
@@ -50,55 +59,63 @@ function is_testhomog
     r = [0.9363   -0.2896    0.1987
          0.3130    0.9447   -0.0978
         -0.1593    0.1538    0.9752];
-    assertTrue(isrot(r));
-    assertTrue(isrot(cat(3, r,r)));
-    assertTrue(isrot(r),'valid');
-    assertFalse(isrot(tr));
-    assertFalse(isrot(1));
-    assertFalse(isrot(ones(3,3),'valid'));
+    verifyTrue(testCase, isrot(r));
+    verifyTrue(testCase, isrot(cat(3, r,r)));
+    verifyTrue(testCase, isrot(r),'valid');
+    verifyFalse(testCase, isrot(tr));
+    verifyFalse(testCase, isrot(1));
+    verifyFalse(testCase, isrot(ones(3,3),'valid'));
+end
               
 %    isvec                      - true if argument is a 3-vector
-function is_testvec
+function is_testvec(testCase)
     vh = [1 2 3];
     vv = [1;2;3];
     s = 45;
-    assertTrue(isvec(vh),3);
-    assertTrue(isvec(vv));
-    assertFalse(isvec(s));
-    assertFalse(isvec(ones(2,2)));
-    assertFalse(isvec(ones(2,2,2)));
+    verifyTrue(testCase, isvec(vh),3);
+    verifyTrue(testCase, isvec(vv));
+    verifyFalse(testCase, isvec(s));
+    verifyFalse(testCase, isvec(ones(2,2)));
+    verifyFalse(testCase, isvec(ones(2,2,2)));
+end
     
 %    numcols                    - number of columns in matrix
-function nu_testmcols
+function numcols_test(testCase)
     a = ones(2,3,4);
     b = 2;
-    assertEqual(numcols(a),3);
-    assertEqual(numcols(b),1);
+    verifyEqual(testCase, numcols(a),3);
+    verifyEqual(testCase, numcols(b),1);
+end
+
 %    numrows                    - number of rows in matrix
-function nu_testmrows
+function numrows_test(testCase)
     a = ones(2,3,4);
     b = 3;
-    assertEqual(numrows(a),2);
-    assertEqual(numrows(b),1);
+    verifyEqual(testCase, numrows(a),2);
+    verifyEqual(testCase, numrows(b),1);
+end
 
 %    Polygon                    - general purpose polygon class
-function Po_testlygon
+function Po_testlygon(testCase)
     v = [1 2 1 2;1 1 2 2];
     p = Polygon(v);
 %    unit                       - unitize a vector
-function un_testit
+end
+
+function unit_test(testCase)
     vh = [1 2 3];
     vv = [1;2;3];
     vo = [0 0 0];
-    assertElementsAlmostEqual(unit(vh), [0.2673    0.5345    0.8018], 'absolute',1e-4);
-    assertElementsAlmostEqual(unit(vv), [0.2673
+    verifyEqual(testCase, unit(vh), [0.2673    0.5345    0.8018], 'absTol',1e-4);
+    verifyEqual(testCase, unit(vv), [0.2673
                                          0.5345
-                                         0.8018], 'absolute',1e-4);
+                                         0.8018], 'absTol',1e-4);
 
-    assertExceptionThrown( @() unit(vo), 'RTB:unit:zero_norm');
+    verifyError(testCase,  @() unit(vo), 'RTB:unit:zero_norm');
+end
 
 %    tb_optparse                - toolbox argument parser
-function tb_test_optparse
+function tb_optparse_test(testCase)
 
     opt.one = [];
     opt.two = 2;
@@ -109,97 +126,97 @@ function tb_test_optparse
     opt.select = {'#bob', '#nancy'};
 
     opt2 = tb_optparse(opt, {'verbose'});
-    assertEqual(opt2.one, []);
-    assertEqual(opt2.two, 2);
-    assertEqual(opt2.three, 'three');
-    assertEqual(opt2.four, false);
-    assertEqual(opt2.five, true);
-    assertEqual(opt2.color, 'red');
-    assertEqual(opt2.select, 1);
+    verifyEqual(testCase, opt2.one, []);
+    verifyEqual(testCase, opt2.two, 2);
+    verifyEqual(testCase, opt2.three, 'three');
+    verifyEqual(testCase, opt2.four, false);
+    verifyEqual(testCase, opt2.five, true);
+    verifyEqual(testCase, opt2.color, 'red');
+    verifyEqual(testCase, opt2.select, 1);
 
     opt2 = tb_optparse(opt, {'one', 7});
-    assertEqual(opt2.one, 7);
-    assertEqual(opt2.two, 2);
-    assertEqual(opt2.three, 'three');
-    assertEqual(opt2.four, false);
-    assertEqual(opt2.five, true);
-    assertEqual(opt2.color, 'red');
-    assertEqual(opt2.select, 1);
+    verifyEqual(testCase, opt2.one, 7);
+    verifyEqual(testCase, opt2.two, 2);
+    verifyEqual(testCase, opt2.three, 'three');
+    verifyEqual(testCase, opt2.four, false);
+    verifyEqual(testCase, opt2.five, true);
+    verifyEqual(testCase, opt2.color, 'red');
+    verifyEqual(testCase, opt2.select, 1);
 
-    assertExceptionThrown(@() tb_optparse(opt, {'one'}), 'RTB:tboptparse:badargs');
+    verifyError(testCase, @() tb_optparse(opt, {'one'}), 'RTB:tboptparse:badargs');
 
     opt2 = tb_optparse(opt, {'two', 3});
-    assertEqual(opt2.one, []);
-    assertEqual(opt2.two, 3);
-    assertEqual(opt2.three, 'three');
-    assertEqual(opt2.four, false);
-    assertEqual(opt2.five, true);
-    assertEqual(opt2.color, 'red');
-    assertEqual(opt2.select, 1);
+    verifyEqual(testCase, opt2.one, []);
+    verifyEqual(testCase, opt2.two, 3);
+    verifyEqual(testCase, opt2.three, 'three');
+    verifyEqual(testCase, opt2.four, false);
+    verifyEqual(testCase, opt2.five, true);
+    verifyEqual(testCase, opt2.color, 'red');
+    verifyEqual(testCase, opt2.select, 1);
 
     opt2 = tb_optparse(opt, {'three', 'bob'});
-    assertEqual(opt2.one, []);
-    assertEqual(opt2.two, 2);
-    assertEqual(opt2.three, 'bob');
-    assertEqual(opt2.four, false);
-    assertEqual(opt2.five, true);
-    assertEqual(opt2.color, 'red');
-    assertEqual(opt2.select, 1);
+    verifyEqual(testCase, opt2.one, []);
+    verifyEqual(testCase, opt2.two, 2);
+    verifyEqual(testCase, opt2.three, 'bob');
+    verifyEqual(testCase, opt2.four, false);
+    verifyEqual(testCase, opt2.five, true);
+    verifyEqual(testCase, opt2.color, 'red');
+    verifyEqual(testCase, opt2.select, 1);
 
     opt2 = tb_optparse(opt, {'four'});
-    assertEqual(opt2.one, []);
-    assertEqual(opt2.two, 2);
-    assertEqual(opt2.three, 'three');
-    assertEqual(opt2.four, true);
-    assertEqual(opt2.five, true);
-    assertEqual(opt2.color, 'red');
-    assertEqual(opt2.select, 1);
+    verifyEqual(testCase, opt2.one, []);
+    verifyEqual(testCase, opt2.two, 2);
+    verifyEqual(testCase, opt2.three, 'three');
+    verifyEqual(testCase, opt2.four, true);
+    verifyEqual(testCase, opt2.five, true);
+    verifyEqual(testCase, opt2.color, 'red');
+    verifyEqual(testCase, opt2.select, 1);
 
     opt2 = tb_optparse(opt, {'nofour'});
-    assertEqual(opt2.one, []);
-    assertEqual(opt2.two, 2);
-    assertEqual(opt2.three, 'three');
-    assertEqual(opt2.four, false);
-    assertEqual(opt2.five, true);
-    assertEqual(opt2.color, 'red');
-    assertEqual(opt2.select, 1);
+    verifyEqual(testCase, opt2.one, []);
+    verifyEqual(testCase, opt2.two, 2);
+    verifyEqual(testCase, opt2.three, 'three');
+    verifyEqual(testCase, opt2.four, false);
+    verifyEqual(testCase, opt2.five, true);
+    verifyEqual(testCase, opt2.color, 'red');
+    verifyEqual(testCase, opt2.select, 1);
 
     opt2 = tb_optparse(opt, {'nofive'});
-    assertEqual(opt2.one, []);
-    assertEqual(opt2.two, 2);
-    assertEqual(opt2.three, 'three');
-    assertEqual(opt2.four, false);
-    assertEqual(opt2.five, false);
-    assertEqual(opt2.color, 'red');
-    assertEqual(opt2.select, 1);
+    verifyEqual(testCase, opt2.one, []);
+    verifyEqual(testCase, opt2.two, 2);
+    verifyEqual(testCase, opt2.three, 'three');
+    verifyEqual(testCase, opt2.four, false);
+    verifyEqual(testCase, opt2.five, false);
+    verifyEqual(testCase, opt2.color, 'red');
+    verifyEqual(testCase, opt2.select, 1);
 
     opt2 = tb_optparse(opt, {'green'});
-    assertEqual(opt2.one, []);
-    assertEqual(opt2.two, 2);
-    assertEqual(opt2.three, 'three');
-    assertEqual(opt2.four, false);
-    assertEqual(opt2.five, true);
-    assertEqual(opt2.color, 'green');
-    assertEqual(opt2.select, 1);
+    verifyEqual(testCase, opt2.one, []);
+    verifyEqual(testCase, opt2.two, 2);
+    verifyEqual(testCase, opt2.three, 'three');
+    verifyEqual(testCase, opt2.four, false);
+    verifyEqual(testCase, opt2.five, true);
+    verifyEqual(testCase, opt2.color, 'green');
+    verifyEqual(testCase, opt2.select, 1);
 
     opt2 = tb_optparse(opt, {'nancy'});
-    assertEqual(opt2.one, []);
-    assertEqual(opt2.two, 2);
-    assertEqual(opt2.three, 'three');
-    assertEqual(opt2.four, false);
-    assertEqual(opt2.five, true);
-    assertEqual(opt2.color, 'red');
-    assertEqual(opt2.select, 2);
+    verifyEqual(testCase, opt2.one, []);
+    verifyEqual(testCase, opt2.two, 2);
+    verifyEqual(testCase, opt2.three, 'three');
+    verifyEqual(testCase, opt2.four, false);
+    verifyEqual(testCase, opt2.five, true);
+    verifyEqual(testCase, opt2.color, 'red');
+    verifyEqual(testCase, opt2.select, 2);
 
     opt2 = tb_optparse(opt, {});
-    assertEqual(opt2.verbose, false);
-    assertEqual(opt2.debug, 0);
+    verifyEqual(testCase, opt2.verbose, false);
+    verifyEqual(testCase, opt2.debug, 0);
     opt2 = tb_optparse(opt, {'verbose'});
-    assertEqual(opt2.verbose, true);
+    verifyEqual(testCase, opt2.verbose, true);
     opt2 = tb_optparse(opt, {'verbose=2'});
-    assertEqual(opt2.verbose, 2);
+    verifyEqual(testCase, opt2.verbose, 2);
     opt2 = tb_optparse(opt, {'debug', 11});
-    assertEqual(opt2.debug, 11);
+    verifyEqual(testCase, opt2.debug, 11);
 
     opt2 = tb_optparse(opt, {'showopt'});
 
@@ -207,21 +224,22 @@ function tb_test_optparse
     opt3.five = false;
 
     opt2 = tb_optparse(opt, {'setopt', opt3});
-    assertEqual(opt2.one, []);
-    assertEqual(opt2.two, 2);
-    assertEqual(opt2.three, 'three');
-    assertEqual(opt2.four, false);
-    assertEqual(opt2.five, false);
-    assertEqual(opt2.color, 'green');
-    assertEqual(opt2.select, 1);
+    verifyEqual(testCase, opt2.one, []);
+    verifyEqual(testCase, opt2.two, 2);
+    verifyEqual(testCase, opt2.three, 'three');
+    verifyEqual(testCase, opt2.four, false);
+    verifyEqual(testCase, opt2.five, false);
+    verifyEqual(testCase, opt2.color, 'green');
+    verifyEqual(testCase, opt2.select, 1);
 
     [opt2,args] = tb_optparse(opt, {1, 'three', 4, 'spam', 2, 'red',  'spam'});
-    assertEqual(args, {1, 'spam', 2, 'spam'});
+    verifyEqual(testCase, args, {1, 'spam', 2, 'spam'});
 
-    assertExceptionThrown( @() tb_optparse(opt, {'two'}), 'RTB:tboptparse:badargs');
-    assertExceptionThrown( @() tb_optparse(opt, 'bob'), 'RTB:tboptparse:badargs');
+    verifyError(testCase,  @() tb_optparse(opt, {'two'}), 'RTB:tboptparse:badargs');
+    verifyError(testCase,  @() tb_optparse(opt, 'bob'), 'RTB:tboptparse:badargs');
+end
 
-function trprint_test
+function trprint_test(testCase)
 
     a = transl([1,2,3]) * eul2tr([.1, .2, .3]);
 
@@ -234,4 +252,4 @@ function trprint_test
     trprint(a, 'angvec', 'radian');
     trprint(a, 'angvec', 'radian', 'fmt', '%g');
     trprint(a, 'angvec', 'radian', 'fmt', '%g', 'label', 'bob');
-
+end

@@ -1,7 +1,38 @@
-function suite = TestPlanningClasses_test
-  initTestSuite;
+function tests = PlanTest
+  tests = functiontests(localfunctions);
+end
 
-function bug2_test
+function astar_test(testCase)
+    load map1           % load map
+    goal = [50;30];
+    start = [20;10];
+    as = Astar(map);    % create Navigation object
+    as.plan(goal);      % setup costmap for specified goal
+    as.path(start);     % plan solution path star-goal, animate
+    P = as.path(start); % plan solution path star-goal, return path
+end
+
+function astarPO_test(testCase)
+    load map1          % load map
+    goal = [50;30];
+    start = [20;10];
+    as = Astar(map); % create Navigation object
+    as.plan(goal,2);   % setup costmap for specified goal
+    as.path(start);    % plan solution path star-goal, animate
+    P = as.path(start); % plan solution path star-goal, return path
+end
+
+function astarMOO_test(testCase)
+    goal = [100;100];
+    start = [1;1];
+    as = Astar(0);   % create Navigation object with random occupancy grid
+    as.addCost(1,L);    % add 1st add'l cost layer L
+    as.plan(goal,3);    % setup costmap for specified goal
+    as.path(start);     % plan solution path start-goal, animate
+    P = as.path(start);    % plan solution path start-goal, return path
+end
+
+function bug2_test(testCase)
 
     goal = [50,30];
     start = [20, 10];
@@ -14,13 +45,14 @@ function bug2_test
     b.path(start);
     p = b.path(start);
     b.plot(p);
+end
 
-function dstar_test
+function dstar_test(testCase)
 
     % load the world
     load map1
     goal = [50,30];
-    start = [20, 10];
+    start = [20, 10]';
 
     % create a planner
     ds = Dstar(map, 'quiet');
@@ -48,8 +80,9 @@ function dstar_test
 
     p = ds.path(start);
     ds.plot(p);
+end
 
-function dxform_test
+function dxform_test(testCase)
     goal = [50,30];
     start = [20, 10];
     load map1
@@ -70,8 +103,9 @@ function dxform_test
 
     dx.plot3d();
     dx.plot3d(p);
+end
 
-function prm_test
+function prm_test(testCase)
     load map1
     randinit
     prm = PRM(map);
@@ -85,8 +119,9 @@ function prm_test
     prm.path(start, goal)
     p = prm.path(start, goal);
     prm.plot(p);
+end
 
-function rrt_test
+function rrt_test(testCase)
 
     goal = [0,0]; 
     randinit
@@ -98,4 +133,4 @@ function rrt_test
     rrt.plan();
 
     p = rrt.path([0 0 0], [0 2 0]);
-
+end
