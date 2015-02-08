@@ -23,7 +23,8 @@
 % 'perspective'     Perspective view (default)
 % 'view',V          Specify view V='x', 'y', 'top' or [az el] for side elevations,
 %                   plan view, or general view by azimuth and elevation
-%                   angle. 
+%                   angle.
+% 'top'             View from the top.
 %-
 % '[no]shading'     Enable Gouraud shading (default true)
 % 'lightpos',L      Position of the light source (default [0 0 20])
@@ -632,6 +633,7 @@ function opt = plot_options(robot, optin)
     opt.name = true;
     opt.projection = {'ortho', 'perspective'};
     opt.view = [];
+    opt.top = false;
 
     % 3D rendering
     opt.shading = true;
@@ -692,6 +694,9 @@ function opt = plot_options(robot, optin)
         error(['unknown option: ' args{1}]);
     end
     
+    if opt.top
+        opt.view = 'top';
+    end
     if ~isempty(opt.projection)
         opt.projection = 'ortho';
     end
