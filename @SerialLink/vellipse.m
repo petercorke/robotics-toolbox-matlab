@@ -36,6 +36,10 @@ function vellipse(robot, q, varargin)
     opt.mode = {'trans', 'rot', '2d'};
     [opt,args] = tb_optparse(opt, varargin);
     
+    if robot.n == 2
+        opt.mode = '2d';
+    end
+    
     J = robot.jacob0(q);
     
     switch opt.mode
