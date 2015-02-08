@@ -64,7 +64,7 @@ function animate(robot, qq)
                                 set(h.pjoint(L), 'Matrix', diag([1 1 q(L) 1]));
                             else
                                 % if length is zero the matrix is singular and MATLAB complains
-                                error('Prismatic length must be > 0');
+                                %error('Prismatic length must be > 0');
                             end
                         end
                         T = T * links(L).A(q(L));
@@ -92,7 +92,7 @@ function animate(robot, qq)
                                 set(h.pjoint(L), 'Matrix', diag([1 1 q(L) 1]));
                             else
                                 % if length is zero the matrix is singular and MATLAB complains
-                                error('Prismatic length must be > 0');
+                                %error('Prismatic length must be > 0');
                             end
                         end
                         
