@@ -1,8 +1,13 @@
 %TR2JAC Jacobian for differential motion
 %
-% J = TR2JAC(T) is a Jacobian matrix (6x6) that maps spatial velocity or
-% differential motion from the world frame to the frame represented by 
-% the homogeneous transform T (4x4).
+% J = TR2JAC(TAB) is a Jacobian matrix (6x6) that maps spatial velocity or
+% differential motion from frame {A} to frame {B} where the pose of {B}
+% relative to {A} is represented by the homogeneous transform TAB (4x4).
+%
+% J = TR2JAC(TAB, 'samebody') is a Jacobian matrix (6x6) that maps spatial
+% velocity or differential motion from frame {A} to frame {B} where both
+% are attached to the same moving body.  The pose of {B} relative to {A} is
+% represented by the homogeneous transform TAB (4x4).
 %
 % See also WTRANS, TR2DELTA, DELTA2TR.
 
@@ -27,10 +32,22 @@
 %
 % http://www.petercorke.com
 
-function J = tr2jac(T)
+function J = tr2jac(T, varargin)
+    
+    opt.samebody = false;
+    
+    opt = tb_optparse(opt, varargin);
 		
     R = t2r(T);
-    J = [
-                 R'  (skew(transl(T))*R)'
-        zeros(3,3)                     R'
-        ];
+    
+    if opt.samebody
+        J = [
+            R'              (skew(transl(T))*R)'
+            zeros(3,3)      R'
+            ];
+    else
+        J = [
+            R'              zeros(3,3)
+            zeros(3,3)      R'
+            ];
+    end
