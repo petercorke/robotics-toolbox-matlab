@@ -133,6 +133,10 @@ function [theta_, n_] = tr2angvec(R, varargin)
         error('complex');
     end
     
+    if opt.deg
+        theta = theta * 180/pi;
+    end
+    
     if nargout == 1
         theta_ = theta;
     elseif nargout == 2
