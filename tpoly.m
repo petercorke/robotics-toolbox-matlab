@@ -10,6 +10,11 @@
 % [S,SD,SDD] = TPOLY(S0, SF, T) as above but specifies the trajectory in 
 % terms of the length of the time vector T (Mx1).
 %
+% Notes::
+% - Velocity is in units of distance per trajectory step, not per second.
+% - Acceleration is in units of distance per trajectory step squared, not
+%   per second squared. 
+%
 % Reference:
 %  Robotics, Vision & Control
 %  Chap 3
