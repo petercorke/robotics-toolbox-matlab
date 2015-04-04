@@ -34,6 +34,9 @@
 
 %\usepackage{multind}
 \usepackage{multicol}
+
+% printindex stuff
+
 \makeatletter
 \def\printindex#1#2{\subsection*{#2}
   \@input{#1.ind}}
@@ -56,9 +59,11 @@
 \def\Mlab{MATLAB$^{\textsuperscript{\textregistered}}$}
 
 \begin{document}
+% include the graphical front page
 \includepdf{titlepage}
 \thispagestyle{empty}
 \newpage
+% inside front cover
 \vspace*{\fill}
 \begin{tabular}{ll}
 Release & \release \\
@@ -69,7 +74,7 @@ Discussion group & \url{http://groups.google.com.au/group/robotics-tool-box}
 \end{tabular}
 \vspace*{\fill}
 \hrule
-Copyright \textcopyright 2014 Peter Corke\\
+Copyright \textcopyright 2015 Peter Corke\\
 peter.i.corke$@$gmail.com\\
 \url{http://www.petercorke.com}
 \newpage
@@ -80,7 +85,7 @@ peter.i.corke$@$gmail.com\\
 
 \pagestyle{headings}        % Gives page headings at top of page
 \lfoot{Robotics Toolbox \release\ for \Mlab}
-\rfoot{Copyright \copyright Peter Corke 2014}
+\rfoot{Copyright \copyright Peter Corke 2015}
 
 \newpage
 \setcounter{section}{0}
@@ -88,10 +93,10 @@ peter.i.corke$@$gmail.com\\
 \cleardoublepage
 \chapter*{Preface}
 \pagestyle{fancyplain}
-\begin{wrapfigure}{l}{4.5cm}
-\vspace{-2ex}\includegraphics[width=4cm]{frontcover.pdf}
+\begin{wrapfigure}{l}{4cm}
+\vspace{-2ex}\includegraphics[width=3.5cm]{frontcover.pdf}
 \end{wrapfigure}
-This, the ninth release of the Toolbox, represents over fifteen years of %% CHANGE
+This, the ninth major release of the Toolbox, represents twenty years of %% CHANGE
 development and a substantial level of maturity.
 This version captures a large number of changes and extensions generated over the last two years
 which support my new book ``\textit{Robotics, Vision \& Control}'' shown to the left.
@@ -114,7 +119,7 @@ This ninth release of the Toolbox has been significantly extended to support mob
 For ground robots the Toolbox includes standard path planning algorithms (bug, distance transform, D*, PRM), kinodynamic planning (RRT),
 localization (EKF, particle filter), map building (EKF) and simultaneous localization and mapping (EKF), and
 a Simulink model a of non-holonomic vehicle.
-The Toolbox also including a detailed Simulink model for a quadcopter flying robot.
+The Toolbox also includes a detailed Simulink model for a quadrotor flying robot.
 
 The routines are generally written in a straightforward manner which allows
 for easy understanding, perhaps at the expense of computational efficiency.
@@ -123,7 +128,7 @@ rewrite the function to be more efficient,
 compile the M-file using the \Mlab\   compiler, or
 create a MEX version.
 
-The manual is now auto-generated from the comments in the \Mlab\ code itself which reduces the effort
+This manual is now essentially auto-generated from the comments in the \Mlab\ code itself which reduces the effort
 in maintaining code and a separate manual as I used to --- the downside is that there are no worked examples and figures in the manual.
 However the book ``\textit{Robotics, Vision \& Control}''  provides a detailed discussion (600 pages, nearly 400 figures and 1000 code examples)
 of how to use the Toolbox functions to
@@ -142,23 +147,50 @@ solve many types of problems in robotics.
 \chapter{Introduction}
 \section{What's changed}
 
-\subsection{Documentation}
+\subsection{New features and changes to RTB 9.10}
+Features of this dot point release include:
 \begin{itemize}
-\item The manual (robot.pdf) no longer a separately written document.  This was just too hard to keep updated with changes to code.
-All documentation is now in the m-file, making maintenance easier and consistency more likely.
-The negative consequence is that the manual is a little ``drier'' than it used to be.
-\item The Functions link from the Toolbox help browser lists all functions with hyperlinks to the individual help entries.
-\item Online HTML-format help is available from \url{http://www.petercorke.com/RTB/r9/html}
+\item A major pass over all the documentation working on clarity and consistency.
+\item \texttt{startup\_rvc} now checks whether an update to RTB is available.
+\item Fixed the bug in \texttt{SerialLink.plot} for prismatic joints and modified DH parameters where the links were missing or in the wrong place.
+\item New methods for \texttt{SerialLink}
+  \begin{itemize}
+   \item \texttt{edit} which presents all the parameters as a table in a figure window and allows
+interactive editing.
+   \item \texttt{fellipse} and \texttt{vellipse} which respectively plot the force and velocity ellipsoid of the
+robot.
+\item  \texttt{trchain}  which describes forward kinematics as a minimal series of elementary transforms.
+\item  numerical inverse kinematic: \texttt{ikcon} and \texttt{ikunc} for constrained and unconstrained joint angles, based on the  MATLAB Optimisation Toolbox.  These provide a good alternative to the existing method 
+\texttt{ikine}.  Contributed by Bryan Moutrie.
+\item  \texttt{pay} and \texttt{paycap}  to determine the effect of payload and maximum payload capability.  Contributed by Bryan Moutrie.
+\item   \texttt{collisions} which interfaces to the public domain package pHRIWARE (by Bryan Moutrie) to perform collision checking between a robot arm and static and moving objects which are described by simple 3D shape primitives.
+ \end{itemize}
+\item A new function called \texttt{models} which lists all the robot models and their keywords.  Allows searching by keywords.  Becoming useful
+as the number of model files increases.
+\item Prototype models for Baxter, NAO and Kuka KR5 robots.
+\item New version of \texttt{rtbdemo} that uses a proper GUI.
+\item Update of the V-REP interface to support version 3.1.x and a demo created, see \texttt{rtbdemo}.
+\item An increasing number of functions now have a \texttt{'deg'} option which allows it to accept angle input in units of degrees rather than the default of
+radians.
+%\item New path  planning modules \texttt{Astar}, \texttt{AstarPO} and \texttt{AstarMOO} for classical, pareto-optimal and multi-objective respectively versions of the A* algorithm.  Also  \texttt{DstarPO} and \texttt{DstarPO} for respectively pareto-optimal and multi-objective versions of the D* algorithm.  Contributed by Alex Lavin.
+\item New Simulink blocks to support N-rotor flyers, eg. hexa- and octo-rotors.  This includes a new control mixer block and a generalized
+N-rotor dynamics block.  Graphics has been updated to render the appropriate number of rotors.  The vehicle model structure must now include
+an element \texttt{nrotors} to specify the number of rotors.
+\item \texttt{roblocks}, the Toolbox Simulink block library is now a \texttt{.slx} file, rather than a \texttt{.mdl} file and all models have been updated
+to suit.   Some older Simulink models had atrophied and have been updated.
+
 \end{itemize}
 
-\subsection{New features and changes}
-\begin{figure}[t]
+\subsection{Earlier changes to RTB 9}
+
+\begin{figure}[b]
 \centering
 \includegraphics[width=6cm]{plot3d.pdf}
 \caption{New rendered robot model using the \texttt{plot3d()} method.}\label{fig:plot3d}
 \end{figure}
-Features of this particular dot point release include:
+
 \begin{itemize}
+\item A major rewrite of \texttt{CodeGenerator}
 \item A major rewrite of \texttt{ikine6s} to handle a number of specific cases: robot with no shoulder offset, robot with
 shoulder offset (can have lefty/right configuration), Stanford arm (prismatic third joint), Puma 560 arm.  The previous code made lots
 of assumptions applicable to the Puma, which caused errors for other 6-axis robots with spherical wrists.
@@ -167,15 +199,15 @@ of assumptions applicable to the Puma, which caused errors for other 6-axis robo
 
 \item A new method \texttt{plot3d()} which uses STL format solid models to render realistic looking robots as shown in Figure
 \ref{fig:plot3d}.  This requires STL models,
-such as those shipped with the package ARTE by Arturo Gil.
+such as those shipped with the package ARTE by Arturo Gil (\url{https://arvc.umh.es/arte}).
 
-\item There are subclasses of \texttt{Link} called \texttt{Revolute}, \texttt{Prismatic}, \texttt{RevoluteMDH} and \texttt{PrismaticMDH} that can be used to make your
+\item Subclasses of \texttt{Link} called \texttt{Revolute}, \texttt{Prismatic}, \texttt{RevoluteMDH} and \texttt{PrismaticMDH} that can be used to make your
 code clearer and more concise.
 \item The behaviour of Fast RNE is a bit different.  The MATLAB version \texttt{@SerialLink/rne.m} is always executed, and it makes
 the decision whether or not to invoke the MEX file.  The MEX file is executed if:
 	\begin{enumerate}
 	\item the robot is not symbolic, and
-	\item the \texttt{SerialLink} property \texttt{fast} is true (ie. the 'nofast' option is not given), and
+	\item the \texttt{SerialLink} property \texttt{fast} is true (ie. the `nofast' option is not given), and
 	\item the MEX file exists.
 	\end{enumerate}
 	
@@ -192,12 +224,13 @@ function \texttt{runscript} to step through the individual demo scripts.  It wor
 \item A set of classes (experimental) to interface with the V-REP robotics simulation engine by Coppelia Robotics.  See
 \texttt{robot/interfaces/VREP}.
 \item Since 9.8 the Toolbox now contains the Robotic Symbolic Toolbox
-by Jo\"{e}rn Malzahn.  There are additional functions, as well as symbolic
+by J\"{o}rn Malzahn.  There are additional functions, as well as symbolic
 support throughout the SerialLink class.
 \item Many bug fixes
 \end{itemize}
 
-Compared to release 8.x and earlier:
+\section{Migrating from RTB 8 and earlier}
+If you're upgrading from RTB 8 or earlier note a significant number of changes summarised below.
 \begin{itemize}
 \item The command \texttt{startup\_rvc} should be executed before using the Toolbox.  This sets up the MATLAB search paths correctly.
 \item The Robot class is now named SerialLink to be more specific.
@@ -232,48 +265,30 @@ Release 9 introduces considerable new functionality, in particular for mobile ro
 \item Monte Carlo estimator ParticleFilter.
  \end{description}
  
-\item Arm robotics:
-  \begin{description}
-\item jsingu
-\item qplot
-\item DHFactor a simple means to generate the Denavit-Hartenberg kinematic model of a robot from a sequence of elementary transforms.
- \end{description}
+\item Arm robotics: \texttt{jsingu}, \texttt{qplot}, \texttt{DHFactor} (a simple means to generate the Denavit-Hartenberg kinematic model of a robot from a sequence of elementary transforms)
  
-\item Trajectory related:
-  \begin{description}
-  \item lspb
-\item tpoly
-\item mtraj
-\item mstraj
-   \end{description}
+\item Trajectory related: \texttt{lspb}, \texttt{tpoly}, \texttt{mtraj}, \texttt{mstraj}
    
-   \item General transformation:
-  \begin{description}
-\item wtrans
-\item se2
-\item se3
-\item homtrans
-\item vex performs the inverse function to skew, it converts a skew-symmetric matrix to a 3-vector.
- \end{description}
+\item General transformation: \texttt{homtrans}, \texttt{se2}, \texttt{se3}, \texttt{wtrans}, \texttt{vex} (performs the inverse function to skew, it converts a skew-symmetric matrix to a 3-vector)
  
 \item Data structures:
   \begin{description}
-\item Pgraph represents a non-directed embedded graph, supports plotting and minimum cost path finding.
-\item Polygon a generic 2D polygon class that supports plotting, intersectio/union/difference of polygons, line/polygon intersection, point/polygon containment.
+\item \texttt{Pgraph} represents a non-directed embedded graph, supports plotting and minimum cost path finding.
+\item \texttt{Polygon} a generic 2D polygon class that supports plotting, intersectio/union/difference of polygons, line/polygon intersection, point/polygon containment.
  \end{description}
  
 \item Graphical functions:
   \begin{description}
- \item[trprint] compact display of a transform in various formats.
-\item[trplot] display a coordinate frame in SE(3)
-\item[trplot2] as above but for SE(2)
-\item[tranimate] animate the motion of a coordinate frame
-\item[plot\_box] plot a box given TL/BR corners or center+WH, with options for edge color, fill color and transparency.
-\item[plot\_circle] plot one or more circles, with options for edge color, fill color and transparency.
-\item[plot\_sphere] plot a sphere, with options for edge color, fill color and transparency.
-\item[plot\_ellipse] plot an ellipse, with options for edge color, fill color and transparency.
-\item[plot\_ellipsoid] plot an ellipsoid, with options for edge color, fill color and transparency.
-\item[plot\_poly] plot a polygon, with options for edge color, fill color and transparency.
+ \item[\texttt{trprint}] compact display of a transform in various formats.
+\item[\texttt{trplot}] display a coordinate frame in SE(3)
+\item[\texttt{trplot2}] as above but for SE(2)
+\item[\texttt{tranimate}] animate the motion of a coordinate frame
+\item[\texttt{plot\_box}] plot a box given TL/BR corners or center+WH, with options for edge color, fill color and transparency.
+\item[\texttt{plot\_circle}] plot one or more circles, with options for edge color, fill color and transparency.
+\item[\texttt{plot\_sphere}] plot a sphere, with options for edge color, fill color and transparency.
+\item[\texttt{plot\_ellipse}] plot an ellipse, with options for edge color, fill color and transparency.
+\item[\texttt{plot\_ellipsoid}] plot an ellipsoid, with options for edge color, fill color and transparency.
+\item[\texttt{plot\_poly}] plot a polygon, with options for edge color, fill color and transparency.
  \end{description}
  
  \item Utility:
@@ -284,7 +299,7 @@ Release 9 introduces considerable new functionality, in particular for mobile ro
 \item Lots of Simulink models are provided in the subdirectory \texttt{simulink}.  These models all have the prefix \texttt{sl\_}.
 \end{itemize}
 
-\subsection{Improvements}
+\subsection{General improvements}
 \begin{itemize}
 \item Many functions now accept MATLAB style arguments given as trailing strings, or string-value pairs.  These are parsed by the internal
 function \texttt{tb\_optparse}.
@@ -322,13 +337,13 @@ Then issue the command \texttt{startup\_rvc} and it will add a number
 of paths to your \Mlab\ search path.
 You need to setup the path every time you start \Mlab\ but you can 
 automate this by setting up environment variables, editing your 
-\texttt{startup.m} script by pressing the ``Update Toolbox Path
+\texttt{startup.m} script, or by pressing the ``Update Toolbox Path
 Cache" button under \Mlab\ General preferences.
 
-A menu-driven demonstration can be invoked by the function {\tt rtdemo}.
+A menu-driven demonstration can be invoked by the function {\tt rtbdemo}.
 
 \subsection{Documentation}
-The file {\tt robot.pdf} is a manual that describes all functions in the Toolbox.
+This document {\tt robot.pdf} is a manual that describes all functions in the Toolbox.
 It is auto-generated from the comments in the \Mlab\ code and is fully hyperlinked:
 to external web sites, the table of content to functions, and the ``See also'' functions
 to each other.
@@ -341,7 +356,7 @@ Toolbox" appears under the Contents.
 
 
 \section{MATLAB version issues}
-The Toolbox has been tested under R2014a.
+The Toolbox has been tested under R2014b.  Compatibility problems are increasingly likely the older your version of \Mlab\ is.
 
 \section{Use in teaching}
 This is definitely encouraged!
@@ -351,7 +366,7 @@ If you plan to distribute paper copies of the PDF manual then every copy must in
 
 \section{Use in research}
 If the Toolbox helps you in your endeavours then I'd appreciate you citing the Toolbox when you publish.
-The details are
+The details are:
 \begin{verbatim}
 @book{Corke11a,
     Author = {Peter I. Corke},
@@ -373,8 +388,6 @@ There is no support!  This software is made freely available in the hope that yo
 you have to hand.
 I am happy to correspond with people who have found genuine
 bugs or deficiencies but my response time can be long and I can't guarantee that I respond to your email.
-I am very happy to accept contributions for inclusion in future versions of the
-toolbox, and you will be suitably acknowledged.
 
 \textbf{I can guarantee that I will not respond to any requests for help with assignments or homework, no matter
 how urgent or important they might be to you.  That's what your teachers, tutors, lecturers and professors are paid to do.}
@@ -392,7 +405,7 @@ so I can distinguish you from a spammer or a web-bot.
 \section{Related software}
 
 \subsection{Octave}
-Octave is an open-source mathematical environment that is very similar to \Mlab\ , but it has some important differences particularly with respect
+Octave is an open-source mathematical environment that is very similar to \Mlab, but it has some important differences particularly with respect
 to graphics and classes.
 Many Toolbox functions work just fine under Octave.
 Three important classes (Quaternion, Link and SerialLink) will not work so modified versions of these classes is provided in the subdirectory
@@ -423,16 +436,22 @@ Machine Vision toolbox (MVTB) for {\Mlab}.  This was described in an article
 and provides a very wide range of useful computer vision functions beyond the Mathwork's Image Processing
 Toolbox.  You can obtain this from \url{http://www.petercorke.com/vision}.
 
+\section{Contributing to the Toolboxes}
+I am very happy to accept contributions for inclusion in future versions of the
+toolbox.  You will, of course, be suitably acknowledged (see below).
+
 \section{Acknowledgements}
-Jo\"{e}rn Malzahn has donated a considerable amount of code, his
-Robot Symbolic Toolbox for MATLAB.
 I have corresponded with a great many people via email since the first 
 release of this Toolbox.  Some have identified bugs and shortcomings
 in the documentation, and even better, some have provided bug fixes and
 even new modules, thankyou.  See the file \texttt{CONTRIB} for details.
-I'd like to especially mention Wynand Smart for some arm robot models, Paul Pounds for the quadcopter model, 
-and Paul Newman (Oxford) for inspiring the mobile robot code.
 
+J\"{o}rn Malzahn has donated a considerable amount of code, his
+Robot Symbolic Toolbox for MATLAB.
+Bryan Moutrie has contributed parts of his open-source package phiWARE to RTB, the remainder of that package can be found online.
+%Alexander Lavin has contributed variants of A* and D* planners.
+Other mentions to Gautam Sinha, Wynand Smart for models of industrial robot arm, Paul Pounds for the quadrotor and related models, 
+and Paul Newman (Oxford) for inspiring the mobile robot code.
 
 
 \renewcommand{\section}{\funcsection}
