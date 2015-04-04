@@ -1,7 +1,10 @@
-The following files are contributed by others:
+The following files are fully/partly contributed by others:
 
 % Robert Biro with Gary Von McMurray
     SerialLink.ikine560.m 
+
+% Bryan Moutrie, Don Riley (rndread from cad2matdemo on FileExchange)
+    SerialLink.plot3d
 
 %Wynand Swart
     mdl_Fanuc10L.m:
@@ -14,3 +17,24 @@ The following files are contributed by others:
 
 %Paul Newman
     EKF.m
+
+%Joern Malzahn
+    @CodeGenerator
+    common/distributeblocks
+    common/doesblockexist
+    common/multidfprintf
+    common/symexpr2slblock
+    common/simulinkext
+
+%Bryan Moutrie
+    @SerialLink
+        collisions
+        ikunc
+        ikcon
+        pay
+        paycap
+        gravjac
+        qmincon
+
+% Gautam sinha
+    mdl_KR5
