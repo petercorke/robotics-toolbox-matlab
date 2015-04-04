@@ -1,6 +1,6 @@
 \documentclass[11pt]{article}
 \usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
-\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+\geometry{a4paper}                   % ... or a4paper or a5paper or ... 
 %\geometry{landscape}                % Activate for for rotated page geometry
 %\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
 \usepackage{graphicx}
@@ -8,8 +8,11 @@
 \usepackage{epstopdf}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 \usepackage[colorlinks=true,urlcolor=blue]{hyperref}
-\input{pic-common}
-\input{matlab}
+
+% maths notation
+\usepackage{amssymb}
+\input{rvc-notation}
+\usepackage{mathtools}
 
 \usepackage{fancyhdr}
 \pagestyle{fancy}
@@ -26,6 +29,16 @@
 \begin{document}
 \maketitle
 
+	\begin{figure}[b!]
+	\centering
+	\includegraphics[width=0.6\textwidth]{phantomx}
+	\caption{The PhantomX robot sitting on my desk.  The world frame $\{\!0\!\}$ and the tool frame $\{\!t\!\}$
+	are shown.
+	Note I'm using a book over the back feet to keep it from
+	toppling over.}
+	\label{fig:phantomx}
+	\end{figure}
+	
 Many low-cost hobby class robots, such as shown in Figure \ref{fig:phantomx} have only 4 joints (degrees of freedom). 
 This document describes how to determine inverse kinematics for such a robot using the Robotics
 Toolbox\cite{Corke11a} for \Mlab.
@@ -38,15 +51,7 @@ the tools.
 
 
 
-	\begin{figure}[b]
-	\centering
-	\includegraphics[width=0.8\textwidth]{phantomx}
-	\caption{The PhantomX robot sitting on my desk.  The world frame $\{\!0\!\}$ and the tool frame $\{\!t\!\}$
-	are shown.
-	Note I'm using a book over the back feet to keep it from
-	toppling over.}
-	\label{fig:phantomx}
-	\end{figure}
+
 
 
 We will consider the problem in two parts.  First the problem of moving the robot tool to a particular position.  Second, moving the tool
@@ -70,7 +75,7 @@ to move the robot to the sort of pose that might be used for picking up an objec
 
 	\begin{figure}
 	\centering
-	\includegraphics[width=0.8\textwidth]{nominal.eps}
+	\includegraphics[width=0.6\textwidth]{nominal.eps}
 	\caption{The PhantomX robot in a pose that might be useful for grabbing an object off the table top.  Here the joint angles
 	are $(1.12, 0.441, -1.69, -0.770)\unit{rad}$.}
 	\label{fig:nominal-pose}
@@ -202,6 +207,19 @@ ans =
          0         0         0    1.0000
 >> px.plot(q)
 \end{Code}
+
+\section{4 DOF arm}
+The fundamental problem is that we normally specify the pose of the robot's end-effector in terms of the full orientation of the 
+frame $\cframe{E}$.  However with only one orientation degree of freedom we cannot achieve an arbitrary pose.  At best we
+can specify the direction of one of the unit-vector columns of the orthonormal rotation matrix --- the $n$, $o$ or $a$ vector.
+If we want the gripper jaws pointing straight down then $\vec{a} = [0 0 -1]$.
+If we want the gripper jaws in the horizontal plane then $\vec{n} = [0 0 1]$.
+However if we wanted the gripper jaws to pointing downwards at 45 degrees the orientation would be a function of the gripper
+position --- we lose the benefit of decoupling tool position and orientation.
+
+Consider instead that the tool orientation was expressed with respect a new frame $\cframe{V}$ which has its origin coincident with
+$\cframe{E}$ but its y- and z-axes lie in the world horizontal plane.
+
 
 
 \bibliographystyle{ieeetr}
