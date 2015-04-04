@@ -55,7 +55,7 @@ function R = eul2r(phi, varargin)
         theta = args{1};
         psi = args{2};
     else
-        error('bad arguments')
+        error('RTB:eul2r:badarg', 'expecting 3 inputs, 3-vector or 3-column matrix')
     end
 
     % optionally convert from degrees
