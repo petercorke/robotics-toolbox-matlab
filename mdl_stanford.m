@@ -109,3 +109,4 @@ qz = [0 0 0 0 0 0];
 
 stanf = SerialLink(L, 'name', 'Stanford arm');
 stanf.plotopt = {'workspace', [-2 2 -2 2 -2 2]};
+stanf.model3d = 'example/stanford';

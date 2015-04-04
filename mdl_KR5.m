@@ -37,6 +37,7 @@ L(6) = Link([0        0           0       0]);
 KR5=SerialLink(L, 'name', 'Kuka KR5');
 KR5.tool=transl(0,0,0.115);
 KR5.ikineType = 'kr5';
+KR5.model3d = 'KUKA/KR5_arc';
 
 qk1=[pi/4 pi/3 pi/4 pi/6 pi/4 pi/6];
 qk2=[pi/4 pi/3 pi/6 pi/3 pi/4 pi/6];
