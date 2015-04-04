@@ -55,7 +55,7 @@
 %
 % See also Navigation, Dstar, DstarPO, Astar, DXform.
 
-% Copyright (C) 1993-2014, by Peter I. Corke, Alexander Lavin
+% Copyright (C) 1993-2015, by Peter I. Corke, Alexander Lavin
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
