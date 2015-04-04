@@ -150,7 +150,7 @@ classdef Quaternion
                     q.s = a1(1);
                     q.v = [0 0 0];
                 else
-                    error('unknown dimension of input');
+                    error('RTB:Quaternion:badarg', 'unknown dimension of input');
                 end
             elseif nargin == 2
                 if isscalar(a1) && isvector(a2)
@@ -158,7 +158,7 @@ classdef Quaternion
                     q.s = cos(a1/2);
                     q.v = sin(a1/2)*unit(a2(:)');
                 else
-                    error ('bad argument to quaternion constructor');
+                    error ('RTB:Quaternion:badarg', 'bad argument to quaternion constructor');
                 end
             
             end
@@ -266,14 +266,17 @@ classdef Quaternion
             n = double(q1)*double(q2)';
         end
 
-        function q = interp(Q1, Q2, r)
+        function q = interp(Q1, Q2, r, varargin)
         %Quaternion.interp Interpolate quaternions
         %
-        % QI = Q1.interp(Q2, S) is a unit-quaternion that interpolates a rotation 
+        % QI = Q1.interp(Q2, S, OPTIONS) is a unit-quaternion that interpolates a rotation 
         % between Q1 for S=0 and Q2 for S=1.
         %
         % If S is a vector QI is a vector of quaternions, each element
         % corresponding to sequential elements of S.
+        %
+        % Options::
+        % 'shortest'   Take the shortest path along the great circle
         %
         % Notes::
         % - This is a spherical linear interpolation (slerp) that can be interpretted 
@@ -290,13 +293,20 @@ classdef Quaternion
             q1 = double(Q1);
             q2 = double(Q2);
             
+            opt.shortest = false;
+            
+            opt = tb_optparse(opt, varargin);
+            
 
             cosTheta = q1*q2';
-            % take shortest path along the great circle, patch by Gauthier Gras
-            if cosTheta < 0
-                q1 = - q1;
-                cosTheta = - cosTheta;
-            end;
+            
+            if opt.shortest
+                % take shortest path along the great circle, patch by Gauthier Gras
+                if cosTheta < 0
+                    q1 = - q1;
+                    cosTheta = - cosTheta;
+                end;
+            end
             
             theta = acos(cosTheta);
             count = 1;
