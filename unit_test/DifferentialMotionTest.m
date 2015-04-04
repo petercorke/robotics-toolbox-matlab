@@ -144,7 +144,7 @@ end
 %    vex                        - skew symmetric matrix to vector
 function vex_test(testCase)
     % unit testing vex with homogeneous transform
-    verifyEqual(testCase, vex([0 -.3 0.2;0.3 0 -0.1;-0.2 0.1 0]),...
+    verifyEqual(testCase, vex([0 -0.3 0.2;0.3 0 -0.1;-0.2 0.1 0]),...
             [0.1000
              0.2000
              0.3000],'absTol',1e-4);
@@ -153,7 +153,7 @@ function vex_test(testCase)
             [0
              0
              0],'absTol',1e-4);
-    verifyError(testCase, @()vex(1),'');
+    verifyError(testCase, @()vex(1),'RTB:vex:badarg');
     % ---------------------------------------------------------------------
     %    wtrans                     - transform wrench between frames
     % does not exist!!! need to find this function
