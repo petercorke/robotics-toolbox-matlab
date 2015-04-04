@@ -233,6 +233,9 @@ grav =    0  base = 1  0  0  0   tool =   0  0 -1  0
 The physical robot has it's base coordinate frame as shown in Figure \ref{fig:phantomx}.
 Something about tool transform
 
+Note that joint 2 has a very large $\alpha$ value to accomodate the opposite rotational directions of joints 2 and 3.
+This is quite unusual and is most likely due to incorrect assembly of the robot.
+
 Let's plot the robot in its zero angle pose
 \begin{Code}
 >> px.plot(qz)
