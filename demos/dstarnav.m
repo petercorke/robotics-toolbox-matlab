@@ -38,7 +38,7 @@ goal = [50,30];
 start = [20, 10];
 
 % then ask the robot to plan a path to goal (it will take few seconds)
-dstar.plan(goal);
+tic; dstar.plan(goal); toc
 
 % Now we can display the obstacles and the cost to reach the goal from every
 % point in the world
@@ -46,11 +46,15 @@ dstar.plot()
 % where the cost scale is shown by the bar to the right.
 
 % Now we can execute the planned path, it will be animated with green dots
-tic; dstar.path(start); toc
+dstar.path(start)
 
 % Now lets change the difficulty of some of the terrain, make it more costly
 % to travese
-for r=78:85; for c=12:45; dstar.modify_cost([c,r], 2); end; end
+for r=78:85
+    for c=12:45
+        dstar.modify_cost([c,r], 2); 
+    end
+end
 
 % Now we can replan, but D* does this in an incremental way which is faster than
 % recomputing the whole plan from scratch
@@ -59,3 +63,4 @@ tic; dstar.plan(); toc
 
 % and the best path is now
 dstar.path(start)
+% we can see that the path has avoided the high cost region we added
