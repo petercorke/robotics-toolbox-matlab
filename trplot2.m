@@ -13,6 +13,7 @@
 % 'color', c         The color to draw the axes, MATLAB colorspec
 % 'noaxes'           Don't display axes on the plot
 % 'frame',F          The frame is named {F} and the subscript on the axis labels is F.
+% 'framelabel',F     The coordinate frame is named {F}, axes have no subscripts.
 % 'text_opts', opt   A cell array of Matlab text properties
 % 'handle', h        Draw in the MATLAB axes specified by h
 % 'view',V           Set plot view parameters V=[az el] angles, or 'auto' 
@@ -79,6 +80,7 @@ function hout = trplot2(T, varargin)
     opt.axes = true;
     opt.axis = [];
     opt.frame = [];
+    opt.framelabel = [];
     opt.text_opts = [];
     opt.view = [];
     opt.width = 1;
@@ -177,6 +179,9 @@ function hout = trplot2(T, varargin)
         set(h, 'Parent', hg);
     end
 
+    if ~isempty(opt.framelabel)
+        opt.frame = opt.framelabel;
+    end
     % label the frame
     if ~isempty(opt.frame)
         h = text(o(1)-0.04*x1(1), o(2)-0.04*y1(2), ...
