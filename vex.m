@@ -1,16 +1,24 @@
 %VEX Convert skew-symmetric matrix to vector
 %
-% V = VEX(S) is the vector (3x1) which has the skew-symmetric matrix S (3x3)
+% V = VEX(S) is the vector which has the corresponding skew-symmetric 
+% matrix S.  
+%
+%In the case that S (3x3) then V is 3x1.
 %
 %           | 0   -vz  vy|
 %           | vz   0  -vx|
 %           |-vy   vx  0 |
 %
+% In the case that S (2x2) then V is 1x1
+%           | 0   -v|
+%           | v    0|
+%
 % Notes::
 % - This is the inverse of the function SKEW().
-% - No checking is done to ensure that the matrix is actually skew-symmetric.
-% - The function takes the mean of the two elements that correspond to each unique
-%   element of the matrix, ie. vx = 0.5*(S(3,2)-S(2,3))
+% - Only rudimentary checking (zero diagonal) is done to ensure that the 
+%   matrix is actually skew-symmetric.
+% - The function takes the mean of the two elements that correspond to 
+%   each unique element of the matrix.
 %
 % See also SKEW.
 
@@ -36,8 +44,13 @@
 % http://www.petercorke.com
 
 function v = vex(S)
-    if isrot(S) || ishomog(S)
+    if trace(abs(S)) > 10*eps
+        error('RTB:vex:badarg', 'argument is not skew symmetric');
+    end
+    if all(size(S) == [3 3])
         v = 0.5*[S(3,2)-S(2,3); S(1,3)-S(3,1); S(2,1)-S(1,2)];
+    elseif all(size(S) == [2 2])
+        v = 0.5*(S(2,1)-S(1,2));
     else
         error('RTB:vex:badarg', 'argument must be a 3x3 matrix');
     end
