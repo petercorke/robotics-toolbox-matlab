@@ -34,9 +34,12 @@ function R = angvec2r(theta, k)
 	cth = cos(theta);
 	sth = sin(theta);
 	vth = (1 - cth);
+    
+    k = unit(k);  % must be a unit vector
 	kx = k(1); ky = k(2); kz = k(3);
 
         % from Paul's book, p. 28
+        % could also use the Rodrigues' equation
 	R = [
 kx*kx*vth+cth      ky*kx*vth-kz*sth   kz*kx*vth+ky*sth
 kx*ky*vth+kz*sth   ky*ky*vth+cth      kz*ky*vth-kx*sth
