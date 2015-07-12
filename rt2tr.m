@@ -35,6 +35,7 @@
 % http://www.petercorke.com
 
 function T = rt2tr(R, t)
+    t = t(:);
     if numcols(R) ~= numrows(R)
         error('R must be square');
     end
