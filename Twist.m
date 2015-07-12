@@ -22,6 +22,9 @@ classdef Twist
                         else
                             % 3D case
                             dir = varargin{1};
+                            if length(dir) < 3
+                                error('RTB:Twist:badarg', 'For 2d case can only specify position');
+                            end
                             point = varargin{2};
                             
                             w = unit(dir(:));
@@ -68,10 +71,10 @@ classdef Twist
                 % its a row vector form of twist, unpack it
                 switch length(T)
                     case 3
-                        tw.v = T(1:2); tw.w = T(3);
+                        tw.v = T(1:2)'; tw.w = T(3);
                         
                     case 6
-                        tw.v = T(1:3); tw.w = T(4:6);
+                        tw.v = T(1:3)'; tw.w = T(4:6)';
                         
                     otherwise
                         error('RTB:Twist:badarg', '3 or 6 element vector expected');
@@ -88,6 +91,24 @@ classdef Twist
             x = [x; zeros(1, numcols(x))];
         end
         
+        function c = plus(a, b)
+            if isa(a, 'Twist') & isa(b, 'Twist')
+                c = Twist(a.s + b.s);
+            else
+                error('RTB:Twist: incorrect operands for + operator')
+            end
+        end
+        
+        function c = mtimes(a, b)
+            if isa(a, 'Twist') & isreal(b)
+                c = Twist(a.s * b);
+            elseif isreal(a) & isa(b, 'Twist')
+                c = Twist(a * b.s);
+            else
+                error('RTB:Twist: incorrect operands for * operator')
+            end
+        end
+        
         function x = expm(tw, varargin)
             if length(tw.v) == 2
                 x = trexp2( tw.S, varargin{:} );
@@ -101,7 +122,11 @@ classdef Twist
         end
         
         function p = pitch(tw)
-            p = tw.w' * tw.v;
+            if length(tw.v) == 2
+                p = 0;
+            else
+                p = tw.w' * tw.v;
+            end
         end
         
         function L = line(tw)
@@ -110,6 +135,20 @@ classdef Twist
                 L = Plucker('UV', tw.w, -tw.v - tw.pitch * tw.w);
         end
         
+        function p = point(tw)
+            if length(tw.v) == 2
+                v = [tw.v; 0];
+                w = [0 0 tw.w]';
+                p = cross(w, v) / tw.theta();
+                p = p(1:2);
+            else
+                p = cross(tw.w, tw.v) / tw.theta();
+            end
+        end
+        
+        function th = theta(tw)
+            th = norm(tw.w);
+        end
         function s = char(tw)
             s = '';
             for i=1:length(tw)
