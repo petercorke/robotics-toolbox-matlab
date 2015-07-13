@@ -626,6 +626,45 @@ classdef Quaternion
             drawnow
         end
 
+        function animate(Q, varargin)
+        %Quaternion.animate Animate a quaternion object
+        %
+        % Q.animate(options) animates a 3D coordinate frame moving from reference
+        % frame to orientation Q.
+        %
+        % Q.animate(Q0, options) animates a 3D coordinate frame moving from
+        % orientation Q0 to orientation Q.
+        %
+        % Options::
+        % Options are passed to tranimate and include:
+        %
+        %  'fps', fps    Number of frames per second to display (default 10)
+        %  'nsteps', n   The number of steps along the path (default 50)
+        %  'axis',A      Axis bounds [xmin, xmax, ymin, ymax, zmin, zmax]
+        %  'movie',M     Save frames as files in the folder M
+        %  'cleanup'     Remove the frame at end of animation
+        %  'noxyz'       Don't label the axes
+        %  'rgb'         Color the axes in the order x=red, y=green, z=blue
+        %  'retain'      Retain frames, don't animate
+        %  Additional options are passed through to TRPLOT.
+        %
+        % See also tranimate, trplot.
+            
+            if nargin > 1 && isa(varargin{1}, 'Quaternion')
+                Q0 = varargin{1};
+                arglist = varargin{2:end};
+            else
+                Q0 = Quaternion();  % identity quaternion
+            end
+            
+            opt.nsteps = 50;
+            [opt,arglist] = tb_optparse(opt, varargin);
+            
+            qs = Q.interp(Q0, lspb(0, 1, opt.nsteps));
+            
+            tranimate(qs.T, arglist{:});
+        end
+            
         function r = R(q)
         %Quaternion.R Convert to orthonormal rotation matrix
         %
