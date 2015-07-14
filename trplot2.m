@@ -77,6 +77,7 @@ function hout = trplot2(T, varargin)
         T = [T [0; 0]; 0 0 1];
     end
     opt.color = 'b';
+    opt.textcolor = 'k';
     opt.axes = true;
     opt.axis = [];
     opt.frame = [];
@@ -88,6 +89,8 @@ function hout = trplot2(T, varargin)
     opt.handle = [];
     opt.length = 1;
     opt.lefty = false;
+    opt.framelabeloffset = 0.2*[1 1];
+
 
     opt = tb_optparse(opt, varargin);
 
@@ -184,10 +187,15 @@ function hout = trplot2(T, varargin)
     end
     % label the frame
     if ~isempty(opt.frame)
-        h = text(o(1)-0.04*x1(1), o(2)-0.04*y1(2), ...
+        h = text(o(1), o(2), ...
             ['\{' opt.frame '\}'], 'Parent', hg);
         set(h, 'VerticalAlignment', 'middle', ...
+            'Color', opt.textcolor, ...
             'HorizontalAlignment', 'center', opt.text_opts{:});
+        e = get(h, 'Extent');
+        d = e(4); % use height of text box as a scale factor
+        e(1:2) = e(1:2) - opt.framelabeloffset * d;
+        set(h, 'Position', e(1:2));
     end
     
     if ~opt.axes

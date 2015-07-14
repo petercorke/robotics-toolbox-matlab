@@ -138,7 +138,8 @@ function hout = trplot(T, varargin)
     opt.text = true;
     opt.lefty = false;
     opt.rviz = false;
-
+    opt.framelabeloffset = [0 0];
+    
     opt = tb_optparse(opt, varargin);
         
     if opt.rviz
@@ -282,10 +283,16 @@ function hout = trplot(T, varargin)
     end
     % label the frame
     if ~isempty(opt.frame)
-        h = text(o(1)-0.04*x1(1), o(2)-0.04*y1(2), o(3)-0.04*z1(3), ...
+        h = text(o(1), o(2), o(3), ...
             ['\{' opt.frame '\}'], 'Parent', hg);
-        set(h, 'VerticalAlignment', 'middle', ...
-            'HorizontalAlignment', 'center', opt.text_opts{:});
+        set(h, 'VerticalAlignment', 'top', ...
+            'HorizontalAlignment', 'center', opt.text_opts{:}, ...
+            'FontUnits', 'normalized');
+        d = get(h, 'FontSize');
+        e = get(h, 'Extent');
+        e(1:2) = e(1:2) + opt.framelabeloffset * d;
+        set(h, 'Extent', e);
+
     end
     
     if ~opt.axes
