@@ -660,7 +660,11 @@ classdef Quaternion
             opt.nsteps = 50;
             [opt,arglist] = tb_optparse(opt, varargin);
             
-            qs = Q.interp(Q0, lspb(0, 1, opt.nsteps));
+            if length(Q) == 1
+                qs = Q.interp(Q0, lspb(0, 1, opt.nsteps));
+            else
+                qs = Q;
+            end
             
             tranimate(qs.T, arglist{:});
         end
