@@ -19,9 +19,13 @@
 % figure.
 %
 % Notes::
-% - Velocity is in units of distance per trajectory step, not per second.
-% - Acceleration is in units of distance per trajectory step squared, not
-%   per second squared. 
+% - If M is given
+%   - Velocity is in units of distance per trajectory step, not per second.
+%   - Acceleration is in units of distance per trajectory step squared, not
+%     per second squared. 
+% - If T is given then results are scaled to units of time.
+% - The time vector T is assumed to be monotonically increasing, and time
+%   scaling is based on the first and last element.
 % - For some values of V no solution is possible and an error is flagged.
 %
 % References::
@@ -126,24 +130,39 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
             % highlight the accel, coast, decel phases with different
             % colored markers
             hold on
+            plot(xt, p);
             k = t<= tb;
-            plot(xt(k), p(k), 'r-o');
+            plot(xt(k), p(k), 'ro');
             k = (t>=tb) & (t<= (tf-tb));
-            plot(xt(k), p(k), 'b-o');
+            plot(xt(k), p(k), 'bo');
             k = t>= (tf-tb);
-            plot(xt(k), p(k), 'g-o');
+            plot(xt(k), p(k), 'go');
             grid; ylabel('$s$', 'FontSize', 16, 'Interpreter','latex');
 
             hold off
 
             subplot(312)
-            plot(xt, pd); grid; ylabel('$\dot{s}$', 'FontSize', 16, 'Interpreter','latex');
+            plot(xt, pd);
+            grid;
+            if isscalar(t0)
+                ylabel('$ds/dk$', 'FontSize', 16, 'Interpreter','latex');
+            else
+                ylabel('$ds/dt$', 'FontSize', 16, 'Interpreter','latex');
+            end
             
             subplot(313)
-            plot(xt, pdd); grid; ylabel('$\ddot{s}$', 'FontSize', 16, 'Interpreter','latex');
-            if ~isscalar(t0)
-                xlabel('time')
+            plot(xt, pdd);
+            grid;
+            if isscalar(t0)
+                ylabel('$ds^2/dk^2$', 'FontSize', 16, 'Interpreter','latex');
             else
+                ylabel('$ds^2/dt^2$', 'FontSize', 16, 'Interpreter','latex');
+            end
+            
+            if ~isscalar(t0)
+                xlabel('t (seconds)')
+            else
+                xlabel('k (step)');
                 for c=findobj(gcf, 'Type', 'axes')
                     set(c, 'XLim', [1 t0]);
                 end

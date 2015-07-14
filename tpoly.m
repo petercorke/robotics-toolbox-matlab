@@ -7,13 +7,20 @@
 % TPOLY(S0, SF, M) as above but plots S, SD and SDD versus time in a single
 % figure.
 %
-% [S,SD,SDD] = TPOLY(S0, SF, T) as above but specifies the trajectory in 
-% terms of the length of the time vector T (Mx1).
+% [S,SD,SDD] = TPOLY(S0, SF, T) as above but the trajectory is computed at
+% each point in the time vector T (Mx1).
+%
+% [S,SD,SDD] = TPOLY(S0, SF, T, QD0, QD1) as above but also specifies the
+% initial and final velocity of the trajectory.
 %
 % Notes::
-% - Velocity is in units of distance per trajectory step, not per second.
-% - Acceleration is in units of distance per trajectory step squared, not
-%   per second squared. 
+% - If M is given
+%   - Velocity is in units of distance per trajectory step, not per second.
+%   - Acceleration is in units of distance per trajectory step squared, not
+%     per second squared. 
+% - If T is given then results are scaled to units of time.
+% - The time vector T is assumed to be monotonically increasing, and time
+%   scaling is based on the first and last element.
 %
 % Reference:
 %  Robotics, Vision & Control
@@ -70,7 +77,6 @@ function [s,sd,sdd] = tpoly(q0, qf, t, qd0, qdf)
     end
     
     tf = max(t);
-    
     % solve for the polynomial coefficients using least squares
     X = [
         0           0           0         0       0   1
@@ -106,13 +112,25 @@ function [s,sd,sdd] = tpoly(q0, qf, t, qd0, qdf)
             plot(xt, p); grid; ylabel('$s$', 'FontSize', 16, 'Interpreter','latex');
 
             subplot(312)
-            plot(xt, pd); grid; ylabel('$\dot{s}$', 'FontSize', 16, 'Interpreter','latex');
+            plot(xt, pd); grid; 
+            if isscalar(t0)
+                ylabel('$ds/dk$', 'FontSize', 16, 'Interpreter','latex');
+            else
+                ylabel('$ds/dt$', 'FontSize', 16, 'Interpreter','latex');
+            end
             
             subplot(313)
-            plot(xt, pdd); grid; ylabel('$\ddot{s}$', 'FontSize', 16, 'Interpreter','latex');
-            if ~isscalar(t0)
-                xlabel('time')
+            plot(xt, pdd); grid;
+            if isscalar(t0)
+                ylabel('$ds^2/dk^2$', 'FontSize', 16, 'Interpreter','latex');
             else
+                ylabel('$ds^2/dt^2$', 'FontSize', 16, 'Interpreter','latex');
+            end
+            
+            if ~isscalar(t0)
+                xlabel('t (seconds)')
+            else
+                xlabel('k (step)');
                 for c=findobj(gcf, 'Type', 'axes')
                     set(c, 'XLim', [1 t0]);
                 end
