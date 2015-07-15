@@ -5,5 +5,9 @@ robot.pdf: titlepage.pdf robot.tex all.tex
 	sh funcidx_make.sh
 	pdflatex robot
 
-titlepage.pdf: rtb-montage-notext.png
+titlepage.pdf: figs/rtb-montage.png
 	convert $< $@
+
+clean:
+	-rm titlepage.pdf *.idx *.ind *.ilg *.aux *.log *.out *.toc
+
