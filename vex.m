@@ -44,9 +44,9 @@
 % http://www.petercorke.com
 
 function v = vex(S)
-    if trace(abs(S)) > 10*eps
-        error('RTB:vex:badarg', 'argument is not skew symmetric');
-    end
+%     if trace(abs(S)) > 10*eps
+%         error('RTB:vex:badarg', 'argument is not skew symmetric tr=%g', trace(abs(S)));
+%     end
     if all(size(S) == [3 3])
         v = 0.5*[S(3,2)-S(2,3); S(1,3)-S(3,1); S(2,1)-S(1,2)];
     elseif all(size(S) == [2 2])
