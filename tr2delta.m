@@ -37,9 +37,17 @@
 % http://www.petercorke.com
 
 function delta = tr2delta(T0, T1)
+    if ~ishomog(T0)
+        error('RTB:tr2delta:badarg', 'T0 should be a homogeneous transformation');
+    end
     if nargin == 1
+        
         T1 = T0;
         T0 = eye(4,4);
+    elseif nargin == 2
+        if ~ishomog(T1)
+            error('RTB:tr2delta:badarg', 'T1 should be a homogeneous transformation');
+        end
     end
     R0 = t2r(T0); R1 = t2r(T1);
     % in world frame
