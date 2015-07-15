@@ -1,20 +1,41 @@
 %TREXP matrix exponential for so(3) and se(3)
 %
-% R = trexp(so3) is the matrix exponential (3x3) that yields 
+% R = TREXP(S) is the matrix exponential (3x3) of the so(3) element S that
+% yields a rotation matrix (3x3). 
 %
-% R = trexp(wth) as above, rotation of |wth| about the vector wth
-% R = trexp(w, theta) as above, rotation of theta about the unit-vector w
+% R = TREXP(S, THETA) as above, but so(3)
+% rotation of S*THETA, S must be unit norm.
 %
-% T = trexp(se3) is
-% T = trexp(Sth) as above
-% T = trexp(S, theta) as above
-% T = trexp(twist, theta)
+% R = TREXP(W) as above, but the so(3) value is expressed as a vector W
+% (1x3). 
+%
+% R = TREXP(W, THETA) as above, but so(3) rotation of W*THETA, wW
+% must be unit norm.
+%
+% T = TREXP(SIGMA) is the matrix exponential (4x4) of the se(3) element SIGMA that
+% yields a homogeneous transformation  matrix (4x4). 
+%
+% T = TREXP(SIGMA, THETA) as above, but se(3)
+% rotation of SIGMA*THETA, the rotation part of SIGMA must be unit norm.
+%
+% T = TREXP(VW) as above, but the se(3) value is expressed as a vector VW
+% (1x6). 
+%
+% T = TREXP(VW, THETA) as above, but se(3) rotation of VW*THETA, the
+% rotation part of VW
+% must be unit norm.
 %
 % Notes::
 % - Efficient closed-form solution of the matrix exponential for arguments that are
 %   so(3) or se(3).
 % - If theta is given then the first argument must be a unit vector or a
 %   skew-symmetric matrix from a unit vector.
+%
+% References::
+% - "Mechanics, planning and control"
+%   Park & Lynch, Cambridge, 2016.
+%
+% See also trlog, trexp2, Twist.
 function T = trexp(S, theta)
 
     if ishomog(S) || isvec(S,6)
@@ -45,14 +66,20 @@ function T = trexp(S, theta)
         elseif isvec(S)
             % input is a 3-vector
             w = S;
+        else
+            error('RTB:trexp:badarg', 'expecting 1x3 or 3x3');
         end
         
         if nargin == 1
             %  theta is not given, extract it
+            if norm(w) < 10*eps
+                T = eye(3,3);
+                return;
+            end
             theta = norm(w);
             S = skew(unit(w));
         else
-            if norm(w) < 10*eps
+            if theta < 10*eps
                 T = eye(3,3);
                 return;
             end

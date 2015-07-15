@@ -24,6 +24,8 @@
 % References::
 % - "Mechanics, planning and control"
 %   Park & Lynch, Cambridge, 2016.
+%
+% See also trexp, trexp2, Twist.
 
 function [o1,o2] = trlog(T)
     
@@ -73,7 +75,7 @@ function [o1,o2] = trlog(T)
             o2 = w;
         end
 
-    else
+    elseif ishomog(T)
         % SE(3) matrix
         
         [R,t] = tr2rt(T);
@@ -81,8 +83,8 @@ function [o1,o2] = trlog(T)
         if abs(trace(R) - 3) < 100*eps
             % rotation matrix is identity, theta=0
             w = [0 0 0]';
-            v = unit(t);
-            theta = norm(t);
+            v = t;
+            theta = 1;
             skw = zeros(3,3);
             
         else
@@ -99,6 +101,9 @@ function [o1,o2] = trlog(T)
             o1 = theta;
             o2 = [v; w];
         end
+    else
+        error('RTB:trlog:badarg', 'expect SO(3) or SE(3) matrix');
+    end
         
 end
 

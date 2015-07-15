@@ -1,20 +1,37 @@
 %TREXP2 matrix exponential for so(2) and se(2)
 %
-% R = trexp(so2) is the matrix exponential (2x2) that yields 
+% R = TREXP2(S) is the matrix exponential (2x2) of the so(2) element S that
+% yields a rotation matrix (2x2).
 %
-% R = trexp(wth) as above, rotation of |wth| about the vector wth
-% R = trexp(w, theta) as above, rotation of theta about the unit-vector w
+% R = TREXP2(S, THETA) as above, but so(2) rotation of S*THETA, S must be
+% unit norm.
 %
-% T = trexp(se3) is
-% T = trexp(Sth) as above
-% T = trexp(S, theta) as above
-% T = trexp(twist, theta)
+% R = TREXP2(THETA) as above, but the so(2) value is expressed as a scalar. 
+%
+% T = TREXP2(SIGMA) is the matrix exponential (3x3) of the se(2) element
+% SIGMA that yields a homogeneous transformation  matrix (3x3).
+%
+% T = TREXP2(SIGMA, THETA) as above, but se(2) rotation of SIGMA*THETA, the
+% rotation part of SIGMA must be unit norm.
+%
+% T = TREXP2(VW) as above, but the se(2) value is expressed as a vector VW
+% (1x3).
+%
+% T = TREXP(VW, THETA) as above, but se(2) rotation of VW*THETA, the
+% rotation part of VW must be unit norm.
 %
 % Notes::
 % - Efficient closed-form solution of the matrix exponential for arguments that are
-%   so(3) or se(3).
+%   so(2) or se(2).
 % - If theta is given then the first argument must be a unit vector or a
 %   skew-symmetric matrix from a unit vector.
+%
+% References::
+% - "Mechanics, planning and control"
+%   Park & Lynch, Cambridge, 2016.
+%
+% See also trlog, trexp, Twist.
+
 function T = trexp2(S, theta)
 
     
@@ -46,9 +63,11 @@ function T = trexp2(S, theta)
         if isrot2(S)
             % input is 2x2 skew symmetric
             w = vex(S);
-        elseif isvec(S,2)
-            % input is a 3-vector
+        elseif isvec(S,1)
+            % input is a 1-vector
             w = S;
+        else
+            error('RTB:trexp2:badarg', 'expecting scalar or 2x2');
         end
         
         if nargin == 1
