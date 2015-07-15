@@ -6,7 +6,10 @@
 \usepackage{pdfpages}
 \usepackage{hyperref}
 \usepackage{fancyhdr}
-
+\usepackage[overlay]{textpos}
+\usepackage{mathptmx}
+\usepackage{anyfontsize}
+\usepackage{t1enc}
 \hypersetup{
   colorlinks=true,
   linkcolor=black
@@ -60,7 +63,21 @@
 
 \begin{document}
 % include the graphical front page
+%\includepdf{titlepage}
+\setlength{\TPHorizModule}{1cm}
+\setlength{\TPVertModule}{1cm}
+
+\begin{textblock}{19}(-3.5,-4.5)
 \includepdf{titlepage}
+\fontsize{75}{80}\selectfont
+\textbf{Robotics Toolbox}\\[5pt]
+\fontsize{40}{45}\selectfont
+for MATLAB\\[5pt]
+Release 9
+
+\vspace*{20.5cm}
+\hfill\textbf{Peter Corke}\\[5pt]
+\end{textblock}
 \thispagestyle{empty}
 \newpage
 % inside front cover
@@ -94,7 +111,7 @@ peter.i.corke$@$gmail.com\\
 \chapter*{Preface}
 \pagestyle{fancyplain}
 \begin{wrapfigure}{l}{4cm}
-\vspace{-2ex}\includegraphics[width=3.5cm]{frontcover.pdf}
+\vspace{-2ex}\includegraphics[width=3.5cm]{figs/frontcover.pdf}
 \end{wrapfigure}
 This, the ninth major release of the Toolbox, represents twenty years of %% CHANGE
 development and a substantial level of maturity.
@@ -185,7 +202,7 @@ to suit.   Some older Simulink models had atrophied and have been updated.
 
 \begin{figure}[b]
 \centering
-\includegraphics[width=6cm]{plot3d.pdf}
+\includegraphics[width=6cm]{figs/plot3d.pdf}
 \caption{New rendered robot model using the \texttt{plot3d()} method.}\label{fig:plot3d}
 \end{figure}
 
