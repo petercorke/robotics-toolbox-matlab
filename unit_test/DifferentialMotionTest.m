@@ -3,6 +3,50 @@ function tests = TransformationsTest
   tests = functiontests(localfunctions);
 end
 
+%%    skew                       - vector to skew symmetric matrix
+function skew_test(testCase)
+    % unit testing the function skew(testCase) with a vector matrix mat([.1, .2, .3])
+    verifyEqual(testCase, skew([1, 2, 3]'),...
+            [     0    -3     2
+                 3     0    -1
+                -2     1     0],'absTol',1e-4);
+   % unit testing the function skew(testCase) with a vertical vector matrix mat([.1, .2, .3])
+    verifyEqual(testCase, skew([1, 2, 3]),...
+            [     0    -3     2
+                 3     0    -1
+                -2     1     0],'absTol',1e-4);
+     % unit testing the function skew(testCase) with zero values
+    verifyEqual(testCase, skew([0 0 0]),...
+            [0     0     0
+             0     0     0
+             0     0     0],'absTol',1e-4);
+     %Testing with a scalar number input 
+     verifyEqual(testCase, skew(1),...
+            [0    -1
+             1     0],'absTol',1e-4);
+end
+
+         
+%%    vex                        - skew symmetric matrix to vector
+function vex_test(testCase)
+    % unit testing vex with 3x3 skew matrix
+    verifyEqual(testCase, vex([0, -3, 2; 3, 0, -1; -2, 1, 0]),...
+            [1; 2; 3],'absTol',1e-4);
+    % unit testing vex with 3x3 skew matrix
+    verifyEqual(testCase, vex([0 0 0;0 0 0;0 0 0]),...
+            [0; 0; 0],'absTol',1e-4);
+    % test SO(2) case
+    verifyEqual(testCase, vex([0, -3; 3, 0]),...
+            [3],'absTol',1e-4);
+    verifyError(testCase, @()vex(1),'RTB:vex:badarg');
+    verifyError(testCase, @()vex(zeros(4,4)),'RTB:vex:badarg');
+
+    % ---------------------------------------------------------------------
+    %    wtrans                     - transform wrench between frames
+    % does not exist!!! need to find this function
+    %----------------------------------------------------------------------
+end
+
 %% Differential motion
 %    delta2tr                   - differential motion vector to HT
 function delta2tr_test(testCase)
@@ -64,98 +108,61 @@ function rpy2jac_test(testCase)
 end
     
 
-%    skew                       - vector to skew symmetric matrix
-function skew_test(testCase)
-    % unit testing the function skew(testCase) with a vector matrix mat([.1, .2, .3])
-    verifyEqual(testCase, skew([.1, .2, .3]),...
-            [0   -0.3000    0.2000
-        0.3000         0   -0.1000
-       -0.2000    0.1000         0],'absTol',1e-4);
-   % unit testing the function skew(testCase) with a vertical vector matrix mat([.1, .2, .3])
-    verifyEqual(testCase, skew([.1; .2; .3]),...
-            [0   -0.3000    0.2000
-        0.3000         0   -0.1000
-       -0.2000    0.1000         0],'absTol',1e-4);
-     % unit testing the function skew(testCase) with zero values
-    verifyEqual(testCase, skew([0 0 0]),...
-            [0     0     0
-             0     0     0
-             0     0     0],'absTol',1e-4);
-     %Testing with a scalar number input 
-     verifyEqual(testCase, skew(1),...
-            [0    -1
-             1     0],'absTol',1e-4);
-end
-    
+
 %    tr2delta                   - HT to differential motion vector
 function tr2delta_test(testCase)
-    % unit tessting tr2delta with a tr matrix
-    verifyEqual(testCase, tr2delta([1 2 3 4;5 6 7 8;9 10 11 12;13 14 15 16]),...
-            [4.0000
-             8.0000
-            12.0000
-             1.5000
-            -3.0000
-             1.5000],'absTol',1e-4);
-    % Unit testing tr2delta with two homogeneous transformations
-    verifyEqual(testCase, tr2delta([1 2 3 4;5 6 7 8;9 10 11 12;13 14 15 16],...
-        [16 15 14 13; 12 11 10 9;8 7 6 5;4 3 2 1]),...
-            [9
-             1
-            -7
-            -102
-             204
-            -102],'absTol',1e-4);
-    % unit tessting tr2delta with a tr matrix of zeros
-    verifyEqual(testCase, tr2delta([0 0 0 0;0 0 0 0;0 0 0 0;0 0 0 0]),...
-        [0
-         0
-         0
-         0
-         0
-         0],'absTol',1e-4);
-    %Testing with a scalar number input 
-    verifyError(testCase, @()tr2delta(1),'RTB:t2r:badarg');
+    % unit testing tr2delta with a tr matrix
+    verifyEqual(testCase, tr2delta( transl(0.1, 0.2, 0.3) ),...
+        [0.1000, 0.2000, 0.3000, 0, 0, 0]','absTol',1e-4);
+    verifyEqual(testCase, tr2delta( transl(0.1, 0.2, 0.3), transl(0.2, 0.4, 0.6) ), ...
+        [0.1000, 0.2000, 0.3000, 0, 0, 0]','absTol',1e-4);
+    verifyEqual(testCase, tr2delta( trotx(0.001) ), ...
+        [0,0,0, 0.001,0,0]','absTol',1e-4);
+    verifyEqual(testCase, tr2delta( troty(0.001) ), ...
+        [0,0,0, 0,0.001,0]','absTol',1e-4);
+    verifyEqual(testCase, tr2delta( trotz(0.001) ), ...
+        [0,0,0, 0,0,0.001]','absTol',1e-4);
+    verifyEqual(testCase, tr2delta( trotx(0.001), trotx(0.002) ), ...
+        [0,0,0, 0.001,0,0]','absTol',1e-4);
+    %Testing with a scalar number input
+    verifyError(testCase, @()tr2delta(1),'RTB:tr2delta:badarg');
+    verifyError(testCase, @()tr2delta( ones(3,3) ),'RTB:tr2delta:badarg');
+
 end
     
 %    tr2jac                     - HT to Jacobian
 function tr2jac_test(testCase)
     % unit testing tr2jac with homogeneous transform
-    verifyEqual(testCase, tr2jac([1 2 3 4;5 6 7 8;9 10 11 12;13 14 15 16]),...
-            [1     5     9    12   -24    12
-             2     6    10     8   -16     8
-             3     7    11     4    -8     4
-             0     0     0     1     5     9
-             0     0     0     2     6    10
-             0     0     0     3     7    11],'absTol',1e-4);
+    verifyEqual(testCase, tr2jac( transl(1,2,3) ),...
+        [
+        1     0     0     0     0     0
+        0     1     0     0     0     0
+        0     0     1     0     0     0
+        0     0     0     1     0     0
+        0     0     0     0     1     0
+        0     0     0     0     0     1],'absTol',1e-4);
+    
+    verifyEqual(testCase, tr2jac( trotx(pi/2) ),...
+        [
+        1     0     0     0     0     0
+        0     0     1     0     0     0
+        0    -1     0     0     0     0
+        0     0     0     1     0     0
+        0     0     0     0     0     1
+        0     0     0     0    -1     0],'absTol',1e-4);
+    verifyEqual(testCase, tr2jac( trotz(pi) ),...
+        [
+        -1     0     0     0     0     0
+        0    -1     0     0     0     0
+        0     0     1     0     0     0
+        0     0     0    -1     0     0
+        0     0     0     0    -1     0
+        0     0     0     0     0     1],'absTol',1e-4);
     % unit testing tr2jac with homogeneous transform of zeros
     verifyEqual(testCase, tr2jac([0 0 0 0;0 0 0 0;0 0 0 0;0 0 0 0]),...
-            [0     0     0     0     0     0
-             0     0     0     0     0     0
-             0     0     0     0     0     0
-             0     0     0     0     0     0
-             0     0     0     0     0     0
-             0     0     0     0     0     0],'absTol',1e-4);
+            zeros(6,6),'absTol',1e-4);
     % test with scalar value
     verifyError(testCase, @()tr2jac(1),'RTB:t2r:badarg');
 end
      
-         
-%    vex                        - skew symmetric matrix to vector
-function vex_test(testCase)
-    % unit testing vex with homogeneous transform
-    verifyEqual(testCase, vex([0 -0.3 0.2;0.3 0 -0.1;-0.2 0.1 0]),...
-            [0.1000
-             0.2000
-             0.3000],'absTol',1e-4);
-    % unit testing vex with homogeneous transform
-    verifyEqual(testCase, vex([0 0 0;0 0 0;0 0 0]),...
-            [0
-             0
-             0],'absTol',1e-4);
-    verifyError(testCase, @()vex(1),'RTB:vex:badarg');
-    % ---------------------------------------------------------------------
-    %    wtrans                     - transform wrench between frames
-    % does not exist!!! need to find this function
-    %----------------------------------------------------------------------
-end
+
