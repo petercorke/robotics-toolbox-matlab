@@ -7,39 +7,42 @@ end
 %% Homogeneous transformations
 %    angvec2r                   - angle/vector to RM
 function angvec2r_test(testCase)
-    %Unit test for angvec2r with variables 0.1, [1,2,3]) 
-    verifyEqual(testCase, angvec2r( 0.1, [1,2,3]),...
-    [1.0000   -0.2895    0.2147
-    0.3095    1.0150   -0.0699
-   -0.1847    0.1298    1.0400],'absTol',1e-4);
-    %Unit test for angvec2r with variables 0, [0 0 0]) 
-    verifyEqual(testCase, angvec2r( 0, [0 0 0]),...
-    [1     0     0
-     0     1     0
-     0     0     1],'absTol',1e-4);
-    %Unit test for angvec2r with variables ([1,2,3],0.1) 
+    verifyEqual(testCase, angvec2r(0, [1 0 0]),...
+        eye(3,3),'absTol',1e-4);
+
+    verifyEqual(testCase, angvec2r( pi/2, [1 0 0]),...
+        rotx(pi/2),'absTol',1e-4);
+    
+    verifyEqual(testCase, angvec2r( pi/2, [0 1 0]),...
+        roty(pi/2),'absTol',1e-4);
+    
+    verifyEqual(testCase, angvec2r( pi/2, [0 0 1]),...
+        rotz(pi/2),'absTol',1e-4);
+ 
+    verifyError(testCase, @()angvec2r(1, [0 0 0]),'RTB:angvec2r:badarg');
+
     verifyError(testCase, @()angvec2r([1,2,3],0.1),'RTB:angvec2r:badarg');
-    %Unit test for angvec2r with variables (1)
     verifyError(testCase, @()angvec2r(1),'RTB:angvec2r:badarg');
 end
 
 %    angvec2tr                  - angle/vector to HT
 function angvec2tr_test(testCase)
-    %Unit test for angvec2r with variables 0.1, [1,2,3]) 
-    verifyEqual(testCase, angvec2tr( 0.1, [1,2,3]),...
-    [1.0000   -0.2895    0.2147         0
-    0.3095    1.0150   -0.0699         0
-   -0.1847    0.1298    1.0400         0
-         0         0         0    1.0000],'absTol',1e-4);
-    %Unit test for angvec2tr with variables 0, [0 0 0]) 
-    verifyEqual(testCase, angvec2tr( 0, [0 0 0]),...
-    [1     0     0     0
-     0     1     0     0
-     0     0     1     0
-     0     0     0     1],'absTol',1e-4);
-    %Unit test for angvec2tr with variables ([1,2,3],0.1) 
+    
+    verifyEqual(testCase, angvec2tr(0, [1 0 0]),...
+        eye(4,4),'absTol',1e-4);
+    
+    verifyEqual(testCase, angvec2tr( pi/2, [1 0 0]),...
+        trotx(pi/2),'absTol',1e-4);
+    
+    verifyEqual(testCase, angvec2tr( pi/2, [0 1 0]),...
+        troty(pi/2),'absTol',1e-4);
+    
+    verifyEqual(testCase, angvec2tr( pi/2, [0 0 1]),...
+        trotz(pi/2),'absTol',1e-4);
+    
+    verifyError(testCase, @()angvec2tr(1, [0 0 0]),'RTB:angvec2r:badarg');
+    
     verifyError(testCase, @()angvec2tr([1,2,3],0.1),'RTB:angvec2r:badarg');
-    %Unit test for angvec2tr with variables (1)
     verifyError(testCase, @()angvec2tr(1),'RTB:angvec2tr:badarg');
 end
      
@@ -193,10 +196,9 @@ function rotx_test(testCase)
     verifyEqual(testCase, rotx(0.1),...
         [1.0000 0 0 ; 0 0.9950 -0.0998 ; 0 0.0998 0.9950 ],'absTol',1e-4);
     verifyEqual(testCase, rotx(0),...
-        [1     0     0
-         0     1     0
-         0     0     1 ],'absTol',1e-4);
-     %test for non-scalar input
+        eye(3,3),'absTol',1e-4);
+
+    %test for non-scalar input
     verifyError(testCase, @()rotx([1 2 3]),'MATLAB:catenate:dimensionMismatch');
 end
     
@@ -533,29 +535,30 @@ function trotz_test(testCase)
     verifyError(testCase, @()trotz([1 2 3]),'MATLAB:catenate:dimensionMismatch');
 end
 
-function two_d_test(testCase)
-    verifyEqual(testCase,  trot2(0.3), ...
-            [    0.9553   -0.2955         0
-                0.2955    0.9553         0
-                         0         0    1.0000
-            ], 'absTol',1e-4);
-    verifyEqual(testCase,  rot2(0.3), ...
-        [0.9553   -0.2955
-            0.2955    0.9553
-            ], 'absTol',1e-4);
-    verifyEqual(testCase,  se2(1,2,0.3), ...
-        [    0.9553   -0.2955    1.0000
-            0.2955    0.9553    2.0000
-             0         0    1.0000], 'absTol',1e-4);
-    verifyEqual(testCase,  transl2(1,2), ...
-         [     1     0     1
-              0     1     2
-               0     0     1 ], 'absTol',1e-4);
-    verifyEqual(testCase,  transl2([1,2]), ...
-         [     1     0     1
-              0     1     2
-               0     0     1 ], 'absTol',1e-4);
-    T2 = [1 0 1; 0 1 2; 0 0 1];
+
+function rot2_test(testCase)
+    verifyEqual(testCase,  rot2(0), ...
+        [
+        1     0
+        0     1], 'absTol', 1e-6);
+    verifyEqual(testCase,  trot2(0), ...
+        eye(3,3), 'absTol', 1e-6);
+    verifyEqual(testCase,  rot2(0), ...
+        eye(2,2), 'absTol', 1e-6);
+    verifyEqual(testCase,  trot2(pi/2), ...
+        [
+        0    -1     0
+        1     0     0
+        0     0     1], 'absTol', 1e-6);
+    verifyEqual(testCase,  trot2(pi)*trot2(-pi/2), ...
+        trot2(pi/2), 'absTol', 1e-6);
+    verifyEqual(testCase,  rot2(pi)*rot2(-pi/2), ...
+        rot2(pi/2), 'absTol', 1e-6);
+end
+
+function SE2_test(testCase)
+    
+        T2 = [1 0 1; 0 1 2; 0 0 1];
     verifyEqual(testCase,  transl2(T2), ...
          [1;2], 'absTol',1e-4);
     
@@ -571,4 +574,186 @@ function two_d_test(testCase)
     verifyEqual(testCase,  isrot2(R2,1), true);
     verifyEqual(testCase,  isrot2(R2f,1), false);
     verifyEqual(testCase,  isrot2(T2), false);
+    
+    verifyEqual(testCase,  transl2(1, 2), ...
+        [1 0 1; 0 1 2; 0 0 1], 'absTol', 1e-6);
+    verifyEqual(testCase,  transl2([2, 3]), ...
+        [1 0 2; 0 1 3; 0 0 1], 'absTol', 1e-6);
+    verifyEqual(testCase,  SE2(2, 3, 0), ...
+        [1 0 2; 0 1 3; 0 0 1], 'absTol', 1e-6);
+    verifyEqual(testCase,  SE2(2, 3, pi/2), ...
+        transl2(2,3)*trot2(pi/2), 'absTol', 1e-6);
 end
+
+function trlog_test(testCase)
+    %unit tests for matrix expon stuff
+
+    %%% SO(3) tests
+    % zero rotation case
+    verifyEqual(testCase, trlog( eye(3,3) ), skew([0 0 0]), 'absTol', 1e-6);
+
+    % rotation by pi case
+    verifyEqual(testCase, trlog( rotx(pi) ), skew([pi 0 0]), 'absTol', 1e-6);
+    verifyEqual(testCase, trlog( roty(pi) ), skew([0 pi 0]), 'absTol', 1e-6);
+    verifyEqual(testCase, trlog( rotz(pi) ), skew([0 0 pi]), 'absTol', 1e-6);
+
+    % general case
+    verifyEqual(testCase, trlog( rotx(0.2) ), skew([0.2 0 0]), 'absTol', 1e-6);
+    verifyEqual(testCase, trlog( roty(0.3) ), skew([0 0.3 0]), 'absTol', 1e-6);
+    verifyEqual(testCase, trlog( rotz(0.4) ), skew([0 0 0.4]), 'absTol', 1e-6);
+
+    %%% SE(3) tests
+
+    % pure translation
+    verifyEqual(testCase, trlog( transl([1 2 3]) ), ...
+        [0 0 0 1; 0 0 0 2; 0 0 0 3; 0 0 0 0], 'absTol', 1e-6);
+
+    % mixture
+    T = transl([1 2 3])*trotx(0.3);
+    verifyEqual(testCase, trlog(T), logm(T), 'absTol', 1e-6);
+    
+    T = transl([1 2 3])*troty(0.3);
+    verifyEqual(testCase, trlog(T), logm(T), 'absTol', 1e-6);
+    
+    verifyError(testCase, @()trlog(0),'RTB:trlog:badarg');
+
+end
+
+function trexp_test(testCase)
+    %unit tests for matrix log stuff
+
+    %%% SO(3) tests
+    % zero rotation case
+    verifyEqual(testCase, trexp(skew([0 0 0])), eye(3,3), 'absTol', 1e-6);
+
+    % rotation by pi case
+    verifyEqual(testCase, trexp(skew([pi 0 0])), rotx(pi), 'absTol', 1e-6);
+    verifyEqual(testCase, trexp(skew([0 pi 0])), roty(pi), 'absTol', 1e-6);
+    verifyEqual(testCase, trexp(skew([0 0 pi])), rotz(pi), 'absTol', 1e-6);
+
+    % general case
+    verifyEqual(testCase, trexp(skew([0.2 0 0])), rotx(0.2), 'absTol', 1e-6);
+    verifyEqual(testCase, trexp(skew([0 0.3 0])), roty(0.3), 'absTol', 1e-6);
+    verifyEqual(testCase, trexp(skew([0 0 0.4])), rotz(0.4), 'absTol', 1e-6);
+
+    %%% SE(3) tests
+
+    % pure translation
+    verifyEqual(testCase, trexp([0 0 0 1; 0 0 0 2; 0 0 0 3; 0 0 0 0]), ...
+        transl([1 2 3]), 'absTol', 1e-6);
+
+    % mixture
+    T = transl([1 2 3])*trotx(0.3);
+    verifyEqual(testCase, trexp(logm(T)), T, 'absTol', 1e-6);
+    
+    T = transl([1 2 3])*troty(0.3);
+    verifyEqual(testCase, trexp(logm(T)), T, 'absTol', 1e-6);
+end
+
+function twist_test(testCase)
+    %2D twists
+    
+    % check basics work
+    s = [1 2 3];
+    tw = Twist(s);
+    verifyEqual(testCase, tw.s, s, 'absTol', 1e-6);
+    verifyEqual(testCase, tw.v', s(1:2), 'absTol', 1e-6);
+    verifyEqual(testCase, tw.w, s(3), 'absTol', 1e-6);
+    verifyEqual(testCase, tw.S, [skew(s(3)) [s(1:2)]'; 0 0 0], 'absTol', 1e-6);
+    
+    % check rendering
+    c = tw.char;
+    a = [tw tw tw];
+    c = tw.char;
+    
+    % check overloaded +
+    s2 = [4 6 5];
+    tw2 = Twist(s2);
+    sum = tw+tw2;
+    verifyEqual(testCase, sum.s, tw.s+tw2.s, 'absTol', 1e-6);
+    
+    % check rotational twist
+    tw = Twist('R', [1 2]);
+    verifyEqual(testCase, tw.s, [2 -1 1], 'absTol', 1e-6);
+    
+    % check prismatic twist
+    tw = Twist('P', [2 3]);
+    verifyEqual(testCase, tw.s, [unit([2 3]) 0], 'absTol', 1e-6);
+    tw = Twist('T', [2 3]);
+    verifyEqual(testCase, tw.s, [unit([2 3]) 0], 'absTol', 1e-6);
+    
+    % check twist from SE(2)
+    tw = Twist( trot2(0) );
+    verifyEqual(testCase, tw.s, [0 0 0], 'absTol', 1e-6);
+    tw = Twist( trot2(pi/2) );
+    verifyEqual(testCase, tw.s, [0 0 pi/2], 'absTol', 1e-6);    
+    tw = Twist( SE2(1,2,0) );
+    verifyEqual(testCase, tw.s, [1 2 0], 'absTol', 1e-6);
+    tw = Twist( SE2(1,2,pi/2) );
+    verifyEqual(testCase, tw.s, [3*pi/4 pi/4 pi/2], 'absTol', 1e-6);
+
+    % test expm and T
+    verifyEqual(testCase, tw.T, expm(tw.S), 'absTol', 1e-6);
+    verifyEqual(testCase, tw.expm, expm(tw.S), 'absTol', 1e-6);
+
+    tw = Twist('R', [1 2]);
+    verifyEqual(testCase, tw.T(pi/2), [0 -1 3; 1 0 1; 0 0 1], 'absTol', 1e-6);
+
+    % 3D twists
+    
+    % check basics work
+    s = [1 2 3 4 5 6];
+    tw = Twist(s);
+    verifyEqual(testCase, tw.s, s, 'absTol', 1e-6);
+    verifyEqual(testCase, tw.v', s(1:3), 'absTol', 1e-6);
+    verifyEqual(testCase, tw.w', s(4:6), 'absTol', 1e-6);
+    verifyEqual(testCase, tw.S, [skew(s(4:6)) [s(1:3)]'; 0 0 0 0], 'absTol', 1e-6);
+    
+    % check rendering
+    c = tw.char;
+    a = [tw tw tw];
+    c = tw.char;
+    
+    % check overloaded +
+    s2 = [4 6 5 7 9 8];
+    tw2 = Twist(s2);
+    sum = tw+tw2;
+    verifyEqual(testCase, sum.s, tw.s+tw2.s, 'absTol', 1e-6);
+    
+    % check rotational twist
+    tw = Twist('R', [1 2 3], [0 0 0]);
+    verifyEqual(testCase, tw.s, [0 0 0 unit([1 2 3])], 'absTol', 1e-6);
+    
+    % check prismatic twist
+    tw = Twist('P', [1 2 3]);
+    verifyEqual(testCase, tw.s, [unit([1 2 3]) 0 0 0 ], 'absTol', 1e-6);
+    tw2 = Twist('T', [1 2 3]);
+    verifyEqual(testCase, tw.s, tw2.s, 'absTol', 1e-6);
+    
+    % check twist from SE(3)
+    tw = Twist( trotx(0) );
+    verifyEqual(testCase, tw.s, [0 0 0  0 0 0], 'absTol', 1e-6);
+    tw = Twist( trotx(pi/2) );
+    verifyEqual(testCase, tw.s, [0 0 0  pi/2 0 0], 'absTol', 1e-6);    
+    tw = Twist( troty(pi/2) );
+    verifyEqual(testCase, tw.s, [0 0 0  0 pi/2 0], 'absTol', 1e-6);
+    tw = Twist( trotz(pi/2) );
+    verifyEqual(testCase, tw.s, [0 0 0  0 0 pi/2], 'absTol', 1e-6);
+    
+    tw = Twist( transl([1 2 3]) );
+    verifyEqual(testCase, tw.s, [1 2 3  0 0 0], 'absTol', 1e-6);
+    tw = Twist( transl([1 2 3])*troty(pi/2) );
+    verifyEqual(testCase, tw.s, [-pi/2 2 pi  0 pi/2 0], 'absTol', 1e-6);
+
+    % test expm and T
+    verifyEqual(testCase, tw.T, expm(tw.S), 'absTol', 1e-6);
+    verifyEqual(testCase, tw.expm, expm(tw.S), 'absTol', 1e-6);
+    
+    tw = Twist('R', [1 0 0], [0 0 0]);
+    verifyEqual(testCase, tw.T(pi/2), trotx(pi/2), 'absTol', 1e-6);
+    tw = Twist('R', [0 1 0], [0 0 0]);
+    verifyEqual(testCase, tw.T(pi/2), troty(pi/2), 'absTol', 1e-6);
+    tw = Twist('R', [0 0 1], [0 0 0]);
+    verifyEqual(testCase, tw.T(pi/2), trotz(pi/2), 'absTol', 1e-6);
+end
+
