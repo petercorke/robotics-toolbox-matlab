@@ -16,6 +16,9 @@
 %  display       print the link parameters in human readable form
 %  char          convert to string
 %
+% Overloaded operators::
+%  +             concatenate links, result is a SerialLink object
+%
 % Properties (read/write)::
 %
 %  theta    kinematic: joint angle
@@ -863,6 +866,14 @@ classdef Link < handle
             sl.B = sym(sl.B);
             sl.Tc = sym(sl.Tc);
             
+        end
+        
+        function R = plus(L1, L2)
+            if isa(L1, 'Link') && isa(L2, 'Link')
+                R = SerialLink([L1 L2]);
+            else
+                error('RTB:Link: second operand for + operator must be a Link class')
+            end
         end
     end % methods
     

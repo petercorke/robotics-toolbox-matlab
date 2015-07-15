@@ -85,6 +85,7 @@
 %  alpha       kinematic: link twists (1xN)
 %
 % Overloaded operators::
+%  R+L     append a Link object to a SerialLink manipulator
 %  R1*R2   concatenate two SerialLink manipulators R1 and R2
 %
 % Note::
@@ -370,7 +371,16 @@ classdef SerialLink < handle
             end
         end
         %}
-
+        
+        function r2 = plus(R, L)
+            if isa(L, 'Link')
+                R.links = [R.links L];
+                r2 = R;
+            else
+                error('RTB:SerialLink: second operand for + operator must be a Link class')
+            end
+        end
+        
         function r2 = mtimes(r, l)
         %SerialLink.mtimes Concatenate robots
         %
