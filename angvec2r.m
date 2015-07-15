@@ -3,6 +3,10 @@
 % R = ANGVEC2R(THETA, V) is an orthonormal rotation matrix (3x3)
 % equivalent to a rotation of THETA about the vector V.
 %
+% Notes::
+% - If THETA == 0 then return identity matrix.
+% - If THETA ~= 0 then V must have a finite length.
+%
 % See also eul2r, rpy2r, tr2angvec.
 
 
@@ -30,11 +34,20 @@ function R = angvec2r(theta, k)
     if nargin < 2 || ~isscalar(theta) || ~isvec(k)
         error('RTB:angvec2r:badarg', 'bad arguments');
     end
-
+    if norm(k) < 10*eps
+        if (abs(theta) > 0)
+            error('RTB:angvec2r:badarg', 'norm of direction is zero');
+        else
+            R = eye(3,3);
+            return;
+        end
+    end
+    
 	cth = cos(theta);
 	sth = sin(theta);
 	vth = (1 - cth);
     
+
     k = unit(k);  % must be a unit vector
 	kx = k(1); ky = k(2); kz = k(3);
 
