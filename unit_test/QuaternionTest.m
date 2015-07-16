@@ -257,3 +257,32 @@ function plot_test(testCase)
     q = Quaternion(R).double;
     plot(q);
 end
+
+function angvec_test(testCase)
+    	% null rotation
+    q = Quaternion();
+    [theta, v] = q.angvec();
+    verifyEqual(testCase, theta, 0.0, 'absTol',1e-6);
+    verifyEqual(testCase, v, [0 0 0], 'absTol',1e-6);
+    
+    % canonic rotations
+    q = Quaternion(rotx(pi/2));
+    [theta, v] = q.angvec();
+    verifyEqual(testCase, theta, pi/2, 'absTol',1e-6);
+    verifyEqual(testCase, v, [1 0 0], 'absTol',1e-6);
+    
+    q = Quaternion(roty(pi/2));
+    [theta, v] = q.angvec();
+    verifyEqual(testCase, theta, pi/2, 'absTol',1e-6);
+    verifyEqual(testCase, v, [0 1 0], 'absTol',1e-6);
+    
+    q = Quaternion(rotz(pi/2));
+    [theta, v] = q.angvec();
+    verifyEqual(testCase, theta, pi/2, 'absTol',1e-6);
+    verifyEqual(testCase, v, [0 0 1], 'absTol',1e-6);
+     
+    q = Quaternion(roty(pi/2));
+    [theta, v] = q.angvec('deg');
+    verifyEqual(testCase, theta, 90, 'absTol',1e-6);
+    verifyEqual(testCase, v, [0 1 0], 'absTol',1e-6);
+end

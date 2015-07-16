@@ -42,8 +42,10 @@
 
 function [theta_, n_] = tr2angvec(R, varargin)
 
+    if ~ishomog(R) && ~isrot(R)
+        error('RTB:tr2angvec:badarg', 'argument must be SO(3) or SE(3)');
+    end
     opt.deg = false;
-    
     opt = tb_optparse(opt, varargin);
     
     % get the rotation submatrix(s)
@@ -51,12 +53,6 @@ function [theta_, n_] = tr2angvec(R, varargin)
         R = t2r(R);
     end
     
-    % check the determinant
-    if abs(det(R)-1) > 10*eps
-           error('matrix not orthonormal rotation matrix');
-    end
-        
-
     if size(R,3) > 1
         theta = zeros(size(R,3),1);
         v = zeros(size(R,3),3);
@@ -87,14 +83,21 @@ function [theta_, n_] = tr2angvec(R, varargin)
         % Use eigenvectors, get angle from trace which is defined over -pi to
         % pi.  Don't use eigenvalues since they only give angles -pi/2 to pi/2.
         
-        [v,d] = eig(R(:,:,i));
+        Ri = R(:,:,i);
+        
+        % check the determinant
+        if abs(det(Ri)-1) > 10*eps
+            error('RTB:tr2angvec:badarg', 'matrix not orthonormal rotation matrix');
+        end
+
+        [v,d] = eig(Ri);
 
         unit_evec = abs(real(diag(d))-1) < 20*eps;
         
         switch sum(unit_evec)
             case 0
                 % no unit eigenvalues, matrix is not orthonormal
-                error('matrix not orthonormal rotation matrix');
+                error('RTB:tr2angvec:badarg', 'matrix not orthonormal rotation matrix');
                 
             case 1
                 % one unit eigenvalue, should always be this case
@@ -109,32 +112,30 @@ function [theta_, n_] = tr2angvec(R, varargin)
                     end
                 end
         end
-         
-        
+           
         % get the direction, eigenvector corresponding to real eigenvalue
         n(i,:) = real(v(:,k));
 
         % rotation comes from the trace
-        ac = (trace(R(:,:,i)) - 1) / 2;
+        ac = (trace(Ri) - 1) / 2;
         ac = max( min(ac, 1), -1);  % clip it to robustly handle slight non-orthonormality
         theta(i) = acos( ac );
         
+        if ~isreal(theta(i)) || ~isreal(n(i,:))
+            error('RTB:tr2angvec:badarg', 'complex result, shouldnt happen');
+        end
+        
+        if opt.deg
+            theta(i) = theta(i) * 180/pi;
+            units = 'deg';
+        else
+            units = 'rad';
+        end
+        
         if nargout == 0
             % if no output arguments display the angle and vector
-            if opt.deg
-                fprintf('Rotation: %f deg x [%f %f %f]\n', theta(i)*180/pi, n(i,1), n(i,2), n(i,3));
-            else
-                fprintf('Rotation: %f rad x [%f %f %f]\n', theta(i), n(i,1), n(i,2), n(i,3));
-            end
+            fprintf('Rotation: %f %s x [%f %f %f]\n', theta(i), units, n(i,:));
         end
-    end
-    
-    if ~isreal(theta) || ~isreal(n)
-        error('complex');
-    end
-    
-    if opt.deg
-        theta = theta * 180/pi;
     end
     
     if nargout == 1

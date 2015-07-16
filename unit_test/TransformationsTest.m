@@ -25,27 +25,7 @@ function angvec2r_test(testCase)
     verifyError(testCase, @()angvec2r(1),'RTB:angvec2r:badarg');
 end
 
-%    angvec2tr                  - angle/vector to HT
-function angvec2tr_test(testCase)
-    
-    verifyEqual(testCase, angvec2tr(0, [1 0 0]),...
-        eye(4,4),'absTol',1e-4);
-    
-    verifyEqual(testCase, angvec2tr( pi/2, [1 0 0]),...
-        trotx(pi/2),'absTol',1e-4);
-    
-    verifyEqual(testCase, angvec2tr( pi/2, [0 1 0]),...
-        troty(pi/2),'absTol',1e-4);
-    
-    verifyEqual(testCase, angvec2tr( pi/2, [0 0 1]),...
-        trotz(pi/2),'absTol',1e-4);
-    
-    verifyError(testCase, @()angvec2tr(1, [0 0 0]),'RTB:angvec2r:badarg');
-    
-    verifyError(testCase, @()angvec2tr([1,2,3],0.1),'RTB:angvec2r:badarg');
-    verifyError(testCase, @()angvec2tr(1),'RTB:angvec2tr:badarg');
-end
-     
+
 %    eul2r                      - Euler angles to RM
 function eul2r_test(testCase)
     verifyEqual(testCase, eul2r(0, 0, 0),...
@@ -366,29 +346,83 @@ function t2r_test(testCase)
     verifyEqual(testCase, t2r(T),...
         [1 2; 4 5],'absTol',1e-4);
 end
-    
-%    tr2angvec                  - HT/RM to angle/vector form
-% CHECK OUTPUT OF THIS FUNCTION!!!!!!!!!!!!!!!!!!!!!!
-function tr2angvec_test(testCase)
-    % unit test for tr2angvec using a tr matrix 
-    [theta, v] = tr2angvec(eye(4,4));
-    verifyEqual(testCase, theta,...
-        0.0,'absTol',1e-4);
 
-    % unit test for tr2angvec using a tr matrix 
-    [theta, v] = tr2angvec(eul2tr([.1, .2, .3]));
-    verifyEqual(testCase, theta,...
-        0.4466,'absTol',1e-4);
-    verifyEqual(testCase, v,...
-        [0.0450    0.4486    0.8926],'absTol',1e-4);
-    %test with a r matrix
-    [theta, v] = tr2angvec(eul2r([.3, .2, .1]));
-    verifyEqual(testCase, theta,...
-        0.4466,'absTol',1e-4);
-    verifyEqual(testCase, v,...
-        [-0.0450    0.4486    0.8926],'absTol',1e-4);
+
+%    angvec2tr                  - angle/vector to HT
+function angvec2tr_test(testCase)
+    
+    verifyEqual(testCase, angvec2tr(0, [1 0 0]),...
+        eye(4,4),'absTol',1e-4);
+    
+    verifyEqual(testCase, angvec2tr( pi/2, [1 0 0]),...
+        trotx(pi/2),'absTol',1e-4);
+    
+    verifyEqual(testCase, angvec2tr( pi/2, [0 1 0]),...
+        troty(pi/2),'absTol',1e-4);
+    
+    verifyEqual(testCase, angvec2tr( pi/2, [0 0 1]),...
+        trotz(pi/2),'absTol',1e-4);
+    
+    verifyError(testCase, @()angvec2tr(1, [0 0 0]),'RTB:angvec2r:badarg');
+    
+    verifyError(testCase, @()angvec2tr([1,2,3],0.1),'RTB:angvec2r:badarg');
+    verifyError(testCase, @()angvec2tr(1),'RTB:angvec2tr:badarg');
+end
+     
+%    tr2angvec                  - HT/RM to angle/vector form
+function tr2angvec_test(testCase)
+	% null rotation
+    [theta, v] = tr2angvec(eye(3,3));
+    verifyEqual(testCase, theta, 0.0, 'absTol',1e-6);
+    verifyEqual(testCase, v, [1 0 0], 'absTol',1e-6);
+    
+    % canonic rotations
+    [theta, v] = tr2angvec(rotx(pi/2));
+    verifyEqual(testCase, theta, pi/2, 'absTol',1e-6);
+    verifyEqual(testCase, v, [1 0 0], 'absTol',1e-6);
+    
+    [theta, v] = tr2angvec(roty(pi/2));
+    verifyEqual(testCase, theta, pi/2, 'absTol',1e-6);
+    verifyEqual(testCase, v, [0 1 0], 'absTol',1e-6);
+    
+    [theta, v] = tr2angvec(rotz(pi/2));
+    verifyEqual(testCase, theta, pi/2, 'absTol',1e-6);
+    verifyEqual(testCase, v, [0 0 1], 'absTol',1e-6);
+    
+    % null rotation
+    [theta, v] = tr2angvec(eye(4,4));
+    verifyEqual(testCase, theta, 0.0, 'absTol',1e-6);
+    verifyEqual(testCase, v, [1 0 0], 'absTol',1e-6);
+    
+    % canonic rotations
+    [theta, v] = tr2angvec(trotx(pi/2));
+    verifyEqual(testCase, theta, pi/2, 'absTol',1e-6);
+    verifyEqual(testCase, v, [1 0 0], 'absTol',1e-6);
+    
+    [theta, v] = tr2angvec(troty(pi/2));
+    verifyEqual(testCase, theta, pi/2, 'absTol',1e-6);
+    verifyEqual(testCase, v, [0 1 0], 'absTol',1e-6);
+    
+    [theta, v] = tr2angvec(trotz(pi/2));
+    verifyEqual(testCase, theta, pi/2, 'absTol',1e-6);
+    verifyEqual(testCase, v, [0 0 1], 'absTol',1e-6);
+     
+    [theta, v] = tr2angvec(roty(pi/2), 'deg');
+    verifyEqual(testCase, theta, 90, 'absTol',1e-6);
+    verifyEqual(testCase, v, [0 1 0], 'absTol',1e-6);
+    
+    R = cat(3, rotx(pi/2), roty(pi/2), rotz(pi/2));
+    [theta, v] = tr2angvec(R);
+    verifyEqual(testCase, theta, pi/2*[1 1 1]', 'absTol',1e-6);
+    verifyEqual(testCase, v, eye(3,3), 'absTol',1e-6);
+    
+    T = cat(3, trotx(pi/2), troty(pi/2), trotz(pi/2));
+    [theta, v] = tr2angvec(T);
+    verifyEqual(testCase, theta, pi/2*[1 1 1]', 'absTol',1e-6);
+    verifyEqual(testCase, v, eye(3,3), 'absTol',1e-6);
+    
     %test for scalar input
-    verifyError(testCase, @()tr2angvec(1), 'RTB:t2r:badarg');
+    verifyError(testCase, @()tr2angvec(1), 'RTB:tr2angvec:badarg');
 end
     
 %    tr2eul                     - HT/RM to Euler angles
@@ -446,12 +480,16 @@ end
      
 %    trnorm                     - normalize HT
 function trnorm_test(testCase)
-    %Unit test for oa2r with variables tr matrix generated with oa2tr
-    verifyEqual(testCase, trnorm(rpy2tr( [.1, .2, .3])),...
-        [0.9363   -0.2896    0.1987         0
-         0.3130    0.9447   -0.0978         0
-        -0.1593    0.1538    0.9752         0
-              0         0         0    1.0000],'absTol',1e-4); 
+        
+    R = [0.9 0 0; .2 .6 .3; .1 .2 .4]';
+    verifyEqual(testCase, det(trnorm(R)), 1, 'absTol', 1e-14);
+
+    t = [1 2 3]';
+    T = rt2tr(R, t);
+    Tn = trnorm(T);
+    verifyEqual(testCase, det(trnorm(t2r(Tn))), 1, 'absTol', 1e-14);
+    verifyEqual(testCase, Tn(1:3,4), t);
+
     %test for scalar input
     verifyError(testCase, @()trnorm(1),'RTB:trnorm:badarg');    
 end

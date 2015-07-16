@@ -163,6 +163,39 @@ classdef Quaternion
             
             end
         end
+        
+        function [theta_,n_] = angvec(q, varargin)
+            opt.deg = false;
+            opt = tb_optparse(opt, varargin);
+            
+            if norm(q.v) < 10*eps
+                % identity quaternion, null rotation
+                theta = 0;
+                n = [0 0 0];
+            else
+                % finite rotation
+                n = unit(q.v);
+                theta = 2*atan2( norm(q.v), q.s);
+            end
+            
+            if opt.deg
+                theta = theta * 180/pi;
+                units = 'deg';
+            else
+                units = 'rad';
+            end
+            
+            if nargout == 0
+                % if no output arguments display the angle and vector
+                fprintf('Rotation: %f %s x [%f %f %f]\n', theta, units, n);
+            elseif nargout == 1
+                theta_ = theta;
+            elseif nargout == 2
+                theta_ = theta;
+                n_ = n;
+            end
+        end
+
 
         function s = char(q)
         %Quaternion.char Convert to string
