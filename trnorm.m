@@ -41,23 +41,27 @@
 %
 % http://www.petercorke.com
 
-function r = trnorm(t)
+function TR = trnorm(T)
 
-    if ndims(t) == 3
-        nd = size(t, 3);
+    if ndims(T) == 3
+        % recurse for transform sequence
+        nd = size(T, 3);
         r = zeros(4,4,nd);
         for i=1:nd
-            r(:,:,i) = trnorm(t(:,:,i));
+            TR(:,:,i) = trnorm(T(:,:,i));
         end
         return
     end
-
-    if all(size(t) == [4 4])
-        n = cross(t(1:3,2), t(1:3,3));  % N = O x A
-        o = cross(t(1:3,3), n);         % O = A x N
-        r = [unit(n) unit(t(1:3,2)) unit(t(1:3,3)) t(1:3,4); 0 0 0 1];
-    elseif all(size(t) == [3 3])
-            r = t;
+    
+    n = T(1:3,1); o = T(1:3,2); a = T(1:3,3);
+    n = cross(o, a);         % N = O x A
+    o = cross(a, n);         % O = A x N
+    R = [unit(n) unit(o) unit(a)];
+    
+    if ishomog(T)
+        TR = rt2tr( R, T(1:3,4) );
+    elseif isrot(T)
+        TR = R;
     else
         error('RTB:trnorm:badarg', 'argument must be 3x3 or 4x4 hom xform');
     end
