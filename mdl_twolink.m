@@ -2,7 +2,7 @@
 %
 % MDL_TWOLINK is a script that creates the workspace variable tl which
 % describes the kinematic and dynamic characteristics of a simple planar
-% 2-link mechanism.
+% 2-link mechanism moving in the XZ plane, it experiences gravity loading.
 %
 % Also defines the vector:
 %   qz   corresponds to the zero joint angle configuration.
@@ -53,5 +53,9 @@ twolink = SerialLink([
     'comment', 'from Spong, Hutchinson, Vidyasagar');
 qz = [0 0];
 qn = [pi/6, -pi/6];
+
+% the robot defined above moves in the XY plane and is not influenced by
+% the default gravity vector, acting in the Z-direction.  We choose to
+% rotate the robot so that it moves in the XZ plane.
 twolink.base = trotx(pi/2);
 twolink.fast = 0;
