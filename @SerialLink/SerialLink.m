@@ -441,17 +441,21 @@ classdef SerialLink < handle
                 r = robot(j);
 
                 % informational line
+                info = '';
                 if r.mdh
-                    convention = 'modDH';
+                    info = strcat(info, 'modDH');
                 else
-                    convention = 'stdDH';
+                    info = strcat(info, 'stdDH');
                 end
                 if r.fast
-                    fast = 'fastRNE';
+                    info = strcat(info, ', fastRNE');
                 else
-                    fast = 'slowRNE';
+                    info = strcat(info, ', slowRNE');
                 end
-                s = sprintf('%s (%d axis, %s, %s, %s)', r.name, r.n, r.config, convention, fast);
+                if r.issym
+                    info = strcat(info, ', Symbolic');;
+                end
+                s = sprintf('%s (%d axis, %s, %s)', r.name, r.n, r.config, info);
 
                 % comment and other info
                 line = '';
