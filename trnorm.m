@@ -43,6 +43,10 @@
 
 function TR = trnorm(T)
 
+    if ~ishomog(T) && ~isrot(T)
+        error('RTB:trnorm:badarg', 'expecting SO(3) or SE(3)');
+    end
+    
     if ndims(T) == 3
         % recurse for transform sequence
         nd = size(T, 3);
