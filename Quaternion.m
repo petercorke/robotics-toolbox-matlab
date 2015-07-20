@@ -20,7 +20,10 @@
 %  inv       inverse of quaterion
 %  norm      norm of quaternion
 %  unit      unitized quaternion
-%  plot      same options as trplot()
+%  plot      plot a coordinate frame representing orientation of quaternion
+%  animate   animates a coordinate frame representing changing orientation
+%            of quaternion sequence
+%  angvec    convert to angle vector form
 %  interp    interpolation (slerp) between q and q2, 0<=s<=1
 %  scale     interpolation (slerp) between identity and q, 0<=s<=1
 %  dot       derivative of quaternion with angular velocity w
@@ -34,7 +37,8 @@
 %  q1~=q2    test for quaternion inequality
 %  q+q2      elementwise sum of quaternions
 %  q-q2      elementwise difference of quaternions
-%  q*q2      quaternion product
+%  q*q2      quaternion (Hamilton) product
+%  q.*q2     quaternion (Hamilton) product followed by unitization
 %  q*v       rotate vector by quaternion, v is 3x1
 %  s*q       elementwise multiplication of quaternion by scalar
 %  q/q2      q*q2.inv
@@ -95,14 +99,40 @@ classdef Quaternion
 
     methods
 
-        function q = Quaternion(a1, a2)
+        function q = Quaternion(varargin)
         %Quaternion.Quaternion Constructor for quaternion objects
         % 
         % Construct a quaternion from various other orientation representations.
         %
         % Q = Quaternion() is the identitity unit-quaternion 1<0,0,0> representing a null rotation.
         %
-        % Q = Quaternion(Q1) is a copy of the quaternion Q1
+        % Q = Quaternion('quaternion', Q1) is a copy of the quaternion Q1
+        %
+        % Q = Quaternion('euler', EUL) create a unit-quaternion equivalent to the Euler
+        % angle vector EUL (1x3).
+        %
+        % Q = Quaternion('euler', E1, E2, E3) as above but Euler angles are given by
+        % three scalars.
+        %
+        % Q = Quaternion('RPY', RPY) create a unit-quaternion equivalent to the
+        % roll-pitch-yaw angle vector RPY (1x3).
+        %
+        % Q = Quaternion('RPY', R, P, Y) as above but RPY angles are given by three
+        % scalars.
+        %
+        % Q = Quaternion('angvec', TH, V) is a unit-quaternion corresponding to rotation of TH about the 
+        % vector V.
+        %
+        % Q = Quaternion('omega', W) is a unit-quaternion corresponding to rotation of |W| about the 
+        % vector W.
+        %
+        % Q = Quaternion('pure', V) is a pure quaternion with the specified vector part: 0<V>
+        %
+        % Q = Quaternion('component', [S V1 V2 V3]) is a quaternion formed by
+        % specifying directly its 4 components
+        %
+        %
+        % Old style arguments::
         %
         % Q = Quaternion([S V1 V2 V3]) is a quaternion formed by specifying directly its 4 elements
         %
@@ -121,14 +151,57 @@ classdef Quaternion
         % of the SE(3) homogeneous transform T (4x4). If T (4x4xN) is a sequence
         % then Q (Nx1) is a vector of Quaternions corresponding to the elements of
         % T.
+        %
+        % Notes::
+        % - The constructor does not handle the vector case.
 
             if nargin == 0
                 q.v = [0,0,0];
                 q.s = 1;
-            elseif isa(a1, 'Quaternion')
+            elseif ischar(varargin{1}) 
+                % new style options
+                switch varargin{1}
+                    case 'omega'
+                        w = varargin{2};
+                        if ~isvec(w)
+                            error('RTB:Quaternion:bad arg', 'must be a 3-vector');
+                        end
+                        theta = norm(w);
+                        q.s = cos(theta/2);
+                        q.v = sin(theta/2)*unit(w(:)');
+                    case 'angvec'
+                        theta = varargin{2};
+                        v = varargin{3};
+                        if ~isvec(v)
+                            error('RTB:Quaternion:bad arg', 'must be a 3-vector');
+                        end
+                        q.s = cos(theta/2);
+                        q.v = sin(theta/2)*unit(v(:)');
+                    case 'pure'
+                        q.s = 0;
+                        v = varargin{2};
+                        if ~isvec(v)
+                            error('RTB:Quaternion:bad arg', 'must be a 3-vector');
+                        end
+                        q.v = v;
+                    case {'RPY', 'rpy'}
+                        q = tr2q( rpy2r(varargin{2:end}) );
+                    case {'Euler', 'euler'}
+                        q = tr2q( eul2r(varargin{2:end}) );
+                    case 'component'
+                        v = varargin{2};
+                        q.s = v(1);
+                        q.v = v(2:4);
+                    case {'quaternion', 'Quaternion'}
+                        q = varargin{2};
+                    case 'R'
+                        q = tr2q( varargin{2} );
+                end
+            elseif isa(varargin{1}, 'Quaternion')
             %   Q = Quaternion(q)       from another quaternion
-                q = a1;
+                q = varargin{1};
             elseif nargin == 1
+                a1 = varargin{1};
                 if isvec(a1, 4)
             %   Q = Quaternion([s v1 v2 v3])    from 4 elements
                     a1 = a1(:);
@@ -153,6 +226,8 @@ classdef Quaternion
                     error('RTB:Quaternion:badarg', 'unknown dimension of input');
                 end
             elseif nargin == 2
+                a1 = varargin{1}; a2 = varargin{2};
+
                 if isscalar(a1) && isvector(a2)
                 %   Q = Quaternion(theta, v)    from vector plus angle
                     q.s = cos(a1/2);
@@ -165,6 +240,24 @@ classdef Quaternion
         end
         
         function [theta_,n_] = angvec(q, varargin)
+        %Quaternion.angvec Convert to angle-vector form
+        %
+        % Q.angvec(OPTIONS) prints a compact one representation of the rotational angle and rotation vector 
+        % corresponding to this quaternion.
+        %
+        % TH = Q.angvec(OPTIONS) is the rotational angle, about some vector, 
+        % corresponding to this quaternion.
+        %
+        % [TH,V] = Q.angvec(OPTIONS) as above but also returns a unit vector
+        % parallel to the rotation axis.
+        %
+        % Options::
+        %  'deg'     Display/return angle in degrees rather than radians
+        %
+        % Notes::
+        % - Due to the double cover of the quaternion, the returned rotation angles
+        %   will be in the interval [-2pi, 2pi).
+        
             opt.deg = false;
             opt = tb_optparse(opt, varargin);
             
@@ -520,6 +613,24 @@ classdef Quaternion
                 qp = Quaternion(double(q1) - double(q2));
             end
         end
+        
+        function qp = times(q1, q2)
+        %Quaternion.times Multiply a quaternion object and unitize
+        %
+        % Q1.*Q2   is a quaternion formed by the Hamilton product of two quaternions.
+        %
+        % Notes::
+        % - Overloaded operator '.*'
+        % - If the two multiplicands are unit-quaternions, the product will be a
+        %   unit quaternion since it is explicitly enforced.
+        %
+        % See also Quaternion.mtimes.
+            if isa(q1, 'Quaternion') && isa(q2, 'Quaternion')
+                qp = unit( q1*q2 );
+            else
+                error('RTB:Quaternion:badarg', 'quaternion product .*: incorrect operands');
+            end
+        end
 
         function qp = mtimes(q1, q2)
         %Quaternion.mtimes Multiply a quaternion object
@@ -568,7 +679,7 @@ classdef Quaternion
                 elseif length(q2) == 1
                     qp = Quaternion( double(q1)*q2);
                 else
-                    error('quaternion-vector product: must be a 3-vector or scalar');
+                    error('RTB:Quaternion:badarg', 'quaternion-vector product: must be a 3-vector or scalar');
                 end
 
             elseif isa(q2, 'Quaternion') && isa(q1, 'double')
@@ -578,8 +689,10 @@ classdef Quaternion
                 elseif length(q1) == 1
                     qp = Quaternion( double(q2)*q1);
                 else
-                    error('quaternion-vector product: must be a 3-vector or scalar');
+                    error('RTB:Quaternion:badarg', 'quaternion-vector product: must be a 3-vector or scalar');
                 end
+            else
+                error('RTB:Quaternion:badarg', 'quaternion product: incorrect right hand operand');
             end
         end
 
