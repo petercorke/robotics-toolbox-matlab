@@ -1,51 +1,66 @@
 ROOT = ~/rvc
+BUILD = tmp
+MANUAL = $(BUILD)/manual/robot.pdf
+SRC = $(ROOT)/robot
+ROBOT = rvctools/robot
+COMMON = rvctools/common
+CONTRIB = rvctools/contrib
 
 release:  build doco zipit
 
-build: 
+doco:	pdf markup
+
+build:  tmp allfuncs.txt
+
+tmp:
 	# clean up
-	-\rm -rf rvctools tmpdoc robot.zip robot.tgz
+	mkdir tmp
+
+	# recurse
+	$(MAKE) -C tmp -f ../Makefile $(MFLAGS) _build
+
+_build: 
 
 	# make a temp directory to hold the files
-	mkdir -p rvctools/robot rvctools/simulink rvctools/common rvctools/contrib
+	mkdir -p $(BUILD) rvctools/robot rvctools/simulink rvctools/common rvctools/contrib
 
 	# create the Manifest
-	buildcontent -r `cat ../RELEASE` --rtb $<
+	buildcontent -r `cat ../../RELEASE` --rtb ../allfuncs.txt
 
 	# copy all m-files and classes listed in the Manifest
-	mancp --verbose Manifest .. rvctools/robot
-	mancp --verbose Manifest $(ROOT)/common rvctools/common
+	mancp --verbose Manifest $(SRC) $(ROBOT)
+	mancp --verbose Manifest $(ROOT)/common $(COMMON)
 
 	# copy any contrib files that will be included
 	#cp -r $(ROOT)/contrib/paretofront rvctools/contrib
-	cp -r $(ROOT)/contrib/pHRIWARE rvctools/contrib
+	cp -r $(ROOT)/contrib/pHRIWARE $(CONTRIB)
 
 	# copy any GUIDE files
-	cp ../*.fig rvctools/robot
+	cp ../../*.fig $(ROBOT)
 
 	# copy Java source code and jar file
-	cp -r ../*.java rvctools/robot
-	(cd ..; make)
-	cp ../*.jar rvctools/robot
+	cp -r $(SRC)/*.java $(ROBOT)
+	(cd $(SRC); make)
+	cp $(SRC)/*.jar $(ROBOT)
 
 	# copy simulink models
-	cp -r ../simulink/*.{mdl,m,slx} rvctools/simulink
-	cp -r ../examples rvctools/robot
-	cp -r ../demos rvctools/robot
-	cp -r ../mex rvctools/robot
-	cp -r ../Octave rvctools/robot
+	cp -r $(SRC)/simulink/*.{mdl,m,slx} rvctools/simulink
+	cp -r $(SRC)/examples $(ROBOT)
+	cp -r $(SRC)/demos $(ROBOT)
+	cp -r $(SRC)/mex $(ROBOT)
+	cp -r $(SRC)/Octave $(ROBOT)
 
 	# copy interfaces
-	cp -r ../interfaces rvctools/robot
+	cp -r ../../interfaces $(ROBOT)
 
 	# copy misc documentation files
-	cp ../RELEASE rvctools/robot
-	-cp ../CHANGES rvctools/robot
-	cp ../README rvctools/robot
-	cp ../CONTRIB rvctools/robot
-	cp ../CITATION rvctools/robot
-	cp ../LGPL-LICENCE.txt rvctools/robot
-	cp ../startup_rtb.m rvctools/robot
+	cp $(SRC)/RELEASE $(ROBOT)
+	-cp $(SRC)/CHANGES $(ROBOT)
+	cp $(SRC)/README $(ROBOT)
+	cp $(SRC)/CONTRIB $(ROBOT)
+	cp $(SRC)/CITATION $(ROBOT)
+	cp $(SRC)/LGPL-LICENCE.txt $(ROBOT)
+	cp $(SRC)/startup_rtb.m $(ROBOT)
 
 	#cp $(ROOT)/common/*.m rvctools/common
 	cp $(ROOT)/startup_rvc.m rvctools
@@ -54,18 +69,39 @@ build:
 	# remove all SVN files from rvctools and below
 	find rvctools -name .svn -type d | xargs rm -rf
 
-pdf: build
+pdf:	tmp $(MANUAL)
+
+$(MANUAL):
+	# recurse
+	$(MAKE) -C tmp -f ../Makefile $(MFLAGS) _pdf
+
+_pdf:
 	-\rm -rf tmpdoc
-	-mkdir tmpdoc
-	-mkdir -p rvctools/robot/info/html
+	-mkdir tmpdoc 
 	-cp -r rvctools/robot/* tmpdoc
 	-cp rvctools/common/* tmpdoc
 
 	-rm tmpdoc/HiddenFigure.m
+	# add a couple of things from interfaces
+	-cp rvctools/robot/interfaces/VREP/*.m tmpdoc
+	-cp rvctools/robot/interfaces/Arbotix.m tmpdoc
+
+	# copy over the manual skeleton, we will work here
+	cp -r ~/rvc/robot/doc/manual .
+	
+	# generate LaTeX code for all functions in there
+	(cd tmpdoc; help3.py -v -l --include @* *.m; mv all.tex ../manual)
+
+	# copy over the index generator support
+	-mv funcidx* manual
+
 	# build the PDF manual
-	(cd tmpdoc; help3.py -v -l --include @* *.m; mv all.tex ../../doc/manual)
-	(cd ../doc/manual; make)
-	open ../doc/manual/robot.pdf
+	(cd manual; make)
+
+	cp manual/robot.pdf rvctools/robot
+
+	# and let's take a look
+	open manual/robot.pdf 
 
 
 CMD = '/INSERT_HERE/ {\
@@ -73,44 +109,34 @@ r helpfuncbycat.xml\
 d\
 }'
 
-doco:
-	-\rm -rf tmpdoc
-	-mkdir tmpdoc
-	-mkdir -p rvctools/robot/info/html
-	-cp -r rvctools/robot/* tmpdoc
-	-cp rvctools/common/* tmpdoc
-	# add a couple of things from interfaces
-	-cp rvctools/robot/interfaces/VREP/*.m tmpdoc
-	-cp rvctools/robot/interfaces/Arbotix.m tmpdoc
+markup: $(MANUAL)
+	# rely on pdf code to build all the temp files
+	# recurse
+	$(MAKE) -C tmp -f ../Makefile $(MFLAGS) _markup
 
-	-rm tmpdoc/HiddenFigure.m
-
-	# build the PDF manual
-	(cd tmpdoc; help3.py -l --include @* *.m; mv all.tex ../../doc/manual)
-	-cp funcidx* ../doc/manual
-	(cd ../doc/manual; make)
-	mv ../doc/manual/robot.pdf rvctools/robot
-
+_markup:
 	# build the XML/info stuff for matlab help browser system
-	-mkdir -p rvctools/robot/info/html
-	cp -r ../info/robot_product_page.html rvctools/robot/info
-	(cd tmpdoc; help3.py --rtb -m @* *.m; mv *.html ../rvctools/robot/info/html)
-	cp contents.html rvctools/robot/info
-	cp contents_alpha.html rvctools/robot/info
-	cp contents_toc.html rvctools/robot/info
-
-	# create the helptoc.xml file
-	cp ../info.xml rvctools/robot
-	cp ../info/helptoc.xml .
-	sed '/<!--INSERT_HERE-->/r helpfuncbycat.xml' < ../info/helptoc.xml > rvctools/robot/info/helptoc.xml
-
-	cp ../info/*.html rvctools/robot/info
-	cp -r ../info/icons rvctools/robot/info
-	cp -r ../doc/manual/rtb-montage-notext.png rvctools/robot/info
+	# build it in info, info/html
+	-mkdir -p info/html
+	cp -r $(SRC)/info/robot_product_page.html info
+	(cd tmpdoc; help3.py --rtb -m @* *.m; mv *.html ../info/html)
 
 	# copy over the autogen files
-	cp contents_toc.html rvctools/robot/info
+	cp contents.html info
+	cp contents_alpha.html info
+	cp contents_toc.html info
 
+	# create the helptoc.xml file
+	cp $(SRC)/info.xml $(ROBOT)
+	cp $(SRC)/info/helptoc.xml .
+	sed '/<!--INSERT_HERE-->/r helpfuncbycat.xml' < $(SRC)/info/helptoc.xml > info/helptoc.xml
+
+	# copy invariant files from the distro
+	cp $(SRC)/info/*.html info
+	cp -r $(SRC)/info/icons info
+	cp manual/figs/rtb-montage.png info
+
+	
 	# build the web/HTML doco
 	-mkdir html
 	(cd tmpdoc; help3.py --rtb -w @* *.m; mv *.html ../html)
@@ -120,24 +146,31 @@ doco:
 	# classical matlab toolbox index
 	cp Contents.m rvctools/robot
 
+	# install it all
+	cp -r info rvctools/robot
+
 
 zipit:
-	# remove all traces of svn files
-	-find rvctools -name .svn -exec rm -rf {} \;
 	# build the distrib archives
-	zip -rq robot-`cat ../RELEASE`.zip ./rvctools
+	(cd tmp; zip -rq ../robot-`cat ../../RELEASE`.zip ./rvctools)
 	#tar zcf robot.tgz ./rvctools
 
 test: zipit
 	(cd $(ROOT); unzip $(ROOT)/robot/distrib/robot.zip)
 
-flat:
-	-\rm -rf RTB_flat
-	mkdir RTB_flat
-	cp rvctools/robot/*.m RTB_flat
-	cp rvctools/common/*.m RTB_flat
-	cp -r rvctools/robot/@SerialLink RTB_flat
-	find RTB_flat -name .svn -type d | xargs rm -rf
+flat: tmp pdf
+	$(MAKE) -C tmp -f ../Makefile $(MFLAGS) _flat
+
+_flat:
+	-\rm -rf flat
+	mkdir flat
+	-cp rvctools/robot/* flat
+	cp rvctools/common/*.m flat
+	cp -r rvctools/robot/@SerialLink flat
+	cp -r rvctools/robot/demos flat
+	cp -r rvctools/robot/examples flat
+	cp -r rvctools/robot/mex flat
+
 
 dropbox:
 	cp -r ./{robot,simulink,common} $(HOME)/Dropbox
@@ -150,8 +183,5 @@ install:
 	ssh geek chmod -R a+rX www/RTB/r9
 
 clean:
-	@-\rm -rf robot.zip robot.tgz
-	@-\rm -rf simulink common tmpdoc robot robot.zip robot.tgz
-	@-\rm -rf info tmpdoc html
-	@-\rm *.m *.xml *.html *.png Manifest
-	-\rm -rf rvctools tmpdoc robot.zip robot.tgz
+	@-\rm -rf tmp
+
