@@ -1,9 +1,10 @@
 %% Test all the Simulink models
-end
-function test_suite(testCase) = SimulinkTest
-  initTestSuite;
 
+
+function tests = SimulinkTest
+  tests = functiontests(localfunctions);
 end
+
 function braitenberg_test(testCase)
     sim('sl_braitenberg');
 	close all
@@ -117,3 +118,4 @@ end
 function quadcopter_vs_test(testCase)
     sim('sl_quadrotor_vs');
 	close all
+end
