@@ -303,7 +303,7 @@ classdef Link < handle
                     % eg. L3 = Link([ 0, 0.15005, 0.0203, -pi/2, 0], 'standard');
                     dh = args{1};
                     if length(dh) < 4
-                        error('must provide params (theta d a alpha)');
+                        error('RTB:Link:badarg', 'must provide params (theta d a alpha)');
                     end
                     
                     % set the kinematic parameters
@@ -530,7 +530,7 @@ classdef Link < handle
                 end
                 l.Tc = v;     
             else
-                error('Coulomb friction vector can have 1 (symmetric) or 2 (asymmetric) elements only')
+                error('RTB:Link:badarg', 'Coulomb friction vector can have 1 (symmetric) or 2 (asymmetric) elements only')
             end
         end % set.Tc()
         
@@ -548,7 +548,7 @@ classdef Link < handle
             end
             if all(size(v) == [3 3])
                 if isa(v, 'double') && norm(v-v') > eps
-                    error('inertia matrix must be symmetric');
+                    error('RTB:Link:badarg', 'inertia matrix must be symmetric');
                 end
                 l.I = v;
             elseif length(v) == 3
@@ -570,7 +570,7 @@ classdef Link < handle
             % Note::
             % - The limits are not currently used by any Toolbox functions.
             if isempty(l.qlim)
-                error('no limits assigned to link')
+                error('RTB:Link:badarg', 'no limits assigned to link')
             end
             v = (q > l.qlim(2)) - (q < l.qlim(1));
         end % islimit()

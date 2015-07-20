@@ -84,10 +84,7 @@ function set_test(testCase)
     verifyEqual(testCase, L.r, [1 2 3]);
     L.r = [1 2 3]';
     verifyEqual(testCase, L.r, [1 2 3]);
-    verifyError(testCase, @() eval('L=Link; L.r = [ 1 2]'), 'RTB:Link:badarg');
 
-    verifyError(testCase, @() eval('L=Link; L.I = 1'), 'RTB:Link:badarg');
-    %verifyError(testCase, @()L.I = rand(3,3), 'RTB:Link:badarg');
     L.I = [1, 2, 3];
     verifyEqual(testCase, L.I, diag([1,2,3]));
     L.I = [1, 2, 3, 4, 5, 6];
@@ -100,7 +97,34 @@ function set_test(testCase)
     verifyEqual(testCase, L.Tc, [1 -1]);
     L.Tc = [1 -2];
     verifyEqual(testCase, L.Tc, [1 -2]);
-    verifyError(testCase, @() eval('L=Link; L.Tc = [-2 1]'), 'RTB:Link:badarg');
+    
+    % all these should all fail
+    function set_fail1
+        L = Link;
+        L.Tc = [-2 1];  % wrong order
+    end
+    function set_fail2
+        L = Link;
+        L.r = [ 1 2]';  % too short
+    end
+    
+    function set_fail3
+        L = Link;
+        L.I = 1;  % too short
+    end
+    
+    function set_fail4
+        L = Link;
+        I = diag([1 2 3]);
+        I(1,2) = 1;
+        L.I = I;        % not symmetric
+    end
+    
+    verifyError(testCase, @set_fail1, 'RTB:Link:badarg');
+    verifyError(testCase, @set_fail2, 'RTB:Link:badarg');
+    verifyError(testCase, @set_fail3, 'RTB:Link:badarg');
+    verifyError(testCase, @set_fail4, 'RTB:Link:badarg');
+
 end
     
 function viscous_friction_test(testCase)
