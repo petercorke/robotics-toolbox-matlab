@@ -1,0 +1,9 @@
+# ignore png, gimp and pdf files
+*.xcf
+*.log
+*.aux
+*.idx
+*.jar
+*~
+distrib/tmp
+.DS_Store
