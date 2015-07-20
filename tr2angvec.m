@@ -17,7 +17,7 @@
 % Notes::
 % - If no output arguments are specified the result is displayed.
 %
-% See also ANGVEC2R, ANGVEC2TR.
+% See also ANGVEC2R, ANGVEC2TR, TRLOG.
 
 
 
@@ -82,48 +82,21 @@ function [theta_, n_] = tr2angvec(R, varargin)
         %
         % Use eigenvectors, get angle from trace which is defined over -pi to
         % pi.  Don't use eigenvalues since they only give angles -pi/2 to pi/2.
+        %
+        % 4.
+        %
+        % Take the log of the rotation matrix
         
         Ri = R(:,:,i);
         
         % check the determinant
         if abs(det(Ri)-1) > 10*eps
-            error('RTB:tr2angvec:badarg', 'matrix not orthonormal rotation matrix');
+            error('RTB:tr2angvec:badarg', 'matrix is not orthonormal');
         end
-
-        [v,d] = eig(Ri);
-
-        unit_evec = abs(real(diag(d))-1) < 20*eps;
         
-        switch sum(unit_evec)
-            case 0
-                % no unit eigenvalues, matrix is not orthonormal
-                error('RTB:tr2angvec:badarg', 'matrix not orthonormal rotation matrix');
-                
-            case 1
-                % one unit eigenvalue, should always be this case
-                k = find(unit_evec);
-            otherwise
-                % for the case of a matrix very close to unity, the results
-                % become complex, with a conjugate pair of eigenvectors and one
-                % with zero complex part.
-                for k=1:3
-                    if isreal(v(:,k))
-                        break;
-                    end
-                end
-        end
-           
-        % get the direction, eigenvector corresponding to real eigenvalue
-        n(i,:) = real(v(:,k));
-
-        % rotation comes from the trace
-        ac = (trace(Ri) - 1) / 2;
-        ac = max( min(ac, 1), -1);  % clip it to robustly handle slight non-orthonormality
-        theta(i) = acos( ac );
-        
-        if ~isreal(theta(i)) || ~isreal(n(i,:))
-            error('RTB:tr2angvec:badarg', 'complex result, shouldnt happen');
-        end
+        [th,v] = trlog(Ri);
+        theta(i) = th;
+        n(i,:) = v;
         
         if opt.deg
             theta(i) = theta(i) * 180/pi;
