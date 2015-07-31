@@ -4,7 +4,159 @@ function tests = TransformationsTest
   tests = functiontests(localfunctions);
 end
 
-%% Homogeneous transformations
+% Primitives
+function rotx_test(testCase)
+    %Unit test for rotz
+    verifyEqual(testCase, rotx(0), eye(3,3),'absTol',1e-4);
+    verifyEqual(testCase, rotx(pi/2), [1 0 0; 0 0 -1; 0 1 0],'absTol',1e-4);
+    verifyEqual(testCase, rotx(pi), [1 0 0; 0 -1 0; 0 0 -1],'absTol',1e-4);
+
+    verifyEqual(testCase, rotx(90, 'deg'), [1 0 0; 0 0 -1; 0 1 0],'absTol',1e-4);
+    verifyEqual(testCase, rotx(180, 'deg'), [1 0 0; 0 -1 0; 0 0 -1],'absTol',1e-4);
+
+    %test for non-scalar input
+    verifyError(testCase, @()rotx([1 2 3]),'MATLAB:catenate:dimensionMismatch');
+end
+    
+function roty_test(testCase)
+    %Unit test for roty
+    verifyEqual(testCase, roty(0), eye(3,3),'absTol',1e-4);
+    verifyEqual(testCase, roty(pi/2), [0 0 1; 0 1 0; -1 0 0],'absTol',1e-4);
+    verifyEqual(testCase, roty(pi), [-1 0 0; 0 1 0; 0 0 -1],'absTol',1e-4);
+
+    verifyEqual(testCase, roty(90, 'deg'), [0 0 1; 0 1 0; -1 0 0],'absTol',1e-4);
+    verifyEqual(testCase, roty(180, 'deg'), [-1 0 0; 0 1 0; 0 0 -1],'absTol',1e-4);
+     %test for non-scalar input
+    verifyError(testCase, @()roty([1 2 3]),'MATLAB:catenate:dimensionMismatch');
+end
+    
+function rotz_test(testCase)
+    %Unit test for rotz
+    verifyEqual(testCase, rotz(0), eye(3,3),'absTol',1e-4);
+    verifyEqual(testCase, rotz(pi/2), [0 -1 0; 1 0 0; 0 0 1],'absTol',1e-4);
+    verifyEqual(testCase, rotz(pi), [-1 0 0; 0 -1 0; 0 0 1],'absTol',1e-4);
+
+    verifyEqual(testCase, rotz(90, 'deg'), [0 -1 0; 1 0 0; 0 0 1],'absTol',1e-4);
+    verifyEqual(testCase, rotz(180, 'deg'), [-1 0 0; 0 -1 0; 0 0 1],'absTol',1e-4);
+     %test for non-scalar input
+    verifyError(testCase, @()rotz([1 2 3]),'MATLAB:catenate:dimensionMismatch');
+end
+ 
+function trotx_test(testCase)
+    %Unit test for trotz
+    verifyEqual(testCase, trotx(0), eye(4,4),'absTol',1e-4);
+    verifyEqual(testCase, trotx(pi/2), [1 0 0 0; 0 0 -1 0; 0 1 0 0; 0 0 0 1],'absTol',1e-4);
+    verifyEqual(testCase, trotx(pi), [1 0 0 0; 0 -1 0 0; 0 0 -1 0; 0 0 0 1],'absTol',1e-4);
+
+    verifyEqual(testCase, trotx(90, 'deg'), [1 0 0 0; 0 0 -1 0; 0 1 0 0; 0 0 0 1],'absTol',1e-4);
+    verifyEqual(testCase, trotx(180, 'deg'), [1 0 0 0; 0 -1 0 0; 0 0 -1 0; 0 0 0 1],'absTol',1e-4);
+
+    %test for non-scalar input
+    verifyError(testCase, @()trotx([1 2 3; 0 0 0 1]),'MATLAB:catenate:dimensionMismatch');
+end
+    
+function troty_test(testCase)
+    %Unit test for troty
+    verifyEqual(testCase, troty(0), eye(4,4),'absTol',1e-4);
+    verifyEqual(testCase, troty(pi/2), [0 0 1 0; 0 1 0 0; -1 0 0 0; 0 0 0 1],'absTol',1e-4);
+    verifyEqual(testCase, troty(pi), [-1 0 0 0; 0 1 0 0; 0 0 -1 0; 0 0 0 1],'absTol',1e-4);
+
+    verifyEqual(testCase, troty(90, 'deg'), [0 0 1 0; 0 1 0 0; -1 0 0 0; 0 0 0 1],'absTol',1e-4);
+    verifyEqual(testCase, troty(180, 'deg'), [-1 0 0 0; 0 1 0 0; 0 0 -1 0; 0 0 0 1],'absTol',1e-4);
+     %test for non-scalar input
+    verifyError(testCase, @()troty([1 2 3; 0 0 0 1]),'MATLAB:catenate:dimensionMismatch');
+end
+    
+function trotz_test(testCase)
+    %Unit test for trotz
+    verifyEqual(testCase, trotz(0), eye(4,4),'absTol',1e-4);
+    verifyEqual(testCase, trotz(pi/2), [0 -1 0 0; 1 0 0 0; 0 0 1 0; 0 0 0 1],'absTol',1e-4);
+    verifyEqual(testCase, trotz(pi), [-1 0 0 0; 0 -1 0 0; 0 0 1 0; 0 0 0 1],'absTol',1e-4);
+
+    verifyEqual(testCase, trotz(90, 'deg'), [0 -1 0 0; 1 0 0 0; 0 0 1 0; 0 0 0 1],'absTol',1e-4);
+    verifyEqual(testCase, trotz(180, 'deg'), [-1 0 0 0; 0 -1 0 0; 0 0 1 0; 0 0 0 1],'absTol',1e-4);
+     %test for non-scalar input
+    verifyError(testCase, @()trotz([1 2 3; 0 0 0 1]),'MATLAB:catenate:dimensionMismatch');
+end
+
+function transl_test(testCase)
+    %Unit test for transl with variables (0.1, 0.2, 0.3)
+    verifyEqual(testCase, transl(0.1, 0.2, 0.3),...
+        [1.0000         0         0    0.1000
+              0    1.0000         0    0.2000
+              0         0    1.0000    0.3000
+              0         0         0    1.0000],'absTol',1e-4);
+    %Unit test for transl with variables ([0.1, 0.2, 0.3])
+    verifyEqual(testCase, transl([0.1, 0.2, 0.3]),...
+        [1.0000         0         0    0.1000
+              0    1.0000         0    0.2000
+              0         0    1.0000    0.3000
+              0         0         0    1.0000],'absTol',1e-4);
+    %Unit test for transl with variables [0 0 0]
+    verifyEqual(testCase, transl([0 0 0] ),...
+        [1     0     0     0
+         0     1     0     0
+         0     0     1     0
+         0     0     0     1],'absTol',1e-4);
+    %Unit test for transl with variable (1)
+    verifyEqual(testCase, transl(1),...
+        [1     0     0     1
+         0     1     0     1
+         0     0     1     1
+         0     0     0     1],'absTol',1e-4);
+end
+   
+%% SE(2)
+function SE2_test(testCase)
+    
+        T2 = [1 0 1; 0 1 2; 0 0 1];
+    verifyEqual(testCase,  transl2(T2), ...
+         [1;2], 'absTol',1e-4);
+    
+    T2f = [1 1 1; 1 1 2; 0 0 1];
+    R2 = [1 0 ; 0 1];
+    R2f = [1 1 ; 1 1];
+    verifyEqual(testCase,  ishomog2(T2), true);
+    verifyEqual(testCase,  ishomog2(T2,1), true);
+    verifyEqual(testCase,  ishomog2(T2f,1), false);
+    verifyEqual(testCase,  ishomog2(R2), false);
+
+    verifyEqual(testCase,  isrot2(R2), true);
+    verifyEqual(testCase,  isrot2(R2,1), true);
+    verifyEqual(testCase,  isrot2(R2f,1), false);
+    verifyEqual(testCase,  isrot2(T2), false);
+    
+    verifyEqual(testCase,  transl2(1, 2), ...
+        [1 0 1; 0 1 2; 0 0 1], 'absTol', 1e-6);
+    verifyEqual(testCase,  transl2([2, 3]), ...
+        [1 0 2; 0 1 3; 0 0 1], 'absTol', 1e-6);
+    verifyEqual(testCase,  SE2(2, 3, 0), ...
+        [1 0 2; 0 1 3; 0 0 1], 'absTol', 1e-6);
+    verifyEqual(testCase,  SE2(2, 3, pi/2), ...
+        transl2(2,3)*trot2(pi/2), 'absTol', 1e-6);
+end
+
+function rot2_test(testCase)
+    verifyEqual(testCase,  rot2(0), ...
+        [
+        1     0
+        0     1], 'absTol', 1e-6);
+    verifyEqual(testCase,  trot2(0), ...
+        eye(3,3), 'absTol', 1e-6);
+    verifyEqual(testCase,  rot2(0), ...
+        eye(2,2), 'absTol', 1e-6);
+    verifyEqual(testCase,  trot2(pi/2), ...
+        [
+        0    -1     0
+        1     0     0
+        0     0     1], 'absTol', 1e-6);
+    verifyEqual(testCase,  trot2(pi)*trot2(-pi/2), ...
+        trot2(pi/2), 'absTol', 1e-6);
+    verifyEqual(testCase,  rot2(pi)*rot2(-pi/2), ...
+        rot2(pi/2), 'absTol', 1e-6);
+end
+
+%% angle/vector form
 %    angvec2r                   - angle/vector to RM
 function angvec2r_test(testCase)
     verifyEqual(testCase, angvec2r(0, [1 0 0]),...
@@ -24,329 +176,6 @@ function angvec2r_test(testCase)
     verifyError(testCase, @()angvec2r([1,2,3],0.1),'RTB:angvec2r:badarg');
     verifyError(testCase, @()angvec2r(1),'RTB:angvec2r:badarg');
 end
-
-
-%    eul2r                      - Euler angles to RM
-function eul2r_test(testCase)
-    verifyEqual(testCase, eul2r(0, 0, 0),...
-        [1     0     0
-         0     1     0
-         0     0     1], ...
-    'absTol',1e-4);
-
-    verifyEqual(testCase, eul2r(.1, .2, .3),...
-        [0.9021   -0.3836    0.1977
-         0.3875    0.9216    0.0198
-        -0.1898    0.0587    0.9801], ...
-        'absTol',1e-4);
-
-    verifyEqual(testCase, eul2r(.1, .2, .3, 'deg'),...
-        [1.0000   -0.0070    0.0035
-        0.0070    1.0000    0.0000
-       -0.0035    0.0000    1.0000], ...
-        'absTol',1e-4);
-
-    verifyEqual(testCase, eul2r([.1, .2, .3]),...
-        [0.9021   -0.3836    0.1977
-         0.3875    0.9216    0.0198
-        -0.1898    0.0587    0.9801], ...
-        'absTol',1e-4);
-
-    verifyEqual(testCase, eul2r([.1, .2, .3], 'deg'),...
-        [1.0000   -0.0070    0.0035
-        0.0070    1.0000    0.0000
-       -0.0035    0.0000    1.0000], ...
-        'absTol',1e-4);
-
-    % trajectory case
-    R = eul2r( [.1, .2, .3; .1 .2 .3; .1 .2 .3]);
-    verifySize(testCase, R, [3 3 3]);
-
-    verifyEqual(testCase, R(:,:,2), ...
-        [0.9021   -0.3836    0.1977
-         0.3875    0.9216    0.0198
-        -0.1898    0.0587    0.9801], ...
-         'absTol',1e-4);
-
-    %test for scalar input
-    verifyError(testCase, @()eul2r(1),'RTB:eul2r:badarg');
-end
-    
-%    eul2tr                     - Euler angles to HT
-function eul2tr_test(testCase)
-    %Unit test for eul2tr with variables (0, 0, 0)
-    verifyEqual(testCase, eul2tr(0, 0, 0),...
-        [1     0     0     0
-         0     1     0     0
-         0     0     1     0
-         0     0     0     1],'absTol',1e-4);
-
-    verifyEqual(testCase, eul2tr(.1, .2, .3),...
-        [0.9021   -0.3836    0.1977         0
-        0.3875    0.9216    0.0198         0
-       -0.1898    0.0587    0.9801         0
-         0         0         0    1.0000], ...
-     'absTol', 1e-4);
-
-    verifyEqual(testCase,  eul2tr(.1, .2, .3, 'deg'), ...
-        [1.0000   -0.0070    0.0035         0
-        0.0070    1.0000    0.0000         0
-       -0.0035    0.0000    1.0000         0
-             0         0         0    1.0000], ...
-     'absTol', 1e-4);
-
-    verifyEqual(testCase, eul2tr([.1, .2, .3]),...
-        [0.9021   -0.3836    0.1977         0
-        0.3875    0.9216    0.0198         0
-       -0.1898    0.0587    0.9801         0
-         0         0         0    1.0000], ...
-     'absTol', 1e-4);
-
-    verifyEqual(testCase, eul2tr([.1, .2, .3], 'deg'),...
-        [1.0000   -0.0070    0.0035         0
-        0.0070    1.0000    0.0000         0
-       -0.0035    0.0000    1.0000         0
-             0         0         0    1.0000], ...
-     'absTol', 1e-4);
-
-    % trajectory case
-    T = eul2tr( [.1, .2, .3; .1 .2 .3; .1 .2 .3]);
-    verifySize(testCase, T, [4 4 3]);
-
-    verifyEqual(testCase, T(:,:,2), ...
-        [0.9021   -0.3836    0.1977         0
-        0.3875    0.9216    0.0198         0
-       -0.1898    0.0587    0.9801         0
-         0         0         0    1.0000], ...
-     'absTol', 1e-4);
-
-    %test for scalar input
-    verifyError(testCase, @()eul2tr(1),'RTB:eul2r:badarg');
-end
-
-%    oa2r                       - orientation and approach vector to RM
-function oa2r_test(testCase)
-    %Unit test for oa2r with variables ([0 1 0] & [0 0 1]) 
-    verifyEqual(testCase, oa2r([0 1 0], [0 0 1]),...
-        [1     0     0
-         0     1     0
-         0     0     1],'absTol',1e-4);
-    %test for scalar input
-    verifyError(testCase, @()oa2r(1),'RTB:oa2r:badarg');
-end
-
-%    oa2tr                      - orientation and approach vector to HT
-function oa2tr_test(testCase)
-    %Unit test for oa2tr with variables ([0 1 0] & [0 0 1]) 
-    verifyEqual(testCase, oa2tr([0 1 0], [0 0 1]),...
-        [1     0     0     0
-         0     1     0     0
-         0     0     1     0
-         0     0     0     1],'absTol',1e-4);
-    %test for scalar input
-    verifyError(testCase, @()oa2tr(1),'RTB:oa2tr:badarg');
-end
-    
-%    r2t                        - RM to HT
-function r2t_test(testCase)
-    %Unit test for r2t
-
-    % SO(3) case
-    R = [1 2 3;4 5 6; 7 8 9];
-    verifyEqual(testCase, r2t(R),...
-        [1 2 3 0; 4 5 6 0; 7 8 9 0; 0 0 0 1],'absTol',1e-4);
-
-    % sequence case
-    Rs = cat(3, R, R, R);
-    Ts = r2t(Rs);
-    verifySize(testCase, Ts, [4 4 3]);
-    verifyEqual(testCase, Ts(:,:,2), ...
-        [1 2 3 0; 4 5 6 0; 7 8 9 0; 0 0 0 1],'absTol',1e-4);
-
-    % SO(2) case
-    R = [1 2; 3 4];
-    verifyEqual(testCase, r2t(R),...
-        [1 2 0; 3 4 0; 0 0 1],'absTol',1e-4);
-end
-
-    
-%    rotx                       - RM for rotation about X-axis
-function rotx_test(testCase)
-    %Unit test for rotz
-    verifyEqual(testCase, rotx(0.1),...
-        [1.0000 0 0 ; 0 0.9950 -0.0998 ; 0 0.0998 0.9950 ],'absTol',1e-4);
-    verifyEqual(testCase, rotx(0),...
-        eye(3,3),'absTol',1e-4);
-
-    %test for non-scalar input
-    verifyError(testCase, @()rotx([1 2 3]),'MATLAB:catenate:dimensionMismatch');
-end
-    
-%    roty                       - RM for rotation about Y-axis
-function roty_test(testCase)
-    %Unit test for roty
-    verifyEqual(testCase, roty(0.1),...
-        [0.9950 0 0.0998 ;0 1.0000 0 ;-0.0998 0 0.9950 ],'absTol',1e-4);
-    verifyEqual(testCase, roty(0),...
-        [1     0     0
-         0     1     0
-         0     0     1 ],'absTol',1e-4);
-     %test for non-scalar input
-    verifyError(testCase, @()roty([1 2 3]),'MATLAB:catenate:dimensionMismatch');
-end
-    
-%    rotz                       - RM for rotation about Z-axis
-function rotz_test(testCase)
-    %Unit test for rotz
-    verifyEqual(testCase, rotz(0.1),...
-        [0.9950 -0.0998 0 ; 0.0998 0.9950 0 ;0 0 1.0000],'absTol',1e-4);
-    verifyEqual(testCase, rotz(0),...
-        [1     0     0
-         0     1     0
-         0     0     1 ],'absTol',1e-4);
-     %test for non-scalar input
-    verifyError(testCase, @()rotz([1 2 3]),'MATLAB:catenate:dimensionMismatch');
-end
-    
-%    rpy2r                      - roll/pitch/yaw angles to RM
-function rpy2r_test(testCase)
-    %Unit test for rpy2r with variables (0.1, 0.2, 0.3)
-    verifyEqual(testCase, rpy2r(.1, .2, .3),...
-        [0.9363   -0.2896    0.1987
-         0.3130    0.9447   -0.0978
-        -0.1593    0.1538    0.9752], ...
-        'absTol',1e-4);
-    verifyEqual(testCase, rpy2r(.1, .2, .3, 'deg'),...
-        [1.0000   -0.0052    0.0035
-        0.0052    1.0000   -0.0017
-       -0.0035    0.0018    1.0000], ...
-        'absTol',1e-4);
-    verifyEqual(testCase, rpy2r(.1, .2, .3, 'zyx'),...
-        [0.9752   -0.0370    0.2184
-        0.0978    0.9564   -0.2751
-       -0.1987    0.2896    0.9363], ...
-        'absTol',1e-4);
-
-    verifyEqual(testCase, rpy2r([.1, .2, .3]),...
-        [0.9363   -0.2896    0.1987
-         0.3130    0.9447   -0.0978
-        -0.1593    0.1538    0.9752], ...
-        'absTol',1e-4);
-
-    verifyEqual(testCase, rpy2r([.1, .2, .3], 'deg'),...
-        [1.0000   -0.0052    0.0035
-        0.0052    1.0000   -0.0017
-       -0.0035    0.0018    1.0000], ...
-        'absTol',1e-4);
-
-    verifyEqual(testCase, rpy2r([.1, .2, .3], 'zyx'),...
-        [0.9752   -0.0370    0.2184
-        0.0978    0.9564   -0.2751
-       -0.1987    0.2896    0.9363], ...
-        'absTol',1e-4);
-
-    verifyEqual(testCase, rpy2r([0 0 0]),...
-        [1     0     0
-         0     1     0
-         0     0     1],'absTol',1e-4);
-
-    % trajectory case
-    R = rpy2r( [.1, .2, .3; .1 .2 .3; .1 .2 .3]);
-    verifySize(testCase, R, [3 3 3]);
-
-    verifyEqual(testCase, R(:,:,2), ...
-        [0.9363   -0.2896    0.1987
-         0.3130    0.9447   -0.0978
-        -0.1593    0.1538    0.9752], ...
-         'absTol',1e-4);
-end
-
-        
-%    rpy2tr                     - roll/pitch/yaw angles to HT
-function rpy2tr_test(testCase)
-    %Unit test for rpy2tr with variables (0.1, 0.2, 0.3)
-    verifyEqual(testCase, rpy2tr(.1, .2, .3),...
-        [0.9363   -0.2896    0.1987         0
-         0.3130    0.9447   -0.0978         0
-        -0.1593    0.1538    0.9752         0
-              0         0         0    1.0000],'absTol',1e-4);
-
-    verifyEqual(testCase,  rpy2tr(.1, .2, .3, 'deg'), ...
-        [1.0000   -0.0052    0.0035         0
-        0.0052    1.0000   -0.0017         0
-       -0.0035    0.0018    1.0000         0
-             0         0         0    1.0000], ...
-     'absTol', 1e-4);
-
-    verifyEqual(testCase,  rpy2tr(.1, .2, .3, 'xyz'), ...
-        [0.9363   -0.2896    0.1987         0
-        0.3130    0.9447   -0.0978         0
-       -0.1593    0.1538    0.9752         0
-             0         0         0    1.0000], ...
-     'absTol', 1e-4);
-
-    verifyEqual(testCase, rpy2tr([.1, .2, .3]),...
-        [0.9363   -0.2896    0.1987         0
-         0.3130    0.9447   -0.0978         0
-        -0.1593    0.1538    0.9752         0
-              0         0         0    1.0000],'absTol',1e-4);
-
-    verifyEqual(testCase, rpy2tr([.1, .2, .3], 'deg'),...
-        [1.0000   -0.0052    0.0035         0
-        0.0052    1.0000   -0.0017         0
-       -0.0035    0.0018    1.0000         0
-             0         0         0    1.0000], ...
-     'absTol', 1e-4);
-
-    verifyEqual(testCase, rpy2tr([.1, .2, .3], 'xyz'),...
-        [0.9363   -0.2896    0.1987         0
-        0.3130    0.9447   -0.0978         0
-       -0.1593    0.1538    0.9752         0
-             0         0         0    1.0000], ...
-     'absTol', 1e-4);
-
-    % trajectory case
-    T = rpy2tr( [.1, .2, .3; .1 .2 .3; .1 .2 .3]);
-    verifySize(testCase, T, [4 4 3]);
-
-    verifyEqual(testCase, T(:,:,2), ...
-        [0.9363   -0.2896    0.1987         0
-         0.3130    0.9447   -0.0978         0
-        -0.1593    0.1538    0.9752         0
-              0         0         0    1.0000],'absTol',1e-4);
-
-    %Unit test for rpy2tr with variables ([0 0 0])
-    verifyEqual(testCase, rpy2tr( [0 0 0]),...
-        [1     0     0     0
-         0     1     0     0
-         0     0     1     0
-         0     0     0     1],'absTol',1e-4);
-    %test for scalar input
-    verifyError(testCase, @()rpy2tr(1),'RTB:rpy2r:badarg');
-end
-        
-%    t2r                        - HT to RM
-function t2r_test(testCase)
-    %Unit test for r2t with variables eul2tr([.1, .2, .3])
-
-    % SO(3) case
-    T = [1 2 3 4; 5 6 7 8; 9 10 11 12; 0 0 0 1];
-    verifyEqual(testCase, t2r(T),...
-        [1 2 3; 5 6 7; 9 10 11],'absTol',1e-4);
-
-    % sequence case
-    Ts = cat(3, T, T, T);
-    Rs = t2r(Ts);
-    verifySize(testCase, Rs, [3 3 3]);
-    verifyEqual(testCase, Rs(:,:,2), ...
-        [1 2 3; 5 6 7; 9 10 11],'absTol',1e-4);
-
-    % SO(2) case
-    T = [1 2 3; 4 5 6; 0 0 1];
-    verifyEqual(testCase, t2r(T),...
-        [1 2; 4 5],'absTol',1e-4);
-end
-
 
 %    angvec2tr                  - angle/vector to HT
 function angvec2tr_test(testCase)
@@ -425,58 +254,296 @@ function tr2angvec_test(testCase)
     verifyError(testCase, @()tr2angvec(1), 'RTB:tr2angvec:badarg');
 end
     
-%    tr2eul                     - HT/RM to Euler angles
+
+
+%% 3-angle forms
+
+function eul2r_test(testCase)
+    
+    % ZYZ
+    r2d = 180/pi;
+    
+    R = rotz(0.1) * roty(0.2) * rotz(0.3);
+    
+    verifyEqual(testCase, eul2r(0.1, 0.2, 0.3), R, 'absTol',1e-4); 
+    verifyEqual(testCase, eul2r([0.1, 0.2, 0.3]), R, 'absTol',1e-4);
+    verifyEqual(testCase, eul2r(0.1*r2d, 0.2*r2d, 0.3*r2d, 'deg'), R, 'absTol',1e-4); 
+    verifyEqual(testCase, eul2r([0.1, 0.2, 0.3]*r2d, 'deg'), R, 'absTol',1e-4);
+    
+    % trajectory case
+    Rs = eul2r( [0.1, 0.2, 0.3; 0.1 0.2 0.3; 0.1 0.2 0.3]);
+    verifySize(testCase, Rs, [3 3 3]);
+    verifyEqual(testCase, Rs(:,:,2), R, 'absTol',1e-4);
+    
+    Rs = eul2r( [0.1, 0.2, 0.3; 0.1 0.2 0.3; 0.1 0.2 0.3]*r2d, 'deg');
+    verifySize(testCase, Rs, [3 3 3]);
+    verifyEqual(testCase, Rs(:,:,2), R, 'absTol',1e-4);
+
+    %test for scalar input
+    verifyError(testCase, @()eul2r(1),'RTB:eul2r:badarg');
+end
+    
+%    eul2tr                     - Euler angles to HT
+function eul2tr_test(testCase)
+    r2d = 180/pi;
+    
+    T = trotz(0.1) * troty(0.2) * trotz(0.3);
+    
+    verifyEqual(testCase, eul2tr(0.1, 0.2, 0.3), T, 'absTol',1e-4); 
+    verifyEqual(testCase, eul2tr([0.1, 0.2, 0.3]), T, 'absTol',1e-4);
+    verifyEqual(testCase, eul2tr(0.1*r2d, 0.2*r2d, 0.3*r2d, 'deg'), T, 'absTol',1e-4); 
+    verifyEqual(testCase, eul2tr([0.1, 0.2, 0.3]*r2d, 'deg'), T, 'absTol',1e-4);
+    
+    % trajectory case
+    Ts = eul2tr( [0.1, 0.2, 0.3; 0.1 0.2 0.3; 0.1 0.2 0.3]);
+    verifySize(testCase, Ts, [4 4 3]);
+    verifyEqual(testCase, Ts(:,:,2), T, 'absTol',1e-4);
+    
+    Ts = eul2tr( [0.1, 0.2, 0.3; 0.1 0.2 0.3; 0.1 0.2 0.3]*r2d, 'deg');
+    verifySize(testCase, Ts, [4 4 3]);
+    verifyEqual(testCase, Ts(:,:,2), T, 'absTol',1e-4);
+
+    %test for scalar input
+    verifyError(testCase, @()eul2tr(1),'RTB:eul2r:badarg');
+end
+
+function rpy2r_test(testCase)
+    
+    r2d = 180/pi;
+    
+    R = rotz(0.1) * roty(0.2) * rotx(0.3);
+    
+    verifyEqual(testCase, rpy2r(0.1, 0.2, 0.3), R, 'absTol',1e-4); 
+    verifyEqual(testCase, rpy2r([0.1, 0.2, 0.3]), R, 'absTol',1e-4);
+    verifyEqual(testCase, rpy2r(0.1*r2d, 0.2*r2d, 0.3*r2d, 'deg'), R, 'absTol',1e-4); 
+    verifyEqual(testCase, rpy2r([0.1, 0.2, 0.3]*r2d, 'deg'), R, 'absTol',1e-4);
+    
+    % trajectory case
+    Rs = rpy2r( [0.1, 0.2, 0.3; 0.1 0.2 0.3; 0.1 0.2 0.3]);
+    verifySize(testCase, Rs, [3 3 3]);
+    verifyEqual(testCase, Rs(:,:,2), R, 'absTol',1e-4);
+    
+    Rs = rpy2r( [0.1, 0.2, 0.3; 0.1 0.2 0.3; 0.1 0.2 0.3]*r2d, 'deg');
+    verifySize(testCase, Rs, [3 3 3]);
+    verifyEqual(testCase, Rs(:,:,2), R, 'absTol',1e-4);
+
+    R = rotx(0.1) * roty(0.2) * rotz(0.3);
+    
+    verifyEqual(testCase, rpy2r(0.1, 0.2, 0.3, 'xyz'), R, 'absTol',1e-4); 
+    verifyEqual(testCase, rpy2r([0.1, 0.2, 0.3], 'xyz'), R, 'absTol',1e-4);
+    verifyEqual(testCase, rpy2r(0.1*r2d, 0.2*r2d, 0.3*r2d, 'deg', 'xyz'), R, 'absTol',1e-4); 
+    verifyEqual(testCase, rpy2r([0.1, 0.2, 0.3]*r2d, 'deg', 'xyz'), R, 'absTol',1e-4);  
+    
+    % trajectory case
+    Rs = rpy2r( [0.1, 0.2, 0.3; 0.1 0.2 0.3; 0.1 0.2 0.3], 'xyz');
+    verifySize(testCase, Rs, [3 3 3]);
+    verifyEqual(testCase, Rs(:,:,2), R, 'absTol',1e-4);
+    
+    Rs = rpy2r( [0.1, 0.2, 0.3; 0.1 0.2 0.3; 0.1 0.2 0.3]*r2d, 'xyz', 'deg');
+    verifySize(testCase, Rs, [3 3 3]);
+    verifyEqual(testCase, Rs(:,:,2), R, 'absTol',1e-4);
+    
+    %test for scalar input
+    verifyError(testCase, @()rpy2tr(1),'RTB:rpy2r:badarg');
+end
+
+function rpy2tr_test(testCase)
+
+    r2d = 180/pi;
+    
+    T = trotz(0.1) * troty(0.2) * trotx(0.3);
+    
+    verifyEqual(testCase, rpy2tr(0.1, 0.2, 0.3), T, 'absTol',1e-4); 
+    verifyEqual(testCase, rpy2tr([0.1, 0.2, 0.3]), T, 'absTol',1e-4);
+    verifyEqual(testCase, rpy2tr(0.1*r2d, 0.2*r2d, 0.3*r2d, 'deg'), T, 'absTol',1e-4); 
+    verifyEqual(testCase, rpy2tr([0.1, 0.2, 0.3]*r2d, 'deg'), T, 'absTol',1e-4);
+    
+    % trajectory case
+    Ts = rpy2tr( [0.1, 0.2, 0.3; 0.1 0.2 0.3; 0.1 0.2 0.3]);
+    verifySize(testCase, Ts, [4 4 3]);
+    verifyEqual(testCase, Ts(:,:,2), T, 'absTol',1e-4);
+    
+    Ts = rpy2tr( [0.1, 0.2, 0.3; 0.1 0.2 0.3; 0.1 0.2 0.3]*r2d, 'deg');
+    verifySize(testCase, Ts, [4 4 3]);
+    verifyEqual(testCase, Ts(:,:,2), T, 'absTol',1e-4);
+
+    T = trotx(0.1) * troty(0.2) * trotz(0.3);
+    
+    verifyEqual(testCase, rpy2tr(0.1, 0.2, 0.3, 'xyz'), T, 'absTol',1e-4); 
+    verifyEqual(testCase, rpy2tr([0.1, 0.2, 0.3], 'xyz'), T, 'absTol',1e-4);
+    verifyEqual(testCase, rpy2tr(0.1*r2d, 0.2*r2d, 0.3*r2d, 'deg', 'xyz'), T, 'absTol',1e-4); 
+    verifyEqual(testCase, rpy2tr([0.1, 0.2, 0.3]*r2d, 'deg', 'xyz'), T, 'absTol',1e-4);  
+    
+    % trajectory case
+    Ts = rpy2tr( [0.1, 0.2, 0.3; 0.1 0.2 0.3; 0.1 0.2 0.3], 'xyz');
+    verifySize(testCase, Ts, [4 4 3]);
+    verifyEqual(testCase, Ts(:,:,2), T, 'absTol',1e-4);
+    
+    Ts = rpy2tr( [0.1, 0.2, 0.3; 0.1 0.2 0.3; 0.1 0.2 0.3]*r2d, 'xyz', 'deg');
+    verifySize(testCase, Ts, [4 4 3]);
+    verifyEqual(testCase, Ts(:,:,2), T, 'absTol',1e-4);
+    
+    %test for scalar input
+    verifyError(testCase, @()rpy2tr(1),'RTB:rpy2r:badarg');
+end
+
 function tr2eul_test(testCase)
-    %Unit test for tr2eul with variables eul2tr( [.1, .2, .3] )
-    verifyEqual(testCase, tr2eul(eul2tr([.1, .2, .3])),...
-        [0.1000    0.2000    0.3000],'absTol',1e-4);
-    %Unit test for tr2eul with variables eul2tr( [.1, .2, .3] )
-    verifyEqual(testCase, tr2eul(eul2tr([0 0 0])),...
-        [0 0 0],'absTol',1e-4);
+
+    eul = [0.1 0.2 0.3];
+    R = eul2r(eul);
+    verifyEqual(testCase, tr2eul(R), eul,'absTol',1e-4);
+    verifyEqual(testCase, tr2eul(R, 'deg'), eul*180/pi,'absTol',1e-4);
+
+    Rs = cat(3, R, R, R, R);
+    x = tr2eul(Rs);
+    verifySize(testCase, x, [4 3]);
+    verifyEqual(testCase, x(2,:), eul,'absTol',1e-4);
+    x = tr2eul(Rs, 'deg');
+    verifySize(testCase, x, [4 3]);
+    verifyEqual(testCase, x(2,:), eul*180/pi,'absTol',1e-4);
+
+    T = eul2tr(eul);
+    verifyEqual(testCase, tr2eul(T), eul,'absTol',1e-4);
+    verifyEqual(testCase, tr2eul(T, 'deg'), eul*180/pi,'absTol',1e-4);
+
+    Ts = cat(3, T, T, T, T);
+    x = tr2eul(Ts);
+    verifySize(testCase, x, [4 3]);
+    verifyEqual(testCase, x(2,:), eul,'absTol',1e-4);
+    x = tr2eul(Ts, 'deg');
+    verifySize(testCase, x, [4 3]);
+    verifyEqual(testCase, x(2,:), eul*180/pi,'absTol',1e-4);
+
     %test for scalar input
     verifyError(testCase, @()tr2eul(1),'MATLAB:badsubscript');
 end
     
-%    tr2rpy                     - HT/RM to roll/pitch/yaw angles
 function tr2rpy_test(testCase)
-    %Unit test for rpy2r with variables [.1, .2, .3]
-     verifyEqual(testCase, tr2rpy(rpy2tr( [.1, .2, .3])),...
-        [0.1000    0.2000    0.3000],'absTol',1e-4);
-    %Unit test for tr2eul with variables eul2tr( [.1, .2, .3] )
-    verifyEqual(testCase, tr2rpy(eul2tr([0 0 0])),...
-        [0 0 0],'absTol',1e-4);
+    rpy = [0.1 0.2 0.3];
+    R = rpy2r(rpy);
+    verifyEqual(testCase, tr2rpy(R), rpy,'absTol',1e-4);
+    verifyEqual(testCase, tr2rpy(R, 'deg'), rpy*180/pi,'absTol',1e-4);
+
+    Rs = cat(3, R, R, R, R);
+    x = tr2rpy(Rs);
+    verifySize(testCase, x, [4 3]);
+    verifyEqual(testCase, x(2,:), rpy,'absTol',1e-4);
+    x = tr2rpy(Rs, 'deg');
+    verifySize(testCase, x, [4 3]);
+    verifyEqual(testCase, x(2,:), rpy*180/pi,'absTol',1e-4);
+
+    T = rpy2tr(rpy);
+    verifyEqual(testCase, tr2rpy(T), rpy,'absTol',1e-4);
+    verifyEqual(testCase, tr2rpy(T, 'deg'), rpy*180/pi,'absTol',1e-4);
+
+    Ts = cat(3, T, T, T, T);
+    x = tr2rpy(Ts);
+    verifySize(testCase, x, [4 3]);
+    verifyEqual(testCase, x(2,:), rpy,'absTol',1e-4);
+    x = tr2rpy(Ts, 'deg');
+    verifySize(testCase, x, [4 3]);
+    verifyEqual(testCase, x(2,:), rpy*180/pi,'absTol',1e-4);
+
+    % xyz order
+    R = rpy2r(rpy, 'xyz');
+    verifyEqual(testCase, tr2rpy(R, 'xyz'), rpy,'absTol',1e-4);
+    verifyEqual(testCase, tr2rpy(R, 'deg', 'xyz'), rpy*180/pi,'absTol',1e-4);
+
+    Rs = cat(3, R, R, R, R);
+    x = tr2rpy(Rs, 'xyz');
+    verifySize(testCase, x, [4 3]);
+    verifyEqual(testCase, x(2,:), rpy,'absTol',1e-4);
+    x = tr2rpy(Rs, 'deg', 'xyz');
+    verifySize(testCase, x, [4 3]);
+    verifyEqual(testCase, x(2,:), rpy*180/pi,'absTol',1e-4);
+
+    T = rpy2tr(rpy, 'xyz');
+    verifyEqual(testCase, tr2rpy(T, 'xyz'), rpy,'absTol',1e-4);
+    verifyEqual(testCase, tr2rpy(T, 'deg', 'xyz'), rpy*180/pi,'absTol',1e-4);
+
+    Ts = cat(3, T, T, T, T);
+    x = tr2rpy(Ts, 'xyz');
+    verifySize(testCase, x, [4 3]);
+    verifyEqual(testCase, x(2,:), rpy,'absTol',1e-4);
+    x = tr2rpy(Ts, 'deg', 'xyz');
+    verifySize(testCase, x, [4 3]);
+    verifyEqual(testCase, x(2,:), rpy*180/pi,'absTol',1e-4);
+
     %test for scalar input
     verifyError(testCase, @()tr2rpy(1),'MATLAB:badsubscript');
 end
     
-%    transl                     - set or extract the translational component of HT
-function transl_test(testCase)
-    %Unit test for transl with variables (0.1, 0.2, 0.3)
-    verifyEqual(testCase, transl(0.1, 0.2, 0.3),...
-        [1.0000         0         0    0.1000
-              0    1.0000         0    0.2000
-              0         0    1.0000    0.3000
-              0         0         0    1.0000],'absTol',1e-4);
-    %Unit test for transl with variables ([0.1, 0.2, 0.3])
-    verifyEqual(testCase, transl([0.1, 0.2, 0.3]),...
-        [1.0000         0         0    0.1000
-              0    1.0000         0    0.2000
-              0         0    1.0000    0.3000
-              0         0         0    1.0000],'absTol',1e-4);
-    %Unit test for transl with variables [0 0 0]
-    verifyEqual(testCase, transl([0 0 0] ),...
+        
+
+%    oa2r                       - orientation and approach vector to RM
+function oa2r_test(testCase)
+    %Unit test for oa2r with variables ([0 1 0] & [0 0 1]) 
+    verifyEqual(testCase, oa2r([0 1 0], [0 0 1]),...
+        [1     0     0
+         0     1     0
+         0     0     1],'absTol',1e-4);
+    %test for scalar input
+    verifyError(testCase, @()oa2r(1),'RTB:oa2r:badarg');
+end
+
+%    oa2tr                      - orientation and approach vector to HT
+function oa2tr_test(testCase)
+    %Unit test for oa2tr with variables ([0 1 0] & [0 0 1]) 
+    verifyEqual(testCase, oa2tr([0 1 0], [0 0 1]),...
         [1     0     0     0
          0     1     0     0
          0     0     1     0
          0     0     0     1],'absTol',1e-4);
-    %Unit test for transl with variable (1)
-    verifyEqual(testCase, transl(1),...
-        [1     0     0     1
-         0     1     0     1
-         0     0     1     1
-         0     0     0     1],'absTol',1e-4);
+    %test for scalar input
+    verifyError(testCase, @()oa2tr(1),'RTB:oa2tr:badarg');
 end
     
+%    r2t                        - RM to HT
+function r2t_test(testCase)
+    %Unit test for r2t
+
+    % SO(3) case
+    R = [1 2 3;4 5 6; 7 8 9];
+    verifyEqual(testCase, r2t(R),...
+        [1 2 3 0; 4 5 6 0; 7 8 9 0; 0 0 0 1],'absTol',1e-4);
+
+    % sequence case
+    Rs = cat(3, R, R, R);
+    Ts = r2t(Rs);
+    verifySize(testCase, Ts, [4 4 3]);
+    verifyEqual(testCase, Ts(:,:,2), ...
+        [1 2 3 0; 4 5 6 0; 7 8 9 0; 0 0 0 1],'absTol',1e-4);
+
+    % SO(2) case
+    R = [1 2; 3 4];
+    verifyEqual(testCase, r2t(R),...
+        [1 2 0; 3 4 0; 0 0 1],'absTol',1e-4);
+end
+   
+%    t2r                        - HT to RM
+function t2r_test(testCase)
+    %Unit test for r2t with variables eul2tr([.1, .2, .3])
+
+    % SO(3) case
+    T = [1 2 3 4; 5 6 7 8; 9 10 11 12; 0 0 0 1];
+    verifyEqual(testCase, t2r(T),...
+        [1 2 3; 5 6 7; 9 10 11],'absTol',1e-4);
+
+    % sequence case
+    Ts = cat(3, T, T, T);
+    Rs = t2r(Ts);
+    verifySize(testCase, Rs, [3 3 3]);
+    verifyEqual(testCase, Rs(:,:,2), ...
+        [1 2 3; 5 6 7; 9 10 11],'absTol',1e-4);
+
+    % SO(2) case
+    T = [1 2 3; 4 5 6; 0 0 1];
+    verifyEqual(testCase, t2r(T),...
+        [1 2; 4 5],'absTol',1e-4);
+end
+
+
+ 
      
 %    trnorm                     - normalize HT
 function trnorm_test(testCase)
@@ -495,133 +562,6 @@ function trnorm_test(testCase)
 end
           
      
-function rot_test(testCase)
-    verifyEqual(testCase, rotx(0), eye(3), 'absTol', 1e-9);
-    verifyEqual(testCase, roty(0), eye(3), 'absTol', 1e-9);
-    verifyEqual(testCase, rotz(0), eye(3), 'absTol', 1e-9);
-
-    verifyEqual(testCase, rotx(pi/2), [1 0 0; 0 0 -1; 0 1 0], 'absTol', 1e-9);
-    verifyEqual(testCase, roty(pi/2), [0 0 1; 0 1 0; -1 0 0], 'absTol', 1e-9);
-    verifyEqual(testCase, rotz(pi/2), [0 -1 0; 1 0 0; 0 0 1], 'absTol', 1e-9);
-
-    verifyEqual(testCase, trotx(0), eye(4), 'absTol', 1e-9);
-    verifyEqual(testCase, troty(0), eye(4), 'absTol', 1e-9);
-    verifyEqual(testCase, trotz(0), eye(4), 'absTol', 1e-9);
-
-    verifyEqual(testCase, trotx(pi/2), [1 0 0 0; 0 0 -1 0; 0 1 0 0; 0 0 0 1], 'absTol', 1e-9);
-    verifyEqual(testCase, troty(pi/2), [0 0 1 0; 0 1 0 0; -1 0 0 0; 0 0 0 1], 'absTol', 1e-9);
-    verifyEqual(testCase, trotz(pi/2), [0 -1 0 0; 1 0 0 0; 0 0 1 0; 0 0 0 1], 'absTol', 1e-9);
-
-    verifyEqual(testCase, rotx(pi/2), rotx(90, 'deg'), 'absTol', 1e-9);
-    verifyEqual(testCase, roty(pi/2), roty(90, 'deg'), 'absTol', 1e-9);
-    verifyEqual(testCase, rotz(pi/2), rotz(90, 'deg'), 'absTol', 1e-9);
-
-    verifyEqual(testCase, trotx(pi/2), trotx(90, 'deg'), 'absTol', 1e-9);
-    verifyEqual(testCase, troty(pi/2), troty(90, 'deg'), 'absTol', 1e-9);
-    verifyEqual(testCase, trotz(pi/2), trotz(90, 'deg'), 'absTol', 1e-9);
-end
-
-%    trotx                      - HT for rotation about X-axis
-function trotx_test(testCase)
-    %Unit test for trotz
-    verifyEqual(testCase, trotx(0.1),...
-        [1.0000 0 0 0
-         0 0.9950 -0.0998 0
-         0 0.0998  0.9950 0
-         0 0 0 1.0000],'absTol',1e-4);
-    verifyEqual(testCase, trotx(0),...
-        [1     0     0     0
-         0     1     0     0
-         0     0     1     0
-         0     0     0     1 ],'absTol',1e-4);
-    %test for non-scalar input
-    verifyError(testCase, @()trotx([1 2 3]),'MATLAB:catenate:dimensionMismatch');
-end
-     
-    
-%    troty                      - HT for rotation about Y-axis
-function troty_test(testCase)
-    %Unit test for troty
-    verifyEqual(testCase, troty(0.1),...
-        [0.9950 0 0.0998 0
-        0 1.0000 0 0
-        -0.0998 0 0.9950 0
-        0 0 0 1.0000],'absTol',1e-4);
-    verifyEqual(testCase, troty(0),...
-        [1     0     0     0
-         0     1     0     0
-         0     0     1     0
-         0     0     0     1 ],'absTol',1e-4);
-    %test for non-scalar input
-    verifyError(testCase, @()troty([1 2 3]),'MATLAB:catenate:dimensionMismatch');
-end
-    
-%    trotz                      - HT for rotation about Z-axis
-function trotz_test(testCase)
-    %Unit test for trotz
-    verifyEqual(testCase, trotz(0.1),...
-        [0.9950 -0.0998 0 0
-        0.0998 0.9950 0 0
-        0 0 1.0000 0
-        0 0 0 1.0000],'absTol',1e-4);
-    verifyEqual(testCase, trotz(0),...
-        [1     0     0     0
-         0     1     0     0
-         0     0     1     0
-         0     0     0     1 ],'absTol',1e-4);
-    %test for non-scalar input
-    verifyError(testCase, @()trotz([1 2 3]),'MATLAB:catenate:dimensionMismatch');
-end
-
-
-function rot2_test(testCase)
-    verifyEqual(testCase,  rot2(0), ...
-        [
-        1     0
-        0     1], 'absTol', 1e-6);
-    verifyEqual(testCase,  trot2(0), ...
-        eye(3,3), 'absTol', 1e-6);
-    verifyEqual(testCase,  rot2(0), ...
-        eye(2,2), 'absTol', 1e-6);
-    verifyEqual(testCase,  trot2(pi/2), ...
-        [
-        0    -1     0
-        1     0     0
-        0     0     1], 'absTol', 1e-6);
-    verifyEqual(testCase,  trot2(pi)*trot2(-pi/2), ...
-        trot2(pi/2), 'absTol', 1e-6);
-    verifyEqual(testCase,  rot2(pi)*rot2(-pi/2), ...
-        rot2(pi/2), 'absTol', 1e-6);
-end
-
-function SE2_test(testCase)
-    
-        T2 = [1 0 1; 0 1 2; 0 0 1];
-    verifyEqual(testCase,  transl2(T2), ...
-         [1;2], 'absTol',1e-4);
-    
-    T2f = [1 1 1; 1 1 2; 0 0 1];
-    R2 = [1 0 ; 0 1];
-    R2f = [1 1 ; 1 1];
-    verifyEqual(testCase,  ishomog2(T2), true);
-    verifyEqual(testCase,  ishomog2(T2,1), true);
-    verifyEqual(testCase,  ishomog2(T2f,1), false);
-    verifyEqual(testCase,  ishomog2(R2), false);
-
-    verifyEqual(testCase,  isrot2(R2), true);
-    verifyEqual(testCase,  isrot2(R2,1), true);
-    verifyEqual(testCase,  isrot2(R2f,1), false);
-    verifyEqual(testCase,  isrot2(T2), false);
-    
-    verifyEqual(testCase,  transl2(1, 2), ...
-        [1 0 1; 0 1 2; 0 0 1], 'absTol', 1e-6);
-    verifyEqual(testCase,  transl2([2, 3]), ...
-        [1 0 2; 0 1 3; 0 0 1], 'absTol', 1e-6);
-    verifyEqual(testCase,  SE2(2, 3, 0), ...
-        [1 0 2; 0 1 3; 0 0 1], 'absTol', 1e-6);
-    verifyEqual(testCase,  SE2(2, 3, pi/2), ...
-        transl2(2,3)*trot2(pi/2), 'absTol', 1e-6);
-end
 
 function trlog_test(testCase)
     %unit tests for matrix expon stuff

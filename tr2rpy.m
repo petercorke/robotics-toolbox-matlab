@@ -13,12 +13,12 @@
 %
 % Options::
 %  'deg'   Compute angles in degrees (radians default)
-%  'zyx'   Return solution for sequential rotations about Z, Y, X axes (Paul book)
+%  'xyz'   Return solution for sequential rotations about X, Y, Z axes
 %
 % Notes::
 % - There is a singularity for the case where P=pi/2 in which case R is arbitrarily
 %   set to zero and Y is the sum (R+Y).
-% - Note that textbooks (Paul, Spong) use the rotation order ZYX.
+% - Toolbox rel 8-9 has the reverse angle sequence
 %
 % See also  rpy2tr, tr2eul.
 
@@ -47,7 +47,7 @@
 function rpy = tr2rpy(m, varargin)
 	
     opt.deg = false;
-    opt.zyx = false;
+    opt.xyz = false;
     opt = tb_optparse(opt, varargin);
 
 	s = size(m);
@@ -60,7 +60,7 @@ function rpy = tr2rpy(m, varargin)
 	end
 	rpy = zeros(1,3);
 
-    if ~opt.zyx
+    if opt.xyz
         % XYZ order
         if abs(m(3,3)) < eps && abs(m(2,3)) < eps
             % singularity

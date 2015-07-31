@@ -16,16 +16,12 @@
 %
 % Options::
 %  'deg'   Compute angles in degrees (radians default)
-%  'zyx'   Return solution for sequential rotations about Z, Y, X axes (Paul book)
+%  'xyz'   Return solution for sequential rotations about X, Y, Z axes
 %
 % Note::
-% - In previous releases (<8) the angles corresponded to rotations about ZYX. Many 
-%   texts (Paul, Spong) use the rotation order ZYX. This old behaviour can be enabled 
-%   by passing the option 'zyx'
+% - Toolbox rel 8-9 has the reverse angle sequence
 %
 % See also TR2RPY, EUL2TR.
-
-
 
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
@@ -47,7 +43,7 @@
 % http://www.petercorke.com
 
 function R = rpy2r(roll, varargin)
-    opt.zyx = false;
+    opt.xyz = false;
     opt.deg = false;
     [opt,args] = tb_optparse(opt, varargin);
 
@@ -71,7 +67,7 @@ function R = rpy2r(roll, varargin)
         yaw = yaw * d2r;
     end
 
-    if ~opt.zyx
+    if opt.xyz
         % XYZ order
         if numrows(roll) == 1
             R = rotx(roll) * roty(pitch) * rotz(yaw);
