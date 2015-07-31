@@ -62,6 +62,7 @@ function tranimate(P2, varargin)
     opt.movie = [];
     opt.cleanup = false;
     opt.retain = false;
+    opt.time = [];
 
     [opt, args] = tb_optparse(opt, varargin);
     
@@ -69,6 +70,9 @@ function tranimate(P2, varargin)
         anim = Animate(opt.movie);
     end
     P1 = [];
+    if ~isempty(opt.time) && isempty(opt.fps)
+        opt.fps = 1 /(opt.time(2) - opt.time(1));
+    end
 
     % convert quaternion and rotation matrix to hom transform
     if isrot(P2)
@@ -138,21 +142,33 @@ function tranimate(P2, varargin)
         hg = trplot(eye(4,4), args{:});  % create a frame at the origin
     end
 
+    if ~isempty(opt.time)
+        htime = uicontrol('Parent', gcf, 'Style', 'text', ...
+            'HorizontalAlignment', 'left', 'Position', [50 20 100 20]);
+    end
     % animate it for all poses in the sequence
     for i=1:size(Ttraj,3)
+        
+        tic
         T = Ttraj(:,:,i);
         
         if opt.retain
             trplot(T, args{:});
         else
-            trplot(hg, T);
+            trplot(T, 'handle', hg);
         end
         
         if ~isempty(opt.movie)
             anim.add();
         end
         
-        pause(1/opt.fps);
+        if ~isempty(opt.time)
+            set(htime, 'String', sprintf('time %g', opt.time(i)));
+        end
+        
+        drawnow
+        dt = toc;
+        pause(1/opt.fps-dt);
     end
     
     if opt.cleanup
