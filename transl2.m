@@ -21,7 +21,7 @@
 % - Somewhat unusually this function performs a function and its inverse.  An
 %   historical anomaly.
 %
-% See also TRANSL.
+% See also SE2, ROT2, ISHOMOG2, TRPLOT2, TRANSL.
 
 
 

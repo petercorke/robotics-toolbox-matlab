@@ -8,7 +8,7 @@
 % Notes::
 % - Translational component is zero.
 %
-% See also ROT2, TRANSL2, TROTX, TROTY, TROTZ.
+% See also ROT2, TRANSL2, ISHOMOG2, TRPLOT2, TROTX, TROTY, TROTZ.
 
 
 

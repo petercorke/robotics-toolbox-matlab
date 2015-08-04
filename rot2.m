@@ -5,7 +5,7 @@
 %
 % R = ROT2(THETA, 'deg') as above but THETA is in degrees.
 %
-% See also TROT2, ROTX, ROTY, ROTZ.
+% See also SE2, TROT2, ISROT2, TRPLOT2, ROTX, ROTY, ROTZ.
 
 
 

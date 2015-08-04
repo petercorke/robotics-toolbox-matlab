@@ -9,7 +9,7 @@
 %
 % T = SE2(XYT) as above where XYT=[X,Y,THETA]
 %
-% See also TRANSL2, ROT2, ISHOMOG2, ISROT2, TRPLOT2.
+% See also TRANSL2, TROT2, ISHOMOG2, TRPLOT2.
 
 
 % Copyright (C) 1993-2015, by Peter I. Corke
