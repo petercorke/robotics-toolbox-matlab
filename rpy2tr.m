@@ -2,7 +2,7 @@
 %
 % T = RPY2TR(ROLL, PITCH, YAW, OPTIONS) is an SE(3) homogeneous
 % transformation matrix (4x4) equivalent to the specified roll, pitch, yaw
-% angles angles. These correspond to rotations about the X, Y, Z axes
+% angles angles. These correspond to rotations about the Z, Y, X axes
 % respectively. If ROLL, PITCH, YAW are column vectors (Nx1) then they are
 % assumed to represent a trajectory and R is a three-dimensional matrix
 % (4x4xN), where the last index corresponds to rows of ROLL, PITCH, YAW.
@@ -16,12 +16,12 @@
 %
 % Options::
 %  'deg'   Compute angles in degrees (radians default)
-%  'zyx'   Return solution for sequential rotations about Z, Y, X axes (Paul book)
+%  'xyz'   Return solution for sequential rotations about X, Y, Z axes
 %
 % Note::
-% - In previous releases (<8) the angles corresponded to rotations about ZYX. Many 
-%   texts (Paul, Spong) use the rotation order ZYX. This old behaviour can be enabled 
-%   by passing the option 'zyx'
+% - Toolbox rel 8-9 has the reverse angle sequence.
+% - ZYX order is appropriate for vehicles with direction of travel in the X
+%   direction.  XYZ order if direction of travel in the Z direction.
 %
 % See also TR2RPY, RPY2R, EUL2TR.
 

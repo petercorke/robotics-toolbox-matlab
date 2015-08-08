@@ -2,7 +2,7 @@
 %
 % R = RPY2R(ROLL, PITCH, YAW, OPTIONS) is an SO(3) orthonornal rotation
 % matrix (3x3) equivalent to the specified roll, pitch, yaw angles angles.
-% These correspond to rotations about the X, Y, Z axes respectively. If
+% These correspond to rotations about the Z, Y, X axes respectively. If
 % ROLL, PITCH, YAW are column vectors (Nx1) then they are assumed to
 % represent a trajectory and R is a three-dimensional matrix (3x3xN), where
 % the last index corresponds to rows of ROLL, PITCH, YAW.
@@ -19,7 +19,9 @@
 %  'xyz'   Return solution for sequential rotations about X, Y, Z axes
 %
 % Note::
-% - Toolbox rel 8-9 has the reverse angle sequence
+% - Toolbox rel 8-9 has the reverse angle sequence.
+% - ZYX order is appropriate for vehicles with direction of travel in the X
+%   direction.  XYZ order if direction of travel in the Z direction.
 %
 % See also TR2RPY, EUL2TR.
 
@@ -78,7 +80,7 @@ function R = rpy2r(roll, varargin)
             end
         end
     else
-        % old ZYX order (as per Paul book)
+        % ZYX order
         if numrows(roll) == 1
             R = rotz(roll) * roty(pitch) * rotx(yaw);
         else
