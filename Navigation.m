@@ -35,7 +35,7 @@
 % - The initial random number state is captured as seed0 to allow rerunning an
 %   experiment with an interesting outcome.
 %
-% See also Dstar, Dxform, PRM, RRT.
+% See also Dstar, Dxform, PRM, Lattice, RRT.
 
 
 % Copyright (C) 1993-2014, by Peter I. Corke
@@ -68,6 +68,7 @@ classdef Navigation < handle
     properties
         occgrid     % occupancy grid
         goal        % goal coordinate
+        start       % start coordinate
 
         navhook     % function handle, called on each navigation iteration
         verbose     % verbosity
@@ -169,67 +170,7 @@ classdef Navigation < handle
             nav.spincount = 0;
         end
 
-        function r = rand(nav, varargin)
-        %Navigation.rand Uniformly distributed random number
-        %
-        % R = N.rand() return a uniformly distributed random number from
-        % a private random number stream.
-        %
-        % R = N.rand(M) as above but return a matrix (MxM) of random numbers.
-        %
-        % R = N.rand(L,M) as above but return a matrix (LxM) of random numbers.
-        %
-        % Notes::
-        % - Accepts the same arguments as rand().
-        % - Seed is provided to Navigation constructor.
-        % - Provides an independent sequence of random numbers that does not
-        %   interfere with any other randomised algorithms that might be used.
-        %
-        % See also Navigation.randi, Navigation.randn, rand, RandStream.
-            r = nav.randstream.rand(varargin{:});
-        end
 
-        function r = randn(nav, varargin)
-        %Navigation.randn Normally distributed random number
-        %
-        % R = N.randn() returns a normally distributed random number from
-        % a private random number stream.
-        %
-        % R = N.randn(M) as above but returns a matrix (MxM) of random numbers.
-        %
-        % R = N.randn(L,M) as above but returns a matrix (LxM) of random numbers.
-        %
-        %
-        % Notes::
-        % - Accepts the same arguments as randn().
-        % - Seed is provided to Navigation constructor.
-        % - Provides an independent sequence of random numbers that does not
-        %   interfere with any other randomised algorithms that might be used.
-        %
-        % See also Navigation.rand, Navigation.randi, randn, RandStream.
-            r = nav.randstream.randn(varargin{:});
-        end
-
-        function r = randi(nav, varargin)
-        %Navigation.randi Integer random number
-        %
-        % I = N.randi(RM) returns a uniformly distributed random integer in the 
-        % range 1 to RM from a private random number stream.
-        %
-        % I = N.randi(RM, M) as above but returns a matrix (MxM) of random integers.
-        %
-        % I = N.randn(RM, L,M) as above but returns a matrix (LxM) of random integers.
-        %
-        %
-        % Notes::
-        % - Accepts the same arguments as randn().
-        % - Seed is provided to Navigation constructor.
-        % - Provides an independent sequence of random numbers that does not
-        %   interfere with any other randomised algorithms that might be used.
-        %
-        % See also Navigation.rand, Navigation.randn, randi, RandStream.
-            r = nav.randstream.randi(varargin{:});
-        end
 
         % invoked whenever the goal is set
         function set.goal(nav, goal)
@@ -343,10 +284,6 @@ robot = start;
             end
         end
 
-        function visualize(nav, varargin)
-            warning('visualize method deprecated for Navigation classes, use plot instead');
-            nav.plot(varargin{:});
-        end
 
         function plot(nav, varargin)
         %Navigation.plot  Visualize navigation environment
@@ -411,14 +348,17 @@ robot = start;
             
             if ~isempty(args)
                 p = args{1};
-                if numcols(p) ~= 2
-                    error('expecting Nx2 matrix of points');
+                if numcols(p) < 2
+                    error('expecting Nx2 or Nx3 matrix of points');
                 end
                 plot(p(:,1), p(:,2), 'g.', 'MarkerSize', 12);
             end
             
-            if ~isempty(nav.goal) && opt.goal
-                plot(nav.goal(1), nav.goal(2), 'bd', 'MarkerFaceColor', 'b');
+            if ~isempty(nav.goal)
+                plot(nav.goal(1), nav.goal(2), 'bp', 'MarkerFaceColor', 'b','MarkerSize', 12);
+            end
+            if ~isempty(nav.start)
+                plot(nav.start(1), nav.start(2), 'bo', 'MarkerFaceColor', 'b', 'MarkerSize', 8);
             end
             hold off
         end
@@ -459,6 +399,7 @@ robot = start;
         % N.char() is a string representing the state of the navigation 
         % object in human-readable form.
             s = [class(nav) ' navigation class:'];
+            
             s = char(s, sprintf('  occupancy grid: %dx%d', size(nav.occgrid)));
             if ~isempty(nav.goal)
                 if length(nav.goal) == 2
@@ -470,6 +411,67 @@ robot = start;
             end
         end
 
+        function r = rand(nav, varargin)
+        %Navigation.rand Uniformly distributed random number
+        %
+        % R = N.rand() return a uniformly distributed random number from
+        % a private random number stream.
+        %
+        % R = N.rand(M) as above but return a matrix (MxM) of random numbers.
+        %
+        % R = N.rand(L,M) as above but return a matrix (LxM) of random numbers.
+        %
+        % Notes::
+        % - Accepts the same arguments as rand().
+        % - Seed is provided to Navigation constructor.
+        % - Provides an independent sequence of random numbers that does not
+        %   interfere with any other randomised algorithms that might be used.
+        %
+        % See also Navigation.randi, Navigation.randn, rand, RandStream.
+            r = nav.randstream.rand(varargin{:});
+        end
+
+        function r = randn(nav, varargin)
+        %Navigation.randn Normally distributed random number
+        %
+        % R = N.randn() returns a normally distributed random number from
+        % a private random number stream.
+        %
+        % R = N.randn(M) as above but returns a matrix (MxM) of random numbers.
+        %
+        % R = N.randn(L,M) as above but returns a matrix (LxM) of random numbers.
+        %
+        %
+        % Notes::
+        % - Accepts the same arguments as randn().
+        % - Seed is provided to Navigation constructor.
+        % - Provides an independent sequence of random numbers that does not
+        %   interfere with any other randomised algorithms that might be used.
+        %
+        % See also Navigation.rand, Navigation.randi, randn, RandStream.
+            r = nav.randstream.randn(varargin{:});
+        end
+
+        function r = randi(nav, varargin)
+        %Navigation.randi Integer random number
+        %
+        % I = N.randi(RM) returns a uniformly distributed random integer in the 
+        % range 1 to RM from a private random number stream.
+        %
+        % I = N.randi(RM, M) as above but returns a matrix (MxM) of random integers.
+        %
+        % I = N.randn(RM, L,M) as above but returns a matrix (LxM) of random integers.
+        %
+        %
+        % Notes::
+        % - Accepts the same arguments as randn().
+        % - Seed is provided to Navigation constructor.
+        % - Provides an independent sequence of random numbers that does not
+        %   interfere with any other randomised algorithms that might be used.
+        %
+        % See also Navigation.rand, Navigation.randn, randi, RandStream.
+            r = nav.randstream.randi(varargin{:});
+        end
         
         function verbosity(nav, v)
         %Navigation.verbosity Set verbosity
