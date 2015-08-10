@@ -118,11 +118,7 @@ classdef Quaternion
             end
             
         end
-        
-        function uq = new(q, varargin)
-            uq = Quaternion(varargin{:});
-        end
-        
+
         function qo = set.s(q, s)
             if ~isreal(s) || ~isscalar(s)
                 error('RTB:Quaternion:badarg', 's must be real scalar');
@@ -217,7 +213,7 @@ classdef Quaternion
             % See also Quaternion.norm.
             
             for i=1:length(q)
-                qu(i) = Quaternion( q(i).double / norm(q(i)) );
+                qu(i) = UnitQuaternion( q(i).double / norm(q(i)) );
             end
         end
 
@@ -290,6 +286,11 @@ classdef Quaternion
                 %
                 % QQ = qqmul(Q1, Q2) is the product of two quaternions.
                 
+                if isa(q1, 'UnitQuaternion') && isa(q2, 'UnitQuaternion')
+                    new = @UnitQuaternion.new;
+                else
+                    new = @Quaternion.new;
+                end
                 if length(q1) == length(q2)
                     for i=1:length(q1)
                         % decompose into scalar and vector components
@@ -297,7 +298,7 @@ classdef Quaternion
                         s2 = q2(i).s;  v2 = q2(i).v;
                         
                         % form the product
-                        qp(i) = q2.new([s1*s2-v1*v2' s1*v2+s2*v1+cross(v1,v2)]);
+                        qp(i) = new([s1*s2-v1*v2' s1*v2+s2*v1+cross(v1,v2)]);
                     end
                 elseif isscalar(q1)
                     s1 = q1.s;  v1 = q1.v;
@@ -307,7 +308,7 @@ classdef Quaternion
                         s2 = q2(i).s;  v2 = q2(i).v;
                         
                         % form the product
-                        qp(i) = q2.new([s1*s2-v1*v2' s1*v2+s2*v1+cross(v1,v2)]);
+                        qp(i) = new([s1*s2-v1*v2' s1*v2+s2*v1+cross(v1,v2)]);
                     end
                 elseif isscalar(q2)
                     s2 = q2.s;  v2 = q2.v;
@@ -317,7 +318,7 @@ classdef Quaternion
                         s1 = q1(i).s;  v1 = q1(i).v;
                         
                         % form the product
-                        qp(i) = q2.new([s1*s2-v1*v2' s1*v2+s2*v1+cross(v1,v2)]);
+                        qp(i) = new([s1*s2-v1*v2' s1*v2+s2*v1+cross(v1,v2)]);
                     end
                 else
                     error('RTB:quaternion:badarg', '* operand length mismatch');
@@ -420,19 +421,23 @@ classdef Quaternion
             
             % check that exponent is an integer
             if (p - floor(p)) ~= 0
-                error('quaternion exponent must be integer');
+                error('RTB:Quaternion:badarg', 'quaternion exponent must be integer');
             end
             
-            qp = q.new();
-            
-            % multiply by itself so many times
-            for i = 2:abs(p)
-                qp = qp * q;
-            end
-            
-            % if exponent was negative, invert it
-            if p<0
-                qp = inv(qp);
+            if p == 0
+                qp = q.new([1 0 0 0]);
+            else
+                qp = q();
+                
+                % multiply by itself so many times
+                for i = 2:abs(p)
+                    qp = qp * q;
+                end
+                
+                % if exponent was negative, invert it
+                if p<0
+                    qp = inv(qp);
+                end
             end
         end
         
@@ -668,6 +673,10 @@ classdef Quaternion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods(Static)
         
+        function uq = new(varargin)
+            uq = Quaternion(varargin{:});
+        end
+                
         function q = pure(v)
             
             if ~isvec(v)

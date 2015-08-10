@@ -163,11 +163,7 @@ classdef UnitQuaternion < Quaternion
             
         end
         
-        % Helper function for an object that invokes it's constructor.  If invoked
-        % on a UnitQuaternion in the superclass will construct a UnitQuaternion.
-        function uq = new(q, varargin)
-            uq = UnitQuaternion(varargin{:});
-        end
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% UNIT-QUATERNION FUNCTIONS
@@ -407,7 +403,7 @@ classdef UnitQuaternion < Quaternion
                             q = q1 * Quaternion.pure(q2(:,i)) * inv(q1);
                             qp(:,i) = q.v(:);
                         end
-                    elseif length(q2) == 1
+                    elseif numcols(q2) == 1
                         for i=1:length(q1)
                             q = q1(i) * Quaternion.pure(q2(:)) * inv(q1(i));
                             qp(:,i) = q.v(:);
@@ -416,7 +412,7 @@ classdef UnitQuaternion < Quaternion
                         error('RTB:UnitQuaternion:badarg', 'quaternion-double product: vectors lengths incorrect');
                     end
                 else
-                    error('RTB:UnitQuaternion:badarg', 'quaternion-double product: must be a 3-vector');
+                    aerror('RTB:UnitQuaternion:badarg', 'quaternion-double product: must be a 3-vector');
                 end
             else
                 error('RTB:UnitQuaternion:badarg', 'quaternion product: incorrect right hand operand');
@@ -440,11 +436,12 @@ classdef UnitQuaternion < Quaternion
             %
             % See also Quaternion.mtimes.
             if isa(q2, 'UnitQuaternion')
-                qp = unit( q1*q2 );
+                qp = unit(q1*q2 );
             else
                 error('RTB:UnitQuaternion:badarg', 'quaternion product .*: incorrect operands');
             end
         end
+        
         
         
         function qq = mrdivide(q1, q2)
@@ -614,7 +611,13 @@ classdef UnitQuaternion < Quaternion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% STATIC FACTORY METHODS, ALTERNATIVE CONSTRUCTORS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    methods(Static)        
+    methods(Static) 
+        
+                % Helper function for an object that invokes it's constructor.  If invoked
+        % on a UnitQuaternion in the superclass will construct a UnitQuaternion.
+        function uq = new(varargin)
+            uq = UnitQuaternion(varargin{:});
+        end
 
         function uq = Rx(varargin)
             %UnitQuaternion.Rx Unit-quaternion constructor for rotation about x-axis.
@@ -646,7 +649,7 @@ classdef UnitQuaternion < Quaternion
             % Q = UnitQuaternion.Rz(ANGLE, 'deg') as above but THETA is in degrees.
             %
             % See also UnitQuaternion.Rx, UnitQuaternion.Ry.
-            uq = UnitQuaternion( rotx(varargin{:}));
+            uq = UnitQuaternion( rotz(varargin{:}));
         end
         
         function uq = omega(w)
@@ -739,7 +742,9 @@ classdef UnitQuaternion < Quaternion
             %   Return a unit-quaternion corresponding to the rotational part of the
             %   homogeneous transform T.
             %
-            
+            if ishomog(R)
+                R = t2r(R);
+            end
             s = sqrt(trace(R)+1)/2.0;
             kx = R(3,2) - R(2,3);   % Oz - Ay
             ky = R(1,3) - R(3,1);   % Ax - Nz
