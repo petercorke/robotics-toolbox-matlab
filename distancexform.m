@@ -39,6 +39,8 @@
 
 function d = distancexform(world, goal, metric, show)
     
+    world = idouble(world);
+    
     if exist('imorph', 'file') ~= 3
         error('Machine Vision Toolbox is required by this function');
     end
@@ -81,13 +83,13 @@ function d = distancexform(world, goal, metric, show)
         idisp(world)
     end
 
-
     count = 0;
+    ninf = Inf;  % number of infinities in the map
     while 1
         world = imorph(world, m, 'plusmin');
         count = count+1;
         if show
-            cmap = [1 0 0; gray(256)];
+            cmap = [1 0 0; gray(count)];
             colormap(cmap)
             image(world+1, 'CDataMapping', 'direct');
             set(gca, 'Ydir', 'normal');
@@ -96,14 +98,17 @@ function d = distancexform(world, goal, metric, show)
             pause(show);
         end
 
-        if ~any(isinf(world(:)))
-            % stop if no Inf's left in the map
+        ninfnow = sum( isinf(world(:)) ); % current number of Infs
+        if ninfnow == ninf
+            % stop if the number of Infs left in the map had stopped reducing
+            % it may never get to zero if there are unreachable cells in the map
             break;
         end
+        ninf = ninfnow;
     end
 
     if show
-        fprintf('%d iterations\n', count);
+        fprintf('%d iterations, %d unreachable cells\n', count, ninf);
     end
 
     d = world;
