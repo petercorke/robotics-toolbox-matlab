@@ -46,8 +46,20 @@
 
 function R = rpy2r(roll, varargin)
     opt.xyz = false;
+    opt.zyx = false;
     opt.deg = false;
     [opt,args] = tb_optparse(opt, varargin);
+    
+    if opt.xyz & opt.zyx
+        error('RTB:rpy2r:badopt', 'xyz and zyx flags cannot both be set');
+    elseif opt.xyz & ~opt.zyx
+        xyzorder = true;
+    elseif ~opt.xyz & opt.zyx
+        xyzorder = false;
+    elseif ~opt.xyz & ~opt.zyx
+        % default, ZYX order
+        xyzorder = false;
+    end
 
     % unpack the arguments
     if numcols(roll) == 3
@@ -69,7 +81,7 @@ function R = rpy2r(roll, varargin)
         yaw = yaw * d2r;
     end
 
-    if opt.xyz
+    if xyzorder
         % XYZ order
         if numrows(roll) == 1
             R = rotx(roll) * roty(pitch) * rotz(yaw);
