@@ -78,7 +78,6 @@ classdef Dstar < Navigation
 
     properties (SetAccess=private, GetAccess=private)
 
-        costmap   % world cost map: obstacle = Inf
         G         % index of goal point
 
         % info kept per cell (state)
@@ -90,19 +89,26 @@ classdef Dstar < Navigation
         %   each open point is a column, row 1 = index of cell, row 2 = k
         openlist
 
-        niter
+
 
         changed
 
         openlist_maxlen     % keep track of maximum length
-        quiet
-
+        
+        
         % tag state values
         NEW = 0;
         OPEN = 1;
         CLOSED = 2;
     end
-
+    
+    properties (SetAccess=private, GetAccess=public)
+        quiet
+        niter
+        costmap   % world cost map: obstacle = Inf
+        
+    end
+    
     methods
 
         % constructor
@@ -133,7 +139,7 @@ classdef Dstar < Navigation
             opt = tb_optparse(opt, varargin);
             ds.quiet = opt.quiet;
 
-            ds.occgrid2costmap(ds.occgrid);
+            ds.occgrid2costmap(ds.occgridnav);
 
 
             % init the D* state variables
@@ -167,7 +173,7 @@ classdef Dstar < Navigation
             goal = ds.goal;
 
             % keep goal in index rather than row,col format
-            ds.G = sub2ind(size(ds.occgrid), goal(2), goal(1));
+            ds.G = sub2ind(size(ds.occgridnav), goal(2), goal(1));
             ds.INSERT(ds.G, 0, 'goalset');
             ds.h(ds.G) = 0;
         end
@@ -312,7 +318,7 @@ classdef Dstar < Navigation
         %   calling DS.plan(). 
         %
         % See also Dstar.costmap_get, Dstar.costmap_modify.
-            if ~all(size(costmap) == size(ds.occgrid))
+            if ~all(size(costmap) == size(ds.occgridnav))
                 error('costmap must be same size as occupancy grid');
             end
             ds.costmap = costmap;

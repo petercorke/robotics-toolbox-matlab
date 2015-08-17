@@ -159,21 +159,23 @@ classdef DXform < Navigation
                 error('No goal specified');
             end
 
-            %dx.occgrid(dx.goal(2), dx.goal(1))
-            dx.distancemap = distancexform(dx.occgrid, dx.goal, dx.metric, show);
+            dx.distancemap = distancexform(dx.occgridnav, dx.goal, dx.metric, show);
 
         end
 
         function plot(dx, varargin)
             %DXform.plot Visualize navigation environment
             %
-            % DX.plot() displays the occupancy grid and the goal distance
+            % DX.plot(OPTIONS) displays the occupancy grid and the goal distance
             % in a new figure.  The goal distance is shown by intensity which
             % increases with distance from the goal.  Obstacles are overlaid
             % and shown in red.
             %
-            % DX.plot(P) as above but also overlays a path given by the set
+            % DX.plot(P, OPTIONS) as above but also overlays a path given by the set
             % of points P (2xM).
+            %
+            % Notes::
+            % - See Navigation.plot for options.
             %
             % See also Navigation.plot.
 

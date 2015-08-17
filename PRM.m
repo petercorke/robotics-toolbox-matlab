@@ -69,7 +69,8 @@ classdef PRM < Navigation
         vstart          % index of vertex closest to start
         localGoal       % next vertex on the roadmap
         localPath       % set of points along path to next vertex
-        gpath           % list of vertices between start and goal
+        vpath           % list of vertices between start and goal
+        gpath
     end
 
     methods
@@ -101,7 +102,7 @@ classdef PRM < Navigation
 
             % parse out PRM specific options and save in the navigation object
             opt.npoints = 100;
-            opt.distthresh = 0.3*max(size(prm.occgrid));
+            opt.distthresh = 0.3*max(size(prm.occgridnav));
             [opt,args] = tb_optparse(opt, varargin);
             prm.npoints = opt.npoints;
             prm.distthresh = opt.distthresh;
@@ -119,6 +120,7 @@ classdef PRM < Navigation
             prm.message('create the graph');
 
             prm.graph.clear();  % empty the graph
+            prm.vpath = [];
             create_roadmap(prm);  % build the graph
         end
         
@@ -146,6 +148,34 @@ classdef PRM < Navigation
             end
         end
 
+        function c = closest(prm, vertex, vcomponent)
+            
+            % find a node close to v that is:
+            %  - closest
+            %  - in the same component
+            %  - free straight line path
+                            if nargin > 2
+            component = prm.graph.component(vcomponent);
+                            end
+            [d,v] = prm.graph.distances(vertex);
+            c = [];
+            
+            % test neighbours in order of increasing distance and check for a clear
+            % path
+            for i=1:length(d)
+                if nargin > 2
+                    if prm.graph.component(v(i)) ~= component
+                        continue; % not connected
+                    end
+                end
+                if ~prm.testpath(vertex, prm.graph.coord(v(i)))
+                    continue; % no path
+                end
+                c = v(i);
+                break
+            end
+        end
+        
         % Handler invoked by Navigation.path() to start the navigation process
         %
         %   - find a path through the graph
@@ -154,23 +184,25 @@ classdef PRM < Navigation
         function navigate_init(prm, start)
 
             % find the vertex closest to the goal
-            prm.vgoal = prm.graph.closest(prm.goal);
+            prm.vgoal = prm.closest(prm.goal);
+            if isempty(prm.vgoal)
+                error('RTB:PRM:nopath', 'plan: no path roadmap -> goal: rerun the planner');
+            end
             
             % find the vertex closest to the start
-            prm.vstart = prm.graph.closest(start);
-
-            % are the vertices connected?
-            if prm.graph.component(prm.vstart) ~= prm.graph.component(prm.vgoal)
-                error('PRM:plan:nopath', 'PRM: start and goal not connected: rerun the planner');
+            prm.vstart = prm.closest(start, prm.vgoal);
+            if isempty(prm.vstart)
+                error('RTB:PRM:nopath', 'plan: no path start -> roadmap: rerun the planner');
             end
             
             % find a path through the graph
             prm.message('planning path through graph');
-            prm.graph.goal(prm.vgoal);   % set the goal 
-            prm.gpath = prm.graph.path(prm.vstart);
+
+            prm.vpath = prm.graph.Astar(prm.vstart, prm.vgoal);
 
             % the path is a list of nodes from vstart to vgoal
             % discard the first vertex, since we plan a local path to it
+            prm.gpath = prm.vpath;
             prm.gpath = prm.gpath(2:end);
 
             % start the navigation engine with a path to the nearest vertex
@@ -241,17 +273,34 @@ classdef PRM < Navigation
         %  'goal'            Superimpose the goal position if set
         %  'nooverlay'       Don't overlay the PRM graph
             
-            opt.nooverlay = false;
+            opt.overlay = true;
+            opt.nodes = true;
             [opt,args] = tb_optparse(opt, varargin);
             
             % display the occgrid
             plot@Navigation(prm, args{:});
             
-            if ~opt.nooverlay
+            if opt.overlay
                 hold on
-                prm.graph.plot()%varargin{:});
-                hold off
+                prm.graph.plot('componentcolor');
+                
+                if opt.nodes
+                    prm.graph.highlight_path(prm.vpath, ...
+                        'NodeFaceColor', 'y', ...
+                        'NodeEdgeColor', 'k', ...
+                        'EdgeColor', 'k', ...
+                        'EdgeThickness', 2 ...
+                        )
+                end
             end
+            
+%             % get the superclass to plot the path
+%             if nargin > 1
+%                 plot@Navigation(prm, varargin{:});
+%             end
+            
+            hold off
+            
         end
 
     end % method
@@ -266,27 +315,30 @@ classdef PRM < Navigation
                 while true
                     x = prm.randi(numcols(prm.occgrid));
                     y = prm.randi(numrows(prm.occgrid));
-                    if prm.occgrid(y,x) == 0
-                        break;
+                    if ~prm.occupied([x y])
+                        break; % free cell
                     end
                 end
                 new = [x; y];
 
+                % add it to the graph
                 vnew = prm.graph.add_node(new);
 
+                % find the closest node already in the graph
                 [d,v] = prm.graph.distances(new);
-                % test neighbours in order of increasing distance
+                
+                % test neighbours in order of increasing distance and check for a clear
+                % path
                 for i=1:length(d)
-                    if v(i) == vnew
-                        continue;
-                    end
                     if d(i) > prm.distthresh
-                        continue;
+                        continue; % it's too far
                     end
                     if ~prm.testpath(new, prm.graph.coord(v(i)))
-                        continue;
+                        continue; % no path
                     end
-                    prm.graph.add_edge(vnew, v(i));
+                    
+                    % add an edge from the found node to new
+                    prm.graph.add_edge(v(i), vnew);
                 end
             end
         end
@@ -296,7 +348,7 @@ classdef PRM < Navigation
             p = bresenham(p1, p2);
 
             for pp=p'
-                if prm.occgrid(pp(2), pp(1)) > 0
+                if prm.occupied(pp)
                     c = false;
                     return;
                 end

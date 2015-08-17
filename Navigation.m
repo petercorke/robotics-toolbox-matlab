@@ -66,7 +66,10 @@
 classdef Navigation < handle
 
     properties
+        options
+        
         occgrid     % occupancy grid
+        occgridnav
         goal        % goal coordinate
         start       % start coordinate
 
@@ -133,11 +136,14 @@ classdef Navigation < handle
             opt.reset = false;
             opt.seed = [];
             
-            [opt,args] = tb_optparse(opt, varargin);
+            [opt,lp.options] = tb_optparse(opt, varargin);
 
             % optionally inflate the obstacles
+
             if opt.inflate > 0
-                nav.occgrid = idilate(nav.occgrid, kcircle(opt.inflate));
+                nav.occgridnav = idilate(nav.occgrid, kcircle(opt.inflate));
+            else
+                nav.occgridnav = nav.occgrid;
             end
             
             % copy other options into the object
@@ -170,12 +176,24 @@ classdef Navigation < handle
             nav.spincount = 0;
         end
 
-
+        function occ = occupied(nav, pos)
+            if isempty(nav.occgridnav)
+                % there are no limits, everywhere is unoccuplied
+                occ = false;
+            else
+                try
+                    occ = nav.occgridnav( pos(2), pos(1) ) > 0;
+                catch me
+                    % come here if subscript out of range, we have fallen off the edge of the map
+                    occ = true;
+                end
+            end
+        end
 
         % invoked whenever the goal is set
         function set.goal(nav, goal)
 
-            if ~isempty(nav.occgrid) && nav.occgrid( goal(2), goal(1)) == 1
+            if nav.occupied(goal)
                 error('Navigation: cant set goal inside obstacle');
             end
             
@@ -288,12 +306,15 @@ robot = start;
         function plot(nav, varargin)
         %Navigation.plot  Visualize navigation environment
         %
-        % N.plot() displays the occupancy grid in a new figure.
+        % N.plot(OPTIONS) displays the occupancy grid in a new figure.
         %
-        % N.plot(P) as above but overlays the points along the path (2xM) matrix.
+        % N.plot(P, OPTIONS) as above but overlays the points along the path (2xM) matrix.
         %
         % Options::
-        %  'goal'         Superimpose the goal position if set
+        %  'colormap',@f    Specify a colormap as a function handle, eg. @hsv
+        %  'beta',V       Specify a beta value to brighten/darken the colormap
+        %  'goal'         Superimpose the start and goal positions if set. Goal is
+        %                 a pentagram, start is a circle.
         %  'distance',D   Display a distance field D behind the obstacle map.  D is
         %                 a matrix of the same size as the occupancy grid.
         %
@@ -301,9 +322,21 @@ robot = start;
         % - The distance field at a point encodes its distance from the goal, small
         %   distance is dark, a large distance is bright.  Obstacles are encoded as
         %   red.
+        % - beta value -1<V<0 to darken, 0<V<+1 to lighten.
+        %
+        % See also brighten.
             
-            opt.goal = false;
+            opt.goal = true;
             opt.distance = [];
+            opt.colormap = @bone;
+            opt.beta = 0.2;
+            opt.pathmarker =  {};
+            opt.startmarker = {};
+            opt.goalmarker =  {};
+            
+            pathmarker =  {'g.', 'MarkerSize', 12};
+            startmarker = {'bo','MarkerFaceColor', 'b', 'MarkerSize', 8};
+            goalmarker =  {'bp', 'MarkerFaceColor', 'b','MarkerSize', 12};
             
             [opt,args] = tb_optparse(opt, varargin);
             
@@ -313,7 +346,8 @@ robot = start;
                 %   free space, color index = 1, white, 
                 %   obstacle, color index = 2, red
                 cmap = [1 1 1; 1 0 0];  % non obstacles are white
-                image(nav.occgrid+1, 'CDataMapping', 'direct');
+                image(nav.occgrid+1, 'CDataMapping', 'direct', ...
+                    'AlphaData', nav.occgrid);
                 colormap(cmap)
                 
             else
@@ -327,7 +361,7 @@ robot = start;
                 maxdist = max(d(:)) + 1;
                 
                 % create the color map
-                cmap = [1 0 0; gray(maxdist)];
+                cmap = [1 0 0; opt.colormap(ceil(maxdist))];
                 
                 % ensure obstacles appear as red pixels
                 opt.distance(nav.occgrid > 0) = 0;
@@ -337,6 +371,7 @@ robot = start;
                 set(gcf, 'Renderer', 'Zbuffer')
                 colormap(cmap)
                 colorbar
+                brighten(opt.beta)
             end
             
             % label the grid
@@ -346,19 +381,24 @@ robot = start;
             grid on
             hold on
             
+            % overlay a path if provided
             if ~isempty(args)
                 p = args{1};
                 if numcols(p) < 2
                     error('expecting Nx2 or Nx3 matrix of points');
                 end
-                plot(p(:,1), p(:,2), 'g.', 'MarkerSize', 12);
+                plot(p(:,1), p(:,2), pathmarker{:}, ...
+                    opt.pathmarker{:});
             end
             
-            if ~isempty(nav.goal)
-                plot(nav.goal(1), nav.goal(2), 'bp', 'MarkerFaceColor', 'b','MarkerSize', 12);
+            % mark start and goal if requested
+            if opt.goal && ~isempty(nav.goal)
+                plot(nav.goal(1), nav.goal(2), ...
+                    goalmarker{:}, opt.goalmarker{:});
             end
-            if ~isempty(nav.start)
-                plot(nav.start(1), nav.start(2), 'bo', 'MarkerFaceColor', 'b', 'MarkerSize', 8);
+            if opt.goal && ~isempty(nav.start)
+                plot(nav.start(1), nav.start(2), ...
+                    startmarker{:}, opt.startmarker{:});
             end
             hold off
         end

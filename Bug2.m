@@ -110,6 +110,7 @@ classdef Bug2 < Navigation
                 y = -[x [1;1]] * [bug.mline(1); bug.mline(3)] / bug.mline(2);
                 plot(x, y, 'k--');
             end
+            bug.step = 1;
         end
         
         % this should be a protected function, but can't make this callable
@@ -134,12 +135,12 @@ classdef Bug2 < Navigation
                 dy = sign(d(2));
 
                 % detect if next step is an obstacle
-                if bug.occgrid(robot(2)+dy, robot(1)+dx)
+                if bug.occupied(robot + [dx; dy])
                     bug.message('(%d,%d) obstacle!', n);
                     bug.H(bug.j,:) = robot; % define hit point
                     bug.step = 2;
                     % get a list of all the points around the obstacle
-                    bug.edge = edgelist(bug.occgrid==0, robot);
+                    bug.edge = edgelist(bug.occgridnav == 0, robot);
                     bug.k = 2;  % skip the first edge point, we are already there
                 else
                     n = robot + [dx; dy];
