@@ -9,7 +9,7 @@
 %
 % Properties::
 % robot   The Vehicle object on which the sensor is mounted
-% map     The Map object representing the landmarks around the robot
+% map     The PointMap object representing the landmarks around the robot
 %
 % Reference::
 %
@@ -17,7 +17,7 @@
 %   Peter Corke,
 %   Springer 2011
 %
-% See also RangeBearing, EKF, Vehicle, Map.
+% See also RangeBearing, EKF, Vehicle, PointMap.
 
 
 % Copyright (C) 1993-2015, by Peter I. Corke
@@ -63,7 +63,7 @@ classdef Sensor < handle
         %Sensor.Sensor Sensor object constructor
         %
         % S = Sensor(VEHICLE, MAP, OPTIONS) is a sensor mounted on a vehicle described by the Vehicle class object
-        % VEHICLE and observing landmarks in a map described by the Map class object MAP.
+        % VEHICLE and observing landmarks in a map described by the PointMap class object MAP.
         %
         % Options::
         % 'animate'    animate the action of the laser scanner

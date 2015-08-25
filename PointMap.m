@@ -1,6 +1,6 @@
-%MAP Map of planar point features
+%PointMap Map of planar point features
 %
-% A Map object represents a square 2D environment with a number of landmark
+% A PointMap object represents a square 2D environment with a number of landmark
 % feature points.
 %
 % Methods::
@@ -18,7 +18,7 @@
 %
 % To create a map for an area where X and Y are in the range -10 to +10 metres
 % and with 50 random feature points
-%        map = Map(50, 10);
+%        map = PointMap(50, 10);
 % which can be displayed by
 %        map.plot();
 %
@@ -50,7 +50,7 @@
 %
 % http://www.petercorke.com
 
-classdef Map < handle
+classdef PointMap < handle
 % TODO:
 % add a name property, show in char()
 
@@ -65,10 +65,10 @@ classdef Map < handle
     methods
 
         % constructor
-        function map = Map(nfeatures, varargin)
-        %Map.Map Create a map of point feature landmarks
+        function map = PointMap(nfeatures, varargin)
+        %PointMap.PointMap Create a map of point feature landmarks
         %
-        % M = Map(N, DIM, OPTIONS) is a Map object that represents N random point features
+        % M = PointMap(N, DIM, OPTIONS) is a PointMap object that represents N random point features
         % in a planar region bounded by +/-DIM in the x- and y-directions.
         %
         % Options::
@@ -90,14 +90,14 @@ classdef Map < handle
         end
 
         function f = feature(map, k)
-            %Map.feature Get landmarks from map
+            %PointMap.feature Get landmarks from map
             %
             % F = M.feature(K) is the coordinate (2x1) of the K'th map feature (landmark).
             f = map.map(:,k);
         end
 
         function plot(map, varargin)
-            %Map.plot Plot the map
+            %PointMap.plot Plot the map
             %
             % M.plot() plots the feature map in the current figure, as a square
             % region with dimensions given by the M.dim property.  Each feature
@@ -115,11 +115,12 @@ classdef Map < handle
             ylabel('y');
 
             if nargin == 1
-                args = {'kd'};
+                args = {'kh'};
             else
                 args = varargin;
             end
-            plot(map.map(1,:)', map.map(2,:)', args{:});
+            h = plot(map.map(1,:)', map.map(2,:)', args{:});
+            set(h, 'Tag', 'map');
             grid on
             hold on
         end
@@ -149,7 +150,7 @@ classdef Map < handle
             %
             % Notes::
             % - This method is invoked implicitly at the command line when the result
-            %   of an expression is a Map object and the command has no trailing
+            %   of an expression is a PointMap object and the command has no trailing
             %   semicolon.
             %
             % See also map.char.
@@ -166,7 +167,7 @@ classdef Map < handle
         %
         % s = M.char() is a string showing map parameters in 
         % a compact human readable format. 
-            s = 'Map object';
+            s = 'PointMap object';
             s = char(s, sprintf('  %d features', map.nfeatures));
             s = char(s, sprintf('  dimension %.1f', map.dim));
         end

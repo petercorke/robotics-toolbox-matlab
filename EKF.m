@@ -16,7 +16,7 @@
 %   - The vehicle must be driven within the area of the map and this is 
 %     achieved by connecting the Vehicle object to a Driver object.  
 %   - a map containing the position of a number of landmark points and is
-%     represented by a Map object.
+%     represented by a PointMap object.
 %   - a sensor that returns measurements about landmarks relative to the 
 %     vehicle's location and is represented by a Sensor object subclass.
 %
@@ -76,7 +76,7 @@
 % vehicle state covariance P0
 %    veh = Vehicle(V);
 %    veh.add_driver( RandomPath(20, 2) );
-%    map = Map(20);
+%    map = PointMap(20);
 %    sensor = RangeBearingSensor(veh, map, W);
 %    ekf = EKF(veh, V_est, P0, sensor, W_est, map);
 % We run the simulation for 1000 time steps
@@ -122,7 +122,7 @@
 %
 %    veh = Vehicle(V);
 %    veh.add_driver( RandomPath(20, 2) );
-%    map = Map(20);
+%    map = PointMap(20);
 %    sensor = RangeBearingSensor(veh, map, W);
 %    ekf = EKF(veh, V_est, P0, sensor, W, []);
 % We run the simulation for 1000 time steps
@@ -157,7 +157,7 @@
 % Inspired by code of Paul Newman, Oxford University, 
 % http://www.robots.ox.ac.uk/~pnewman
 %
-% See also Vehicle, RandomPath, RangeBearingSensor, Map, ParticleFilter.
+% See also Vehicle, RandomPath, RangeBearingSensor, PointMap, ParticleFilter.
 
 
 % Copyright (C) 1993-2015, by Peter I. Corke
@@ -182,7 +182,7 @@ classdef EKF < handle
 
     %TODO
     % add a hook for data association
-    % show ellipses and laser scan landmark strikes (perhaps this in Map
+    % show ellipses and laser scan landmark strikes (perhaps this in PointMap
     % class)
     % show landmark covar as ellipse or pole
     % show vehicle covar as ellipse
@@ -267,7 +267,7 @@ classdef EKF < handle
             % - EKF subclasses Handle, so it is a reference object.
             % - Dimensions of workspace are normally taken from the map if given.
             %
-            % See also Vehicle, Sensor, RangeBearingSensor, Map.
+            % See also Vehicle, Sensor, RangeBearingSensor, PointMap.
 
             opt.history = true;
             opt.joseph = true;
@@ -312,8 +312,8 @@ classdef EKF < handle
             end
             
             % check types for passed objects
-            if ~isempty(map) && ~isa(map, 'Map')
-                error('RTB:EKF:badarg', 'expecting Map object');
+            if ~isempty(map) && ~isa(map, 'PointMap')
+                error('RTB:EKF:badarg', 'expecting PointMap object');
             end
             if ~isempty(sensor) && ~isa(sensor, 'Sensor')
                 error('RTB:EKF:badarg', 'expecting Sensor object');
@@ -431,6 +431,7 @@ classdef EKF < handle
                 end
                 if nargout == 0
                     plot(xyt(:,1), xyt(:,2), varargin{:});
+                    plot(xyt(1,1), xyt(1,2), 'ko', 'MarkerSize', 8, 'LineWidth', 2);
                 end
             else
                 xyt = [];
@@ -513,7 +514,7 @@ classdef EKF < handle
                     plot(err(:,3), args{:});
                     hold off
                     grid
-                    xlabel('time (samples)')
+                    xlabel('Time step')
                     ylabel('\theta error')
                 else
                     out = pxy;
@@ -521,7 +522,7 @@ classdef EKF < handle
             end
         end
         
-        function out = plot_map(ekf, covar, varargin)
+        function out = plot_map(ekf, confidence, varargin)
         %EKF.plot_map Plot landmarks
         %
         % E.plot_map() overlay the current plot with the estimated landmark 
@@ -540,7 +541,7 @@ classdef EKF < handle
         % TODO:  some option to plot map evolution, layered ellipses
 
             if nargin < 2
-                covar = 1;
+                confidence = 0.95;
             end
             
             xy = [];
@@ -560,8 +561,8 @@ classdef EKF < handle
                 P = ekf.P_est(n:n+1,n:n+1);
                 % TODO reinstate the interval feature
                 %plot_ellipse(xf, P, interval, 0, [], varargin{:});
-                plot_ellipse(covar^2*P, xf, varargin{:});
-                plot(xf(1), xf(2), '+')
+                plot_ellipse( P * chi2inv(confidence, 2), xf, varargin{:});
+                plot(xf(1), xf(2), 'k.', 'MarkerSize', 10)
                 
                 xy = [xy xf];
             end
@@ -588,13 +589,33 @@ classdef EKF < handle
             end
              if nargout == 0
                  plot(p, varargin{:});
-                 xlabel('sample');
+                 xlabel('Time step');
                  ylabel('(det P)^{0.5}')
              else
                 out = p;
              end
         end
 
+        function show_P(ekf, k)
+            clf
+            if nargin < 2
+                k = length(ekf.history);
+            end
+            z = log10(abs(ekf.history(k).P));
+            mn = min(z(~isinf(z)))
+            z(isinf(z)) = mn;
+            cmap = flip( gray(256), 1);
+            imshow(z, ...
+                'DisplayRange', [min(z(:)) max(z(:))], ...
+                'ColorMap', cmap, ...
+                'InitialMagnification', 'fit'   )
+            xlabel('state'); ylabel('state');
+
+            c= colorbar();
+            c.Label.String = 'log covariance';
+        end
+        
+        
         function plot_ellipse(ekf, interval, varargin)
             %EKF.plot_ellipse Plot vehicle covariance as an ellipse
             %

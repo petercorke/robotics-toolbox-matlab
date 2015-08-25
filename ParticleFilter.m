@@ -26,7 +26,7 @@
 % Example::
 %
 % Create a landmark map
-%    map = Map(20);
+%    map = PointMap(20);
 % and a vehicle with odometry covariance and a driver
 %    W = diag([0.1, 1*pi/180].^2);
 %    veh = Vehicle(W);
@@ -70,7 +70,7 @@
 %   Peter Corke,
 %   Springer 2011
 %
-% See also Vehicle, RandomPath, RangeBearingSensor, Map, EKF.
+% See also Vehicle, RandomPath, RangeBearingSensor, PointMap, EKF.
 
 
 % Copyright (C) 1993-2015, by Peter I. Corke
@@ -152,7 +152,7 @@ classdef ParticleFilter < handle
             %   methods rand, randn and randi.  If not given the global stream is used.
             %
             %
-            % See also Vehicle, Sensor, RangeBearingSensor, Map.
+            % See also Vehicle, Sensor, RangeBearingSensor, PointMap.
 
             pf.robot = robot;
             pf.sensor = sensor;
@@ -253,7 +253,8 @@ classdef ParticleFilter < handle
 
             % display the initial particles
             pf.h = plot3(pf.x(:,1), pf.x(:,2), pf.x(:,3), 'g.');
-
+            set(pf.h, 'Tag', 'particles');
+            
             pf.robot.plot();
 
             % iterate over time
@@ -313,8 +314,15 @@ classdef ParticleFilter < handle
             hold on
             for p = 1:pf.nparticles
                 x = pf.x(p,:);
-                plot3([x(1) x(1)], [x(2) x(2)], [0 pf.weight(p)]);
+                plot3([x(1) x(1)], [x(2) x(2)], [0 pf.weight(p)], 'r');
+                plot3([x(1) x(1)], [x(2) x(2)], [0 pf.weight(p)], 'k.', 'MarkerSize', 12);
+
             end
+            grid on
+            xyzlabel
+            zlabel('particle weight')
+            view(30,60);
+            rotate3d on
         end
 
         function plot_xy(pf, varargin)

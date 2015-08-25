@@ -2,7 +2,7 @@
 %
 % A concrete subclass of the Sensor class that implements a range and bearing
 % angle sensor that provides robot-centric measurements of point features in 
-% the world. To enable this it has references to a map of the world (Map object)
+% the world. To enable this it has references to a map of the world (PointMap object)
 % and a robot moving through the world (Vehicle object).
 %
 % Methods::
@@ -27,7 +27,7 @@
 %   Peter Corke,
 %   Springer 2011
 %
-% See also Sensor, Vehicle, Map, EKF.
+% See also Sensor, Vehicle, PointMap, EKF.
 
 
 % Copyright (C) 1993-2015, by Peter I. Corke
@@ -88,7 +88,7 @@ classdef RangeBearingSensor < Sensor
             %
             % See also options for Sensor constructor.
             %
-            % See also Sensor.Sensor, Vehicle, Map, EKF.
+            % See also Sensor.Sensor, Vehicle, PointMap, EKF.
 
 
             % call the superclass constructor
