@@ -65,10 +65,9 @@ classdef Lattice < Navigation
         vstart          % index of vertex closest to start
         localGoal       % next vertex on the roadmap
         localPath       % set of points along path to next vertex
-        gpath           % list of vertices between start and goal
+        vpath           % list of vertices between start and goal
         grid
         root
-        vpath
     end
     
     methods
@@ -101,17 +100,26 @@ classdef Lattice < Navigation
             % parse out Lattice specific options and save in the navigation object
             opt.iterations = Inf;
             opt.cost = [1 1 1];
-            opt.grid = 2;
-            opt.root = [];
-            [lp,args] = tb_optparse(opt, lp, varargin);
+            opt.grid = 1;
+            opt.root = [0 0 0]';
+            [lp,args] = tb_optparse(opt, varargin, lp);
             
         end
         
-        function plan(lp)
+        function plan(lp, varargin)
             %Lattice.plan Create a lattice plan
             %
             % P.plan() creates the lattice by iteratively building a tree of possible paths.  The resulting graph is kept
             % within the object.
+            
+            % default parameters come from the constructor
+            opt.iterations = lp.iterations;
+            opt.cost = lp.cost;
+
+            [opt,args] = tb_optparse(opt, varargin);
+            
+            lp.iterations = opt.iterations;
+            lp.cost = opt.cost;
             
             % check root node sanity
             if isempty(lp.root)
@@ -126,7 +134,7 @@ classdef Lattice < Navigation
                     error('root must be 2- or 3-vector');
             end
             
-            if lp.occgrid(lp.root(2), lp.root(1)) == 1
+            if lp.occupied(lp.root)
                 error('root node cell is occupied')
             end
             
@@ -135,10 +143,11 @@ classdef Lattice < Navigation
             
             lp.graph.clear();  % empty the graph
             create_lattice(lp);  % build the graph
+            fprintf('%d nodes created\n', lp.graph.n);
         end
         
         
-        function p = query(lp, start, goal)
+        function pp = query(lp, start, goal)
             %Lattice.path Find a path between two points
             %
             % P.path(START, GOAL) finds and displays a path from START to GOAL
@@ -154,12 +163,30 @@ classdef Lattice < Navigation
             lp.goal = goal;
             lp.start = start;
             
-            lp.vstart = lp.graph.closest(start);
-            lp.vgoal = lp.graph.closest(goal);
+            start(3) = round(start(3)*2/pi);
+            goal(3) = round(goal(3)*2/pi);
             
-            lp.gpath = lp.graph.Astar(lp.vstart, lp.vgoal, true);
+            lp.vstart = lp.graph.closest(start, 0.5);
+            lp.vgoal = lp.graph.closest(goal, 0.5);
             
-            p = lp.graph.coord(lp.gpath);
+            if isempty(lp.vstart)
+                error('Lattice:badarg', 'start configuration not in lattice');
+            end
+            if isempty(lp.vgoal)
+                error('Lattice:badarg', 'goal configuration not in lattice');
+            end
+            
+            % find path through the graph using A* search
+            [lp.vpath,cost] = lp.graph.Astar(lp.vstart, lp.vgoal, 'directed');
+            fprintf('A* path cost %g\n', cost);
+            
+            p = lp.graph.coord(lp.vpath);
+            
+            if nargout > 0
+                pp = p;
+                pp(3,:) = angdiff( pp(3,:) * pi/2 );
+            end
+            
             
         end
         
@@ -179,6 +206,9 @@ classdef Lattice < Navigation
             lp.goal = goal;
             lp.start = start;
             
+            start(3) = round(start*2/pi);
+            goal(3) = round(goal*2/pi);
+
             lp.vstart = lp.graph.closest(start);
             lp.vgoal = lp.graph.closest(goal);
 
@@ -202,62 +232,11 @@ classdef Lattice < Navigation
         %   - find a path through the graph
         %   - determine vertices closest to start and goal
         %   - find path to first vertex
-        function navigate_init(lp, start)
-            
-            % find the vertex closest to the goal
-            lp.vgoal = lp.graph.closest(lp.goal)
-            
-            % find the vertex closest to the start
-            lp.vstart = lp.graph.closest(start)
-            
-            
-            % find a path through the graph
-            lp.message('planning path through graph');
-            
-            lp.gpath = lp.graph.Astar(lp.vstart, lp.vgoal)
-            
-            % the path is a list of nodes from vstart to vgoal
-            % discard the first vertex, since we plan a local path to it
-            lp.gpath = lp.gpath(2:end);
-            
-            % start the navigation engine with a path to the nearest vertex
-            lp.graph.highlight_node(lp.vstart);
-            
-            lp.localPath = bresenham(start, lp.graph.coord(lp.vstart));
-            lp.localPath = lp.localPath(2:end,:);
-        end
+
         
         % Invoked for each step on the path by path() method.
         function n = next(lp, p)
             
-            if all(p(:) == lp.goal)
-                n = [];     % signal that we've arrived
-                return;
-            end
-            
-            % we take the next point from the localPath
-            if numrows(lp.localPath) == 0
-                % local path is consumed, move to next vertex
-                if isempty(lp.gpath)
-                    % we have arrived at the goal vertex
-                    % make the path from this vertex to the goal coordinate
-                    lp.localPath = bresenham(p, lp.goal);
-                    lp.localPath = lp.localPath(2:end,:);
-                    lp.localGoal = [];
-                else
-                    % set local goal to next vertex in gpath and remove it from the list
-                    lp.localGoal = lp.gpath(1);
-                    lp.gpath = lp.gpath(2:end);
-                    
-                    % compute local path to the next vertex
-                    lp.localPath = bresenham(p, lp.graph.coord(lp.localGoal));
-                    lp.localPath = lp.localPath(2:end,:);
-                    lp.graph.highlight_node(lp.localGoal);
-                end
-            end
-            
-            n = lp.localPath(1,:)';     % take the first point
-            lp.localPath = lp.localPath(2:end,:); % and remove from the path
         end
         
         function s = char(lp)
@@ -305,9 +284,25 @@ classdef Lattice < Navigation
             if ~isempty(lp.vpath)
                 % highlight the path
                 hold on
-                lp.graph.highlight_path(lp.vpath, varargin{:});
+                %lp.graph.highlight_path(lp.vpath, varargin{:});
+                lp.highlight();
                 hold off
             end
+            
+            grid on
+        end
+        
+        function path = animate(lp, varargin)
+            path = [];
+            for k=1:length(lp.vpath)-1
+                v1 = lp.vpath(k);
+                v2 = lp.vpath(k+1);
+
+                seg = drivearc(lp, [v1, v2], 10);
+                path = [path seg(:,1:end-1)];
+            end
+            path = [path seg(:,end)];
+
         end
         
     end % method
@@ -329,12 +324,12 @@ classdef Lattice < Navigation
             destinations = [
                 d  d  d   % x
                 0  d -d   % y
-                0  1  3   % theta
+                0  1  3   % theta *pi/2
                 ];
             
             % now we iterate, repeating this patter at each leaf node
             iteration = 1;
-            while iteration < lp.iterations
+            while iteration <= lp.iterations
                 additions = 0;
                 
                 for node = find(lp.graph.connectivity_out == 0) % foreach leaf node
@@ -367,10 +362,8 @@ classdef Lattice < Navigation
                         end
                     end
                 end
-                iteration = iteration + 1
-                additions
+                iteration = iteration + 1;
                 if additions == 0
-                    iteration
                     break;  % no more nodes can be added to the space
                 end
             end
@@ -388,7 +381,7 @@ classdef Lattice < Navigation
             xlabel('x'); ylabel('y'); zlabel('\theta')
             grid on
             hold on
-            plot3(0, 0, 0, 'ko', 'MarkerSize', 8);
+            plot3(lp.root(1), lp.root(2), lp.root(3), 'ko', 'MarkerSize', 8);
             view(0,90);
             axis equal
             
@@ -401,15 +394,15 @@ classdef Lattice < Navigation
         
         function highlight(lp)
             % highlight the path
-            for k=1:length(lp.gpath)-1
-                v1 = lp.gpath(k)
-                v2 = lp.gpath(k+1)
-                e1 = lp.graph.edges_in(v1); e2 = lp.graph.edges_out(v2);
-                i = intersect(e1, e2);
-                if length(i) > 1
-                    error('should be only one entry');
-                end
-                drawarc(lp, [v1, v2], {'Linewidth', 3, 'Color', 'k'});
+            for k=1:length(lp.vpath)-1
+                v1 = lp.vpath(k);
+                v2 = lp.vpath(k+1);
+% %                 e1 = lp.graph.edges_in(v1); e2 = lp.graph.edges_out(v2);
+% %                 i = intersect(e1, e2);
+% %                 if length(i) > 1
+% %                     error('should be only one entry');
+% %                 end
+                drawarc(lp, [v1, v2], {'Linewidth', 3, 'Color', 'r'});
             end
         end
         
@@ -457,19 +450,46 @@ classdef Lattice < Navigation
             end
         end
         
-        % test the path from p1 to p2 is entirely in free space
-        function c = testpath(lp, p1, p2)
-            p = bresenham(p1, p2);
+        function path = drivearc(lp, v, narc)
+            g = lp.graph;
             
-            for pp=p'
-                if lp.occgrid(pp(2), pp(1)) > 0
-                    c = false;
-                    return;
+            
+            v1 = v(1); v2 = v(2);
+            p1 = g.coord(v1);
+            p2 = g.coord(v2);
+            
+            path = [];
+            
+            % frame {N} is start of the arc
+            theta = p1(3)*pi/2;  % {0} -> {N}
+            T_0N = SE2(p1(1:2), theta);
+            
+            dest = round( T_0N.inv * p2(1:2) );  % in {N}
+            
+            if dest(2) == 0
+                % no heading change, straight line segment
+                
+                for s=linspace(0, 1, narc)
+                    path = [path (1-s)*p1 + s*p2];
                 end
+            else
+                % curved segment
+                c = T_0N * [0 dest(2)]';
+                
+                th = ( linspace(-dest(2)/lp.grid, 0, narc) + p1(3) )*pi/2;
+                
+                x = lp.grid*cos(th) + c(1);
+                y = lp.grid*sin(th) + c(2);
+                
+                
+                th0 = p1(3);
+% %                 th0(th0==3) = -1;
+                thf = p2(3);
+% %                 thf(thf==3) = -1;
+                path = [path [x; y; linspace(th0, angdiff(thf,th0)+th0, narc)*pi/2] ];
             end
-            c = true;
         end
-        
+
         
     end % private methods
     

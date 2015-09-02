@@ -37,6 +37,7 @@
 % - The D* algorithm for real-time planning of optimal traverses,
 %   A. Stentz,
 %   Tech. Rep. CMU-RI-TR-94-37, The Robotics Institute, Carnegie-Mellon University, 1994.
+%   https://www.ri.cmu.edu/pub_files/pub3/stentz_anthony__tony__1994_2/stentz_anthony__tony__1994_2.pdf
 % - Robotics, Vision & Control, Sec 5.2.2,
 %   Peter Corke, Springer, 2011.
 %
@@ -103,7 +104,6 @@ classdef Dstar < Navigation
     end
     
     properties (SetAccess=private, GetAccess=public)
-        quiet
         niter
         costmap   % world cost map: obstacle = Inf
         
@@ -126,7 +126,7 @@ classdef Dstar < Navigation
             % 'metric',M    Specify the distance metric as 'euclidean' (default)
             %               or 'cityblock'.
             % 'inflate',K   Inflate all obstacles by K cells.
-            % 'quiet'       Don't display the progress spinner
+            % 'progress'       Don't display the progress spinner
             %
             % Other options are supported by the Navigation superclass.
             %
@@ -135,11 +135,10 @@ classdef Dstar < Navigation
             % invoke the superclass constructor
             ds = ds@Navigation(world, varargin{:});
 
-            opt.quiet = false;
-            opt = tb_optparse(opt, varargin);
-            ds.quiet = opt.quiet;
 
-            ds.occgrid2costmap(ds.occgridnav);
+
+            
+
 
 
             % init the D* state variables
@@ -160,23 +159,13 @@ classdef Dstar < Navigation
             ds.b = zeros(size(ds.costmap), 'uint32');  % backpointers
             ds.t = zeros(size(ds.costmap), 'uint8');   % tags
             ds.h = Inf*ones(size(ds.costmap));         % path cost estimate
-            ds.openlist = zeros(2,0);               % the open list, one column per point
+            ds.openlist = zeros(2,0);                  % the open list, one column per point
 
             ds.openlist_maxlen = -Inf;
+            
+                        ds.occgrid2costmap(ds.occgridnav);
         end
 
-        function goal_change(ds)
-
-            if isempty(ds.b)
-                return;
-            end
-            goal = ds.goal;
-
-            % keep goal in index rather than row,col format
-            ds.G = sub2ind(size(ds.occgridnav), goal(2), goal(1));
-            ds.INSERT(ds.G, 0, 'goalset');
-            ds.h(ds.G) = 0;
-        end
 
         function s = char(ds)
             %Dstar.char Convert navigation object to string
@@ -210,9 +199,53 @@ classdef Dstar < Navigation
             %
             % See also Navigation.plot.
             
-            plot@Navigation(ds, 'distance', ds.h, varargin{:});
+            plot@Navigation(ds, varargin{:}, 'distance', ds.h);
         end
 
+
+        function pp = query(nav, start, varargin)
+            
+            opt.animate = false;
+            
+            opt = tb_optparse(opt, varargin);
+            
+            % make sure start and goal are set and valid
+            nav.checkquery(start);
+            
+            if opt.animate
+                nav.plot();
+                hold on
+            end
+            
+            % iterate using the next() method until we reach the goal
+            robot = start(:);
+            path = [];
+            while true
+                if opt.animate
+                    plot(robot(1), robot(2), 'g.', 'MarkerSize', 12);
+                    drawnow
+                end
+                
+                % move to next point on path
+                robot = nav.next(robot);
+                
+                % are we there yet?
+                if isempty(robot)
+                    % yes, exit the loop
+                    break
+                else
+                    % no, append it to the path
+                    path = [path robot(:)];
+                end
+                
+            end
+            
+            % only return the path if required
+            if nargout > 0
+                pp = path';
+            end
+        end
+        
         % invoked by Navigation.step
         function n = next(ds, current)
 
@@ -229,46 +262,78 @@ classdef Dstar < Navigation
             end
         end
 
-        function plan(ds, goal)
+        function plan(ds, varargin)
             %Dstar.plan Plan path to goal
             %
-            % DS.plan() updates DS with a costmap of distance to the
-            % goal from every non-obstacle point in the map.  The goal is
-            % as specified to the constructor.
+            % DS.plan(GOAL) create a D* plan to reach the goal from all free cells
+            % in the map.
             %
-            % DS.plan(GOAL) as above but uses the specified goal.
+            % DS.plan() updates a D* plan after changes to the costmap. The goal is
+            % as specified in the last call to this method.
+            %
             %
             % Note::
             % - If a path has already been planned, but the costmap was
             %   modified, then reinvoking this method will replan,
             %   incrementally updating the plan at lower cost than a full
             %   replan.
+            
+            opt.progress = true;
+            opt.animate = false;
+            [opt,args] = tb_optparse(opt, varargin);
+            
+            if length(args) > 0
+                goal = args{1};
+                ds.setgoal(goal);
+                ds.reset();
+                % keep goal in index rather than row,col format
+                ds.G = sub2ind(size(ds.occgridnav), goal(2), goal(1));
+                ds.INSERT(ds.G, 0, 'goalset');
+                ds.h(ds.G) = 0;
+                title = 'D* planning';
+            else
+                title = 'D* replanning';
+            end
 
-            
-            if nargin > 1
-                ds.goal = goal;
-            end
-            % for replanning no goal is needed, 
-            if isempty(ds.goal)
-                error('must specify a goal point');
-            end
-            
+
             ds.niter = 0;
+            if opt.progress
+                % for replanning we don't really know how many iterations, so scale it to
+                % the worst case, a full replan
+                h = waitbar(0, title, ...
+                    'CreateCancelBtn', 'setappdata(gcbf, ''canceling'', 1)');
+                setappdata(h, 'canceling', 0);
+            end
+            
+            % number of free cells, upper bound on number of iterations, trapped free
+            % cells will never be reached
+            nfree = prod(size(ds.occgridnav)) - sum(sum(ds.occgridnav > 0));
+            nupdate = round(nfree/100);
+            
             while true
-                if ~ds.quiet && mod(ds.niter, 20) == 0
-                    ds.spinner();
-                end
+                
                 ds.niter = ds.niter + 1;
+                if opt.progress && mod(ds.niter, nupdate) == 0
+                    if getappdata(h, 'canceling');
+                        break;
+                    end
+                    waitbar(ds.niter/nfree);
+                    
+                    if opt.animate
+                        idisp(ds.h);
+                        drawnow
+                    end
+                end
+                
 
+                
                 if ds.PROCESS_STATE() < 0
                     break;
                 end
-                if ds.verbose
-                    disp(' ')
-                end
+                
             end
-            if ~ds.quiet
-                fprintf('\r');
+            if opt.progress
+                delete(h);
             end
             ds.changed = false;
         end
@@ -325,8 +390,11 @@ classdef Dstar < Navigation
             ds.changed = true;
         end
 
-        function costmap_modify(ds, point, newcost)
-        %Dstar.costmap_modify Modify cost map
+        function modify_cost(ds, xy, newcost)
+        %Dstar.modify_cost Modify cost map
+        %
+        % DS.modify_cost(X, Y, cost)
+                %Dstar.costmap_modify Modify cost map
         %
         % DS.costmap_modify(P, NEW) modifies the cost map at P=[X,Y] to
         % have the value NEW.  If P (2xM) and NEW (1xM) then the cost of
@@ -339,32 +407,36 @@ classdef Dstar < Navigation
         % - Replaces modify_cost, same syntax.
         %
         % See also Dstar.costmap_set, Dstar.costmap_get.
-
-            modify_cost(ds, point, newcost);
-        end
-
-        function modify_cost(ds, point, newcost)
-        %Dstar.modify_cost Modify cost map
-        %
-        % Notes::
-        % - Deprecated: use modify_cost instead instead.
         %
         % See also Dstar.costmap_set, Dstar.costmap_get.
 
-            if numel(point) == 2
-                % for case of single point ensure it is a column vector
-                point = point(:);
+            function modify(ds, x, y, newcost)
+                X = sub2ind(size(ds.costmap), y, x);
+                ds.costmap(X) = newcost;
+                
+                if ds.t(X) == ds.CLOSED
+                    ds.INSERT(X, ds.h(X), 'modifycost');
+                end
             end
-            if numcols(point) ~= numcols(newcost)
-                error('number of columns in point must match columns in newcost');
+            
+            if all(size(xy) == [2 2]) && numel(newcost) == 1
+                % a rectangular region is specified
+                for xx=xy(1,1):xy(1,2)
+                    for yy=xy(2,1):xy(2,2)
+                        if ~isinf(ds.costmap(yy,xx))
+                        modify(ds, xx, yy, newcost);
+                        end
+                    end
+                end
+            elseif numcols(xy) == numel(newcost)
+                % a set of column vectors specifying the points to change
+                for i=1:numcols(xy)
+                    modify(ds, xy(1,i), xy(2,i), newcost(i));
+                end
+            else
+                error('length of x, y and newcost must match');
             end
-            for i=1:numcols(point)
-                X = sub2ind(size(ds.costmap), point(2,i), point(1,i));
-                ds.costmap(X) = newcost(i);
-            end
-            if ds.t(X) == ds.CLOSED
-                ds.INSERT(X, ds.h(X), 'modifycost');
-            end
+
             ds.changed = true;
         end
     end % public methods
@@ -442,6 +514,7 @@ classdef Dstar < Navigation
             kk = ds.openlist(2, i);
         end
 
+        % add node to open list
         function INSERT(ds, X, h_new, where)
 
             % where is for diagnostic purposes only
@@ -472,11 +545,15 @@ classdef Dstar < Navigation
             ds.t(X) = ds.OPEN;
         end
 
+        % remove node from open list
         function DELETE(ds, X)
             ds.message('delete %d\n', X);
             i = find(ds.openlist(1,:) == X);
             if length(i) ~= 1
                 error('D*:DELETE: state %d doesnt exist', X);
+            end
+            if length(i) > 1
+                disp('hello')
             end
             ds.openlist(:,i) = []; % remove the column
             ds.t(X) = ds.CLOSED;

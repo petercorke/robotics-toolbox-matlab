@@ -129,7 +129,7 @@ classdef DXform < Navigation
         end
 
             
-        function plan(dx, goal, show)
+        function plan(dx, goal, varargin)
             %DXform.plan Plan path to goal
             %
             % DX.plan() updates the internal distancemap where the value of each element is 
@@ -146,18 +146,17 @@ classdef DXform < Navigation
             %
             % See also Navigation.path.
 
-
-            if nargin < 3
+            opt.animate = false;
+            
+            opt = tb_optparse(opt, varargin);
+            
+            if opt.animate
+                show = 0.05;
+            else
                 show = 0;
             end
-
-            if nargin > 1
-                dx.goal = goal;
-            end
-
-            if isempty(dx.goal)
-                error('No goal specified');
-            end
+            
+            dx.setgoal(goal);
 
             dx.distancemap = distancexform(dx.occgridnav, dx.goal, dx.metric, show);
 
@@ -179,8 +178,52 @@ classdef DXform < Navigation
             %
             % See also Navigation.plot.
 
-            plot@Navigation(dx, 'distance', dx.distancemap, varargin{:});
+            plot@Navigation(dx, varargin{:}, 'distance', dx.distancemap);
 
+        end
+        
+        function pp = query(nav, start, varargin)
+            
+            opt.animate = false;
+            
+            opt = tb_optparse(opt, varargin);
+            
+            % make sure start and goal are set and valid
+            nav.checkquery(start);
+            
+            
+            if opt.animate
+                nav.plot();
+            end
+            
+            
+            % iterate using the next() method until we reach the goal
+            robot = start(:);
+            path = [];
+            while true
+                if opt.animate
+                    plot(robot(1), robot(2), 'g.', 'MarkerSize', 12);
+                    drawnow
+                end
+                
+                % move to next point on path
+                robot = nav.next(robot);
+                
+                % are we there yet?
+                if isempty(robot)
+                    % yes, exit the loop
+                    break
+                else
+                    % no, append it to the path
+                    path = [path robot(:)];
+                end
+                
+            end
+            
+            % only return the path if required
+            if nargout > 0
+                pp = path';
+            end
         end
 
         function n = next(dx, robot)

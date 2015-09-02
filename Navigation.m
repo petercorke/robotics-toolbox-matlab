@@ -73,7 +73,6 @@ classdef Navigation < handle
         goal        % goal coordinate
         start       % start coordinate
 
-        navhook     % function handle, called on each navigation iteration
         verbose     % verbosity
         seed            % current random seed
         spincount
@@ -85,10 +84,9 @@ classdef Navigation < handle
 
     % next() should be protected and abstract, but this doesnt work
     % properly
-    methods (Abstract)
-        plan(obj)
-        n = next(obj)
-    end % method Abstract
+%     methods (Abstract)
+%         query(obj, start, goal, varargin)
+%     end % method Abstract
 
     methods
 
@@ -105,7 +103,6 @@ classdef Navigation < handle
         % occupancy grid OCCGRID.  A number of options can be be passed.
         %
         % Options::
-        % 'navhook',F   Specify a function to be called at every step of path
         % 'goal',G      Specify the goal point (2x1)
         % 'verbose'     Display debugging information
         % 'inflate',K   Inflate all obstacles by K cells.
@@ -131,7 +128,6 @@ classdef Navigation < handle
             % default values of options
             opt.goal = [];
             opt.inflate = 0;
-            opt.navhook = [];
             opt.private = false;
             opt.reset = false;
             opt.seed = [];
@@ -148,7 +144,6 @@ classdef Navigation < handle
             
             % copy other options into the object
             nav.verbose = opt.verbose;
-            nav.navhook = opt.navhook;
             if ~isempty(opt.goal)
                 nav.goal = opt.goal(:)';
             end
@@ -176,6 +171,67 @@ classdef Navigation < handle
             nav.spincount = 0;
         end
 
+        function setgoal(nav, goal)
+            if isempty(goal)
+                nav.plot();
+                disp('select goal location'); beep
+                goal = round(ginput(1));
+            end
+            % make upright
+            nav.goal = goal(:);
+            
+            % check if reachable
+            if nav.occupied(nav.goal)
+                error('Navigation:checkquery:badarg', 'goal location inside obtacle');
+            end
+        end
+        
+        
+        function checkquery(nav, start, goal)
+            
+            % stash what we know
+            nav.start = start(:);
+            
+            if nargin == 3
+                % this planner supports a query with a goal
+                nav.goal = goal(:);
+            end
+            
+            % if any of start or goal are [], prompt the user to select
+            if isempty(start)
+                nav.plot();
+                disp('select start location'); beep
+                start = round(ginput(1));
+            end
+            
+            if nargin == 3
+                if isempty(goal)
+                    nav.plot();
+                    disp('select goal location'); beep
+                    goal = round(ginput(1));
+                end
+            end
+            
+            % make upright
+            nav.start = start(:);
+            
+            % check if reachable
+            if nav.occupied(nav.start)
+                error('Navigation:checkquery:badarg', 'start location inside obtacle');
+            end
+            
+            if nargin == 3
+                % make upright
+                nav.goal = goal(:);
+                
+                % check if reachable
+                if nav.occupied(nav.goal)
+                    error('Navigation:checkquery:badarg', 'goal location inside obtacle');
+                end
+            end
+        end
+        
+        
         function occ = occupied(nav, pos)
             if isempty(nav.occgridnav)
                 % there are no limits, everywhere is unoccuplied
@@ -191,19 +247,19 @@ classdef Navigation < handle
         end
 
         % invoked whenever the goal is set
-        function set.goal(nav, goal)
-
-            if nav.occupied(goal)
-                error('Navigation: cant set goal inside obstacle');
-            end
-            
-            goal = goal(:);
-            if ~(all(size(goal) == size(nav.goal)) && all(goal == nav.goal))
-                % goal has changed
-                nav.goal = goal(:);
-                nav.goal_change();
-            end
-        end
+%         function set.goal(nav, goal)
+% 
+% %             if nav.occupied(goal)
+% %                 error('Navigation: cant set goal inside obstacle');
+% %             end
+% %             
+% %             goal = goal(:);
+% %             if ~(all(size(goal) == size(nav.goal)) && all(goal == nav.goal))
+% %                 % goal has changed
+% %                 nav.goal = goal(:);
+% %                 nav.goal_change();
+% %             end
+%         end
         
         function goal_change(nav)
             %Navigation.goal_change Notify change of goal
@@ -290,10 +346,6 @@ robot = start;
                     p = [p; robot(:)'];
                 end
 
-                % invoke the navhook function
-                if isa(nav.navhook, 'function_handle')
-                    nav.navhook(nav, robot(1), robot(2));
-                end
             end
 
             % only return the path if required
@@ -302,8 +354,12 @@ robot = start;
             end
         end
 
-
         function plot(nav, varargin)
+            nav.plot_bg(varargin{:});
+            nav.plot_fg(varargin{:});
+        end
+        
+        function plot_bg(nav, varargin)
         %Navigation.plot  Visualize navigation environment
         %
         % N.plot(OPTIONS) displays the occupancy grid in a new figure.
@@ -326,19 +382,19 @@ robot = start;
         %
         % See also brighten.
             
-            opt.goal = true;
             opt.distance = [];
             opt.colormap = @bone;
             opt.beta = 0.2;
-            opt.pathmarker =  {};
-            opt.startmarker = {};
-            opt.goalmarker =  {};
-            
-            pathmarker =  {'g.', 'MarkerSize', 12};
-            startmarker = {'bo','MarkerFaceColor', 'b', 'MarkerSize', 8};
-            goalmarker =  {'bp', 'MarkerFaceColor', 'b','MarkerSize', 12};
+            opt.inflated = false;
+
             
             [opt,args] = tb_optparse(opt, varargin);
+            
+            if opt.inflated
+                occgrid = nav.occgridnav;
+            else
+                occgrid = nav.occgrid;
+            end
             
             clf
             if isempty(opt.distance)
@@ -346,8 +402,8 @@ robot = start;
                 %   free space, color index = 1, white, 
                 %   obstacle, color index = 2, red
                 cmap = [1 1 1; 1 0 0];  % non obstacles are white
-                image(nav.occgrid+1, 'CDataMapping', 'direct', ...
-                    'AlphaData', nav.occgrid);
+                image(occgrid+1, 'CDataMapping', 'direct', ...
+                    'AlphaData', occgrid);
                 colormap(cmap)
                 
             else
@@ -364,13 +420,14 @@ robot = start;
                 cmap = [1 0 0; opt.colormap(ceil(maxdist))];
                 
                 % ensure obstacles appear as red pixels
-                opt.distance(nav.occgrid > 0) = 0;
+                opt.distance(occgrid > 0) = 0;
                 
                 % display it with colorbar
                 image(opt.distance+1, 'CDataMapping', 'direct');
                 set(gcf, 'Renderer', 'Zbuffer')
                 colormap(cmap)
-                colorbar
+                cb = colorbar;
+                cb.Label.String = 'Distance to goal (cells)';
                 brighten(opt.beta)
             end
             
@@ -380,28 +437,61 @@ robot = start;
             ylabel('y');
             grid on
             hold on
+        end
+        
+        function plot_fg(nav, varargin)
             
+            opt.pathmarker =  {};
+            opt.startmarker = {};
+            opt.goalmarker =  {};
+                        opt.goal = true;
+            
+            pathmarker =  {'g.', 'MarkerSize', 12};
+            startmarker = {'bo','MarkerFaceColor', 'k', 'MarkerEdgeColor', 'w', 'MarkerSize', 12};
+            goalmarker =  {'bp', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'w', 'MarkerSize', 18};
+            
+            [opt,args] = tb_optparse(opt, varargin);
+                    
+                        
             % overlay a path if provided
-            if ~isempty(args)
+            if ~isempty(args) && isnumeric(args{1})
                 p = args{1};
                 if numcols(p) < 2
                     error('expecting Nx2 or Nx3 matrix of points');
                 end
-                plot(p(:,1), p(:,2), pathmarker{:}, ...
-                    opt.pathmarker{:});
+                if numcols(p) == 2
+                    plot(p(:,1), p(:,2), pathmarker{:}, ...
+                        opt.pathmarker{:}, 'Tag', 'path');
+                else
+                    plot3(p(:,1), p(:,2), p(:,3), pathmarker{:}, ...
+                        opt.pathmarker{:}, 'Tag', 'path');
+                end
             end
             
             % mark start and goal if requested
-            if opt.goal && ~isempty(nav.goal)
-                plot(nav.goal(1), nav.goal(2), ...
-                    goalmarker{:}, opt.goalmarker{:});
+            if length(nav.goal) == 2
+                if opt.goal && ~isempty(nav.goal)
+                    plot(nav.goal(1), nav.goal(2), ...
+                        goalmarker{:}, opt.goalmarker{:}, 'Tag', 'goal');
+                end
+                if opt.goal && ~isempty(nav.start)
+                    plot(nav.start(1), nav.start(2), ...
+                        startmarker{:}, opt.startmarker{:}, 'Tag', 'start');
+                end
+            else
+                if opt.goal && ~isempty(nav.goal)
+                    plot3(nav.goal(1), nav.goal(2), nav.goal(3)+0.1, ...
+                        goalmarker{:}, opt.goalmarker{:}, 'Tag', 'goal');
+                end
+                if opt.goal && ~isempty(nav.start)
+                    plot3(nav.start(1), nav.start(2), nav.start(3)+0.1, ...
+                        startmarker{:}, opt.startmarker{:}, 'Tag', 'start');
+                end
             end
-            if opt.goal && ~isempty(nav.start)
-                plot(nav.start(1), nav.start(2), ...
-                    startmarker{:}, opt.startmarker{:});
-            end
+
             hold off
         end
+                
 
         function navigate_init(nav, start)
             %Navigation.navigate_init Notify start of path
@@ -520,14 +610,7 @@ robot = start;
         % values display more information.
             nav.verbose = v;
         end
-            
-        % called at each point on the path as
-        %   navhook(nav, robot)
-        %
-        % can be used for logging data, animation, etc.
-        function navhook_set(nav, navhook)
-            nav.navhook = navhook;
-        end
+       
         
         function message(nav, varargin)
         %Navigation.message Print debug message

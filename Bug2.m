@@ -59,7 +59,7 @@ classdef Bug2 < Navigation
 
     methods
 
-        function bug = Bug2(world, goal)
+        function bug = Bug2(varargin)
             %Bug2.Bug2 bug2 navigation object constructor
             %
             % B = Bug2(MAP) is a bug2 navigation
@@ -74,52 +74,87 @@ classdef Bug2 < Navigation
             % See also Navigation.Navigation.
 
             % invoke the superclass constructor
-            bug = bug@Navigation(world);
+            bug = bug@Navigation(varargin{:});
 
             bug.H = [];
             bug.j = 1;
             bug.step = 1;
         end
 
-        % null planning for the bug!
-        function plan(bug, goal)
-            bug.goal = goal;
-        end
 
-        function navigate_init(bug, robot)
-
-            if isempty(bug.goal)
-                error('RTB:bug2:nogoal', 'no goal set, cant compute path');
-            end
-            % parameters of the M-line, direct from initial position to goal
-            % as a vector mline, such that [robot 1]*mline = 0
-            dims = axis;
-            xmin = dims(1); xmax = dims(2);
-            ymin = dims(3); ymax = dims(4);
-
-            % create homogeneous representation of the line
+        function pp = query(bug, start, goal, varargin)
+        
+            opt.animate = false;
+            
+            opt = tb_optparse(opt, varargin);
+       
+            % make sure start and goal are set and valid
+            bug.checkquery(start, goal);
+            
+            % compute the m-line
+            %  create homogeneous representation of the line
             %  line*[x y 1]' = 0
-            bug.mline = homline(robot(1), robot(2), ...
+            bug.mline = homline(start(1), start(2), ...
                 bug.goal(1), bug.goal(2));
             bug.mline = bug.mline / norm(bug.mline(1:2));
-            if bug.mline(2) == 0
-                % handle the case that the line is vertical
-                plot([robot(1) robot(1)], [ymin ymax], 'k--');
-            else
-                x = [xmin xmax]';
-                y = -[x [1;1]] * [bug.mline(1); bug.mline(3)] / bug.mline(2);
-                plot(x, y, 'k--');
+            
+            if opt.animate
+                bug.plot();
+                
+                % parameters of the M-line, direct from initial position to goal
+                % as a vector mline, such that [robot 1]*mline = 0
+                dims = axis;
+                xmin = dims(1); xmax = dims(2);
+                ymin = dims(3); ymax = dims(4);
+                
+                hold on
+                if bug.mline(2) == 0
+                    % handle the case that the line is vertical
+                    plot([start(1) start(1)], [ymin ymax], 'k--');
+                else
+                    x = [xmin xmax]';
+                    y = -[x [1;1]] * [bug.mline(1); bug.mline(3)] / bug.mline(2);
+                    plot(x, y, 'k--');
+                end
             end
+            
+            
+            % iterate using the next() method until we reach the goal
+            robot = start(:);
             bug.step = 1;
+            path = [];
+            while true
+                if opt.animate
+                    plot(robot(1), robot(2), 'g.', 'MarkerSize', 12);
+                    drawnow 
+                end
+
+                % move to next point on path
+                robot = bug.next(robot);
+
+                % are we there yet?
+                if isempty(robot)
+                    % yes, exit the loop
+                    break
+                else
+                    % no, append it to the path
+                    path = [path robot(:)];
+                end
+
+            end
+
+            % only return the path if required
+            if nargout > 0
+                pp = path';
+            end
         end
         
-        % this should be a protected function, but can't make this callable
-        % from superclass when it's instantiation of an abstract method
-        % (R2010a).
         
         function n = next(bug, robot)
             
+            % implement the main state machine for bug2
             n = [];
+            robot = robot(:);
             % these are coordinates (x,y)
           
             if bug.step == 1
@@ -131,8 +166,20 @@ classdef Bug2 < Navigation
 
                 % motion on line toward goal
                 d = bug.goal-robot;
-                dx = sign(d(1));
-                dy = sign(d(2));
+                if abs(d(1)) > abs(d(2))
+                    % line slope less than 45 deg
+                    dx = sign(d(1));
+                    L = bug.mline;
+                    y = -( (robot(1)+dx)*L(1) + L(3) ) / L(2);
+                    dy = round(y - robot(2));
+                else
+                    % line slope greater than 45 deg
+                    dy = sign(d(2));
+                    L = bug.mline;
+                    x = -( (robot(2)+dy)*L(2) + L(3) ) / L(1);
+                    dx = round(x - robot(1));
+                end
+                
 
                 % detect if next step is an obstacle
                 if bug.occupied(robot + [dx; dy])
@@ -154,8 +201,8 @@ classdef Bug2 < Navigation
                     return
                 end
 
-                if bug.k <= numrows(bug.edge)
-                    n = bug.edge(bug.k,:)';  % next edge point
+                if bug.k <= numcols(bug.edge)
+                    n = bug.edge(:,bug.k);  % next edge point
                 else
                     % we are at the end of the list of edge points, we
                     % are back where we started.  Step 2.c test.

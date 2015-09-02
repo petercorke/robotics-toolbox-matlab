@@ -60,9 +60,10 @@ classdef PRM < Navigation
 
     properties
         npoints         % number of sample points
+        npoints0
         distthresh      % distance threshold, links between vertices
                         % must be less than this.
-
+distthresh0
         graph           % graph Object representing random nodes
 
         vgoal           % index of vertex closest to goal
@@ -104,11 +105,11 @@ classdef PRM < Navigation
             opt.npoints = 100;
             opt.distthresh = 0.3*max(size(prm.occgridnav));
             [opt,args] = tb_optparse(opt, varargin);
-            prm.npoints = opt.npoints;
-            prm.distthresh = opt.distthresh;
+            prm.npoints0 = opt.npoints;
+            prm.distthresh0 = opt.distthresh;
         end
 
-        function plan(prm)
+        function plan(prm, varargin)
         %PRM.plan Create a probabilistic roadmap
         %
         % P.plan() creates the probabilistic roadmap by randomly
@@ -118,13 +119,21 @@ classdef PRM < Navigation
 
         % build a graph over the free space
             prm.message('create the graph');
+            
+            opt.npoints = prm.npoints0;
+            opt.distthresh = prm.distthresh0;
+
+            opt = tb_optparse(opt, varargin);
+            
+            prm.npoints = opt.npoints;
+            prm.distthresh = opt.distthresh;
 
             prm.graph.clear();  % empty the graph
             prm.vpath = [];
             create_roadmap(prm);  % build the graph
         end
         
-        function p = path(prm, start, goal)
+        function pp = query(prm, start, goal)
         %PRM.path Find a path between two points
         %
         % P.path(START, GOAL) finds and displays a path from START to GOAL
@@ -132,20 +141,36 @@ classdef PRM < Navigation
         %
         % X = P.path(START) returns the path (2xM) from START to GOAL.
         
-            if nargin < 3
-                error('must specify start and goal');
+            if prm.graph.n == 0
+                error('RTB:PRM:noplan', 'query: no plan: run the planner');
+            end
+            checkquery(prm, start, goal)
+            
+            % find the vertex closest to the goal
+            prm.vgoal = prm.closest(prm.goal);
+            if isempty(prm.vgoal)
+                error('RTB:PRM:nopath', 'plan: no path roadmap -> goal: rerun the planner');
             end
             
-            % set the goal coordinate
-            prm.goal = goal;
-
-            % invoke the superclass path function, which iterates on our
-            % next method
-            if nargout == 0
-                path@Navigation(prm, start);
-            else
-                p = path@Navigation(prm, start);
+            % find the vertex closest to the start
+            prm.vstart = prm.closest(prm.start);
+            if isempty(prm.vstart)
+                error('RTB:PRM:nopath', 'plan: no path start -> roadmap: rerun the planner');
             end
+            
+            % find a path through the graph
+
+            prm.vpath = prm.graph.Astar(prm.vstart, prm.vgoal);
+
+            % the path is a list of nodes from vstart to vgoal
+            % discard the first vertex, since we plan a local path to it
+            prm.gpath = prm.vpath;
+            prm.gpath = prm.gpath(2:end);
+
+            if nargout > 0
+                pp = [prm.start prm.graph.coord(prm.vpath) prm.goal]';
+            end
+       
         end
 
         function c = closest(prm, vertex, vcomponent)
@@ -181,36 +206,7 @@ classdef PRM < Navigation
         %   - find a path through the graph
         %   - determine vertices closest to start and goal
         %   - find path to first vertex
-        function navigate_init(prm, start)
 
-            % find the vertex closest to the goal
-            prm.vgoal = prm.closest(prm.goal);
-            if isempty(prm.vgoal)
-                error('RTB:PRM:nopath', 'plan: no path roadmap -> goal: rerun the planner');
-            end
-            
-            % find the vertex closest to the start
-            prm.vstart = prm.closest(start, prm.vgoal);
-            if isempty(prm.vstart)
-                error('RTB:PRM:nopath', 'plan: no path start -> roadmap: rerun the planner');
-            end
-            
-            % find a path through the graph
-            prm.message('planning path through graph');
-
-            prm.vpath = prm.graph.Astar(prm.vstart, prm.vgoal);
-
-            % the path is a list of nodes from vstart to vgoal
-            % discard the first vertex, since we plan a local path to it
-            prm.gpath = prm.vpath;
-            prm.gpath = prm.gpath(2:end);
-
-            % start the navigation engine with a path to the nearest vertex
-            prm.graph.highlight_node(prm.vstart);
-
-            prm.localPath = bresenham(start, prm.graph.coord(prm.vstart));
-            prm.localPath = prm.localPath(2:end,:);
-        end
 
         % Invoked for each step on the path by path() method.
         function n = next(prm, p)
@@ -259,7 +255,7 @@ classdef PRM < Navigation
 
             % add PRM specific stuff information
             s = char(s, sprintf('  graph size: %d', prm.npoints));
-            s = char(s, sprintf('  dist thresh: %f', prm.distthresh));
+            s = char(s, sprintf('  dist thresh: %g', prm.distthresh));
             s = char(s, char(prm.graph) );
         end
         
@@ -284,13 +280,23 @@ classdef PRM < Navigation
                 hold on
                 prm.graph.plot('componentcolor');
                 
-                if opt.nodes
+                if opt.nodes && ~isempty(prm.vpath)
                     prm.graph.highlight_path(prm.vpath, ...
                         'NodeFaceColor', 'y', ...
                         'NodeEdgeColor', 'k', ...
                         'EdgeColor', 'k', ...
                         'EdgeThickness', 2 ...
                         )
+                    
+                    v0 = prm.vpath(1);
+                    p0 = prm.graph.coord(v0);
+                    plot([prm.start(1) p0(1)], [prm.start(2) p0(2)], 'Color', 'k', ...
+                        'LineWidth', 1.5);
+                    vf = prm.vpath(end);
+                    pf = prm.graph.coord(vf);
+                    
+                    plot([prm.goal(1) pf(1)], [prm.goal(2) pf(2)], 'Color', 'k', ...
+                        'LineWidth', 1.5);
                 end
             end
             

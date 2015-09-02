@@ -135,12 +135,12 @@ classdef RRT < Navigation
             % handle the options not done by Navigation superclass
             opt.npoints = 500;
             opt.simtime = 0.5;
-            opt.speed = vehicle.vmax;
+            opt.speed = vehicle.speedmax;
             opt.x0 = [0 0];
             opt.revcost = 1;
-            opt.root = [];
+            opt.root = [0 0 0];
             
-            [rrt,args] = tb_optparse(opt, rrt, varargin);
+            [rrt,args] = tb_optparse(opt, varargin, rrt);
             
             if isempty(rrt.occgrid)
                 opt = [];
@@ -168,7 +168,7 @@ classdef RRT < Navigation
             end
 
             rrt.graph = PGraph(3, 'distance', 'SE2', ...
-                'dweight', 0.5*1/norm(diff([rrt.xrange; rrt.yrange])) );  % graph of points in SE(2)
+                'dweight', 2*pi/norm(sum([rrt.xrange; rrt.yrange])) );  % graph of points in SE(2)
 
         end
 
@@ -220,10 +220,10 @@ classdef RRT < Navigation
             if isempty(rrt.root)
                 error('no root node specified');
             end
-            if ~isvec(root, 3)
+            if ~isvec(rrt.root, 3)
                 error('root must be 3-vector');
             end
-            if rrt.occupied(lp.root)
+            if rrt.occupied(rrt.root)
                 error('root node cell is occupied')
             end
 
@@ -253,16 +253,23 @@ classdef RRT < Navigation
 
                 % pick a point not in obstacle
                 while true
-                    xy = round( rrt.randxy() );  % get random coordinate (x,y)
-
-                    % test if lies in the obstacle map (if it exists)
-                    try
-                        if ~rrt.occupied(xy)
-                            break;
+                    xy = rrt.randxy();  % get random coordinate (x,y)
+                    
+                    if isempty(rrt.occgrid)
+                        break
+                    else
+                        % we have an occgrid
+                        xy = round( xy );  % round it to a grid cell coordinate
+                        
+                        % test if lies in the obstacle map
+                        try
+                            if ~rrt.occupied(xy)
+                                break;
+                            end
+                        catch
+                            % index error, point must be off the map
+                            continue;
                         end
-                    catch
-                        % index error, point must be off the map
-                        continue;
                     end
                 end
                 theta = rrt.rand*2*pi;
@@ -323,12 +330,12 @@ classdef RRT < Navigation
             end
 
             if opt.progress
-                close(h)
+                delete(h)
             end
             rrt.message('graph create done');
         end
 
-        function p_ = path(rrt, xstart, xgoal)
+        function p_ = query(rrt, xstart, xgoal)
         %RRT.path Find a path between two points
         %
         % X = R.path(START, GOAL) finds a path (Nx3) from state START (1x3) 
@@ -345,12 +352,14 @@ classdef RRT < Navigation
         %
         % See also RRT.plot.
 
+            rrt.checkquery(xstart, xgoal);
+            
             g = rrt.graph;
             vstart = g.closest(xstart);
             vgoal = g.closest(xgoal);
 
             % find path through the graph using A* search
-            [path,cost] = g.Astar(vstart, vgoal);
+            [path,cost] = g.Astar(vstart, vgoal)
             
             fprintf('A* path cost %g\n', cost);
             
@@ -412,18 +421,20 @@ classdef RRT < Navigation
         %
         % R.plot() displays the navigation tree in 3D.
 
-            % display the occgrid
-            plot@Navigation(rrt, varargin{:});
-            
-            rrt.graph.plot('noedges', 'NodeSize', 3, 'NodeFaceColor', 'b', 'NodeEdgeColor', 'b', 'edges');
 
-            hold on
-%             for i=2:rrt.graph.n
-%                 b = rrt.graph.vdata(i);
-%                 plot2(b.path(:,1:b.k)')
-%             end
+            % display the occgrid background
+            rrt.plot_bg(varargin{:});
+            
+            % display the graph
+            %rrt.graph.plot('noedges', 'NodeSize', 3, 'NodeFaceColor', 'm', 'NodeEdgeColor', 'm', 'edges');
+            
+            rrt.graph.plot('noedges', 'nocomponentcolor', 'NodeSize', 3, 'NodeFaceColor', 'b', 'NodeEdgeColor', 'b', 'edges');
+hold on
+            
+            % display the occgrid background
+            rrt.plot_fg(varargin{:});
             xlabel('x'); ylabel('y'); zlabel('\theta');
-            grid; hold off
+            grid on; hold off
         end
 
         % required by abstract superclass
@@ -451,12 +462,6 @@ classdef RRT < Navigation
             end
         end
         
-            
-        function test(rrt)
-            xy = rrt.randxy()
-        end
-
-
 
     end % methods
 
