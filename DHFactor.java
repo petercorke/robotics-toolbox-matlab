@@ -1107,9 +1107,11 @@ public class DHFactor {
         return results.toString();
     }
 
+    /*
     public String display() {
         return results.toString();
     }
+    */
 
     private String angle(int a)
     {
