@@ -90,7 +90,7 @@
                 L.offset = dh(j,6);
                 L.qlim(1) = dh(j,7);
                 L.qlim(2) = dh(j,8);
-                if numcols(dh) > 6
+                if numcols(dh) > 8
                     L.m = dh(j,9);
                     L.Jm = dh(j,10);
                     L.B = dh(j,11);
