@@ -17,18 +17,19 @@ classdef URDF
             
             dom = xmlread(urdffile);
             
-            links = dom.getElementsByTagName('link');
-            joints = dom.getElementsByTagName('joint');
-            properties = dom.getElementsByTagName('property');
             robot = dom.getElementsByTagName('robot');
-            urdf.attr = urdf.getattr(robot.item(0))
+            ro = robot.item(0);
+            links = URDF.getChildElementsByTagName(ro,'link');
+            joints = URDF.getChildElementsByTagName(ro,'joint');
+            properties = URDF.getChildElementsByTagName(ro,'property');
+            urdf.attr = urdf.getattr(robot.item(0));
             
             % get the properties
-            fprintf('%d properties\n', properties.getLength);
+            fprintf('%d properties\n', length(properties));
             
             Props = [];
-            for k = 0:properties.getLength-1
-                property = properties.item(k)
+            for k = 1:length(properties)
+                property = properties(k)
                 if property.hasAttributes
                     attributes = property.getAttributes;
                     
@@ -125,14 +126,28 @@ classdef URDF
     end
     
     methods (Static)
+       function r = getChildElementsByTagName(node,name)
+            r = [];
+            nodeChildren = node.getChildNodes;
+            for i=1:nodeChildren.getLength
+                child = nodeChildren.item(i-1);
+                if child.getNodeType == 3
+                    continue;
+                end
+                if strcmp(char(child.getNodeName),name)
+                    r = [r; child];
+                end
+            end
+        end
+        
         function List = get_elements(doc, elname, props)
-            elements  = doc.getElementsByTagName(elname);
+            elements  = URDF.getChildElementsByTagName(doc.getDocumentElement(),elname);
             % get the links
             List = {};
-            fprintf('%d %s\n', elements.getLength, elname);
+            fprintf('%d %s\n', length(elements), elname);
             % step through the list of  elements found
-            for k = 1:elements.getLength
-                element = elements.item(k-1);
+            for k = 1: length(elements)
+                element = elements(k);
                 
                 info = URDF.descend(element, props);
                 info = URDF.getattr(element, info, props);
@@ -163,6 +178,10 @@ classdef URDF
             end
         end
         
+
+
+
+
         function att = getattr(node, att, props)
             if nargin < 2
                 att = [];
