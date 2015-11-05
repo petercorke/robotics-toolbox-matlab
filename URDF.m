@@ -90,6 +90,9 @@ classdef URDF
             linkparent = zeros(urdf.nlinks);
             linkjoint = zeros(urdf.nlinks);
             joints = [];
+            for i=1:urdf.nlinks
+                linksbyname.(urdf.links{i}.name) = i;
+            end
             for i=1:urdf.njoints
                 T = rpy2tr(urdf.joints{i}.origin.rpy);
                 T(1:3,4) = urdf.joints{i}.origin.xyz;
@@ -99,13 +102,6 @@ classdef URDF
                 s.name = urdf.joints{i}.child.link;
                 s.parent = urdf.joints{i}.parent.link;
                 s.id = length(links)+1;
-                if isfield(linksbyname,s.parent) == 0
-                    q.id = length(links)+1;
-                    q.type = 'fixed';
-                    q.joint= 0;
-                    links{end+1} = q;
-                    linksbyname.(s.parent) = q.id;
-                end
                 s.parentid = linksbyname.(s.parent);
                 
                 if isfield(urdf.joints{i},'axis')
@@ -135,7 +131,7 @@ classdef URDF
             r.njoints = njoints;
             r.linksbyname = linksbyname; % links byname
             r.linkjoint = linkjoint;
-            r.linkmap = linkparent; % parent relationship
+            r.linkparent = linkparent; % parent relationship
         end
 
         function r = robot(urdf)
