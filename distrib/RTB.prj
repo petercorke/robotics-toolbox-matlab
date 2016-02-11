@@ -1,0 +1,277 @@
+<deployment-project plugin="plugin.toolbox" plugin-version="1.0">
+  <configuration build-checksum="3364172398" file="/Users/corkep/code/RVC/robotics-toolbox-matlab/distrib/tmp/flat/Robotics Toolbox for MATLAB.prj" location="/Users/corkep/code/RVC/robotics-toolbox-matlab/distrib/tmp/flat" name="Robotics Toolbox for MATLAB" target="target.toolbox" target-name="Package Toolbox">
+    <param.appname>Robotics Toolbox for MATLAB</param.appname>
+    <param.authnamewatermark>Peter Corke</param.authnamewatermark>
+    <param.email />
+    <param.company>QUT</param.company>
+    <param.summary>MATLAB support for mobile and arm robots</param.summary>
+    <param.description>MATLAB support for representing pose, motion, mobile and arm robots.</param.description>
+    <param.screenshot>/Users/corkep/rvc/doc/rtb-montage-notext.png</param.screenshot>
+    <param.version>9.10</param.version>
+    <param.output>${PROJECT_ROOT}/Robotics Toolbox for MATLAB.mltbx</param.output>
+    <param.products.name>
+      <item>MATLAB</item>
+      <item>Optimization Toolbox</item>
+      <item>Symbolic Math Toolbox</item>
+      <item>MATLAB Runtime - Core</item>
+      <item>Simulink</item>
+      <item>SystemTest</item>
+      <item>Image Processing Toolbox</item>
+    </param.products.name>
+    <param.products.id>
+      <item>1</item>
+      <item>6</item>
+      <item>15</item>
+      <item>35000</item>
+      <item>2</item>
+      <item>77</item>
+      <item>17</item>
+    </param.products.id>
+    <param.products.version>
+      <item>8.5</item>
+      <item>7.2</item>
+      <item>6.2</item>
+      <item>8.5</item>
+      <item>8.5</item>
+      <item>2.6.9</item>
+      <item>9.2</item>
+    </param.products.version>
+    <param.platforms />
+    <param.guid>5456c90d-db69-4f01-b199-f3e351cfc928</param.guid>
+    <param.exclude.filters />
+    <param.examples>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;examples/&gt;</param.examples>
+    <param.demosxml />
+    <param.apps />
+    <param.docs>${PROJECT_ROOT}/info.xml</param.docs>
+    <unset>
+      <param.email />
+      <param.output />
+      <param.platforms />
+      <param.exclude.filters />
+      <param.demosxml />
+      <param.apps />
+    </unset>
+    <fileset.rootdir>
+      <file>/Users/corkep/code/RVC/robotics-toolbox-matlab/distrib/tmp/flat</file>
+    </fileset.rootdir>
+    <fileset.rootfiles>
+      <file>${PROJECT_ROOT}/.DS_Store</file>
+      <file>${PROJECT_ROOT}/@SerialLink</file>
+      <file>${PROJECT_ROOT}/Bug2.m</file>
+      <file>${PROJECT_ROOT}/CITATION</file>
+      <file>${PROJECT_ROOT}/CONTRIB</file>
+      <file>${PROJECT_ROOT}/Contents.m</file>
+      <file>${PROJECT_ROOT}/DH.jar</file>
+      <file>${PROJECT_ROOT}/DHFactor.java</file>
+      <file>${PROJECT_ROOT}/DHFactor.m</file>
+      <file>${PROJECT_ROOT}/DXform.m</file>
+      <file>${PROJECT_ROOT}/Dstar.m</file>
+      <file>${PROJECT_ROOT}/EKF.m</file>
+      <file>${PROJECT_ROOT}/LGPL-LICENCE.txt</file>
+      <file>${PROJECT_ROOT}/Link.m</file>
+      <file>${PROJECT_ROOT}/Map.m</file>
+      <file>${PROJECT_ROOT}/Navigation.m</file>
+      <file>${PROJECT_ROOT}/PGraph.m</file>
+      <file>${PROJECT_ROOT}/PRM.m</file>
+      <file>${PROJECT_ROOT}/ParticleFilter.m</file>
+      <file>${PROJECT_ROOT}/Polygon.m</file>
+      <file>${PROJECT_ROOT}/Prismatic.m</file>
+      <file>${PROJECT_ROOT}/Quaternion.m</file>
+      <file>${PROJECT_ROOT}/README</file>
+      <file>${PROJECT_ROOT}/RELEASE</file>
+      <file>${PROJECT_ROOT}/RRT.m</file>
+      <file>${PROJECT_ROOT}/RandomPath.m</file>
+      <file>${PROJECT_ROOT}/RangeBearingSensor.m</file>
+      <file>${PROJECT_ROOT}/Revolute.m</file>
+      <file>${PROJECT_ROOT}/Sensor.m</file>
+      <file>${PROJECT_ROOT}/Vehicle.m</file>
+      <file>${PROJECT_ROOT}/about.m</file>
+      <file>${PROJECT_ROOT}/angdiff.m</file>
+      <file>${PROJECT_ROOT}/angvec2r.m</file>
+      <file>${PROJECT_ROOT}/angvec2tr.m</file>
+      <file>${PROJECT_ROOT}/bresenham.m</file>
+      <file>${PROJECT_ROOT}/circle.m</file>
+      <file>${PROJECT_ROOT}/colnorm.m</file>
+      <file>${PROJECT_ROOT}/ctraj.m</file>
+      <file>${PROJECT_ROOT}/delta2tr.m</file>
+      <file>${PROJECT_ROOT}/demos</file>
+      <file>${PROJECT_ROOT}/diff2.m</file>
+      <file>${PROJECT_ROOT}/distancexform.m</file>
+      <file>${PROJECT_ROOT}/e2h.m</file>
+      <file>${PROJECT_ROOT}/eul2jac.m</file>
+      <file>${PROJECT_ROOT}/eul2r.m</file>
+      <file>${PROJECT_ROOT}/eul2tr.m</file>
+      <file>${PROJECT_ROOT}/examples</file>
+      <file>${PROJECT_ROOT}/gauss2d.m</file>
+      <file>${PROJECT_ROOT}/h2e.m</file>
+      <file>${PROJECT_ROOT}/homline.m</file>
+      <file>${PROJECT_ROOT}/homtrans.m</file>
+      <file>${PROJECT_ROOT}/info.xml</file>
+      <file>${PROJECT_ROOT}/ishomog.m</file>
+      <file>${PROJECT_ROOT}/isrot.m</file>
+      <file>${PROJECT_ROOT}/isvec.m</file>
+      <file>${PROJECT_ROOT}/jtraj.m</file>
+      <file>${PROJECT_ROOT}/lspb.m</file>
+      <file>${PROJECT_ROOT}/mdl_3link3d.m</file>
+      <file>${PROJECT_ROOT}/mdl_Fanuc10L.m</file>
+      <file>${PROJECT_ROOT}/mdl_KR5.m</file>
+      <file>${PROJECT_ROOT}/mdl_MotomanHP6.m</file>
+      <file>${PROJECT_ROOT}/mdl_S4ABB2p8.m</file>
+      <file>${PROJECT_ROOT}/mdl_ball.m</file>
+      <file>${PROJECT_ROOT}/mdl_baxter.m</file>
+      <file>${PROJECT_ROOT}/mdl_coil.m</file>
+      <file>${PROJECT_ROOT}/mdl_hyper2d.m</file>
+      <file>${PROJECT_ROOT}/mdl_hyper3d.m</file>
+      <file>${PROJECT_ROOT}/mdl_irb140.m</file>
+      <file>${PROJECT_ROOT}/mdl_irb140_mdh.m</file>
+      <file>${PROJECT_ROOT}/mdl_jaco.m</file>
+      <file>${PROJECT_ROOT}/mdl_m16.m</file>
+      <file>${PROJECT_ROOT}/mdl_mico.m</file>
+      <file>${PROJECT_ROOT}/mdl_nao.m</file>
+      <file>${PROJECT_ROOT}/mdl_offset6.m</file>
+      <file>${PROJECT_ROOT}/mdl_p8.m</file>
+      <file>${PROJECT_ROOT}/mdl_phantomx.m</file>
+      <file>${PROJECT_ROOT}/mdl_planar1.m</file>
+      <file>${PROJECT_ROOT}/mdl_planar2.m</file>
+      <file>${PROJECT_ROOT}/mdl_planar3.m</file>
+      <file>${PROJECT_ROOT}/mdl_puma560.m</file>
+      <file>${PROJECT_ROOT}/mdl_puma560akb.m</file>
+      <file>${PROJECT_ROOT}/mdl_quadrotor.m</file>
+      <file>${PROJECT_ROOT}/mdl_simple6.m</file>
+      <file>${PROJECT_ROOT}/mdl_stanford.m</file>
+      <file>${PROJECT_ROOT}/mdl_stanford_mdh.m</file>
+      <file>${PROJECT_ROOT}/mdl_twolink.m</file>
+      <file>${PROJECT_ROOT}/mdl_twolink_mdh.m</file>
+      <file>${PROJECT_ROOT}/mdl_twolink_sym.m</file>
+      <file>${PROJECT_ROOT}/mex</file>
+      <file>${PROJECT_ROOT}/models.m</file>
+      <file>${PROJECT_ROOT}/mplot.m</file>
+      <file>${PROJECT_ROOT}/mstraj.m</file>
+      <file>${PROJECT_ROOT}/mtraj.m</file>
+      <file>${PROJECT_ROOT}/numcols.m</file>
+      <file>${PROJECT_ROOT}/numrows.m</file>
+      <file>${PROJECT_ROOT}/oa2r.m</file>
+      <file>${PROJECT_ROOT}/oa2tr.m</file>
+      <file>${PROJECT_ROOT}/peak.m</file>
+      <file>${PROJECT_ROOT}/peak2.m</file>
+      <file>${PROJECT_ROOT}/plot2.m</file>
+      <file>${PROJECT_ROOT}/plot_arrow.m</file>
+      <file>${PROJECT_ROOT}/plot_box.m</file>
+      <file>${PROJECT_ROOT}/plot_circle.m</file>
+      <file>${PROJECT_ROOT}/plot_ellipse.m</file>
+      <file>${PROJECT_ROOT}/plot_homline.m</file>
+      <file>${PROJECT_ROOT}/plot_point.m</file>
+      <file>${PROJECT_ROOT}/plot_poly.m</file>
+      <file>${PROJECT_ROOT}/plot_sphere.m</file>
+      <file>${PROJECT_ROOT}/plot_vehicle.m</file>
+      <file>${PROJECT_ROOT}/plotbotopt.m</file>
+      <file>${PROJECT_ROOT}/plotp.m</file>
+      <file>${PROJECT_ROOT}/polydiff.m</file>
+      <file>${PROJECT_ROOT}/qplot.m</file>
+      <file>${PROJECT_ROOT}/r2t.m</file>
+      <file>${PROJECT_ROOT}/randinit.m</file>
+      <file>${PROJECT_ROOT}/robot.pdf</file>
+      <file>${PROJECT_ROOT}/rotx.m</file>
+      <file>${PROJECT_ROOT}/roty.m</file>
+      <file>${PROJECT_ROOT}/rotz.m</file>
+      <file>${PROJECT_ROOT}/rpy2jac.m</file>
+      <file>${PROJECT_ROOT}/rpy2r.m</file>
+      <file>${PROJECT_ROOT}/rpy2tr.m</file>
+      <file>${PROJECT_ROOT}/rt2tr.m</file>
+      <file>${PROJECT_ROOT}/rtbdemo.m</file>
+      <file>${PROJECT_ROOT}/rtbdemo_gui.fig</file>
+      <file>${PROJECT_ROOT}/runscript.m</file>
+      <file>${PROJECT_ROOT}/se2.m</file>
+      <file>${PROJECT_ROOT}/skew.m</file>
+      <file>${PROJECT_ROOT}/startup_rtb.m</file>
+      <file>${PROJECT_ROOT}/t2r.m</file>
+      <file>${PROJECT_ROOT}/tb_optparse.m</file>
+      <file>${PROJECT_ROOT}/tpoly.m</file>
+      <file>${PROJECT_ROOT}/tr2angvec.m</file>
+      <file>${PROJECT_ROOT}/tr2delta.m</file>
+      <file>${PROJECT_ROOT}/tr2eul.m</file>
+      <file>${PROJECT_ROOT}/tr2jac.m</file>
+      <file>${PROJECT_ROOT}/tr2rpy.m</file>
+      <file>${PROJECT_ROOT}/tr2rt.m</file>
+      <file>${PROJECT_ROOT}/tranimate.m</file>
+      <file>${PROJECT_ROOT}/transl.m</file>
+      <file>${PROJECT_ROOT}/trinterp.m</file>
+      <file>${PROJECT_ROOT}/tripleangle.fig</file>
+      <file>${PROJECT_ROOT}/trnorm.m</file>
+      <file>${PROJECT_ROOT}/trotx.m</file>
+      <file>${PROJECT_ROOT}/troty.m</file>
+      <file>${PROJECT_ROOT}/trotz.m</file>
+      <file>${PROJECT_ROOT}/trplot.m</file>
+      <file>${PROJECT_ROOT}/trplot2.m</file>
+      <file>${PROJECT_ROOT}/trprint.m</file>
+      <file>${PROJECT_ROOT}/unit.m</file>
+      <file>${PROJECT_ROOT}/vex.m</file>
+      <file>${PROJECT_ROOT}/wtrans.m</file>
+      <file>${PROJECT_ROOT}/xaxis.m</file>
+      <file>${PROJECT_ROOT}/xyzlabel.m</file>
+      <file>${PROJECT_ROOT}/yaxis.m</file>
+    </fileset.rootfiles>
+    <fileset.depfun.included />
+    <fileset.depfun.excluded>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/Animate.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/arrow3.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/colorname.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/colorspace.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/edgelist.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/filt1d.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/iconcat.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/idilate.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/idisp.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/idouble.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/ihist.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/imeshgrid.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/imorph.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/inormhist.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/ipaste.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/iwindow.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/kcircle.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/mpq_poly.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/pickregion.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/rvcpath.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/tristim2cc.m</file>
+    </fileset.depfun.excluded>
+    <fileset.package />
+    <build-deliverables>
+      <file location="/Users/corkep/code/RVC/robotics-toolbox-matlab/distrib/tmp/flat" name="Robotics Toolbox for MATLAB.mltbx" optional="false">/Users/corkep/code/RVC/robotics-toolbox-matlab/distrib/tmp/flat/Robotics Toolbox for MATLAB.mltbx</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/Applications/MATLAB_R2015a.app</root>
+      <toolboxes>
+        <toolbox name="embeddedcoder" />
+        <toolbox name="matlabcoder" />
+      </toolboxes>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>true</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.10.4</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>maci64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

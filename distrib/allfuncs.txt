@@ -1,32 +1,38 @@
-h1.Homogeneous transformations : Manipulate homogeneous transformations and orthonormal rotation matrices
+h1.Homogeneous transformations 3D : Manipulate homogeneous transformations and orthonormal rotation matrices
 angvec2r    : angle/vector to RM
 angvec2tr   : angle/vector to HT
 eul2r       : Euler angles to RM
 eul2tr      : Euler angles to HT
 oa2r        : orientation and approach vector to RM 
 oa2tr       : orientation and approach vector to HT
-r2t         : RM to HT
-rt2tr       : (R,t) to HT
 rotx        : RM for rotation about X-axis
 roty        : RM for rotation about Y-axis
 rotz        : RM for rotation about Z-axis
 rpy2r       : roll/pitch/yaw angles to RM
 rpy2tr      : roll/pitch/yaw angles to HT
-se2         : HT in SE(2)
-t2r         : HT to RM
 tr2angvec   : HT/RM to angle/vector form
 tr2eul      : HT/RM to Euler angles 
 tr2rpy      : HT/RM to roll/pitch/yaw angles
-tr2rt      : HT to (R,t)
 tranimate  : animate a coordinate frame
 transl      : set or extract the translational component of HT
 trnorm      : normalize HT 
 trplot      : plot HT as a coordinate frame
-trplot2     : plot HT, SE(2), as a coordinate frame
 trprint     : print an HT
 trotx       : HT for rotation about X-axis
 troty       : HT for rotation about Y-axis
 trotz       : HT for rotation about Z-axis
+
+h1.Homogeneous transformations 2D : Manipulate homogeneous transformations and orthonormal rotation matrices
+se2         : HT in SE(2)
+trplot2     : plot HT, SE(2), as a coordinate frame
+transl2      : set or extract the translational component of HT
+rot2         : rotation matrix
+
+h1.Homogeneous transformation utilities : Manipulate homogeneous transformations and orthonormal rotation matrices
+r2t         : RM to HT
+rt2tr       : (R,t) to HT
+t2r         : HT to RM
+tr2rt      : HT to (R,t)
 
 h1. Homogeneous points and lines : Manipulate homogeneous points and lines
 e2h         : Euclidean coordinates to homogeneous
@@ -70,6 +76,10 @@ Quaternion.interp     : interpolate a quaternion
 h1.Serial-link manipulator : Class representing the kinematics and dynamics of a serial-link manipulator
 SerialLink : construct a serial-link robot object
 Link        : construct a robot link object 
+Revolute    : construct a revolute link object
+Prismatic   : construct a prismatic link object
+RevoluteMDH    : construct a revolute link object (MDH params)
+PrismaticMDH   : construct a prismatic link object (MDH params)
 *           : compound two robots
 SerialLink.friction    : return joint friction torques
 SerialLink.nofriction  : return a robot object with no friction
@@ -79,15 +89,38 @@ SerialLink.teach    : drive a graphical  robot
 
 h2.Models : Models of serial-link manipulators
 DHFactor : convert elementary transformations to DH form
+models          : list/search all models
+mdl_3link3d
+mdl_KR5         : Kuka KR5
+mdl_S4ABB2p8    : ABB S4 2.8 (DH, kine)
+mdl_ball        : high DOF ball robot
+mdl_baxter      : Rethink Robotics Baxter
+mdl_coil        : high DOF coiled robot
 mdl_Fanuc10L    : Fanuc 10L (DH, kine)
+mdl_hyper2d     : high DOF planar
+mdl_hyper3d     : high DOF 3D
+mdl_irb140      : ABB IRB140
+mdl_irb140_mdh  : ABB IRB140 (MDH)
+mdl_jaco        : Kinova Jaco
+mdl_m16         : Fanuc M16
+mdl_mico        : Kinova Jaco
 mdl_MotomanHP6  : Motoman HP6 (DH, kine)
+mdl_nao         : Alderbaran Nao humanoid
+mdl_offset6     : simple 6-link arm with shoulder offset
+mdl_p8          : Puma 560 on an XY base
+mdl_phantomx    : PhantomX pincher
+mdl_planar1     : 1 line planar robot
+mdl_planar2     : 1 line planar robot
+mdl_planar3     : 1 line planar robot
 mdl_puma560     : Puma 560 data (DH, kine, dyn)
 mdl_puma560akb  : Puma 560 data (MDH, kine, dyn)
-mdl_robot       : construct a robot object 
+mdl_quadrotor   : simple quadcopter model
+mdl_simple6
 mdl_stanford    : Stanford arm data (DH, kine, dyn)
-mdl_S4ABB2p8    : ABB S4 2.8 (DH, kine)
+mdl_stanford_mdh
 mdl_twolink     : simple 2-link example (DH, kine)
-mdl_quadcopter : simple quadcopter model
+mdl_twolink_mdh : simple 2-link example (MDH, kine)
+mdl_twolink_sym : simple 2-link example (DH, kine, symbolic)
 
 h2.Kinematic : Serial-link manipulator kinematic functions
 DHFactor        : transform sequence to DH description
@@ -131,6 +164,8 @@ PRM : probabilistic roadmap planner
 RRT : rapidly exploring random tree
 
 h1.Graphics : Useful graphic primitives
+circle      : compute/draw points on a circle
+mplot       : time series plotting
 plot2    : plot trajectory
 plotp    : plot points
 plot_arrow : draw an arrow
@@ -142,8 +177,6 @@ plot_point   : plot points
 plot_poly    : plot polygon
 plot_sphere : draw a sphere
 qplot : plot joint angle trajectories
-plot2
-plotp
 xaxis : set x-axis scaling
 yaxis : set y-axis scaling
 xyzlabel : label axes x, y and z
@@ -152,7 +185,6 @@ h1.Utility : Miscellaneous functions
 about       : summary of object size and type
 angdiff     : subtract 2 angles modulo 2pi
 bresenham   : Bresenhan line drawing
-circle      : compute/draw points on a circle
 colnorm     : columnwise norm of matrix
 diff2       : elementwise diff
 gauss2d     : Gaussian distribution in 2D
@@ -169,12 +201,13 @@ polydiff    : derivative of polynomial
 Polygon : general purpose polygon class
 randinit    : initialize random number generator
 ramp        : create linear ramp
+runscript   : step through a script file
 unit        : unitize a vector
 tb_optparse : toolbox argument parser
 distancexform: compute distance transform
 
 h1.Demonstrations
-rtdemo      : Serial-link manipulator demonstration
+rtbdemo      : Serial-link manipulator demonstration
 
 h1.Examples
 sl_quadcopter : Simulink model of a flying quadcopter
