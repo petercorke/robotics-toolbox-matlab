@@ -79,6 +79,8 @@ classdef Navigation < handle
 
         randstream
         seed0
+        
+        w2g        % transform from world coordinates to grid coordinates
     end
 
 
@@ -119,10 +121,21 @@ classdef Navigation < handle
         %   with radius given by the 'inflate' option.
         % - The 'private' option creates a private random number stream for the methods 
         %   rand, randn and randi.  If not given the global stream is used.
+        %
+        % TODO:
+        %   - allow for an arbitrary transform from world coordinates to the grid
 
-            if nargin >= 1 && isnumeric(varargin{1}) && ~isscalar(varargin{1})
-                nav.occgrid = varargin{1};
+            if nargin >= 1 
+                % first argument is the map
+                map = varargin{1};
                 varargin = varargin(2:end);
+                if isnumeric(map) && ~isscalar(map)
+                    nav.occgrid = map;
+                    nav.w2g = SE2(0, 0, 0);
+                elseif isstruct(map)
+                     nav.occgrid = map.map;
+                     nav.w2g = nav.T;
+                end
             end
             
             % default values of options
@@ -170,6 +183,7 @@ classdef Navigation < handle
 
             nav.spincount = 0;
         end
+        
 
         function setgoal(nav, goal)
             if isempty(goal)
@@ -245,7 +259,22 @@ classdef Navigation < handle
                 end
             end
         end
-
+        
+        function occ = occupied_new(nav, x, y)
+            if nargin == 2 && isvec(x, 2)
+                wc = x(:);
+            else
+                wc = [x; y];
+            end
+            gc = round( nav.w2g * x(:) );
+            try
+                occ = nav.occgrid(gc(2), gc(1));
+            catch
+                occ = true; % beyond the grid, all cells are implicitly occupied
+            end
+        end
+        
+        
         % invoked whenever the goal is set
 %         function set.goal(nav, goal)
 % 
