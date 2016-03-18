@@ -1,0 +1,92 @@
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration build-checksum="626810611" file="/Users/corkep/code/RVC/robotics-toolbox-matlab/Triple angle visualizer.prj" location="/Users/corkep/code/RVC/robotics-toolbox-matlab" name="Triple angle visualizer" target="target.mlapps" target-name="Package App">
+    <param.appname>Triple angle visualizer</param.appname>
+    <param.authnamewatermark>Peter Corke</param.authnamewatermark>
+    <param.email>rvc@petercorke.com</param.email>
+    <param.company />
+    <param.icon />
+    <param.icons />
+    <param.summary>Interactively experiment with roll-pitch-yaw or Euler angles</param.summary>
+    <param.description>App packaged for Introduction to Robotics MOOC - week 2</param.description>
+    <param.screenshot>/Users/corkep/tripleangle.png</param.screenshot>
+    <param.version>1.0</param.version>
+    <param.products.name>
+      <item>MATLAB</item>
+    </param.products.name>
+    <param.products.id>
+      <item>'1'</item>
+    </param.products.id>
+    <param.products.version>
+      <item>8.5</item>
+    </param.products.version>
+    <param.platforms />
+    <param.output>${PROJECT_ROOT}/Triple angle visualizer.mlappinstall</param.output>
+    <param.guid>fbd722b4-a491-4bf9-9cb0-83bb714de676</param.guid>
+    <unset>
+      <param.company />
+      <param.icon />
+      <param.icons />
+      <param.version />
+      <param.platforms />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}/tripleangle.m</file>
+    </fileset.main>
+    <fileset.depfun>
+      <file>${PROJECT_ROOT}/r2t.m</file>
+      <file>${PROJECT_ROOT}/rotx.m</file>
+      <file>${PROJECT_ROOT}/roty.m</file>
+      <file>${PROJECT_ROOT}/rotz.m</file>
+      <file>${PROJECT_ROOT}/tripleangle.fig</file>
+      <file>/Users/corkep/rvc/common/tb_optparse.m</file>
+      <file>/Users/corkep/rvc/contrib/stlTools/stlGetFormat.m</file>
+      <file>/Users/corkep/rvc/contrib/stlTools/stlRead.m</file>
+      <file>/Users/corkep/rvc/contrib/stlTools/stlReadAscii.m</file>
+      <file>/Users/corkep/rvc/contrib/stlTools/stlReadBinary.m</file>
+      <file>/Users/corkep/rvc/contrib/stlTools/stlSlimVerts.m</file>
+    </fileset.depfun>
+    <fileset.resources>
+      <file>${PROJECT_ROOT}/gimbal-ring1.stl</file>
+      <file>${PROJECT_ROOT}/gimbal-ring2.stl</file>
+      <file>${PROJECT_ROOT}/gimbal-ring3.stl</file>
+      <file>${PROJECT_ROOT}/spitfire_assy-gear_up.stl</file>
+    </fileset.resources>
+    <fileset.package />
+    <build-deliverables>
+      <file location="/Users/corkep/code/RVC/robotics-toolbox-matlab" name="Triple angle visualizer.mlappinstall" optional="false">/Users/corkep/code/RVC/robotics-toolbox-matlab/Triple angle visualizer.mlappinstall</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/Applications/MATLAB_R2015a.app</root>
+      <toolboxes>
+        <toolbox name="embeddedcoder" />
+        <toolbox name="matlabcoder" />
+      </toolboxes>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>true</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.10.4</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>maci64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
