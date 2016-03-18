@@ -101,21 +101,7 @@ classdef Bug2 < Navigation
             if opt.animate
                 bug.plot();
                 
-                % parameters of the M-line, direct from initial position to goal
-                % as a vector mline, such that [robot 1]*mline = 0
-                dims = axis;
-                xmin = dims(1); xmax = dims(2);
-                ymin = dims(3); ymax = dims(4);
-                
-                hold on
-                if bug.mline(2) == 0
-                    % handle the case that the line is vertical
-                    plot([start(1) start(1)], [ymin ymax], 'k--');
-                else
-                    x = [xmin xmax]';
-                    y = -[x [1;1]] * [bug.mline(1); bug.mline(3)] / bug.mline(2);
-                    plot(x, y, 'k--');
-                end
+                bug.plot_mline();
             end
             
             
@@ -149,6 +135,27 @@ classdef Bug2 < Navigation
             end
         end
         
+        function plot_mline(bug, ls)
+                % parameters of the M-line, direct from initial position to goal
+                % as a vector mline, such that [robot 1]*mline = 0
+                
+                if nargin < 2
+                    ls = 'k--';
+                end
+                dims = axis;
+                xmin = dims(1); xmax = dims(2);
+                ymin = dims(3); ymax = dims(4);
+                
+                hold on
+                if bug.mline(2) == 0
+                    % handle the case that the line is vertical
+                    plot([start(1) start(1)], [ymin ymax], 'k--');
+                else
+                    x = [xmin xmax]';
+                    y = -[x [1;1]] * [bug.mline(1); bug.mline(3)] / bug.mline(2);
+                    plot(x, y, ls);
+                end
+        end
         
         function n = next(bug, robot)
             
