@@ -187,6 +187,7 @@ classdef Lattice < Navigation
                 pp(3,:) = angdiff( pp(3,:) * pi/2 );
             end
             
+            pp = pp';
             
         end
         
