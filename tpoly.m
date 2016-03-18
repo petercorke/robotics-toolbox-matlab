@@ -76,6 +76,8 @@ function [s,sd,sdd] = tpoly(q0, qf, t, qd0, qdf)
         qdf = 0;
     end
     
+    plotsargs = {'.-', 'Markersize', 16};
+                
     tf = max(t);
     % solve for the polynomial coefficients using least squares
     X = [
@@ -107,12 +109,13 @@ function [s,sd,sdd] = tpoly(q0, qf, t, qd0, qdf)
                 xt = t;
             end
 
+
             clf
             subplot(311)
-            plot(xt, p); grid; ylabel('$s$', 'FontSize', 16, 'Interpreter','latex');
+            plot(xt, p, plotsargs{:}); grid; ylabel('$s$', 'FontSize', 16, 'Interpreter','latex');
 
             subplot(312)
-            plot(xt, pd); grid; 
+            plot(xt, pd, plotsargs{:}); grid; 
             if isscalar(t0)
                 ylabel('$ds/dk$', 'FontSize', 16, 'Interpreter','latex');
             else
@@ -120,7 +123,7 @@ function [s,sd,sdd] = tpoly(q0, qf, t, qd0, qdf)
             end
             
             subplot(313)
-            plot(xt, pdd); grid;
+            plot(xt, pdd, plotsargs{:}); grid;
             if isscalar(t0)
                 ylabel('$ds^2/dk^2$', 'FontSize', 16, 'Interpreter','latex');
             else

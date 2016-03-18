@@ -65,6 +65,7 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
     else
         t = t(:);
     end
+    plotsargs = {'Markersize', 16};
 
     tf = max(t(:));
 
@@ -130,19 +131,19 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
             % highlight the accel, coast, decel phases with different
             % colored markers
             hold on
-            plot(xt, p);
+            %plot(xt, p);
             k = t<= tb;
-            plot(xt(k), p(k), 'ro');
+            plot(xt(k), p(k), 'r.-', plotsargs{:});
             k = (t>=tb) & (t<= (tf-tb));
-            plot(xt(k), p(k), 'bo');
+            plot(xt(k), p(k), 'b.-', plotsargs{:});
             k = t>= (tf-tb);
-            plot(xt(k), p(k), 'go');
+            plot(xt(k), p(k), 'g.-', plotsargs{:});
             grid; ylabel('$s$', 'FontSize', 16, 'Interpreter','latex');
 
             hold off
 
             subplot(312)
-            plot(xt, pd);
+            plot(xt, pd, '.-', plotsargs{:});
             grid;
             if isscalar(t0)
                 ylabel('$ds/dk$', 'FontSize', 16, 'Interpreter','latex');
@@ -151,7 +152,7 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
             end
             
             subplot(313)
-            plot(xt, pdd);
+            plot(xt, pdd, '.-', plotsargs{:});
             grid;
             if isscalar(t0)
                 ylabel('$ds^2/dk^2$', 'FontSize', 16, 'Interpreter','latex');
