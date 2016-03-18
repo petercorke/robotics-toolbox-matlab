@@ -44,53 +44,73 @@
 % http://www.petercorke.com
 
 % TODO singularity for XYZ case, 
-function rpy = tr2rpy(m, varargin)
+function [rpy,order] = tr2rpy(R, varargin)
 	
     opt.deg = false;
-    opt.xyz = false;
+    opt.order = {'zyx', 'xyz', 'arm', 'vehicle', 'yxz', 'camera'};
     opt = tb_optparse(opt, varargin);
 
-	s = size(m);
+	s = size(R);
 	if length(s) > 2
 		rpy = zeros(s(3), 3);
 		for i=1:s(3)
-			rpy(i,:) = tr2rpy(m(:,:,i), varargin{:});
+			rpy(i,:) = tr2rpy(R(:,:,i), varargin{:});
 		end
 		return
 	end
 	rpy = zeros(1,3);
 
-    if opt.xyz
+    switch opt.order
+        case {'xyz', 'arm'}
+            opt.order = 'xyz';
         % XYZ order
-        if abs(m(3,3)) < eps && abs(m(2,3)) < eps
+        if abs(R(3,3)) < eps && abs(R(2,3)) < eps
             % singularity
             rpy(1) = 0;  % roll is zero
-            rpy(2) = atan2(m(1,3), m(3,3));  % pitch
-            rpy(3) = atan2(m(2,1), m(2,2));  % yaw is sum of roll+yaw
+            rpy(2) = atan2(R(1,3), R(3,3));  % pitch
+            rpy(3) = atan2(R(2,1), R(2,2));  % yaw is sum of roll+yaw
         else
-            rpy(1) = atan2(-m(2,3), m(3,3));        % roll
+            rpy(3) = atan2(-R(2,3), R(3,3));        % roll
             % compute sin/cos of roll angle
             sr = sin(rpy(1));
             cr = cos(rpy(1));
-            rpy(2) = atan2(m(1,3), cr * m(3,3) - sr * m(2,3));  % pitch
-            rpy(3) = atan2(-m(1,2), m(1,1));        % yaw
+            rpy(2) = atan2(R(1,3), cr * R(3,3) - sr * R(2,3));  % pitch
+            rpy(1) = atan2(-R(1,2), R(1,1));        % yaw
         end
-    else
+        case {'zyx', 'vehicle'}
+                        opt.order = 'zyx';
         % old ZYX order (as per Paul book)
-        if abs(m(1,1)) < eps && abs(m(2,1)) < eps
+        if abs(R(1,1)) < eps && abs(R(2,1)) < eps
             % singularity
             rpy(1) = 0;     % roll is zero
-            rpy(2) = atan2(-m(3,1), m(1,1));  % pitch
-            rpy(3) = atan2(-m(2,3), m(2,2));  % yaw is difference yaw-roll
+            rpy(2) = atan2(-R(3,1), R(1,1));  % pitch
+            rpy(3) = atan2(R(2,3), R(2,2));  % yaw is difference yaw-roll
         else
-            rpy(1) = atan2(m(2,1), m(1,1));
-            sp = sin(rpy(1));
-            cp = cos(rpy(1));
-            rpy(2) = atan2(-m(3,1), cp * m(1,1) + sp * m(2,1));
-            rpy(3) = atan2(sp * m(1,3) - cp * m(2,3), cp*m(2,2) - sp*m(1,2));
+            rpy(3) = atan2(R(2,1), R(1,1));
+            sp = sin(rpy(3));
+            cp = cos(rpy(3));
+            rpy(2) = atan2(-R(3,1), cp * R(1,1) + sp * R(2,1));
+            rpy(1) = atan2(sp * R(1,3) - cp * R(2,3), cp*R(2,2) - sp*R(1,2));
         end
+        case {'yxz', 'camera'}
+                        opt.order = 'yxz';
+            if R(1,3)^2 + R(3,3)^2 < 100*eps
+                disp('is singular')
+                rpy(1) = 0;
+                rpy(3) = atan2(-R(1,2), R(2,2))
+                
+                rpy(2) = atan2(-R(3,1), 0);
+            else
+                rpy(1) = atan2(R(2,1), R(2,2));
+                rpy(3) = atan2(R(1,3), R(3,3));
+                
+                rpy(2) = atan2(-cos(rpy(3))*R(2,3), R(3,3));
+            end
     end
     if opt.deg
         rpy = rpy * 180/pi;
+    end
+    if nargout > 1
+        order = opt.order;
     end
 end

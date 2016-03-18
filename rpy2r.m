@@ -45,22 +45,10 @@
 % http://www.petercorke.com
 
 function R = rpy2r(roll, varargin)
-    opt.xyz = false;
-    opt.zyx = false;
+    opt.order = {'zyx', 'xyz', 'yxz', 'arm', 'vehicle', 'camera'};
     opt.deg = false;
     [opt,args] = tb_optparse(opt, varargin);
     
-    if opt.xyz & opt.zyx
-        error('RTB:rpy2r:badopt', 'xyz and zyx flags cannot both be set');
-    elseif opt.xyz & ~opt.zyx
-        xyzorder = true;
-    elseif ~opt.xyz & opt.zyx
-        xyzorder = false;
-    elseif ~opt.xyz & ~opt.zyx
-        % default, ZYX order
-        xyzorder = false;
-    end
-
     % unpack the arguments
     if numcols(roll) == 3
 		pitch = roll(:,2);
@@ -81,24 +69,37 @@ function R = rpy2r(roll, varargin)
         yaw = yaw * d2r;
     end
 
-    if xyzorder
-        % XYZ order
-        if numrows(roll) == 1
-            R = rotx(roll) * roty(pitch) * rotz(yaw);
-        else
-            R = zeros(3,3,numrows(roll));
-            for i=1:numrows(roll)
-                R(:,:,i) = rotx(roll(i)) * roty(pitch(i)) * rotz(yaw(i));
+    switch opt.order
+        case {'xyz', 'arm'}
+            % XYZ order
+            if numrows(roll) == 1
+                R = rotx(yaw) * roty(pitch) * rotz(roll);
+            else
+                R = zeros(3,3,numrows(roll));
+                for i=1:numrows(roll)
+                    R(:,:,i) = rotx(yaw(i)) * roty(pitch(i)) * rotz(roll(i));
+                end
             end
-        end
-    else
-        % ZYX order
-        if numrows(roll) == 1
-            R = rotz(roll) * roty(pitch) * rotx(yaw);
-        else
-            R = zeros(3,3,numrows(roll));
-            for i=1:numrows(roll)
-                R(:,:,i) = rotz(roll(i)) * roty(pitch(i)) * rotx(yaw(i));
+        case {'zyx', 'vehicle'}
+            % ZYX order
+            if numrows(roll) == 1
+                R = rotz(yaw) * roty(pitch) * rotx(roll);
+            else
+                R = zeros(3,3,numrows(roll));
+                for i=1:numrows(roll)
+                    R(:,:,i) = rotz(yaw(i)) * roty(pitch(i)) * rotx(roll(i));
+                end
             end
-        end
+            
+        case {'yxz', 'camera'}
+            % YXZ order
+            if numrows(roll) == 1
+                R = roty(yaw) * rotx(pitch) * rotz(roll);
+            else
+                R = zeros(3,3,numrows(roll));
+                for i=1:numrows(roll)
+                    R(:,:,i) = roty(yaw(i)) * rotx(pitch(i)) * rotz(roll(i));
+                end
+            end
     end
+end
