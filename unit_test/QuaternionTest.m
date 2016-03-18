@@ -4,333 +4,287 @@ function tests = QuaternionTest
   tests = functiontests(localfunctions);
 end
 
-% Quaternion
-%    Quaternion                 - constructor
-function Quaternion_test(testCase)
+function constructor_test(tc)
+    
+    verifyClass(tc, Quaternion(), 'Quaternion');
+    
+    verifyEqual(tc, Quaternion().double, [0 0 0 0]);
+    
+    %% from S
+    verifyEqual(tc, Quaternion([1 0 0 0]).double, [1 0 0 0]);
+    verifyEqual(tc, Quaternion([0 1 0 0]).double, [0 1 0 0]);
+    verifyEqual(tc, Quaternion([0 0 1 0]).double, [0 0 1 0]);
+    verifyEqual(tc, Quaternion([0 0 0 1]).double, [0 0 0 1]);
+ 
+    verifyEqual(tc, Quaternion([2 0 0 0]).double, [2 0 0 0]);
+    verifyEqual(tc, Quaternion([-2 0 0 0]).double, [-2 0 0 0]);
+
+    %% from [S,V]
+    verifyEqual(tc, Quaternion(1, [0 0 0]).double, [1 0 0 0]);
+    verifyEqual(tc, Quaternion(0, [1 0 0]).double, [0 1 0 0]);
+    verifyEqual(tc, Quaternion(0, [0 1 0]).double, [0 0 1 0]);
+    verifyEqual(tc, Quaternion(0, [0 0 1]).double, [0 0 0 1]);
+ 
+    verifyEqual(tc, Quaternion(2, [0 0 0]).double, [2 0 0 0]);
+    verifyEqual(tc, Quaternion(-2, [0 0 0]).double, [-2 0 0 0]);
+    
+    %% pure
+    v = [5 6 7];
+    verifyEqual(tc, Quaternion.pure(v).double, [0 v],'absTol',1e-4);   
+    
+    %% copy constructor
     q = Quaternion([1 2 3 4]);
-    verifyEqual(testCase, q.double(),[1 2 3 4],'absTol',1e-4);
-    verifyEqual(testCase, q.s, 1,'absTol',1e-4);
-    verifyEqual(testCase, q.v,[2 3 4],'absTol',1e-4);
+    verifyEqual(tc, Quaternion(q), q, 'AbsTol', 1e-10);
 
-    % Q = Quaternion(Q1) is a copy of the quaternion Q1
-    q2 = Quaternion(q);
-    verifyEqual(testCase, q.double(),[1 2 3 4],'absTol',1e-4);
-    
-
-    % Q = Quaternion([S V1 V2 V3]) specifying directly its 4 elements
-    q = Quaternion([1 2 3 4]);
-    verifyEqual(testCase, q.double,[1 2 3 4],'absTol',1e-4);
-    
-    q = Quaternion('component', [1 2 3 4]);
-    verifyEqual(testCase, q.double,[1 2 3 4],'absTol',1e-4);
-
-    % Q = Quaternion(S)  scalar S and zero vector part: S<0,0,0>
-    q = Quaternion(2);
-    verifyEqual(testCase, q.double, [2 0 0 0],'absTol',1e-4);
-
-    % Q = Quaternion(V) is a pure quaternion with the specified vector part: 0<V>
-    q = Quaternion([1 2 3]);
-    verifyEqual(testCase, q.double(),[0 1 2 3],'absTol',1e-4);    
-
-    q = Quaternion('pure', [1 2 3]);
-    verifyEqual(testCase, q.double(),[0 1 2 3],'absTol',1e-4);    
-    
-    % Q = Quaternion(V, TH) is a unit quaternion corresponding to rotation of TH about the vector V.
-    Th = pi;         
-    q = Quaternion(Th,[1 2 3]);
-    expected_out=[0.0000 0.2673 0.5345 0.8018];
-    verifyEqual(testCase, q.double(), expected_out,'absTol',1e-4);
-    
-    q = Quaternion('angvec', Th,[1 2 3]);
-    verifyEqual(testCase, q.double(), expected_out,'absTol',1e-4);
-    
-    % Q = Quaternion(R) is a unit quaternion corresponding to the orthonormal rotation matrix R.
-    R = [1.0000         0         0         
-         0    0.5403   -0.8415
-         0    0.8415    0.5403];
-    q = Quaternion(R);
-    verifyEqual(testCase, q.double(), [0.8776 0.4794 0 0],'absTol',1e-4);
-    
-    % omega option
-    th = 0.2; v = unit([1 2 3]);
-    q = Quaternion('omega', th*v);
-    [th2,v2] = q.angvec();
-    verifyEqual(testCase, th, th2,'absTol',1e-4);
-    verifyEqual(testCase, v, v2,'absTol',1e-4);
-    
-    % euler option
-    angles = [0.1 0.2 0.3];
-    q = Quaternion('Euler', angles);
-    R = eul2r(angles);
-    verifyEqual(testCase, q.R, R,'absTol',1e-4);
-    q = Quaternion('Euler', angles(1), angles(2), angles(3));
-    verifyEqual(testCase, q.R, R,'absTol',1e-4);
-    
-    % rpy option
-    angles = [0.1 0.2 0.3];
-    q = Quaternion('RPY', angles);
-    R = rpy2r(angles);
-    verifyEqual(testCase, q.R, R,'absTol',1e-4);
-    q = Quaternion('RPY', angles(1), angles(2), angles(3));
-    verifyEqual(testCase, q.R, R,'absTol',1e-4);
-
-    % constructor with vector argument
-    Rs = cat(3, R, R, R);
-    qr = Quaternion(Rs);
-    verifySize(testCase, qr, [1 3]);
-    
-    % Q = Quaternion(T) is a unit quaternion equivalent to the rotational
-    % part of the homogeneous transform T.
-    TR = [0.5403         0    0.8415         0
-              0    1.0000         0         0
-        -0.8415         0    0.5403         0
-              0         0         0    1.0000];         
-    qt = Quaternion(TR).double();
-    verifyEqual(testCase, qt, [0.8776 0 0.4794 0],'absTol',1e-4);
-
-    % constructor with vector argument
-    Ts = cat(3, TR, TR, TR);
-    q = Quaternion(Ts);
-    verifySize(testCase, q, [1 3]);
-
-    %test for input errors!! 
-    verifyError(testCase, @()Quaternion([1 2 3 4 5]),'RTB:Quaternion:badarg');
 end
+
+function primitive_convert_test(tc)
+    % char
     
-%    /                          - divide quaternion by quaternion or scalar
-function Quaternion_Divide_test(testCase)
-    % test run devision tests on quaternions
-    q1 = Quaternion();
-    q2 = Quaternion();
-    out = (q1/q2);
-    expected_out = [1 0 0 0 ];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-    q1 = Quaternion();
-    q2 = Quaternion([1 2 3]);
-    out = (q1/q2);
-    expected_out = [0 -1 -2 -3];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
+    s = char( Quaternion() );
+    
+    %% s,v
+    verifyEqual(tc, Quaternion([1 0 0 0]).s, 1);
+    verifyEqual(tc, Quaternion([1 0 0 0]).v, [0 0 0]);
+    
+    verifyEqual(tc, Quaternion([0 1 0 0]).s, 0);
+    verifyEqual(tc, Quaternion([0 1 0 0]).v, [1 0 0]);
+    
+    verifyEqual(tc, Quaternion([0 0 1 0]).s, 0);
+    verifyEqual(tc, Quaternion([0 0 1 0]).v, [0 1 0]);
+    
+    verifyEqual(tc, Quaternion([0 0 0 1]).s, 0);
+    verifyEqual(tc, Quaternion([0 0 0 1]).v, [0 0 1]);
+
 end
+
+function resulttype_test(tc)
     
-%    *                          - multiply quaternion by a quaternion or vector
-function quaternion_compare(testCase)
-    q1 = Quaternion(rotx(0.1));
-    q2 = Quaternion(roty(0.1));
+    q = Quaternion([2 0 0 0]);
+    
+    verifyClass(tc, q*q, 'Quaternion');
 
-    verifyTrue(testCase, q1 == q1);
-    verifyFalse(testCase, q1 == q2);
+    % other combos all fail, test this?
+    
+    verifyClass(tc, q/q, 'Quaternion');
 
-    verifyTrue(testCase, q1 ~= q2);
-    verifyFalse(testCase, q1 ~= q2);
+    verifyClass(tc, conj(q), 'Quaternion');
+    verifyClass(tc, inv(q), 'Quaternion');
+    verifyClass(tc, unit(q), 'UnitQuaternion');
+    
+    verifyClass(tc, q+q, 'Quaternion');
+    verifyClass(tc, q-q, 'Quaternion');
+end
+
+function multiply_test(tc)
+    
+    q1 = Quaternion([1 2 3 4]);
+    q2 = Quaternion([4 3 2 1]);
+    q3 = Quaternion([-1 2 -3 4]);
+
+    u = Quaternion([1 0 0 0]);
+    
+    %% quat-quat product
+    % scalar x scalar
+    
+    verifyEqual(tc, q1*u, q1);
+    verifyEqual(tc, u*q1, q1); 
+    
+    % vector x vector
+    verifyEqual(tc, [q1 u q2 u q3 u] * [u q1 u q2 u q3], [q1 q1 q2 q2 q3 q3]);
+    
+    % scalar x vector
+    verifyEqual(tc, q1 * [q1 q2 q3], [q1*q1 q1*q2 q1*q3]);
+    
+    % vector x scalar
+    verifyEqual(tc, [q1 q2 q3] * q2, [q1*q2 q2*q2 q3*q2]);
+    
+    %% quat-real product
+    % scalar x scalar
+    
+    v1 = q1.double;
+    verifyEqual(tc, double(q1*5), v1*5, 'AbsTol', 1e-10);
+    verifyEqual(tc, double(6*q1), v1*6, 'AbsTol', 1e-10);
+    verifyEqual(tc, double(-2*q1), -2*v1, 'AbsTol', 1e-10);
+    
+    % scalar x vector
+    verifyEqual(tc, 5*[q1 q2 q3], [5*q1 5*q2 5*q3], 'AbsTol', 1e-10);
+    
+    % vector x scalar
+    verifyEqual(tc, [q1 q2 q3] * 5, [5*q1 5*q2 5*q3], 'AbsTol', 1e-10);
+    
+    %% matrix form of multiplication
+    verifyEqual(tc, q1.mat44 * q2.double', double(q1*q2)' );
+
+
+end
+
+
+function divide_test(tc)
+
+    q1 = Quaternion([1 2 3 4]);
+    q2 = Quaternion([4 3 2 1]);
+    q3 = Quaternion([-1 2 -3 4]);
+    
+    u = Quaternion([1 0 0 0]);
+    
+        % scalar / scalar
+
+    verifyEqual(tc, q1/u, q1, 'AbsTol', 1e-10);
+    verifyEqual(tc, q2/u, q2, 'AbsTol', 1e-10);
+    verifyEqual(tc, q1/q1, u, 'AbsTol', 1e-10);
+    
+    verifyEqual(tc, q2/q2, u, 'AbsTol', 1e-10);
+
+    % vector / vector
+    verifyEqual(tc, [q1 q2 q3] / [q2 q3 q1], [q1/q2 q2/q3 q3/q1]);
+    
+    % vector / scalar
+    verifyEqual(tc, [q1 q2 q3] / q2, [q1/q2 q2/q2 q3/q2]);    
+end
+
+    
+function equality_test(tc)
+    q1 = Quaternion([1 2 3 4]);
+    q2 = Quaternion([-2 1 -4 3]);
+
+    verifyTrue(tc, q1 == q1);
+    verifyFalse(tc, q1 == q2);
+
+    verifyTrue(tc, q1 ~= q2);
+    verifyFalse(tc, q2 ~= q2);
 
     R = rotx(0.1);
     RR = cat(3, R,R,R);
-    qt1 = Quaternion(RR);
-    R = roty(0.1);
-    RR = cat(3, R,R,R);
-    qt2 = Quaternion(RR);
+    qt1 = [q1 q1 q2 q2];
+    qt2 = [q1 q2 q2 q1];
 
-    verifyEqual(testCase, qt1==q1, [1 1 1]);
-    verifyEqual(testCase, q1==qt1, [1 1 1]);
-    verifyEqual(testCase, qt1==qt1, [1 1 1]);
+    verifyEqual(tc, qt1==q1, [1 1 0 0]);
+    verifyEqual(tc, q1==qt1, [1 1 0 0]);
+    verifyEqual(tc, qt1==qt1, [1 1 1 1]);
 
-    verifyEqual(testCase, qt2==q1, [0 0 0]);
-    verifyEqual(testCase, q1==qt2, [0 0 0]);
-    verifyEqual(testCase, qt1==qt2, [0 0 0]);
+    verifyEqual(tc, qt2==q1, [1 0 0 1]);
+    verifyEqual(tc, q1==qt2, [1 0 0 1]);
+    verifyEqual(tc, qt1==qt2, [1 0 1 0]);
 
-    verifyEqual(testCase, qt1~=q1, [0 0 0]);
-    verifyEqual(testCase, q1~=qt1, [0 0 0]);
-    verifyEqual(testCase, qt1~=qt1, [0 0 0]);
+    verifyEqual(tc, qt1~=q1, [0 0 1 1]);
+    verifyEqual(tc, q1~=qt1, [0 0 1 1]);
+    verifyEqual(tc, qt1~=qt1, [0 0 0 0]);
 
-    verifyEqual(testCase, qt2~=q1, [1 1 1]);
-    verifyEqual(testCase, q1~=qt2, [1 1 1]);
-    verifyEqual(testCase, qt1~=qt2, [1 1 1]);
+    verifyEqual(tc, qt2~=q1, [0 1 1 0]);
+    verifyEqual(tc, q1~=qt2, [0 1 1 0]);
+    verifyEqual(tc, qt1~=qt2, [0 1 0 1]);
 end
 
-function Quaternion_Multiply_test(testCase)
+function basic_multiply_test(tc)
     % test run multiplication tests on quaternions
-    q1 = Quaternion();
-    q2 = Quaternion();
-    out = (q1*q2);
-    expected_out = [1 0 0 0 ];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
+    q = Quaternion([1 0 0 0]) * Quaternion([1 0 0 0]);
+    verifyEqual(tc, q.double, [1 0 0 0 ],'absTol',1e-4);
     
-    out = (q1.*q2);
-    expected_out = [1 0 0 0 ];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
+    q = Quaternion([1 0 0 0]) * Quaternion([1 2 3 4]);
+    verifyEqual(tc, q.double, [1 2 3 4],'absTol',1e-4);
     
-    q1 = Quaternion();
-    q2 = Quaternion([1 2 3]);
-    out = (q1*q2);
-    expected_out = [0 1 2 3];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-    
-    out = (q1.*q2);
-    expected_out = unit([0 1 2 3]);
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-    
-    %q*v       rotate vector by quaternion, v is 3x1
-    q1 = Quaternion([1 2 3]);
-    out = (q1*[3 2 1]);
-    expected_out = [-22;12;46];
-    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
+    q = Quaternion([1 2 3 4]) * Quaternion([1 2 3 4]);
+    verifyEqual(tc, q.double, [-28 4 6 8],'absTol',1e-4);    
 end
     
-%  q+q2      return elementwise sum of quaternions
-function Quaternion_Addition_test(testCase)
-    % test run multiplication tests on quaternions
-    q1 = Quaternion();
-    q2 = Quaternion();
-    out = (q1+q2);
-    expected_out = [2 0 0 0 ];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-    q1 = Quaternion();
-    q2 = Quaternion([1 2 3]);
-    out = (q1+q2);
-    expected_out = [1 1 2 3];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-end
-
-%  q-q2      return elementwise difference of quaternions
-function Quaternion_Subtraction_test(testCase)
-    % test run multiplication tests on quaternions
-    q1 = Quaternion();
-    q2 = Quaternion();
-    out = (q1-q2);
-    expected_out = [0 0 0 0 ];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-    q1 = Quaternion();
-    q2 = Quaternion([1 2 3]);
-    out = (q1-q2);
-    expected_out = [1 -1 -2 -3];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-end
-
-%  q^n       return q to power n (integer only)
-function Quaternion_Power_test(testCase)
-    % test run multiplication tests on quaternions
-    q1 = Quaternion();
-    out = (q1^2);
-    expected_out = [1 0 0 0 ];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-    q1 = Quaternion([1 2 3]);
-    out = (q1^3);
-    expected_out = [0 -14 -28 -42];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-end
+function add_sub_test(tc)
+    v1 = [1 2 3 4]; v2 = [2 2 4 7];
+    q = Quaternion(v1) + Quaternion(v2);
     
-%    inv                        - invert a quaternion
-function Quaternion_Invert_test(testCase)
-    % test run inversion tests on quaternions
-    q1 = Quaternion();
-    out = q1.inv;
-    expected_out = [1 0 0 0];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-    q1 = Quaternion([1 2 3]);
-    out = q1.inv;
-    expected_out = [0 -1 -2 -3];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-end
-
-%    norm                       - norm of a quaternion
-function Quaternion_Normal_test(testCase)
-    % test run Normal tests on quaternions
-    q1 = Quaternion();
-    out = q1.norm;
-    expected_out = 1;
-    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
-    q1 = Quaternion([1 2 3]);
-    out = q1.norm;
-    expected_out = 3.7417;
-    verifyEqual(testCase, out,expected_out,'absTol',1e-4);
-end
-
-%    unit                       - unitize a quaternion
-function Quaternion_Unit_test(testCase)
-    % test run Normal tests on quaternions
-    q1 = Quaternion();
-    out = q1.unit;
-    expected_out = [1 0 0 0];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-    q1 = Quaternion([1 2 3]);
-    out = q1.unit;
-    expected_out = [0 0.2673 0.5345 0.8018];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-end
-
-%  interp    interpolation (slerp) between q and q2, 0<=s<=1
-function Quaternion_Interpolation_test(testCase)
-    % test run Interpolation tests on quaternions
-    q1 = Quaternion();
-    q2 = Quaternion();
-    out = q1.interp(q2,1);
-    expected_out = [1 0 0 0 ];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-    q1 = Quaternion();
-    q2 = Quaternion([1 2 3]);
-    out = q1.interp(q2,1);
-    expected_out = [0 1 2 3];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-end
-
-
-%  scale     interpolation (slerp) between identity and q, 0<=s<=1
-function Quaternion_Scale_test(testCase)
-    % test run Interpolation tests on quaternions
-    q1 = Quaternion();
-    out = q1.scale(0.5);
-    expected_out = [1 0 0 0 ];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-    q1 = Quaternion([1 2 3]);
-    out = q1.scale(0.5);
-    expected_out = [0.2582 0.2582 0.5164 0.7746];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-end
-
-    %  dot       derivative of quaternion with angular velocity w
-function Quaternion_Dot_test(testCase)
-    % test run dot tests on quaternions
-    q1 = Quaternion();
-    omega = [1 2 3];
-    out = q1.dot(omega);
-    expected_out = [0    0.5000    1.0000    1.5000];
-    verifyEqual(testCase, out.double,expected_out,'absTol',1e-4);
-end
-
-%  plot function of(testCase) Quaternion_test
-function plot_test(testCase)
-    R = [1.0000         0         0         
-         0    0.5403   -0.8415         
-         0    0.8415    0.5403];         
-    q = Quaternion(R).double;
-    plot(q);
-end
-
-function angvec_test(testCase)
-    	% null rotation
-    q = Quaternion();
-    [theta, v] = q.angvec();
-    verifyEqual(testCase, theta, 0.0, 'absTol',1e-6);
-    verifyEqual(testCase, v, [0 0 0], 'absTol',1e-6);
+    verifyEqual(tc, q.double, v1+v2, 'absTol',1e-4);
+    q = Quaternion(v1) - Quaternion(v2);
     
-    % canonic rotations
-    q = Quaternion(rotx(pi/2));
-    [theta, v] = q.angvec();
-    verifyEqual(testCase, theta, pi/2, 'absTol',1e-6);
-    verifyEqual(testCase, v, [1 0 0], 'absTol',1e-6);
-    
-    q = Quaternion(roty(pi/2));
-    [theta, v] = q.angvec();
-    verifyEqual(testCase, theta, pi/2, 'absTol',1e-6);
-    verifyEqual(testCase, v, [0 1 0], 'absTol',1e-6);
-    
-    q = Quaternion(rotz(pi/2));
-    [theta, v] = q.angvec();
-    verifyEqual(testCase, theta, pi/2, 'absTol',1e-6);
-    verifyEqual(testCase, v, [0 0 1], 'absTol',1e-6);
-     
-    q = Quaternion(roty(pi/2));
-    [theta, v] = q.angvec('deg');
-    verifyEqual(testCase, theta, 90, 'absTol',1e-6);
-    verifyEqual(testCase, v, [0 1 0], 'absTol',1e-6);
+    verifyEqual(tc, q.double, v1-v2, 'absTol',1e-4);
 end
+
+    
+function inverse_test(tc)
+    
+    u = Quaternion([1 0 0 0]); % unit quaternion
+    q = Quaternion([1 2 3 4]);
+    
+    verifyEqual(tc, q*inv(q), u, 'AbsTol', 1e-10  );
+    verifyEqual(tc, inv(q)*q, u, 'AbsTol', 1e-10  );
+end
+
+function power_test(tc)
+
+    q = Quaternion([1 2 3 4]);
+    
+    verifyEqual(tc, q^0, Quaternion([1 0 0 0]), 'AbsTol', 1e-10  );
+    verifyEqual(tc, q^(-1), inv(q), 'AbsTol', 1e-10  );
+    verifyEqual(tc, q^2, q*q, 'AbsTol', 1e-10  );
+
+end
+
+
+function miscellany_test(tc)
+    v = [1 2 3 4];
+    q = Quaternion(v);
+    u = Quaternion([1 0 0 0]);
+    
+    %% norm
+    verifyEqual(tc, q.norm, norm(v), 'AbsTol', 1e-10  );
+    verifyEqual(tc, norm([q u q]), [norm(v) 1 norm(v)]', 'AbsTol', 1e-10  );
+    
+    %% unit
+    qu = q.unit();
+    verifyEqual(tc, qu.double, v/norm(v), 'AbsTol', 1e-10  );
+    verifyEqual(tc, unit([q u q]), [qu u qu], 'AbsTol', 1e-10  );
+    
+    %% inner
+    verifyEqual(tc, u.inner(u), 1, 'AbsTol', 1e-10  );
+    verifyEqual(tc, q.inner(q), q.norm^2, 'AbsTol', 1e-10  );
+    verifyEqual(tc, q.inner(u), dot(q.double, u.double), 'AbsTol', 1e-10  );
+
+
+end
+
+
+%  dot                     derivative of quaternion with angular velocity w
+
+%  angle                   angle between two quaternions
+%  plot                    plot a coordinate frame representing orientation of quaternion
+%  animate                 animates a coordinate frame representing changing orientation
+%                          of quaternion sequence
+
+
+% %    Quaternion                 - constructor
+% function Quaternion_test(tc)
+%     q = Quaternion([1 2 3 4]);
+%     verifyEqual(tc, q.double(),[1 2 3 4],'absTol',1e-4);
+%     verifyEqual(tc, q.s, 1,'absTol',1e-4);
+%     verifyEqual(tc, q.v,[2 3 4],'absTol',1e-4);
+% 
+%     % Q = Quaternion(Q1) is a copy of the quaternion Q1
+%     q2 = Quaternion(q);
+%     verifyEqual(tc, q.double(),[1 2 3 4],'absTol',1e-4);
+%     
+% 
+%     % Q = Quaternion([S V1 V2 V3]) specifying directly its 4 elements
+%     q = Quaternion([1 2 3 4]);
+%     verifyEqual(tc, q.double,[1 2 3 4],'absTol',1e-4);
+%     
+%     q = Quaternion('component', [1 2 3 4]);
+%     verifyEqual(tc, q.double,[1 2 3 4],'absTol',1e-4);
+% 
+%     % Q = Quaternion(S)  scalar S and zero vector part: S<0,0,0>
+%     q = Quaternion(2);
+%     verifyEqual(tc, q.double, [2 0 0 0],'absTol',1e-4);
+% 
+%     % Q = Quaternion(V) is a pure quaternion with the specified vector part: 0<V>
+%     q = Quaternion([1 2 3]);
+%     verifyEqual(tc, q.double(),[0 1 2 3],'absTol',1e-4);    
+% 
+% 
+%     
+%     % Q = Quaternion(V, TH) is a unit quaternion corresponding to rotation of TH about the vector V.
+%     Th = pi;         
+%     q = Quaternion(Th,[1 2 3]);
+%     expected_out=[0.0000 0.2673 0.5345 0.8018];
+%     verifyEqual(tc, q.double(), expected_out,'absTol',1e-4);
+%     
+%     %test for input errors!! 
+%     verifyError(tc, @()Quaternion([1 2 3 4 5]),'RTB:Quaternion:badarg');
+% end

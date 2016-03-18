@@ -1,38 +1,183 @@
-classdef SO3
-    properties
-        data
-    end
+classdef SO3 < RTBPose
     
     properties (Dependent=true)
-        R
+        %R
+        n
+        o
+        a
     end
     
     methods
         
+
+        
         function obj = SO3(a, varargin)
             if nargin == 0
                 obj.data = eye(3,3);
+            elseif isa(a, 'SO3')
+                obj.data = a.data;
             elseif SO3.isa(a)
-                obj.data = a;
-            else
+                for i=1:size(a, 3)
+                    obj(i).data = a(:,:,i);
+                end
+            elseif SE3.isa(a)
+                for i=1:size(a, 3)
+                    obj(i).data = a(1:3,1:3,i);
+                end
             end
         end
         
-                function out = mtimes(obj, a)
+
+        
+        function v = get.n(obj);
+            v = obj.data(1:3,1);
+        end
+        
+        function v = get.o(obj);
+            v = obj.data(1:3,2);
+        end
+        
+        function v = get.a(obj);
+            v = obj.data(1:3,3);
+        end
+        
+        function out = mtimes(obj, a)
             if isa(a, 'SO3')
-                out = SO3( obj.data * a.data);
-            elseif SO3.isa(a)
-                out = SO3( obj.data * a);
+                % SO3 * SO3
+                out = repmat(SO3, 1, max(length(obj),length(a)));
+                if length(obj) == length(a)
+                    % do objvector*objvector and objscalar*objscalar case
+                    for i=1:length(obj)
+                        out(i) = SO3( obj(i).data * a(i).data);
+                    end
+                elseif length(obj) == 1
+                    % objscalar*objvector case
+                    for i=1:length(a)
+                        out(i) = SO3( obj.data * a(i).data);
+                    end
+                elseif length(a) == 1
+                    % objvector*objscalar case
+                    for i=1:length(obj)
+                        out(i) = SO3( obj(i).data * a.data);
+                    end
+                else
+                    error('RTB:SO3:badops', 'invalid operand lengths to * operator');
+                end
+%             elseif SO3.isa(a)
+%                 % SO3 * (3x3), result is 4x4xN
+%                 
+%                 out = zeros(4,4,max(length(obj),numcols(a)));
+%                 
+%                 if length(obj) == size(a,3)
+%                     % do vector*vector and scalar*scalar case
+%                     for i=1:length(obj)
+%                         out(:,:,i) = obj(i).data * a(:,:,i);
+%                     end
+%                 elseif length(obj) == 1
+%                     % scalar*vector case
+%                     for i=1:length(obj)
+%                         out(:,:,i) = obj.data * a(:,:,i);
+%                     end
+%                 elseif length(a) == 1
+%                     % vector*scalar case
+%                     for i=1:length(obj)
+%                         out(:,:,i) = obj(i).data * a(:,:);
+%                     end
+%                 else
+%                     error('RTB:SE3:badops', 'invalid operand lengths to * operator');
+%                 end
                 
-            elseif isvec(a,3)
-                out = obj.data * a;
+            elseif numrows(a) == 3
+                % SO3 * vectors (3xN), result is 3xN
+                
+                out = zeros(3, max(length(obj),numcols(a)));  % preallocate space
+                
+                if length(obj) == numcols(a)
+                    % do objvector*vector and objscalar*scalar case
+                    for i=1:length(obj)
+                        out(:,i) = obj(i).data * a(:,i);
+                    end
+                elseif length(obj) == 1
+                    % objscalar*vector case
+                    for i=1:length(obj)
+                        out = obj.data * a;
+                    end
+                elseif numcols(a) == 1
+                    % objvector*scalar case
+                    for i=1:length(obj)
+                        out(:,i) = obj(i).data * a;
+                    end
+                else
+                    error('RTB:SO3:badops', 'invalid operand lengths to * operator');
+                end     
             else
-                error('bad thing');
+                error('RTB:SO3:badops', 'invalid operand types to * operator');
             end
         end
         
-                function ir = inv(obj)
-            ir = SO2(obj.R');
+        function out = times(obj, a)
+            % do the multiplication
+            out = mtimes(obj, a);
+            
+            % now normalize
+            if isa(out, 'SO3')
+                % created an array of SE3's
+                for i=1:length(out)
+                    out(i).data = trnorm(out(i).data);
+                end
+%             else
+%                 % created a 4x4xN matrix
+%                 for i=1:size(out,3)
+%                     out(:,:,i) = trnorm(out(:,:,i));
+%                 end
+            end
+        end
+        
+        function out = mrdivide(obj, a)
+            assert( isa(a, 'SO3'), 'right-hand argument must be SO3');
+            
+            if isa(a, 'SO3')
+                % SO3 / SO3
+                out = repmat(SO3, 1, max(length(obj),length(a)));
+                if length(obj) == length(a)
+                    % do vector*vector and scalar*scalar case
+                    for i=1:length(obj)
+                        out(i) = SO3( obj(i).data * inv(a(i).data));
+                    end
+                elseif length(obj) == 1
+                    % scalar*vector case
+                    for i=1:length(obj)
+                        out(i) = SO3( inv(obj.data) * a(i).data);
+                    end
+                elseif length(a) == 1
+                    % vector*scalar case
+                    for i=1:length(obj)
+                        out(i) = SO3( obj(i).data * inv(a.data));
+                    end
+                else
+                    error('RTB:SO3:badops', 'invalid operand lengths to / operator');
+                end
+                
+            else
+                error('RTB:SE3:badops', 'invalid operand types to / operator');
+            end
+        end
+        
+        
+        function out = rdivide(obj, a)
+            % do the division
+            out = mrdivide(obj, a);
+            
+            % now normalize
+            % created an array of SO3's
+            for i=1:length(out)
+                out(i).data = trnorm(out(i).data);
+            end
+        end
+        
+        
+        function ir = inv(obj)
+            ir = SO3(obj.R');
         end
         
         function d = det(obj)
@@ -43,301 +188,266 @@ classdef SO3
             [varargout{1:nargout}] = eig(obj.data, varargin{:});
         end
         
-        function R = get.R(obj)
-            R = obj.data(1:3,1:3);
+        function RR = R(obj)
+            RR = zeros(3,3,length(obj));
+            for i=1:length(obj)
+                RR(:,:,i) = obj(i).data(1:3,1:3);
+            end
+        end
+
+        function TT = T(obj)
+            TT = zeros(4,4,length(obj));
+            for i=1:length(obj)
+                TT(1:3,1:3,i) = obj(i).data(1:3,1:3);
+                TT(4,4,i) = 1;
+            end
         end
         
-        function o = set.R(obj, data)
-            obj.data(1:3,1:3) = data;
-            o = obj;
-        end
-        %TR2RPY Convert a homogeneous transform to roll-pitch-yaw angles
-%
-% RPY = TR2RPY(T, options) are the roll-pitch-yaw angles (1x3)
-% corresponding to the rotation part of a homogeneous transform T. The 3
-% angles RPY=[R,P,Y] correspond to sequential rotations about the X, Y and
-% Z axes respectively.
-%
-% RPY = TR2RPY(R, options) as above but the input is an orthonormal
-% rotation matrix R (3x3).
-%
-% If R (3x3xK) or T (4x4xK) represent a sequence then each row of RPY
-% corresponds to a step of the sequence.
-%
-% Options::
-%  'deg'   Compute angles in degrees (radians default)
-%  'xyz'   Return solution for sequential rotations about X, Y, Z axes
-%
-% Notes::
-% - There is a singularity for the case where P=pi/2 in which case R is arbitrarily
-%   set to zero and Y is the sum (R+Y).
-% - Toolbox rel 8-9 has the reverse angle sequence
-%
-% See also  rpy2tr, tr2eul.
-
-
-
-
-% TODO singularity for XYZ case, 
-function rpy = torpy(obj, varargin)
-	m = obj.R;
-    opt.deg = false;
-    opt.xyz = false;
-    opt = tb_optparse(opt, varargin);
-
-	s = size(m);
-	if length(s) > 2
-		rpy = zeros(s(3), 3);
-		for i=1:s(3)
-			rpy(i,:) = tr2rpy(m(:,:,i), varargin{:});
-		end
-		return
-	end
-	rpy = zeros(1,3);
-
-    if opt.xyz
-        % XYZ order
-        if abs(m(3,3)) < eps && abs(m(2,3)) < eps
-            % singularity
-            rpy(1) = 0;  % roll is zero
-            rpy(2) = atan2(m(1,3), m(3,3));  % pitch
-            rpy(3) = atan2(m(2,1), m(2,2));  % yaw is sum of roll+yaw
-        else
-            rpy(1) = atan2(-m(2,3), m(3,3));        % roll
-            % compute sin/cos of roll angle
-            sr = sin(rpy(1));
-            cr = cos(rpy(1));
-            rpy(2) = atan2(m(1,3), cr * m(3,3) - sr * m(2,3));  % pitch
-            rpy(3) = atan2(-m(1,2), m(1,1));        % yaw
-        end
-    else
-        % old ZYX order (as per Paul book)
-        if abs(m(1,1)) < eps && abs(m(2,1)) < eps
-            % singularity
-            rpy(1) = 0;     % roll is zero
-            rpy(2) = atan2(-m(3,1), m(1,1));  % pitch
-            rpy(3) = atan2(-m(2,3), m(2,2));  % yaw is difference yaw-roll
-        else
-            rpy(1) = atan2(m(2,1), m(1,1));
-            sp = sin(rpy(1));
-            cp = cos(rpy(1));
-            rpy(2) = atan2(-m(3,1), cp * m(1,1) + sp * m(2,1));
-            rpy(3) = atan2(sp * m(1,3) - cp * m(2,3), cp*m(2,2) - sp*m(1,2));
-        end
-    end
-    if opt.deg
-        rpy = rpy * 180/pi;
-    end
-end
-%TR2EUL Convert homogeneous transform to Euler angles
-%
-% EUL = TR2EUL(T, OPTIONS) are the ZYZ Euler angles (1x3) corresponding to
-% the rotational part of a homogeneous transform T (4x4). The 3 angles
-% EUL=[PHI,THETA,PSI] correspond to sequential rotations about the Z, Y and
-% Z axes respectively.
-%
-% EUL = TR2EUL(R, OPTIONS) as above but the input is an orthonormal
-% rotation matrix R (3x3).
-%
-% If R (3x3xK) or T (4x4xK) represent a sequence then each row of EUL
-% corresponds to a step of the sequence.
-%
-% Options::
-%  'deg'      Compute angles in degrees (radians default)
-%  'flip'     Choose first Euler angle to be in quadrant 2 or 3.
-%
-% Notes::
-% - There is a singularity for the case where THETA=0 in which case PHI is arbitrarily
-%   set to zero and PSI is the sum (PHI+PSI).
-%
-% See also  EUL2TR, TR2RPY.
-
-
-
-
-function euler = toeul(obj, varargin)
-    
-    R = obj.R;
-
-    opt.deg = false;
-    opt.flip = false;
-    opt = tb_optparse(opt, varargin);
-
-	s = size(R);
-	if length(s) > 2
-        euler = zeros(s(3), 3);
-		for i=1:s(3)
-			euler(i,:) = tr2eul(R(:,:,i));
-		end
-
-        if opt.deg
-            euler = euler * 180/pi;
-        end
-		return
-	end
-
-	euler = zeros(1,3);
-
-	% Method as per Paul, p 69.
-    % euler = [phi theta psi]
-    %
-
-	if abs(R(1,3)) < eps && abs(R(2,3)) < eps
-		% singularity
-		euler(1) = 0;
-		sp = 0;
-		cp = 1;
-		euler(2) = atan2(cp*R(1,3) + sp*R(2,3), R(3,3));
-		euler(3) = atan2(-sp * R(1,1) + cp * R(2,1), -sp*R(1,2) + cp*R(2,2));
-    else
-        % non singular
-        
-        % Only positive phi is returned.
-        if opt.flip
-            euler(1) = atan2(-R(2,3), -R(1,3));
-        else
-            euler(1) = atan2(R(2,3), R(1,3));
-        end
-		sp = sin(euler(1));
-		cp = cos(euler(1));
-		euler(2) = atan2(cp*R(1,3) + sp*R(2,3), R(3,3));
-		euler(3) = atan2(-sp * R(1,1) + cp * R(2,1), -sp*R(1,2) + cp*R(2,2));
-	end
-    if opt.deg
-        euler = euler * 180/pi;
-    end
-end
-
-        
-        %TR2ANGVEC Convert rotation matrix to angle-vector form
-%
-% [THETA,V] = TR2ANGVEC(R, OPTIONS) is rotation expressed in terms of an
-% angle THETA (1x1) about the axis V (1x3) equivalent to the orthonormal rotation
-% matrix R (3x3).
-%
-% [THETA,V] = TR2ANGVEC(T, OPTIONS) as above but uses the rotational part of the
-% homogeneous transform T (4x4).
-%
-% If R (3x3xK) or T (4x4xK) represent a sequence then THETA (Kx1)is a vector 
-% of angles for corresponding elements of the sequence and V (Kx3) are the 
-% corresponding axes, one per row.
-%
-% Options::
-% 'deg'   Return angle in degrees
-%
-% Notes::
-% - If no output arguments are specified the result is displayed.
-%
-% See also ANGVEC2R, ANGVEC2TR, TRLOG.
-
-
-function [theta_, n_] = toangvec(obj, varargin)
-    R = obj.R;
-
-    opt.deg = false;
-    opt = tb_optparse(opt, varargin);
-    
-    % get the rotation submatrix(s)
-    if ~isrot(R)
-        R = t2r(R);
-    end
-    
-    if size(R,3) > 1
-        theta = zeros(size(R,3),1);
-        v = zeros(size(R,3),3);
-    end
-    
-    for i=1:size(R,3)  % for each rotation matrix in the sequence
-        
-        % There are a few ways to do this:
-        %
-        % 1.
-        %
-        % e = 0.5*vex(R - R');  % R-R' is skew symmetric
-        % theta = asin(norm(e));
-        % n = unit(e);
-        %
-        %  but this fails for rotations > pi/2
-        %
-        % 2.
-        %
-        % e = vex(logm(R));
-        % theta = norm(e);
-        % n = unit(e);
-        %
-        %  elegant, but 40x slower than using eig
-        %
-        % 3.
-        %
-        % Use eigenvectors, get angle from trace which is defined over -pi to
-        % pi.  Don't use eigenvalues since they only give angles -pi/2 to pi/2.
-        %
-        % 4.
-        %
-        % Take the log of the rotation matrix
-        
-        Ri = R(:,:,i);
-        
-        % check the determinant
-        if abs(det(Ri)-1) > 10*eps
-            error('RTB:tr2angvec:badarg', 'matrix is not orthonormal');
+        function S = log(obj)
+            
+            S = trlog(obj.data);
         end
         
-        [th,v] = trlog(Ri);
-        theta(i) = th;
-        n(i,:) = v;
+
         
-        if opt.deg
-            theta(i) = theta(i) * 180/pi;
-            units = 'deg';
-        else
-            units = 'rad';
-        end
+        %         function o = set.R(obj, data)
+        %             obj.data(1:3,1:3) = data;
+        %             o = obj;
+        %         end
         
-        if nargout == 0
-            % if no output arguments display the angle and vector
-            fprintf('Rotation: %f %s x [%f %f %f]\n', theta(i), units, n(i,:));
-        end
-    end
-    
-    if nargout == 1
-        theta_ = theta;
-    elseif nargout == 2
-        theta_ = theta;
-        n_ = n;
-    end
-end
+        %         function TT = T(obj)
+        %             TT = eye(4,4);
+        %             TT(1:3,1:3) = obj.data(1:3,1:3);
+        %          end
         
-        function display(l)
-            %Link.display Display parameters
+        % TODO singularity for XYZ case,
+        function rpy = torpy(obj, varargin)
+            %SO3.RPY Convert an SO3 rotation to roll-pitch-yaw angles
             %
-            % L.display() displays the link parameters in compact single line format.  If L is a
-            % vector of Link objects displays one line per element.
+            % RPY = SO3.RPY(options) are the roll-pitch-yaw angles (1x3)
+            % corresponding to the rotation part of a homogeneous transform T. The 3
+            % angles RPY=[R,P,Y] correspond to sequential rotations about the X, Y and
+            % Z axes respectively.
+            %
+            % RPY = TR2RPY(R, options) as above but the input is an orthonormal
+            % rotation matrix R (3x3).
+            %
+            % If R (3x3xK) or T (4x4xK) represent a sequence then each row of RPY
+            % corresponds to a step of the sequence.
+            %
+            % Options::
+            %  'deg'   Compute angles in degrees (radians default)
+            %  'xyz'   Return solution for sequential rotations about X, Y, Z axes
             %
             % Notes::
-            % - This method is invoked implicitly at the command line when the result
-            %   of an expression is a Link object and the command has no trailing
-            %   semicolon.
+            % - There is a singularity for the case where P=pi/2 in which case R is arbitrarily
+            %   set to zero and Y is the sum (R+Y).
+            % - Toolbox rel 8-9 has the reverse angle sequence
             %
-            % See also Link.char, Link.dyn, SerialLink.showlink.
-            loose = strcmp( get(0, 'FormatSpacing'), 'loose');
-            if loose
-                disp(' ');
+            % See also  rpy2tr, tr2eul.
+            
+            rpy = tr2rpy(obj.R, varargin{:});
+        end
+        %TR2EUL Convert homogeneous transform to Euler angles
+        %
+        % EUL = TR2EUL(T, OPTIONS) are the ZYZ Euler angles (1x3) corresponding to
+        % the rotational part of a homogeneous transform T (4x4). The 3 angles
+        % EUL=[PHI,THETA,PSI] correspond to sequential rotations about the Z, Y and
+        % Z axes respectively.
+        %
+        % EUL = TR2EUL(R, OPTIONS) as above but the input is an orthonormal
+        % rotation matrix R (3x3).
+        %
+        % If R (3x3xK) or T (4x4xK) represent a sequence then each row of EUL
+        % corresponds to a step of the sequence.
+        %
+        % Options::
+        %  'deg'      Compute angles in degrees (radians default)
+        %  'flip'     Choose first Euler angle to be in quadrant 2 or 3.
+        %
+        % Notes::
+        % - There is a singularity for the case where THETA=0 in which case PHI is arbitrarily
+        %   set to zero and PSI is the sum (PHI+PSI).
+        %
+        % See also  EUL2TR, TR2RPY.
+        
+        
+        
+        
+        function euler = toeul(obj, varargin)
+            
+            R = obj.R;
+            
+            opt.deg = false;
+            opt.flip = false;
+            opt = tb_optparse(opt, varargin);
+            
+            s = size(R);
+            if length(s) > 2
+                euler = zeros(s(3), 3);
+                for i=1:s(3)
+                    euler(i,:) = tr2eul(R(:,:,i));
+                end
+                
+                if opt.deg
+                    euler = euler * 180/pi;
+                end
+                return
             end
-            disp([inputname(1), ' = '])
-            disp( char(l) );
-        end % display()
-        
-        
-        function s2 = char(obj)
-            s = num2str(obj.data, '%10.4g'); %num2str(obj.data, 4);
-            for i=1:numrows(s);
-                s2(i,:) = ['    ', s(i,:)];
+            
+            euler = zeros(1,3);
+            
+            % Method as per Paul, p 69.
+            % euler = [phi theta psi]
+            %
+            
+            if abs(R(1,3)) < eps && abs(R(2,3)) < eps
+                % singularity
+                euler(1) = 0;
+                sp = 0;
+                cp = 1;
+                euler(2) = atan2(cp*R(1,3) + sp*R(2,3), R(3,3));
+                euler(3) = atan2(-sp * R(1,1) + cp * R(2,1), -sp*R(1,2) + cp*R(2,2));
+            else
+                % non singular
+                
+                % Only positive phi is returned.
+                if opt.flip
+                    euler(1) = atan2(-R(2,3), -R(1,3));
+                else
+                    euler(1) = atan2(R(2,3), R(1,3));
+                end
+                sp = sin(euler(1));
+                cp = cos(euler(1));
+                euler(2) = atan2(cp*R(1,3) + sp*R(2,3), R(3,3));
+                euler(3) = atan2(-sp * R(1,1) + cp * R(2,1), -sp*R(1,2) + cp*R(2,2));
+            end
+            if opt.deg
+                euler = euler * 180/pi;
             end
         end
+        
+        
+        %TR2ANGVEC Convert rotation matrix to angle-vector form
+        %
+        % [THETA,V] = TR2ANGVEC(R, OPTIONS) is rotation expressed in terms of an
+        % angle THETA (1x1) about the axis V (1x3) equivalent to the orthonormal rotation
+        % matrix R (3x3).
+        %
+        % [THETA,V] = TR2ANGVEC(T, OPTIONS) as above but uses the rotational part of the
+        % homogeneous transform T (4x4).
+        %
+        % If R (3x3xK) or T (4x4xK) represent a sequence then THETA (Kx1)is a vector
+        % of angles for corresponding elements of the sequence and V (Kx3) are the
+        % corresponding axes, one per row.
+        %
+        % Options::
+        % 'deg'   Return angle in degrees
+        %
+        % Notes::
+        % - If no output arguments are specified the result is displayed.
+        %
+        % See also ANGVEC2R, ANGVEC2TR, TRLOG.
+        
+        
+        function [theta_, n_] = toangvec(obj, varargin)
+            R = obj.R;
+            
+            opt.deg = false;
+            opt = tb_optparse(opt, varargin);
+            
+            % get the rotation submatrix(s)
+            if ~isrot(R)
+                R = t2r(R);
+            end
+            
+            if size(R,3) > 1
+                theta = zeros(size(R,3),1);
+                v = zeros(size(R,3),3);
+            end
+            
+            for i=1:size(R,3)  % for each rotation matrix in the sequence
+                
+                % There are a few ways to do this:
+                %
+                % 1.
+                %
+                % e = 0.5*vex(R - R');  % R-R' is skew symmetric
+                % theta = asin(norm(e));
+                % n = unit(e);
+                %
+                %  but this fails for rotations > pi/2
+                %
+                % 2.
+                %
+                % e = vex(logm(R));
+                % theta = norm(e);
+                % n = unit(e);
+                %
+                %  elegant, but 40x slower than using eig
+                %
+                % 3.
+                %
+                % Use eigenvectors, get angle from trace which is defined over -pi to
+                % pi.  Don't use eigenvalues since they only give angles -pi/2 to pi/2.
+                %
+                % 4.
+                %
+                % Take the log of the rotation matrix
+                
+                Ri = R(:,:,i);
+                
+                % check the determinant
+                if abs(det(Ri)-1) > 10*eps
+                    error('RTB:tr2angvec:badarg', 'matrix is not orthonormal');
+                end
+                
+                [th,v] = trlog(Ri);
+                theta(i) = th;
+                n(i,:) = v;
+                
+                if opt.deg
+                    theta(i) = theta(i) * 180/pi;
+                    units = 'deg';
+                else
+                    units = 'rad';
+                end
+                
+                if nargout == 0
+                    % if no output arguments display the angle and vector
+                    fprintf('Rotation: %f %s x [%f %f %f]\n', theta(i), units, n(i,:));
+                end
+            end
+            
+            if nargout == 1
+                theta_ = theta;
+            elseif nargout == 2
+                theta_ = theta;
+                n_ = n;
+            end
+        end
+        
+        
+        
+        % conversion methods
+        
+        function s = SE3(obj)
+            s = SE3();
+            s.data(1:3,1:3) = obj.data;
+        end
+        
+        function q = UnitQuaternion(obj)
+            for i=1:length(obj)
+                q(i) = UnitQuaternion(obj(i).R);
+            end
+        end
+        
     end
     
     methods (Static)
+        function m = ad(s)
+            m = skew(s);
+        end
         
         %ROTX Rotation about X axis
         %
@@ -349,7 +459,7 @@ end
         % See also ROTY, ROTZ, ANGVEC2R, ROT2.
         
         
-        function obj = rotx(t, deg)
+        function obj = Rx(t, deg)
             
             if nargin > 1 && strcmp(deg, 'deg')
                 t = t *pi/180;
@@ -375,7 +485,7 @@ end
         
         
         
-        function obj = roty(t, deg)
+        function obj = Ry(t, deg)
             if nargin > 1 && strcmp(deg, 'deg')
                 t = t *pi/180;
             end
@@ -399,7 +509,7 @@ end
         
         
         
-        function obj = rotz(t, deg)
+        function obj = Rz(t, deg)
             if nargin > 1 && strcmp(deg, 'deg')
                 t = t *pi/180;
             end
@@ -413,28 +523,30 @@ end
                 ];
             obj = SO3(R);
         end
-        %ISROT Test if SO(3) rotation matrix
-        %
-        % ISROT(R) is true (1) if the argument is of dimension 3x3 or 3x3xN, else false (0).
-        %
-        % ISROT(R, 'valid') as above, but also checks the validity of the rotation
-        % matrix.
-        %
-        % Notes::
-        % - A valid rotation matrix has determinant of 1.
-        %
-        % See also ISHOMOG, ISVEC.
+        
+        function n = new(obj, varargin)
+            n = SO3(varargin{:});
+        end
         
         function h = isa(r, dtest)
-            
+            %SO3.ISA Test if a rotation matrix
+            %
+            % SO3.ISA(R) is true (1) if the argument is of dimension 3x3 or 3x3xN, else false (0).
+            %
+            % SO3.ISA(R, 'valid') as above, but also checks the validity of the rotation
+            % matrix.
+            %
+            % Notes::
+            % - The first form is a fast, but incomplete, test for a rotation in SO(3).
+            %
+            % See also SE3.ISA, SE2.ISA, SO2.ISA.
             d = size(r);
             if ndims(r) >= 2
-                h =  all(d(1:2) == [3 3]);
+                h = all(d(1:2) == [3 3]);
                 
                 if h && nargin > 1
-                    h = abs(det(r) - 1) < eps;
+                    h = abs(det(r) - 1) < 10*eps;
                 end
-                
             else
                 h = false;
             end
@@ -463,42 +575,6 @@ end
         %
         % See also EUL2TR, RPY2TR, TR2EUL.
         
-        
-        
-        function obj = eul(phi, varargin)
-            opt.deg = false;
-            [opt,args] = tb_optparse(opt, varargin);
-            
-            % unpack the arguments
-            if numcols(phi) == 3
-                theta = phi(:,2);
-                psi = phi(:,3);
-                phi = phi(:,1);
-            elseif nargin >= 3
-                theta = args{1};
-                psi = args{2};
-            else
-                error('RTB:eul2r:badarg', 'expecting 3 inputs, 3-vector or 3-column matrix')
-            end
-            
-            % optionally convert from degrees
-            if opt.deg
-                d2r = pi/180.0;
-                phi = phi * d2r;
-                theta = theta * d2r;
-                psi = psi * d2r;
-            end
-            
-            if numrows(phi) == 1
-                R = rotz(phi) * roty(theta) * rotz(psi);
-            else
-                R = zeros(3,3,numrows(phi));
-                for i=1:numrows(phi)
-                    R(:,:,i) = rotz(phi(i)) * roty(theta(i)) * rotz(psi(i));
-                end
-            end
-            obj = SO3(R);
-        end
         %OA2R Convert orientation and approach vectors to rotation matrix
         %
         % R = OA2R(O, A) is an SO(3) rotation matrix (3x3) for the specified
@@ -556,55 +632,32 @@ end
         %
         % See also TR2RPY, EUL2TR.
         
+        function R = rpy(varargin)
+            R = SO3( rpy2r(varargin{:}) );
+        end
         
+        function R = check(tr)
+            if isa(tr, 'SO3')
+                R = SO3(tr);        % enforce it being an SO3
+            elseif SO3.isa(tr)
+                R = SO3(tr);
+            elseif SE3.isa(tr)
+                R = SO3( t2r(tr) );
+            else
+                error('expecting an SO3 or 3x3 matrix');
+            end
+        end
         
-        function obj = rpy(roll, varargin)
-            opt.xyz = false;
-            opt.deg = false;
-            [opt,args] = tb_optparse(opt, varargin);
-            
-            % unpack the arguments
-            if numcols(roll) == 3
-                pitch = roll(:,2);
-                yaw = roll(:,3);
-                roll = roll(:,1);
-            elseif nargin >= 3
-                pitch = args{1};
-                yaw = args{2};
-            else
-                error('RTB:rpy2r:badarg', 'bad arguments')
-            end
-            
-            % optionally convert from degrees
-            if opt.deg
-                d2r = pi/180.0;
-                roll = roll * d2r;
-                pitch = pitch * d2r;
-                yaw = yaw * d2r;
-            end
-            
-            if opt.xyz
-                % XYZ order
-                if numrows(roll) == 1
-                    R = rotx(roll) * roty(pitch) * rotz(yaw);
-                else
-                    R = zeros(3,3,numrows(roll));
-                    for i=1:numrows(roll)
-                        R(:,:,i) = rotx(roll(i)) * roty(pitch(i)) * rotz(yaw(i));
-                    end
-                end
-            else
-                % old ZYX order (as per Paul book)
-                if numrows(roll) == 1
-                    R = rotz(roll) * roty(pitch) * rotx(yaw);
-                else
-                    R = zeros(3,3,numrows(roll));
-                    for i=1:numrows(roll)
-                        R(:,:,i) = rotz(roll(i)) * roty(pitch(i)) * rotx(yaw(i));
-                    end
-                end
-            end
-            obj = SO3(R);
+
+        
+        function R = exp(S)
+            R = SO3( trexp(S) );
+        end
+        
+
+        
+        function R = eul(varargin)
+            R = SO3( eul2r(varargin{:}) );
         end
         
         function obj = angvec(theta, k)
@@ -619,17 +672,7 @@ end
             %
             % See also eul2r, rpy2r, tr2angvec.
             
-            if nargin < 2 || ~isscalar(theta) || ~isvec(k)
-                error('RTB:angvec2r:badarg', 'bad arguments');
-            end
-            if norm(k) < 10*eps
-                if (abs(theta) > 0)
-                    error('RTB:angvec2r:badarg', 'norm of direction is zero');
-                else
-                    R = eye(3,3);
-                    return;
-                end
-            end
+            R = angvec2r(theta, k);
             obj = SO3(R);
         end
     end

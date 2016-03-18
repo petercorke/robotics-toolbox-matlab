@@ -95,10 +95,15 @@
 %  constructor handles R, T trajectory and returns vector
 %  .r, .t on a quaternion vector??
 
+
+% TODO
+% add & test dotb, add dot, dotb to SO3
+% rpy/eul, to and from should be vectorised
+
 classdef UnitQuaternion < Quaternion
     
     methods
-        
+
         function uq = UnitQuaternion(s, v)
             %UnitQuaternion.Quaternion Constructor for quaternion objects
             %
@@ -139,6 +144,13 @@ classdef UnitQuaternion < Quaternion
                 end
                 uq.s = s.s;
                 uq.v = s.v;
+            elseif isa(s, 'SO3')
+                %   Q = Quaternion(R)       from a 3x3 or 4x4 matrix
+                uq(length(s)) = UnitQuaternion();  % preallocate
+                for i=1:length(s)
+                    [qs,qv] = UnitQuaternion.tr2q(s(i).R);
+                    uq(i) = UnitQuaternion(qs,qv);
+                end                
             elseif isrot(s) || ishomog(s)
                 %   Q = Quaternion(R)       from a 3x3 or 4x4 matrix
                 uq(size(s,3)) = UnitQuaternion();  % preallocate
@@ -235,7 +247,10 @@ classdef UnitQuaternion < Quaternion
             
             theta = acos(cosTheta);            
 
-            if any(r<0 | r>1)
+            if length(r) == 1 && r > 1 && (r == floor(r))
+                % integer value
+                r = [0:(r-1)] / (r-1);
+            elseif any(r<0 | r>1)
                 error('RTB:UnitQuaternion:interp', 'values of S outside interval [0,1]');
             end
             
@@ -250,7 +265,17 @@ classdef UnitQuaternion < Quaternion
             end
         end
         
-        
+% polymorphic with SE3
+% function v = isidentity(obj)
+%             v = all(all(obj.T == eye(4,4)));
+%                 end
+
+
+        function qu = increment(obj, w)
+
+            qu = q .* UnitQuaternion.omega( w );
+        end
+
         function th = angle(q1, q2)
             %UnitQuaternion.angle Angle between two unit-quaternions
             %
@@ -263,9 +288,11 @@ classdef UnitQuaternion < Quaternion
             
             c = zeros(1, max(length(q1), length(q2)));
             if length(q1) == length(q2)
-                for i=1:length(q1)
-                    c(i) = q1(i).inner(q2(i));
-                end
+                %for i=1:length(q1)
+                    %c(i) = q1(i).inner(q2(i));
+                    q1d = q1.double; q2d = q2.double;
+                    th = atan2( colnorm((q1d-q2d)'), colnorm((q1d+q2d)') );
+                %end
             elseif length(q1) == 1
                 for i=1:length(q2)
                     c(i) = q1.inner(q2(i));
@@ -280,9 +307,45 @@ classdef UnitQuaternion < Quaternion
             % clip it, just in case it's unnormalized
             c(c<-1) = -1;  c(c>1) = 1;
             
-            th = 2*acos(c);
+            %th = 2*acos(c);
+            %% use 2 atan2(|q1-q2|, |q1+q2|)
         end
         
+        
+        function qd = dot(q, omega)
+            %Quaternion.dot Quaternion derivative
+            %
+            % QD = Q.dot(omega) is the rate of change of a frame with attitude Q and
+            % angular velocity OMEGA (1x3) expressed as a quaternion.
+            %
+            % Notes::
+            % - This is not a group operator, but it is useful to have the result as a
+            %   quaternion.
+            
+            % UnitQuaternion.pure(omega) * q
+            E = q.s*eye(3,3) - skew(q.v);
+            omega = omega(:);
+            qd = 0.5*[-q.v*omega; E*omega];
+        end
+ 
+        
+        function qd = dotb(q, omega)
+            %Quaternion.dot Quaternion derivative
+            %
+            % QD = Q.dot(omega) is the rate of change of a frame with attitude Q and
+            % angular velocity OMEGA (1x3) expressed as a quaternion.
+            %
+            % Notes::
+            % - This is not a group operator, but it is useful to have the result as a
+            %   quaternion.
+            
+            % q * UnitQuaternion.pure(omega)
+
+            E = q.s*eye(3,3) + skew(q.v);
+            omega = omega(:);
+            qd = 0.5*[-q.v*omega; E*omega];
+        end
+ 
         function [theta_,n_] = toangvec(q, varargin)
             %UnitQuaternion.angvec Convert to angle-vector form
             %
@@ -391,6 +454,9 @@ classdef UnitQuaternion < Quaternion
                 %   Rotate the vector V by the unit-quaternion Q.
                 %
                 %   See also: QQMUL, QINV
+                
+                %% 2?qv ×(?qv ×v+qwv)+v 
+                %% 2*q.v x ( q.v x v + s v) + v
                 qp = zeros(3, max(length(q1), numcols(q2)));
                 if numrows(q2) == 3
                     if length(q1) == numcols(q2)
@@ -495,6 +561,67 @@ classdef UnitQuaternion < Quaternion
                 error('RTB:UnitQuaternion:badarg', 'quaternion product .*: incorrect operands');
             end
         end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% GRAPHICS 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function hout = plot(Q, varargin)
+            %Quaternion.plot Plot a quaternion object
+            %
+            % Q.plot(options) plots the quaternion as an oriented coordinate frame.
+            %
+            % h = Q.plot(options) as above but returns a handle which can be used for animation.
+            %
+            % Options::
+            % Options are passed to trplot and include:
+            %
+            % 'color',C          The color to draw the axes, MATLAB colorspec C
+            % 'frame',F          The frame is named {F} and the subscript on the axis labels is F.
+            % 'view',V           Set plot view parameters V=[az el] angles, or 'auto'
+            %                    for view toward origin of coordinate frame
+            % 'handle',h         Update the specified handle
+            %
+            % See also trplot.
+            
+            %axis([-1 1 -1 1 -1 1])
+            
+            h = trplot( Q.R, varargin{:});
+            if nargout > 0
+                hout = h;
+            end
+        end
+        
+        function animate(Q, varargin)
+            %Quaternion.animate Animate a quaternion object
+            %
+            % Q.animate(options) animates a quaternion array Q as a 3D coordinate frame.
+            %
+            % Q.animate(QF, options) animates a 3D coordinate frame moving from
+            % orientation Q to orientation QF.
+            %
+            % Options::
+            % Options are passed to tranimate and include:
+            %
+            %  'fps', fps    Number of frames per second to display (default 10)
+            %  'nsteps', n   The number of steps along the path (default 50)
+            %  'axis',A      Axis bounds [xmin, xmax, ymin, ymax, zmin, zmax]
+            %  'movie',M     Save frames as files in the folder M
+            %  'cleanup'     Remove the frame at end of animation
+            %  'noxyz'       Don't label the axes
+            %  'rgb'         Color the axes in the order x=red, y=green, z=blue
+            %  'retain'      Retain frames, don't animate
+            %  Additional options are passed through to TRPLOT.
+            %
+            % See also tranimate, trplot.
+            
+            if nargin > 1 && isa(varargin{1}, 'Quaternion')
+                QF = varargin{1};
+                tranimate(Q.R, QF.R, varargin{2:end});
+            else
+                tranimate(Q.R, varargin{:});
+            end
+        end
         
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% TYPE CONVERSION METHODS
@@ -581,6 +708,29 @@ classdef UnitQuaternion < Quaternion
                 obj(i) = SE3( q(i).T );
             end
         end
+        
+        function rpy = torpy(q, varargin)
+            rpy = zeros(length(q), 3);
+            for i=1:length(q)
+                rpy(i,:) = tr2rpy( q(i).R, varargin{:} );
+            end
+        end
+        
+        function eul = toeul(q, varargin)
+            eul = zeros(length(q), 3);
+            for i=1:length(q)
+                eul(i,:) = tr2eul( q(i).R, varargin{:} );
+            end
+        end
+        
+        function qv = tovec(q)
+            if q.s < 0
+                qv = -q.v;
+            else
+                qv = q.v;
+            end
+        end
+
     end % methods
     
     methods (Access=private)
@@ -605,6 +755,7 @@ classdef UnitQuaternion < Quaternion
                 2*(x*z-s*y) 2*(y*z+s*x) 1-2*(x^2+y^2)   ];
             
         end
+        
     end % private methods
     
 
@@ -733,7 +884,14 @@ classdef UnitQuaternion < Quaternion
             uq.v = v;
         end
         
+        function uq = vec(qv)
+            s = sqrt(1 - sum(qv.^2));
+            uq = UnitQuaternion(s, qv);
+        end
         
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% OTHER STATIC METHODS, ALTERNATIVE CONSTRUCTORS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function [s,v] = tr2q(R)
             %TR2Q   Convert homogeneous transform to a unit-quaternion
             %
@@ -784,7 +942,84 @@ classdef UnitQuaternion < Quaternion
                 v = [kx ky kz] * sqrt(1 - s^2) / nm;
             end
         end
-    end % static methods
+        
+        function R = q2r(q)
+            %TOROT   Convert unit-quaternion to homogeneous transform
+            %
+            %   T = q2tr(Q)
+            %
+            %   Return the rotational homogeneous transform corresponding to the unit
+            %   quaternion Q.
+            %
+            %   See also: TR2Q
+            
+            s = q(1);
+            x = q(2);
+            y = q(3);
+            z = q(4);
+            
+            R = [   1-2*(y^2+z^2)   2*(x*y-s*z) 2*(x*z+s*y)
+                2*(x*y+s*z) 1-2*(x^2+z^2)   2*(y*z-s*x)
+                2*(x*z-s*y) 2*(y*z+s*x) 1-2*(x^2+y^2)   ];
+            
+        end
+        
+        
+        function out1 = qvmul(qa, qb)
+            %QVMUL
+            %    OUT1 = QVMUL(QX,QY,QZ,QX2,QY2,QZ2)
+            
+            %    This function was generated by the Symbolic Math Toolbox version 6.3.
+            %    04-Nov-2015 15:51:32
+            
+
+%             %
+%             %          qp = qvmul(qax, qay, qaz, qbx, qby, qbz)
+%             %
+%             % which compounds two quaternions (qax,qay,qaz) and (qbx,qby,qbz)
+%             % represented only by their vector components and returns a quaternion
+%             % vector (qpx,qpy,qpz).  It is important that the quaternions have positive
+%             % scalar components.
+%             %
+%             syms qs qx qy real
+%             qz = sym('qz', 'real'); % since qz is a builtin function :(
+%             qs = sqrt(1- qx^2 - qy^2 - qz^2);
+%
+%             % quaternion vector update
+%             syms qs2 qx2 qy2 qz2 real
+%             qs2 = sqrt(1-qx2^2 - qy2^2 - qz2^2);
+%             
+%             % create two quaternions, scalar parts are functions of vector parts
+%             Q1 = Quaternion([qs qx qy qz]);
+%             Q2 = Quaternion([qs2 qx2 qy2 qz2]);
+%             
+%             % multiply them
+%             QQ = Q1 * Q2;
+%             
+%             % create a function to compute the vector part, as a function of
+%             % the two input vector parts
+%             fprintf('creating file --> qvmul.m\n');
+%             matlabFunction(QQ.v, 'file', 'qvmul', 'Vars', [qx qy qz qx2 qy2 qz2]);
+            
+%             t2 = qa(1).^2;
+%             t3 = qa(2).^2;
+%             t4 = qa(3).^2;
+%             t5 = -t2-t3-t4+1.0;
+%             t6 = sqrt(t5);
+            t6 = sqrt(1 - sum(qa.^2));
+            
+
+%             t7 = qb(1).^2;
+%             t8 = qb(2).^2;
+%             t9 = qb(3).^2;
+%             t10 = -t7-t8-t9+1.0;
+%             t11 = sqrt(t10);
+            t11 = sqrt(1 - sum(qb.^2));
+
+            out1 = [qa(2).*qb(3)-qb(2).*qa(3)+qb(1).*t6+qa(1).*t11,-qa(1).*qb(3)+qb(1).*qa(3)+qb(2).*t6+qa(2).*t11,qa(1).*qb(2)-qb(1).*qa(2)+qb(3).*t6+qa(3).*t11];
+        end
+            
+        end % static methods
     
 end % classdef
 

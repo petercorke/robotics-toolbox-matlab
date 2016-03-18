@@ -1,4 +1,6 @@
-%SE3 Create planar translation and rotation transformation
+%SE3 SE(3) homogeneous transformation class
+%
+% Inherits from:SE3 -> SO3 -> RTBPose
 %
 % T = SE2(X, Y, THETA) is an SE(2) homogeneous transformation (3x3)
 % representing translation X and Y, and rotation THETA in the plane.
@@ -9,7 +11,30 @@
 %
 % T = SE2(XYT) as above where XYT=[X,Y,THETA]
 %
-% See also TRANSL2, TROT2, ISHOMOG2, TRPLOT2.
+% Methods::
+%
+% Static methods::
+%  SE3.Rx
+%  SE3.Ry
+%  SE3.Rz
+%  SE3.isa(T)   Test if T is 4x4
+%
+% Properties::
+% For single SE3 objects only, for a vector of SE3 objects use the
+% equivalent methods
+% t       translation as a 3x1 vector (read/write)
+% R       rotation as a 3x3 matrix (read/write)
+%
+% Methods::
+% tv      return translations as a 3xN vector
+%
+% Notes::
+% - The properies R, t are implemented as MATLAB dependent properties.
+%   When applied to a vector of SE3 object the result is a comma-separated
+%   list which can be converted to a matrix by enclosing it in square
+%   brackets, eg [T.t] or more conveniently using the method T.tv 
+%
+% See also SO3, SE2, RTBPose.
 
 %TODO
 % interp
@@ -29,95 +54,396 @@
 classdef SE3 < SO3
     
     properties (Dependent = true)
-        t
-        T
+         t
+%         T
+R
     end
     
     methods
-        
+
         function obj = SE3(a, b, c, varargin)
+            % SE3(x,y,z)
+            % SE3([x y z])
+            % SE3( obj )
+            % SE3( R, t)
             obj.data = eye(4,4);
             if nargin == 0
                 return;
             elseif SE3.isa(a)
-                obj.data = a;
-            elseif nargin >= 2 && SO3.isa(a) && isvec(b,3)
-                obj.R = a;
-                obj.t = b;
-            elseif nargin >= 1 && SO3.isa(a)
-                obj.R = a;
-                obj.t = b;
-            elseif nargin >= 1 && isvec(a, 3)
-                obj.t = a(:);
+                for i=1:size(a, 3)
+                    obj(i).data = a(:,:,i);
+                end
+            elseif isa(a, 'SE3')
+                for i=1:length(a)
+                    obj(i).data = a(i).data;
+                end
+            elseif nargin >= 2 && (isrot(a) || SO3.isa(a)) && isvec(b,3)
+                if isrot(a)
+                    obj.data(1:3,1:3) = a;
+                else
+                    obj.R(1:3,1:3) = a.R;
+                end
+                obj.data(1:3,4) = b(:);
+            elseif nargin >= 1 && numcols(a) == 3
+                % Nx3
+                for i=1:numrows(a)
+                    obj(i).data(1:3,4) = a(i,:)';
+                end
+            elseif nargin == 1 && isvec(a)
+                % 3-vector: t
+                obj.data(1:3,4) = a(:);
+            elseif nargin == 3 && isscalar(a) && isscalar(b) && isscalar(c)
+                % 3 scalars t=(x,y,z)
+                obj.data(1:3,4) = [a b c]';
+            end
         end
-end
-        
 
-                function out = mtimes(obj, a)
-            if isa(a, 'SE3')
-                out = SE3( obj.data * a.data);
-            elseif SE3.isa(a)
-                out = SE3( obj.data * a);
-                
-            elseif isvec(a,3)
-                out = obj.data * [a(:);1];
-                out = out(1:3);
-            else
-                error('bad thing');
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %  GET AND SET
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function o = get.t(obj)
+            o = obj.data(1:3,4);
+        end
+        
+        function o = set.t(obj, t)
+            % TODO CHECKING
+            obj.data(1:3,4) = t(:);
+            o = obj;
+        end
+        
+        function R = get.R(obj)
+            R = obj.data(1:3,1:3);
+        end
+        
+        % set.R
+        
+        % handle assignment SE3 = SE3, SE3=4x4, can'toverload equals
+
+        function t = tv(obj)
+            %t = zeros(3,length(obj)); FAILS FOR SYMBOLIC CASE
+            for i=1:length(obj)
+                t(:,i) = obj(i).data(1:3,4);
             end
         end
         
+        function T = T(obj)
+            for i=1:length(obj)
+                T(:,:,i) = obj(i).data;
+            end
+        end
+
+        function v = isidentity(obj)
+            v = all(all(obj.T == eye(4,4)));
+        end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %  COMPOSITION
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
+        
+        function out = mtimes(a, b)
+            if isa(a, 'SE3') && isa(b, 'SE3')
+                % SE3 * SE3
+                out = repmat(SE3, 1, max(length(a),length(b)));
+                if length(a) == length(b)
+                    % do vector*vector and scalar*scalar case
+                    for i=1:length(a)
+                        out(i) = SE3( a(i).data * b(i).data);
+                    end
+                elseif length(a) == 1
+                    % scalar*vector case
+                    for i=1:length(b)
+                        out(i) = SE3( a.data * b(i).data);
+                    end
+                elseif length(b) == 1
+                    % vector*scalar case
+                    for i=1:length(a)
+                        out(i) = SE3( a(i).data * b.data);
+                    end
+                else
+                    error('RTB:SE3:badops', 'invalid operand lengths to * operator');
+                end
+            elseif isa(a, 'SE3') && SE3.isa(b)
+                % SE3 * (4x4), result is SE3
+                
+                out = repmat(SE3, 1, max(length(a),size(b,3)));
+                if length(a) == size(b,3)
+                    % do vector*vector and scalar*scalar case
+                    for i=1:length(a)
+                        out(i) = SE3(a(i).data * b(:,:,i));
+                    end
+                elseif length(a) == 1
+                    % scalar*vector case
+                    for i=1:length(b)
+                        out(i) = SE3(a.data * b(:,:,i));
+                    end
+                elseif length(a) == 1
+                    % vector*scalar case
+                    for i=1:length(a)
+                        out(i) = SE3(a(i).data * b(:,:));
+                    end
+                else
+                    error('RTB:SE3:badops', 'invalid operand lengths to * operator');
+                end
+            elseif SE3.isa(a) && isa(b, 'SE3') 
+                % (4x4)*SE3, result is SE3
+                
+                out = repmat(SE3, 1, max(size(a,3),length(b)));
+
+                if size(a,3) == length(b)
+                    % do vector*vector and scalar*scalar case
+                    for i=1:length(b)
+                        out(i) = SE3(a(:,:,i) * b(i).data);
+                    end
+                elseif size(a,3) == 1
+                    % scalar*vector case
+                    for i=1:length(a)
+                        out(i) = SE3(a * b(i).data);
+                    end
+                elseif length(b) == 1
+                    % vector*scalar case
+                    for i=1:length(a)
+                        out(i) = SE3(a(:,:,i) * b.data);
+                    end
+                else
+                    error('RTB:SE3:badops', 'invalid operand lengths to * operator');
+                end                
+            elseif numrows(b) == 3
+                % SE3 * vectors (3xN), result is 3xN
+                
+                out = zeros(4, max(length(a),numcols(b)));  % preallocate space
+                b = [b; ones(1,numcols(b))];  % make homogeneous
+                                
+                if length(a) == numcols(b)
+                    % do objvector*vector and objscalar*scalar case
+                    for i=1:length(a)
+                        out(:,i) = a(i).data * b(:,i);
+                    end
+                elseif length(a) == 1
+                    % objscalar*vector case
+                    for i=1:length(a)
+                        out = a.data * b;
+                    end
+                elseif numcols(b) == 1
+                    % objvector*scalar case
+                    for i=1:length(a)
+                        out(:,i) = a(i).data * b;
+                    end
+                else
+                    error('RTB:SE3:badops', 'invalid operand lengths to * operator');
+                end  
+                
+                out = out(1:3,:);
+            else
+                    error('RTB:SE3:badops', 'invalid operand types to * operator');
+            end
+        end
+        
+
+        function out = times(obj, a)
+            out = mtimes(obj, a);
+            
+            if isa(out, 'SE3')
+                % created an array of SE3's
+                for i=1:length(out)
+                    out(i).data = trnorm(out(i).data);
+                end
+            end
+        end
+        
+       function out = mrdivide(obj, a)
+            assert( isa(a, 'SE3'), 'right-hand argument must be SE3');
+            
+            if isa(a, 'SE3')
+                % SE3 / SE3
+                out = repmat(SE3, 1, max(length(obj),length(a)));
+                if length(obj) == length(a)
+                    % do objvector*objvector and objscalar*objscalar case
+                    for i=1:length(obj)
+                        out(i) = SE3( obj(i).data * a(i).inv.data);
+                    end
+                elseif length(obj) == 1
+                    % objscalar*objvector case
+                    for i=1:length(obj)
+                        out(i) = SE3( obj.inv.data * a(i).data);
+                    end
+                elseif length(a) == 1
+                    % objvector*objscalar case
+                    for i=1:length(obj)
+                        out(i) = SE3( obj(i).data * a.inv.data);
+                    end
+                else
+                    error('RTB:SE3:badops', 'invalid operand lengths to / operator');
+                end
+                
+            else
+                error('RTB:SE3:badops', 'invalid operand types to / operator');
+            end
+        end
+        
+        
+        function out = rdivide(obj, a)
+            % do the division
+            out = mrdivide(obj, a);
+            
+            % now normalize
+            % created an array of SE3's
+            for i=1:length(out)
+                out(i).data = trnorm(out(i).data);
+            end
+        end
+        
+        
+        function T = increment(obj, v)
+            T = obj .* delta2tr(v);
+        end
+
+        function J = velxform(obj)
+            
+            R = obj.R;
+            z = zeros(size(R));
+            J = [R z; z R];
+        end
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %  STANDARD SE(3) MATRIX OPERATIONS
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         function it = inv(obj)
-            it = SE3( obj.R', -obj.R*obj.t);
-        end
-        function t = get.t(obj)
-            t = obj.data(1:3,4);
-        end
-        function o = set.t(obj, t)
-            obj.data(1:3,4) = t;
-            o = obj;
-        end
-        function T = get.T(obj)
-            T = obj.data;
-        end
-        function o = set.T(obj, T)
-            obj.data = T;
-            o = obj;
+            it = SE3( obj.R', -obj.R'*obj.t);
         end
         
-        %ISHOMOG2 Test if SE(2) homogeneous transformation
-        %
-        % ISHOMOG2(T) is true (1) if the argument T is of dimension 3x3 or 3x3xN, else
-        % false (0).
-        %
-        % ISHOMOG2(T, 'valid') as above, but also checks the validity of the rotation
-        % sub-matrix.
-        %
-        % Notes::
-        % - The first form is a fast, but incomplete, test for a transform in SE(3).
-        % - Does not work for the SE(3) case.
-        %
-        % See also ISHOMOG, ISROT2, ISVEC.
+        function Ti = interp(varargin)
+            Ti = SE3( trinterp(varargin{:}) );
+        end
         
+        function m = log(obj)
+            m = trlog(obj.T);
+        end
+        
+        function m = logs(obj)
+            m = trlog(obj.T);
+            m = [m(1:3,4); vex(m(1:3,1:3))]';
+        end
+        
+        function m = Ad(obj)
+            %SE3.Ad  Adjoint matrix
+            %
+            % A = S.Ad() is the adjoint matrix (6x6) corresponding to the SE(3) value
+            % S.
+            %
+            % See also Twist.ad.
+            m = [ obj.R       skew(obj.t)*obj.R
+                  zeros(3,3)  obj.R              ];
+        end
+        
+        %% ad function
+        %         function m = Ad(obj)
+%             m = obj.R;
+%         end
+        
+        
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %  Rotation conversion wrappers
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%        
+        % 
+        function out = toeul(out, varargin)
+            out = out.SO3.toeul(varargin{:});
+        end
+        
+        function out = torpy(out, varargin)
+            out = out.SO3.torpy(varargin{:});
+        end
+        
+        function [a,b] = toangvec(out, varargin)
+            if nargout == 1
+                a = out.SO3.toangvec(varargin{:});
+            else
+                [a,b] = out.SO3.toangvec(varargin{:});
+            end
+        end
+        
+        % conversion methods
+        
+        function s = SO3(obj)
+            for i=1:length(obj)
+            s(i) = SO3();
+            s(i).data= obj(i).R;
+            end
+        end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %  VANILLA RTB FUNCTION COMPATIBILITY
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function t = transl(obj)
+            t = obj.tv';
+        end
+
+        function [R,t] = tr2rt(obj)
+            R = obj.R;
+            t = obj.t;
+        end
+        
+        function R = tr2r(obj)
+            R = obj.R;
+        end
+        
+        function T = trnorm(obj)
+            T = trnorm(obj.T);
+        end
+        
+        function Pt = homtrans(T, P)
+            Pt = T*P;
+        end
+        
+        function rpy = tr2rpy(obj, varargin)
+            rpy = tr2rpy(obj.T, varargin{:});
+        end
+        
+        function eul = tr2eul(obj, varargin)
+            eul = tr2eul(obj.T, varargin{:});
+        end
+            
+        function v = ishomog(obj)
+            v = true;
+        end
+        
+        function v = ishomog2(obj)
+            v = false;
+        end
+        
+        function v = isvec(obj, n)
+            v = false;
+        end
+            
     end
     
     methods (Static)
+
+                
+        % Static factory methods for constructors from standard representations             
+
+        function obj = Rx(varargin)
+            obj = SE3( SO3.Rx(varargin{:}) );
+        end
+        function obj = Ry(varargin)
+            obj = SE3( SO3.Ry(varargin{:}) );
+        end
+        function obj = Rz(varargin)
+            obj = SE3( SO3.Rz(varargin{:}) );
+        end
         
-        function obj = rotx(varargin)
-            obj = SE3( SO3.rotx(varargin{:}) );
-        end
-        function obj = roty(varargin)
-            obj = SE3( SO3.roty(varargin{:}) );
-        end
-        function obj = rotz(varargin)
-            obj = SE3( SO3.rotz(varargin{:}) );
-        end
         function obj = oa(varargin)
             obj = SE3( SO3.oa(varargin{:}) );
         end
+        
         function obj = angvec(varargin)
             obj = SE3( SO3.angvec(varargin{:}) );
         end
+        
         function obj = rpy(varargin)
             obj = SE3( SO3.rpy(varargin{:}) );
         end
@@ -125,13 +451,62 @@ end
             obj = SE3( SO3.eul(varargin{:}) );
         end
         
+        % Static factory methods for constructors from exotic representations             
+        function obj = exp(s)
+            %SE3.exp SE3 object from se(3)
+            %
+            %  SE3.exp(SIGMA) is the SE3 rigid-body motion given by the se(3) element SIGMA (4x4).
+            %
+            %  SE3.exp(exp(S) as above, but the se(3) value is expressed as a twist vector (6x1).
+            %
+            %  SE3.exp(SIGMA, THETA) as above, but the motion is given by SIGMA*THETA
+            %  where SIGMA is an se(3) element (4x4) whose rotation part has a unit norm.
+            %
+            % Notes::
+            % - wraps trexp.
+            %
+            % See also trexp.
+            obj = SE3( trexp(s) );
+        end
+        
+%         function m = ad(s)
+%             %m = [skew(s(1:3)) skew(s(4:6));  skew(s(4:6)) zeros(3,3)];
+%             m = [skew(s(4:6)) skew(s(1:3)) ;  zeros(3,3) skew(s(4:6)) ];
+%         end
+        
+        function n = new(obj, varargin)
+            n = SE3(varargin{:});
+        end
+        
+        function T = check(tr)
+            if isa(tr, 'SE3')
+                T = tr;
+            elseif SE3.isa(tr)
+                T = SE3(tr);
+            else
+                error('expecting an SE3 or 4x4 matrix');
+            end
+        end
+                
         function h = isa(tr, rtest)
+        %SE3.ISA Test if a homogeneous transformation
+        %
+        % SE3.ISA(T) is true (1) if the argument T is of dimension 4x4 or 4x4xN, else
+        % false (0).
+        %
+        % SE3.ISA(T, 'valid') as above, but also checks the validity of the rotation
+        % sub-matrix.
+        %
+        % Notes::
+        % - The first form is a fast, but incomplete, test for a transform in SE(3).
+        %
+        % See also SO3.ISA, SE2.ISA, SO2.ISA.
             d = size(tr);
             if ndims(tr) >= 2
-                h =  all(d(1:2) == [3 3]);
+                h =  all(d(1:2) == [4 4]);
                 
                 if h && nargin > 1
-                    h = abs(det(tr(1:2,1:2)) - 1) < eps;
+                    h = SO3.isa( tr(1:3,1:3) );
                 end
             else
                 h = false;

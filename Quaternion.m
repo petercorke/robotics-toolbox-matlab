@@ -108,9 +108,9 @@ classdef Quaternion
                 q.v = s.v;
             elseif nargin == 2 && isscalar(s) && isvec(v,3)
                 q.s = s;
-                q.v = v(:)';
+                q.v = v(:).';
             elseif nargin == 1 && isvec(s,4)
-                s = s(:)';
+                s = s(:).';
                 q.s = s(1);
                 q.v = s(2:4);
             else
@@ -120,7 +120,7 @@ classdef Quaternion
         end
 
         function qo = set.s(q, s)
-            if ~isreal(s) || ~isscalar(s)
+            if ~isa(s, 'sym') && ( ~isreal(s) || ~isscalar(s) )
                 error('RTB:Quaternion:badarg', 's must be real scalar');
             end
             
@@ -134,7 +134,7 @@ classdef Quaternion
             end
             
             qo = q;
-            qo.v = v(:)';
+            qo.v = v(:).';
         end
         
 %         function s = get.s(q)
@@ -216,21 +216,7 @@ classdef Quaternion
                 qu(i) = UnitQuaternion( q(i).double / norm(q(i)) );
             end
         end
-
-        function qd = dot(q, omega)
-            %Quaternion.dot Quaternion derivative
-            %
-            % QD = Q.dot(omega) is the rate of change of a frame with attitude Q and
-            % angular velocity OMEGA (1x3) expressed as a quaternion.
-            %
-            % Notes::
-            % - This is not a group operator, but it is useful to have the result as a
-            %   quaternion.
-            E = q.s*eye(3,3) - skew(q.v);
-            omega = omega(:);
-            qd = Quaternion([-0.5*q.v*omega; 0.5*E*omega]);
-        end
-        
+       
         function n = norm(q)
             %Quaternion.norm Quaternion magnitude
             %
@@ -243,6 +229,13 @@ classdef Quaternion
             % See also Quaternion.inner, Quaternion.unit.
             
             n = colnorm(double(q)')';
+        end
+        
+        function m = mat44(q)
+            m = [q.s    -q.v(1) -q.v(2) -q.v(3)
+                 q.v(1)  q.s    -q.v(3)  q.v(2)
+                 q.v(2)  q.v(3)  q.s    -q.v(1)
+                 q.v(3) -q.v(2)  q.v(1)  q.s];
         end
         
         function n = inner(q1, q2)
@@ -281,7 +274,7 @@ classdef Quaternion
             %
             % See also Quaternion.mrdivide, Quaternion.mpower.
             
-            if isa(q2, 'Quaternion')
+            if isa(q1, 'Quaternion') && isa(q2, 'Quaternion')
                 %QQMUL  Multiply quaternion by quaternion
                 %
                 % QQ = qqmul(Q1, Q2) is the product of two quaternions.
@@ -298,7 +291,7 @@ classdef Quaternion
                         s2 = q2(i).s;  v2 = q2(i).v;
                         
                         % form the product
-                        qp(i) = new([s1*s2-v1*v2' s1*v2+s2*v1+cross(v1,v2)]);
+                        qp(i) = new([s1*s2-v1*v2.' s1*v2+s2*v1+cross(v1,v2)]);
                     end
                 elseif isscalar(q1)
                     s1 = q1.s;  v1 = q1.v;
@@ -308,7 +301,7 @@ classdef Quaternion
                         s2 = q2(i).s;  v2 = q2(i).v;
                         
                         % form the product
-                        qp(i) = new([s1*s2-v1*v2' s1*v2+s2*v1+cross(v1,v2)]);
+                        qp(i) = new([s1*s2-v1*v2.' s1*v2+s2*v1+cross(v1,v2)]);
                     end
                 elseif isscalar(q2)
                     s2 = q2.s;  v2 = q2.v;
@@ -318,7 +311,7 @@ classdef Quaternion
                         s1 = q1(i).s;  v1 = q1(i).v;
                         
                         % form the product
-                        qp(i) = new([s1*s2-v1*v2' s1*v2+s2*v1+cross(v1,v2)]);
+                        qp(i) = new([s1*s2-v1*v2.' s1*v2+s2*v1+cross(v1,v2)]);
                     end
                 else
                     error('RTB:quaternion:badarg', '* operand length mismatch');
@@ -330,12 +323,24 @@ classdef Quaternion
                 %
                 % Q = qsmul(Q, S) multiply quaternion by real scalar.
                 %
+                assert(isscalar(q2), 'quaternion-double product: must be a scalar');
+                for i=1:length(q1)
+                    qp(i) = Quaternion( double(q1(i))*q2);
+                end
                 
-                if length(q2) == 1
-                    qp = Quaternion( double(q1)*q2);
-                else
-                    error('RTB:Quaternion:badarg', 'quaternion-double product: must be a scalar');
-                end              
+                
+            elseif isa(q1, 'double') && isa(q2, 'Quaternion')
+                
+                %QSMUL  Multiply quaternion
+                %
+                % Q = qsmul(Q, S) multiply quaternion by real scalar.
+                %
+                
+                assert(isscalar(q1), 'quaternion-double product: must be a scalar');
+                
+                for i=1:length(q2)
+                    qp(i) = Quaternion( double(q2(i))*q1);
+                end
             else
                 error('RTB:Quaternion:badarg', 'quaternion product: incorrect right hand operand');
             end
@@ -358,7 +363,7 @@ classdef Quaternion
             %
             % See also Quaternion.mtimes, Quaternion.mpower, Quaternion.plus, Quaternion.minus.
             
-            if isa(q2, 'Quaternion')
+            if isa(q1, 'Quaternion') && isa(q2, 'Quaternion')
                 %QQDIV  Divide quaternion by quaternion
                 %
                 % QQ = qqdiv(Q1, Q2) is the quotient of two quaternions.
@@ -395,11 +400,9 @@ classdef Quaternion
                 % Q = qsdiv(Q, S) divide quaternion by real scalar.
                 %
                 
-                if length(q2) == 1
-                    qp = Quaternion( double(q1)/q2);
-                else
-                    error('RTB:Quaternion:badarg', 'quaternion-double quotient: must be a scalar');
-                end              
+                assert(isscalar(q2), 'RTB:Quaternion:badarg', 'quaternion-double quotient: must be a scalar');
+                qq = Quaternion( double(q1)/q2);
+            
             else
                 error('RTB:Quaternion:badarg', 'quaternion quotient: incorrect right hand operand');
             end
@@ -568,67 +571,7 @@ classdef Quaternion
             end
         end
         
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% GRAPHICS 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        function hout = plot(Q, varargin)
-            %Quaternion.plot Plot a quaternion object
-            %
-            % Q.plot(options) plots the quaternion as an oriented coordinate frame.
-            %
-            % h = Q.plot(options) as above but returns a handle which can be used for animation.
-            %
-            % Options::
-            % Options are passed to trplot and include:
-            %
-            % 'color',C          The color to draw the axes, MATLAB colorspec C
-            % 'frame',F          The frame is named {F} and the subscript on the axis labels is F.
-            % 'view',V           Set plot view parameters V=[az el] angles, or 'auto'
-            %                    for view toward origin of coordinate frame
-            % 'handle',h         Update the specified handle
-            %
-            % See also trplot.
-            
-            %axis([-1 1 -1 1 -1 1])
-            
-            h = trplot( Q.R, varargin{:});
-            if nargout > 0
-                hout = h;
-            end
-        end
-        
-        function animate(Q, varargin)
-            %Quaternion.animate Animate a quaternion object
-            %
-            % Q.animate(options) animates a quaternion array Q as a 3D coordinate frame.
-            %
-            % Q.animate(QF, options) animates a 3D coordinate frame moving from
-            % orientation Q to orientation QF.
-            %
-            % Options::
-            % Options are passed to tranimate and include:
-            %
-            %  'fps', fps    Number of frames per second to display (default 10)
-            %  'nsteps', n   The number of steps along the path (default 50)
-            %  'axis',A      Axis bounds [xmin, xmax, ymin, ymax, zmin, zmax]
-            %  'movie',M     Save frames as files in the folder M
-            %  'cleanup'     Remove the frame at end of animation
-            %  'noxyz'       Don't label the axes
-            %  'rgb'         Color the axes in the order x=red, y=green, z=blue
-            %  'retain'      Retain frames, don't animate
-            %  Additional options are passed through to TRPLOT.
-            %
-            % See also tranimate, trplot.
-            
-            if nargin > 1 && isa(varargin{1}, 'Quaternion')
-                QF = varargin{1};
-                tranimate(Q.R, QF.R, varargin{2:end});
-            else
-                tranimate(Q.R, varargin{:});
-            end
-        end
-        
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% TYPE CONVERSION METHODS

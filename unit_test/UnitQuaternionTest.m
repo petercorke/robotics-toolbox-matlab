@@ -2,6 +2,9 @@ function tests = UnitQuaternionTest
   tests = functiontests(localfunctions);
 end
 
+%TODO
+%    test new method
+% test SO3 with symbolics
 
 % we will assume that the primitives rotx,trotx, etc. all work
 
@@ -9,6 +12,8 @@ end
 function constructor_test(tc)
     
     verifyEqual(tc, UnitQuaternion().double, [1 0 0 0]);
+    
+
     
     %% from S
     verifyEqual(tc, UnitQuaternion([1 0 0 0]).double, [1 0 0 0]);
@@ -66,6 +71,11 @@ function constructor_test(tc)
     end
     verifyEqual(tc, UnitQuaternion(R).R, R, 'AbsTol', 1e-10);
     verifyEqual(tc, UnitQuaternion(T).T, T, 'AbsTol', 1e-10);
+    
+    %% copy constructor
+    q = UnitQuaternion(rotx(0.3));
+    verifyEqual(tc, UnitQuaternion(q), q, 'AbsTol', 1e-10);
+    
 
 end
 
@@ -146,6 +156,7 @@ function staticconstructors_test(tc)
     th = 0.2; v = unit([1 2 3]);
     verifyEqual(tc, UnitQuaternion.omega(th*v ).R, angvec2r(th, v), 'AbsTol', 1e-10  );
     verifyEqual(tc, UnitQuaternion.omega(-th*v ).R, angvec2r(-th, v), 'AbsTol', 1e-10  );
+    
 end
 
 function resulttype_test(tc)
@@ -292,16 +303,19 @@ function divide_normalized_test(tc)
 end
 
 function angle_test(tc)
+        %% angle between quaternions
+    %% pure
+    v = [5 6 7];
 end
 
 function conversions_test(tc)
     
     %% 3 angle
-    verifyEqual(tc, UnitQuaternion.rpy( 0.1, 0.2, 0.3 ).rpy, [ 0.1, 0.2, 0.3], 'AbsTol', 1e-10  );
+    verifyEqual(tc, UnitQuaternion.rpy( 0.1, 0.2, 0.3 ).torpy, [ 0.1, 0.2, 0.3], 'AbsTol', 1e-10  );
     
-    verifyEqual(tc, UnitQuaternion.eul( 0.1, 0.2, 0.3 ).eul, [ 0.1, 0.2, 0.3 ], 'AbsTol', 1e-10  );
+    verifyEqual(tc, UnitQuaternion.eul( 0.1, 0.2, 0.3 ).toeul, [ 0.1, 0.2, 0.3 ], 'AbsTol', 1e-10  );
     
-    verifyEqual(tc, UnitQuaternion.rpy( 10, 20, 30, 'deg' ).rpy, rpy2r( 10, 20, 30, 'deg' ), 'AbsTol', 1e-10  );
+    verifyEqual(tc, UnitQuaternion.rpy( 10, 20, 30, 'deg' ).R, rpy2r( 10, 20, 30, 'deg' ), 'AbsTol', 1e-10  );
     
     verifyEqual(tc, UnitQuaternion.eul( 10, 20, 30, 'deg' ).R, eul2r( 10, 20, 30, 'deg' ), 'AbsTol', 1e-10  );
     
@@ -346,24 +360,36 @@ function miscellany_test(tc)
     verifyEqual(tc, q.interp(rx, 0), q, 'AbsTol', 1e-10  );
     verifyEqual(tc, q.interp(rx, 1), rx, 'AbsTol', 1e-10  );
     
-        verifyEqual(tc, q^0, u, 'AbsTol', 1e-10  );
-        verifyEqual(tc, q^(-1), inv(q), 'AbsTol', 1e-10  );
-        verifyEqual(tc, q^2, q*q, 'AbsTol', 1e-10  );
+    verifyEqual(tc, q^0, u, 'AbsTol', 1e-10  );
+    verifyEqual(tc, q^(-1), inv(q), 'AbsTol', 1e-10  );
+    verifyEqual(tc, q^2, q*q, 'AbsTol', 1e-10  );
+    
+    %% equality tests
+    verifyTrue(tc, rx == rx);
+    verifyFalse(tc, rx ~= rx);
+    verifyFalse(tc, rx == ry);
+    
+
 
 end
 
+function dot_test(tc)
+    q = UnitQuaternion();
+    omega = [1 2 3];
+    
+    verifyEqual(tc, q.dot(omega), [0 omega/2]');
+    verifyEqual(tc, q.dotb(omega), [0 omega/2]');
+    
+    q = UnitQuaternion(rotx(pi/2));
+    verifyEqual(tc, q.dot(omega), double(0.5*Quaternion.pure(omega)*q)' );
+    verifyEqual(tc, q.dotb(omega), double(0.5*q*Quaternion.pure(omega))' );
 
-%  dot                     derivative of quaternion with angular velocity w
+end
 
-%  angle                   angle between two quaternions
-%  plot                    plot a coordinate frame representing orientation of quaternion
-%  animate                 animates a coordinate frame representing changing orientation
-%                          of quaternion sequence
+function display_test(tc)
+        ry = UnitQuaternion.Ry(pi/2);
 
-
-%
-% Overloaded operators::
-
-%  q^n                     q to power n (integer only)
-%  q1==q2                  test for quaternion equality
-%  q1~=q2                  test for quaternion inequality
+        
+        ry.plot
+        ry.animate
+end

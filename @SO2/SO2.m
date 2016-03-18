@@ -31,13 +31,11 @@
 %
 % http://www.petercorke.com
 
-classdef SO2
-    properties
-        data
-    end
+classdef SO2 < RTBPose
+    
     
     properties (Dependent = true)
-        R
+        %R
     end
     
     methods
@@ -55,20 +53,30 @@ classdef SO2
             
             if nargin == 0
                 obj.data = eye(2,2);
-            elseif SO2.isa(t)
-                obj.data = t;
-            else
-                
+            elseif isreal(t) && isvector(t)
+                t = t(:)';
                 if nargin > 1 && strcmp(deg, 'deg')
                     t = t *pi/180;
                 end
+                for i=1:length(t)
+                    th = t(i);
+                    obj(i).data = [
+                        cos(th)  -sin(th)
+                        sin(th)   cos(th)
+                        ];
+                end
+            elseif isa(t, 'SO2')
+                obj.data = t.data;
+            elseif SO2.isa(t)
+                for i=1:size(t, 3)
+                    obj(i).data = t(:,:,i);
+                end
+            elseif SE2.isa(t)
+                for i=1:size(t, 3)
+                    obj(i).data = t(1:2,1:2,i);
+                end
+
                 
-                ct = cos(t);
-                st = sin(t);
-                obj.R = [
-                    ct  -st
-                    st   ct
-                    ];
             end
         end
         
@@ -76,18 +84,103 @@ classdef SO2
             d = obj.data;
         end
         
-        function out = mtimes(obj, a)
-            if isa(a, 'SO2')
-                out = SO2( obj.data * a.data);
-            elseif SO2.isa(a)
-                out = SO2( obj.data * a);
-                
-            elseif isvec(a,2)
-                out = obj.data * a;
-            else
-                error('bad thing');
+        function RR = R(obj)
+            RR = zeros(2,2,length(obj));
+            for i=1:length(obj)
+                RR(:,:,i) = obj(i).data(1:2,1:2);
             end
         end
+        
+        function TT = T(obj)
+            TT = zeros(3,3,length(obj));
+            for i=1:length(obj)
+                TT(1:2,1:2,i) = obj(i).data(1:2,1:2);
+                TT(3,3,i) = 1;
+            end
+        end
+        
+        
+        function out = mtimes(a, b)
+            if isa(b, 'SO2')
+                % SO2 * SO2
+                out = repmat(SO2, 1, max(length(a),length(b)));
+                if length(a) == length(b)
+                    % do objvector*objvector and objscalar*objscalar case
+                    for i=1:length(a)
+                        out(i) = SO2( a(i).data * b(i).data);
+                    end
+                elseif length(a) == 1
+                    % objscalar*objvector case
+                    for i=1:length(b)
+                        out(i) = SO2( a.data * b(i).data);
+                    end
+                elseif length(b) == 1
+                    % objvector*objscalar case
+                    for i=1:length(a)
+                        out(i) = SO2( a(i).data * b.data);
+                    end
+                else
+                    error('RTB:SO2:badops', 'invalid operand lengths to * operator');
+                end
+
+                
+            elseif numrows(b) == 2
+                % SO2 * vectors (2xN), result is 2xN
+                
+                out = zeros(2, max(length(a),numcols(b)));  % preallocate space
+                
+                if length(a) == numcols(b)
+                    % do objvector*vector and objscalar*scalar case
+                    for i=1:length(a)
+                        out(:,i) = a(i).data * b(:,i);
+                    end
+                elseif length(a) == 1
+                    % objscalar*vector case
+                    for i=1:length(a)
+                        out = a.data * b;
+                    end
+                elseif numcols(b) == 1
+                    % objvector*scalar case
+                    for i=1:length(a)
+                        out(:,i) = a(i).data * b;
+                    end
+                else
+                    error('RTB:SO2:badops', 'invalid operand lengths to * operator');
+                end     
+            else
+                error('RTB:SO2:badops', 'invalid operand types to * operator');
+            end
+        end
+        
+                function out = mrdivide(obj, a)
+            assert( isa(a, 'SO2'), 'right-hand argument must be SO2');
+            
+            if isa(a, 'SO2')
+                % SO2 / SO2
+                out = repmat(SO2, 1, max(length(obj),length(a)));
+                if length(obj) == length(a)
+                    % do vector*vector and scalar*scalar case
+                    for i=1:length(obj)
+                        out(i) = SO2( obj(i).data * inv(a(i).data));
+                    end
+                elseif length(obj) == 1
+                    % scalar*vector case
+                    for i=1:length(obj)
+                        out(i) = SO2( inv(obj.data) * a(i).data);
+                    end
+                elseif length(a) == 1
+                    % vector*scalar case
+                    for i=1:length(obj)
+                        out(i) = SO2( obj(i).data * inv(a.data));
+                    end
+                else
+                    error('RTB:SO2:badops', 'invalid operand lengths to / operator');
+                end
+                
+            else
+                error('RTB:SO2:badops', 'invalid operand types to / operator');
+            end
+                end
         
         function th = theta(obj)
             th = atan2(obj.data(2,1), obj.data(1,1));
@@ -105,38 +198,52 @@ classdef SO2
             [varargout{1:nargout}] = eig(obj.data, varargin{:});
         end
         
-        function R = get.R(obj)
-            R = obj.data(1:2,1:2);
+        
+        function S = log(obj)
+            S = logm(obj.data);
         end
         
-        function o = set.R(obj, data)
-            obj.data(1:2,1:2) = data;
-            o = obj;
-        end
-        function display(l)
-            %Link.display Display parameters
-            %
-            % L.display() displays the link parameters in compact single line format.  If L is a
-            % vector of Link objects displays one line per element.
-            %
-            % Notes::
-            % - This method is invoked implicitly at the command line when the result
-            %   of an expression is a Link object and the command has no trailing
-            %   semicolon.
-            %
-            % See also Link.char, Link.dyn, SerialLink.showlink.
-            loose = strcmp( get(0, 'FormatSpacing'), 'loose');
-            if loose
-                disp(' ');
-            end
-            disp([inputname(1), ' = '])
-            disp( char(l) );
-        end % display()
+        %         function o = set.R(obj, data)
+        %             if isa(data, 'sym')
+        %                 obj.data = data;
+        %             else
+        %             obj.data(1:2,1:2) = data;
+        %             end
+        %             o = obj;
+        %         end
+        
         function s = char(obj)
             s = num2str(obj.data, 4);
         end
+        
+        
+        function T = SE2(obj)
+            T = SE2( r2t(obj.data) );
+        end
+        
     end
     methods (Static)
+        % Static factory methods for constructors from exotic representations
+        
+        function obj = exp(s)
+            obj = SO2( trexp2(s) );
+        end
+        
+        function n = new(obj, varargin)
+            n = SO2(varargin{:});
+        end
+        
+        function R = check(tr)
+            if isa(tr, 'SO2')
+                R = SO2(tr);        % enforce it being an SO2
+            elseif SO2.isa(tr)
+                R = SO2(tr);
+            elseif SE2.isa(tr)
+                R = SO2( t2r(tr) );
+            else
+                error('expecting an SO2 or 2x2 matrix');
+            end
+        end
         
         %ISROT2 Test if SO(2) rotation matrix
         %
