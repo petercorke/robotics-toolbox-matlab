@@ -3,7 +3,7 @@
 % VN = UNIT(V) is a unit-vector parallel to V.
 %
 % Note::
-% - Reports error for the case where norm(V) is zero.
+% - Reports error for the case where V is non-symbolic and norm(V) is zero
 
 
 
@@ -28,7 +28,7 @@
 
 function u = unit(v)
     n = norm(v, 'fro');
-    if n < eps
+    if ~isa(v, 'sym') && n < eps
         error('RTB:unit:zero_norm', 'vector has zero norm');
     end
 
