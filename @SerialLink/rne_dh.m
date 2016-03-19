@@ -31,20 +31,20 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
-function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
+function [tau,wbase] = rne_dh(robot, varargin)
+
+    opt.grav = robot.gravity;  % default gravity from the object
+    opt.fext = zeros(6, 1);
+    
+    [opt,args] = tb_optparse(opt, varargin);
+    
+    grav = opt.grav(:);
+    fext = opt.fext(:);
 
     z0 = [0;0;1];
-    grav = robot.gravity;   % default gravity from the object
-    fext = zeros(6, 1);
+    zero= zeros(3,1);
     n = robot.n;
 
-    % check that robot object has dynamic parameters for each link
-    for j=1:n
-        link = robot.links(j);
-        if isempty(link.r) || isempty(link.I) || isempty(link.m)
-            error('dynamic parameters (m, r, I) not set in link %d', j);
-        end
-    end
 
     % Set debug to:
     %   0 no messages
@@ -52,34 +52,29 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
     %   2 display print R and p*
     debug = 0;
 
-    if numcols(a1) == 3*n
+    if length(args) == 1
+        a1 = args{1};
+        assert( numcols(a1) == 3*n, 'Incorrect number of columns for RNE with one argument');
         Q = a1(:,1:n);
         Qd = a1(:,n+1:2*n);
         Qdd = a1(:,2*n+1:3*n);
-        np = numrows(Q);
-        if nargin >= 3, 
-            grav = a2(:);
-        end
-        if nargin == 4
-            fext = a3;
-        end
+
+    elseif length(args) == 3
+
+        Q = args{1};
+        Qd = args{2};
+        Qdd = args{3};
+        assert(numcols(Q) == n, 'Incorrect number of columns in q');
+        assert(numcols(Qd) == n, 'Incorrect number of columns in qd');
+        assert(numcols(Qdd) == n, 'Incorrect number of columns in qdd');
+        assert(numrows(Qd) == numrows(Q), 'For trajectory qd must have same number of rows as q');
+        assert(numrows(Qdd) == numrows(Q), 'For trajectory qdd must have same number of rows as q');
     else
-        np = numrows(a1);
-        Q = a1;
-        Qd = a2;
-        Qdd = a3;
-        if numcols(a1) ~= n || numcols(Qd) ~= n || numcols(Qdd) ~= n || ...
-            numrows(Qd) ~= np || numrows(Qdd) ~= np
-            error('bad data');
-        end
-        if nargin >= 5, 
-            grav = a4(:);
-        end
-        if nargin == 6
-            fext = a5;
-        end
+        error('RTB:rne_dh:badargs', 'Too many arguments');
     end
     
+    np = numrows(Q);
+    % preallocate space for result
     if robot.issym || any([isa(Q,'sym'), isa(Qd,'sym'), isa(Qdd,'sym')])
         tau(np, n) = sym();
     else
@@ -102,8 +97,8 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
         
         % rotate base velocity and acceleration into L1 frame
         Rb = t2r(robot.base)';
-        w = Rb*zeros(3,1);
-        wd = Rb*zeros(3,1);
+        w = Rb*zero;
+        wd = Rb*zero;
         vd = Rb*grav(:);
 
     %
@@ -112,7 +107,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
         for j=1:n
             link = robot.links(j);
             Tj = link.A(q(j));
-            if link.RP == 'R'
+            if link.isrevolute
                 d = link.d;
             else
                 d = q(j);
@@ -142,7 +137,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
             %
             % statement order is important here
             %
-            if link.RP == 'R'
+            if link.isrevolute
                 % revolute axis
                 wd = Rt*(wd + z0*qdd(j) + ...
                     cross(w,z0*qd(j)));
@@ -211,7 +206,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
             end
 
             R = Rm{j};
-            if link.RP == 'R'
+            if link.isrevolute
                 % revolute
                 t = nn.'*(R.'*z0) + ...
                     link.G^2 * link.Jm*qdd(j) - ...

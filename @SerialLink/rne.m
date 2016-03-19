@@ -43,6 +43,7 @@
 %   MEX-file operation.
 % - The M-file is a wrapper which calls either RNE_DH or RNE_MDH depending on 
 %   the kinematic conventions used by the robot object, or the MEX file.
+% - If a model has no dynamic parameters set the result is zero.
 %
 % See also SerialLink.accel, SerialLink.gravload, SerialLink.inertia.
 
