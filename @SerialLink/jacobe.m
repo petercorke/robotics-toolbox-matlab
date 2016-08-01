@@ -1,8 +1,8 @@
-%SerialLink.JACOBN Jacobian in end-effector frame
+%SerialLink.JACOBE Jacobian in end-effector frame
 %
-% JN = R.jacobn(Q, options) is the Jacobian matrix (6xN) for the robot in
+% JE = R.jacobe(Q, options) is the Jacobian matrix (6xN) for the robot in
 % pose Q, and N is the number of robot joints. The manipulator Jacobian
-% matrix maps joint velocity to end-effector spatial velocity V = JN*QD in
+% matrix maps joint velocity to end-effector spatial velocity V = JE*QD in
 % the end-effector frame.
 %
 % Options::
@@ -10,7 +10,9 @@
 % 'rot'     Return rotational submatrix of Jacobian 
 %
 % Notes::
+% - This Jacobian accounts for a tool transform if one is set.
 % - This Jacobian is often referred to as the geometric Jacobian.
+% - Prior to release 10 this function was named jacobn.
 %
 % References::
 %  - Differential Kinematic Control Equations for Simple Manipulators,
@@ -42,12 +44,16 @@
 %
 % http://www.petercorke.com
 
-function J = jacobn(robot, q, varargin)
+function J = jacobe(robot, q, varargin)
 
     opt.trans = false;
     opt.rot = false;
-    
+    opt.deg = false;
     opt = tb_optparse(opt, varargin);
+    if opt.deg
+        % in degrees mode, scale the columns corresponding to revolute axes
+        q = robot.todegrees(q);
+    end
     
     n = robot.n;
     L = robot.links;        % get the links
@@ -63,15 +69,18 @@ function J = jacobn(robot, q, varargin)
             % standard DH convention
             U = L(j).A(q(j)) * U;
         end
-        if L(j).RP == 'R'
+        
+        UT = U.T;
+
+        if L(j).isrevolute
             % revolute axis
-            d = [   -U(1,1)*U(2,4)+U(2,1)*U(1,4)
-                -U(1,2)*U(2,4)+U(2,2)*U(1,4)
-                -U(1,3)*U(2,4)+U(2,3)*U(1,4)];
-            delta = U(3,1:3)';  % nz oz az
+            d = [   -UT(1,1)*UT(2,4)+UT(2,1)*UT(1,4)
+                -UT(1,2)*UT(2,4)+UT(2,2)*UT(1,4)
+                -UT(1,3)*UT(2,4)+UT(2,3)*UT(1,4)];
+            delta = UT(3,1:3)';  % nz oz az
         else
             % prismatic axis
-            d = U(3,1:3)';      % nz oz az
+            d = UT(3,1:3)';      % nz oz az
             delta = zeros(3,1); %  0  0  0
         end
         J(:,j) = [d; delta];
