@@ -62,7 +62,7 @@
 %
 % http://www.petercorke.com
 
-function [TG, taxis]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargin)
+function [TG, t, info]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargin)
 
 
     ns = numrows(segments);
@@ -146,7 +146,11 @@ function [TG, taxis]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargin)
             % find the total time and slowest axis
             tt = tb + tl;
             [tseg,slowest] = max(tt);
-            taxis(seg,:) = tt;
+            
+            info(seg).slowest = slowest;
+            info(seg).segtime = tseg;
+            info(seg).axtime = tt;
+            info(seg).clock = clock;
 
             % best if there is some linear motion component
             if tseg <= 2*tacc
@@ -194,6 +198,8 @@ function [TG, taxis]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargin)
     % add the final blend
     qb = jtraj(q, q_next, 0:dt:tacc2, qd_prev, qdf);
     tg = [tg; qb(2:end,:)];
+    info(seg+1).segtime = tacc2;
+    info(seg+1).clock = clock;
 
     % plot a graph if no output argument
     if nargout == 0
@@ -206,6 +212,14 @@ function [TG, taxis]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargin)
         grid
         xlabel('time');
         xaxis(t(1), t(end))
-    else 
+        return
+    end
+    if nargout > 0
         TG = tg;
+    end
+    if nargout > 1
+        t = (0:numrows(tg)-1)'*dt;
+    end
+    if nargout > 2
+        infout = info;
     end
