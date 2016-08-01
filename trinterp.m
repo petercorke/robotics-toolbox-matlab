@@ -16,65 +16,73 @@
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 function T = trinterp(A, B, C)
-
+    
     if nargin == 3
         %	TR = TRINTERP(T0, T1, r)
-        T0 = A; T1 = B; r = C;
-
-        if length(r) > 1
-            T = [];
-            for rr=r(:)'
-                TT = trinterp(T0, T1, rr);
-                T = cat(3, T, TT);
-            end
-            return;
-        end
-
-        q0 = Quaternion(T0);
-        q1 = Quaternion(T1);
-
-        p0 = transl(T0);
-        p1 = transl(T1);
-
-        qr = q0.interp(q1, r);
-        pr = p0*(1-r) + r*p1;
-    elseif nargin == 2
-    %	TR = TRINTERP(T, r)
-        T0 = A; r = B;
-
-        if length(r) > 1
-            T = [];
-            for rr=r(:)'
-                TT = trinterp(T0, rr);
-                T = cat(3, T, TT);
-            end
-            return;
-        end
-
-        q0 = Quaternion(T0);
-        p0 = transl(T0);
-
-        qr = q0.scale(r);
-        pr = r*p0;
-    else
-        error('must be 2 or 3 arguments');
-    end
-    T = rt2tr(qr.R, pr);
+        T0 = SE3.check(A); T1 = SE3.check(B); r = C;
         
+        if length(r) == 1 && r > 1 && (r == floor(r))
+            % integer value
+            r = [0:(r-1)] / (r-1);
+        elseif any(r<0 | r>1)
+            error('RTB:trinterp', 'values of S outside interval [0,1]');
+        end
+        
+        for i=1:length(r)
+            
+            
+            q0 = UnitQuaternion(T0);
+            q1 = UnitQuaternion(T1);
+            
+            p0 = T0.t;
+            p1 = T1.t;
+            
+            qr = q0.interp(q1, r(i));
+            pr = p0*(1-r(i)) + r(i)*p1;
+            
+            T(i) = SE3(qr.R, pr);
+            
+        end
+    elseif nargin == 2
+        %	TR = TRINTERP(T, r)
+        T0 = SE3.check(A); r = B;
+        
+        if length(r) == 1 && r > 1 && (r == floor(r))
+            % integer value
+            r = [0:(r-1)] / (r-1);
+        elseif any(r<0 | r>1)
+            error('RTB:trinterp', 'values of S outside interval [0,1]');
+        end
+
+        for i=1:length(r)
+            q0 = UnitQuaternion(T0);
+            
+            p0 = T0.t;
+            
+            qr = q0.interp(r);
+            pr = r*p0;
+            
+            T(i) = SE3(qr.R, pr);
+            
+        end
+
+    else
+        error('RTB:ctraj:badarg', 'must be 2 or 3 arguments');
+    end    

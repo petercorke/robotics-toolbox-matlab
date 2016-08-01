@@ -19,43 +19,49 @@
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 function T = r2t(R)
-
-    % check dimensions: R is SO(2) or SO(3)
-    d = size(R);
-    if d(1) ~= d(2)
-        error('matrix must be square');
-    end
-    if ~any(d(1) == [2 3])
-        error('argument is not a rotation matrix (sequence)');
-    end
     
-    Z = zeros(d(1),1);
-    B = [Z' 1];
-    
-    if numel(d) == 2
-        % single matrix case
-        T = [R Z; B];
+    if isa(R, 'SO3')
+        T = SE3.R(R);
+    elseif isa(R, 'SO2')
+        T = SE2.R(R);
     else
-        %  matrix sequence case
-        T = zeros(4,4,d(3));
-        for i=1:d(3)
-            T(:,:,i) = [R(:,:,i) Z; B];
+        % check dimensions: R is SO(2) or SO(3)
+        d = size(R);
+        if d(1) ~= d(2)
+            error('matrix must be square');
+        end
+        if ~any(d(1) == [2 3])
+            error('argument is not a rotation matrix (sequence)');
+        end
+        
+        Z = zeros(d(1),1);
+        B = [Z' 1];
+        
+        if numel(d) == 2
+            % single matrix case
+            T = [R Z; B];
+        else
+            %  matrix sequence case
+            T = zeros(4,4,d(3));
+            for i=1:d(3)
+                T(:,:,i) = [R(:,:,i) Z; B];
+            end
         end
     end

@@ -51,10 +51,19 @@
 
 function [t1,t2,t3] = transl(x, y, z)
     if nargin == 1
-        if ishomog(x)
+        if isa(x, 'SE3')
+            if nargout == 1 || nargout == 0
+                t1 = x.t;
+            else
+                t = x.t;
+                t1 = t(1);
+                t2 = t(2);
+                t3 = t(3);
+            end
+        elseif ishomog(x)
             if ndims(x) == 3
                 % transl(T)  -> P, trajectory case
-                if nargout == 1
+                if nargout == 1 
                     t1 = squeeze(x(1:3,4,:))';
                 elseif nargout == 3
                     t1 = squeeze(x(1,4,:))';
