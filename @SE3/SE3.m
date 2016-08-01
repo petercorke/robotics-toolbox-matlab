@@ -61,41 +61,102 @@ R
     
     methods
 
-        function obj = SE3(a, b, c, varargin)
-            % SE3(x,y,z)
-            % SE3([x y z])
-            % SE3( obj )
-            % SE3( R, t)
+        function obj = SE3(varargin)
+        %SE3.SE3 Create an SE(3) object
+        %
+        % Constructs an SE(3) pose object that contains a 4x4 homogeneous transformation matrix.
+        %
+        % T = SE3() is a null relative motion
+        %
+        % T = SE3(X, Y, Z) is an object representing pure translation defined by X,
+        % Y and Z.
+        %
+        % T = SE3(XYZ) is an object representing pure translation defined by XYZ
+        % (3x1).  If XYZ (Nx3) returns an array of SE3 objects, corresponding to
+        % the rows of XYZ
+        %
+        % T = SE3(R, XYZ) is an object representing rotation defined by the
+        % orthonormal rotation matrix R (3x3) and position given by XYZ (3x1)
+        %
+        % T = SE3(T) is an object representing translation and rotation defined by
+        % the homogeneous transformation matrix T (3x3).  If T (3x3xN) returns an array of SE3 objects, corresponding to
+        % the third index of T
+        %
+        % T = SE3(T) is an object representing translation and rotation defined by
+        % the SE3 object T, effectively cloning the object. If T (Nx1) returns an array of SE3 objects, corresponding to
+        % the index of T
+        %
+        % Options::
+        % 'deg'         Angle is specified in degrees
+        %
+        % Notes::
+        % - Arguments can be symbolic
+        
             obj.data = eye(4,4);
-            if nargin == 0
-                return;
-            elseif SE3.isa(a)
-                for i=1:size(a, 3)
-                    obj(i).data = a(:,:,i);
-                end
-            elseif isa(a, 'SE3')
-                for i=1:length(a)
-                    obj(i).data = a(i).data;
-                end
-            elseif nargin >= 2 && (isrot(a) || SO3.isa(a)) && isvec(b,3)
-                if isrot(a)
-                    obj.data(1:3,1:3) = a;
-                else
-                    obj.R(1:3,1:3) = a.R;
-                end
-                obj.data(1:3,4) = b(:);
-            elseif nargin >= 1 && numcols(a) == 3
-                % Nx3
-                for i=1:numrows(a)
-                    obj(i).data(1:3,4) = a(i,:)';
-                end
-            elseif nargin == 1 && isvec(a)
-                % 3-vector: t
-                obj.data(1:3,4) = a(:);
-            elseif nargin == 3 && isscalar(a) && isscalar(b) && isscalar(c)
-                % 3 scalars t=(x,y,z)
-                obj.data(1:3,4) = [a b c]';
+            args = varargin;
+            
+            % if any of the arguments is symbolic the result will be symbolic
+            if any( cellfun(@(x) isa(x, 'sym'), args) )
+                obj.data = sym(obj.data);
             end
+            
+            switch length(args)
+                case 0
+                    % ()
+                    obj.data = eye(4,4);
+                    return;
+                    
+                case 1
+                    a = args{1};
+                    if isvec(a, 3)
+                        % (t)
+                        obj.t = a(:);
+                    elseif SE3.isa(a)
+                        % (SE3)
+                        for i=1:size(a, 3)
+                            obj(i).data = a(:,:,i);
+                        end
+                    elseif isa(a, 'SE3')
+                        % (T)
+                        for i=1:length(a)
+                            obj(i).data = a(i).data;
+                        end
+                        
+                    elseif numcols(a) == 3
+                        % SE3( xyz )
+                        for i=1:length(a)
+                            %obj(i).data = SE3(a(i,:));
+                            obj(i).data(1:3,4) = a(i,:)';
+                        end
+                    else
+                        error('RTB:SE3:badarg', 'unknown arguments');
+                    end
+                    
+                case 2
+                    a = args{1}; b = args{2};
+                    
+                    if (isrot(a) || SO3.isa(a)) && isvec(b,3)
+                        % (R, t)
+                        if isrot(a)
+                            obj.data(1:3,1:3) = a;
+                        else
+                            obj.R(1:3,1:3) = a.R;
+                        end
+                        obj.data(1:3,4) = b(:);
+                    else
+                        error('RTB:SE3:badarg', 'unknown arguments');
+                    end
+                    
+                case 3
+                    a = args{1}; b = args{2}; c = args{3};
+                    
+                    obj.data(1:3,4) = [a; b; c];
+                    
+                otherwise
+                   error('RTB:SE3:badarg', 'too many arguments');
+
+            end
+            
         end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
