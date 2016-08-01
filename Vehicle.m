@@ -1,6 +1,6 @@
 %Vehicle Car-like vehicle class
 %
-% This class models the kinematics of a car-like vehicle (bicycle model) on
+% This abstract class models the kinematics of a car-like vehicle (bicycle model) on
 % a plane that moves in SE(2).  For given steering and velocity inputs it
 % updates the true vehicle state and returns noise-corrupted odometry
 % readings.
@@ -31,7 +31,7 @@
 %   rdim             dimension of the robot (for drawing)
 %   L               length of the vehicle (wheelbase)
 %   alphalim        steering wheel limit
-%   maxspeed        maximum vehicle speed
+%   speedmax        maximum vehicle speed
 %   T               sample interval
 %   verbose         verbosity
 %   x_hist          history of true vehicle state (Nx3)
@@ -97,9 +97,9 @@ classdef Vehicle < handle
         x_hist      % x history
 
         % parameters
-        L           % length of vehicle
-        alphalim    % steering wheel limit
-        maxspeed    % maximum speed
+
+        speedmax    % maximum speed
+
         dim         % dimension of the world -dim -> +dim in x and y
         rdim    % dimension of the robot
         dt           % sample interval
@@ -111,56 +111,55 @@ classdef Vehicle < handle
 
         driver      % driver object
         x0          % initial state
+        
+        options
     end
 
+    methods(Abstract)
+        f
+    end
+    
     methods
 
-        function veh = Vehicle(V, varargin)
+        function veh = Vehicle(varargin)
         %Vehicle Vehicle object constructor
         %
-        % V = Vehicle(V_ACT, OPTIONS)  creates a Vehicle object with actual odometry 
-        % covariance V_ACT (2x2) matrix corresponding to the odometry vector [dx dtheta].
+        % V = Vehicle(OPTIONS)  creates a Vehicle object that implements the
+        % kinematic model of a wheeled vehicle. 
         %
         % Options::
-        % 'stlim',A       Steering angle limited to -A to +A (default 0.5 rad)
-        % 'vmax',S        Maximum speed (default 5m/s)
+        % 'speedmax',S    Maximum speed (default 5m/s)
         % 'L',L           Wheel base (default 1m)
         % 'x0',x0         Initial state (default (0,0,0) )
         % 'dt',T          Time interval
         % 'rdim',R        Robot size as fraction of plot window (default 0.2)
         % 'verbose'       Be verbose
+        % 'V'             Vehicle odometry covariance matrix (2x2)
         %
         % Notes::
         % - Subclasses the MATLAB handle class which means that pass by reference semantics
         %   apply.
             
-            if ~isnumeric(V)
-                error('first arg is V');
-            end
-            veh.x = zeros(3,1);
-            if nargin < 1
-                V = zeros(2,2);
-            end
-
-            opt.stlim = 0.5;
-            opt.vmax = 5;
-            opt.L = 1;
+          
+            % vehicle common
+            opt.covar = [];
             opt.rdim = 0.2;
             opt.dt = 0.1;
             opt.x0 = zeros(3,1);
-            opt = tb_optparse(opt, varargin);
-
-            veh.V = V;
-
-            veh.dt = opt.dt;
-            veh.alphalim = opt.stlim;
-            veh.maxspeed = opt.vmax;
-            veh.L = opt.L;
-            veh.x0 = opt.x0(:);
+            opt.speedmax = 1;
+            
+            [opt,args] = tb_optparse(opt, varargin);
+            
+            veh.V = opt.covar;
             veh.rdim = opt.rdim;
-            veh.verbose = opt.verbose;
+            veh.dt = opt.dt;
+            veh.x0 = opt.x0;
+            veh.speedmax = opt.speedmax;
+            veh.options = args;  % unused options go back to the subclass
 
             veh.x_hist = [];
+            
+
         end
 
         function init(veh, x0)
@@ -197,35 +196,6 @@ classdef Vehicle < handle
             driver.veh = veh;
         end
 
-        function xnext = f(veh, x, odo, w)
-            %Vehicle.f Predict next state based on odometry
-            %
-            % XN = V.f(X, ODO) is the predicted next state XN (1x3) based on current
-            % state X (1x3) and odometry ODO (1x2) = [distance, heading_change].
-            %
-            % XN = V.f(X, ODO, W) as above but with odometry noise W.
-            %
-            % Notes::
-            % - Supports vectorized operation where X and XN (Nx3).
-            if nargin < 4
-                w = [0 0];
-            end
-
-            dd = odo(1) + w(1); dth = odo(2);
-
-            % straightforward code:
-            % thp = x(3) + dth;
-            % xnext = zeros(1,3);
-            % xnext(1) = x(1) + (dd + w(1))*cos(thp);
-            % xnext(2) = x(2) + (dd + w(1))*sin(thp);
-            % xnext(3) = x(3) + dth + w(2);
-            %
-            % vectorized code:
-
-            thp = x(:,3) + dth;
-            xnext = x + [(dd+w(1))*cos(thp)  (dd+w(1))*sin(thp) ones(size(x,1),1)*dth+w(2)];
-        end
-
         function odo = update(veh, u)
             %Vehicle.update Update the vehicle state
             %
@@ -244,41 +214,6 @@ classdef Vehicle < handle
             veh.odometry = odo;
 
             veh.x_hist = [veh.x_hist; veh.x'];   % maintain history
-        end
-
-
-        function J = Fx(veh, x, odo)
-        %Vehicle.Fx  Jacobian df/dx
-        %
-        % J = V.Fx(X, ODO) is the Jacobian df/dx (3x3) at the state X, for
-        % odometry input ODO (1x2) = [distance, heading_change].
-        %
-        % See also Vehicle.f, Vehicle.Fv.
-            dd = odo(1); dth = odo(2);
-            thp = x(3) + dth;
-
-            J = [
-                1   0   -dd*sin(thp)
-                0   1   dd*cos(thp)
-                0   0   1
-                ];
-        end
-
-        function J = Fv(veh, x, odo)
-            %Vehicle.Fv  Jacobian df/dv
-            %
-            % J = V.Fv(X, ODO) is the Jacobian df/dv (3x2) at the state X, for
-            % odometry input ODO (1x2) = [distance, heading_change].
-            %
-            % See also Vehicle.F, Vehicle.Fx.
-            dd = odo(1); dth = odo(2);
-            thp = x(3) + dth;
-
-            J = [
-                cos(thp)    -dd*sin(thp)
-                sin(thp)    dd*cos(thp)
-                0           1
-                ];
         end
 
         function odo = step(veh, varargin)
@@ -304,8 +239,8 @@ classdef Vehicle < handle
             odo = veh.update(u);
 
             % add noise to the odometry
-            if veh.V
-                odo = veh.odometry + randn(1,2)*veh.V;
+            if ~isempty(veh.V)
+                odo = veh.odometry + randn(1,2)*sqrtm(veh.V);
             end
         end
 
@@ -333,12 +268,20 @@ classdef Vehicle < handle
                     steer = 0;
                 end
             end
-
+            
             % clip the speed
-            u(1) = min(veh.maxspeed, max(-veh.maxspeed, speed));
-
+            if isempty(veh.speedmax)
+                u(1) = speed;
+            else
+                u(1) = min(veh.speedmax, max(-veh.speedmax, speed));
+            end
+            
             % clip the steering angle
-            u(2) = max(-veh.alphalim, min(veh.alphalim, steer));
+            if isempty(veh.steermax)
+                u(2) = steer;
+            else
+                u(2) = max(-veh.steermax, min(veh.steermax, steer));
+            end
         end
 
         function p = run(veh, nsteps)
@@ -486,7 +429,7 @@ classdef Vehicle < handle
             disp([inputname(1), ' = '])
             disp( char(nav) );
         end % display()
-
+        
         function s = char(veh)
         %Vehicle.char Convert to a string
         %
@@ -495,20 +438,20 @@ classdef Vehicle < handle
         %
         % See also Vehicle.display.
 
-            s = 'Vehicle object';
+            s = '  Superclass: Vehicle';
             s = char(s, sprintf(...
-            '  L=%g, maxspeed=%g, alphalim=%g, T=%f, nhist=%d', ...
-                veh.L, veh.maxspeed, veh.alphalim, veh.dt, ...
+            '    max speed=%g, max steer input=%g, dT=%g, nhist=%d', ...
+                veh.speedmax, veh.steermax, veh.dt, ...
                 numrows(veh.x_hist)));
             if ~isempty(veh.V)
                 s = char(s, sprintf(...
-                '  V=(%g,%g)', ...
+                '    V=(%g, %g)', ...
                     veh.V(1,1), veh.V(2,2)));
             end
-            s = char(s, sprintf('  x=%g, y=%g, theta=%g', veh.x)); 
+            s = char(s, sprintf('    configuration: x=%g, y=%g, theta=%g', veh.x)); 
             if ~isempty(veh.driver)
-                s = char(s, '  driven by::');
-                s = char(s, [['    '; '    '] char(veh.driver)]);
+                s = char(s, '    driven by::');
+                s = char(s, [['      '; '      '] char(veh.driver)]);
             end
         end
 
@@ -567,11 +510,11 @@ classdef Vehicle < handle
             
             [opt,args] = tb_optparse(opt, varargin);
 
-            lineprops = { 'Color', opt.color' };
-            if opt.fill
-                lineprops = [lineprops 'fill' opt.color ];
-            end
-            
+%HACK             lineprops = { 'Color', opt.color' };
+%             if opt.fill
+%                 lineprops = [lineprops 'fill' opt.color ];
+%             end
+            lineprops = { 'fill', 'b', 'alpha', 0.5 }
             
             % compute the dimensions of the robot
             if ~isempty(opt.size)
