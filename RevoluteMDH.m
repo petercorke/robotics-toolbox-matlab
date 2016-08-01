@@ -44,7 +44,7 @@ classdef RevoluteMDH < Link
             if nargin == 0
                 L.theta = [];
             end
-            L.sigma = 0;
+            L.sigma = 'R';
             if isempty(L.d)
                 L.d = 0;
             end
