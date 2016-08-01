@@ -44,16 +44,8 @@
 
 function traj = ctraj(T0, T1, t)
 
-    if isempty(T0)
-        T0 = eye(4,4);
-    end
-    if isempty(T1)
-        T1 = eye(4,4);
-    end
-    
-    if ~ishomog(T0) || ~ishomog(T1)
-        error('arguments must be homogeneous transformations');
-    end
+    T0 = SE3.check(T0);
+    T1 = SE3.check(T1);
     
     % distance along path is a smooth function of time
     if isscalar(t)
@@ -62,10 +54,10 @@ function traj = ctraj(T0, T1, t)
         s = t(:);
     end
 
-    traj = [];
 
-    for S=s'
-        traj = cat(3, traj, trinterp(T0, T1, S));
+    for i=1:length(s)
+        
+        traj(i) = trinterp(T0, T1, s(i));
     end
 
     
