@@ -38,18 +38,54 @@ classdef SE2 < SO2
     end
     
     methods
-        % ()
-        % (T)
-        % (t)
-        % ([x y th])
-        % (R)
-        % (R, t)
-        % (x, y)
-        % ([x y], th)
-        % (x, y, th)
+
         
         function obj = SE2(varargin)
-            obj.data = eye(3,3);
+        %SE2.SE2 Construct an SE(2) object
+        %
+        % Constructs an SE(2) pose object that contains a 3x3 homogeneous transformation
+        % matrix.
+        %
+        % T = SE2() is a null relative motion
+        %
+        % T = SE2(X, Y) is an object representing pure translation defined by X and
+        % Y
+        %
+        % T = SE2(XY) is an object representing pure translation defined by XY
+        % (2x1). If XY (Nx2) returns an array of SE2 objects, corresponding to
+        % the rows of XY.
+        %
+        % T = SE2(X, Y, THETA) is an object representing translation, X and Y, and
+        % rotation, angle THETA.
+        %
+        % T = SE2(XY, THETA) is an object representing translation, XY (2x1), and
+        % rotation, angle THETA
+        %
+        % T = SE2(XYT) is an object representing translation, XYT(1) and XYT(2),
+        % and rotation, angle XYT(3). If XYT (Nx3) returns an array of SE2 objects, corresponding to
+        % the rows of XYT.
+        %
+        % T = SE2(R) is an object representing pure rotation defined by the
+        % orthonormal rotation matrix R (2x2)
+        %
+        % T = SE2(R, XY) is an object representing rotation defined by the
+        % orthonormal rotation matrix R (2x2) and position given by XY (2x1)
+        %
+        % T = SE2(T) is an object representing translation and rotation defined by
+        % the homogeneous transformation matrix T (3x3).  If T (3x3xN) returns an array of SE2 objects, corresponding to
+        % the third index of T
+        %
+        % T = SE2(T) is an object representing translation and rotation defined by
+        % the SE2 object T, effectively cloning the object. If T (Nx1) returns an array of SE2 objects, corresponding to
+        % the index of T
+        %
+        % Options::
+        % 'deg'         Angle is specified in degrees
+        %
+        % Notes::
+        % - Arguments can be symbolic
+        % - The form SE2(XY) is ambiguous with SE2(R) if XY has 2 rows, the second form is assumed.
+        % - The form SE2(XYT) is ambiguous with SE2(T) if XYT has 3 rows, the second form is assumed.
             
             opt.deg = false;
             
@@ -61,19 +97,32 @@ classdef SE2 < SO2
                 scale = 1;
             end
             
+            % if any of the arguments is symbolic the result will be symbolic
+            if any( cellfun(@(x) isa(x, 'sym'), args) )
+                obj.data = sym(obj.data);
+            end
+            
             switch length(args)
                 case 0
+                    obj.data = eye(3,3);
                     return
                 case 1
                     a = args{1};
+
                     if isvec(a, 2)
                         % (t)
                         obj.t = a(:);
-                        obj.data(3,:) = [0 0 1];
+                        
+                    elseif isvec(a, 3)
+                        % ([x y th])
+                        a = a(:);
+                        T(1:2,1:2) = rot2(a(3)*scale);
+                        T(1:2,3) = a(1:2);
+                        obj.data = T;
+                        
                     elseif SO2.isa(a)
                         % (R)
                         obj.data = r2t(a);
-                        
                         
                     elseif SE2.isa(a)
                         % (T)
@@ -81,18 +130,19 @@ classdef SE2 < SO2
                             obj(i).data = a(:,:,i);
                         end
                     elseif isa(a, 'SE2')
-                        % (SE3)
+                        % (SE2)
                         for i=1:length(a)
                             obj(i).data = a(i).data;
                         end
                         
-                    elseif isvec(a, 3)
-                        % ([x y th])
-                        obj.data(1:2,1:2) = rot2(a(3)*scale);
-                        obj.data(1:2,3) = a(1:2)';
+                    elseif any( numcols(a) == [2 3] )
+                        for i=1:length(a)
+                            obj(i).data = SE2(a(i,:));
+                        end
                     else
                         error('RTB:SE2:badarg', 'unknown arguments');
                     end
+                    
                 case 2
                     a = args{1}; b = args{2};
                     if isscalar(a) && isscalar(b)
@@ -110,6 +160,7 @@ classdef SE2 < SO2
                     else
                         error('RTB:SE3:badarg', 'unknown arguments');
                     end
+                    
                 case 3
                     a = args{1}; b = args{2}; c = args{3};
                     if isscalar(a) && isscalar(b) && isscalar(c)
@@ -124,6 +175,12 @@ classdef SE2 < SO2
                     error('RTB:SE3:badarg', 'unknown arguments');
                     
             end
+            
+            % add the last row if required
+            if numrows(obj.data) == 2
+                obj.data = [obj.data; 0 0 1];
+            end
+            %% HACK
             
         end
         
