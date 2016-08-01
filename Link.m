@@ -75,14 +75,14 @@
 %
 % http://www.petercorke.com
 
-classdef Link < handle
+classdef Link < matlab.mixin.Copyable
     properties
         % kinematic parameters
         theta % kinematic: link angle
         d     % kinematic: link offset
         alpha % kinematic: link twist
         a     % kinematic: link length
-        sigma % revolute=0, prismatic=1
+        sigma % revolute='R', prismatic='P'
         mdh   % standard DH=0, MDH=1
         offset % joint coordinate offset
         name   % joint coordinate name
@@ -212,7 +212,7 @@ classdef Link < handle
                 l.a = 0;
                 l.theta = 0;
                 l.d = 0;
-                l.sigma = 0;
+                l.sigma = 'R';
                 l.mdh = 0;
                 l.offset = 0;
                 l.flip = false;
@@ -328,7 +328,11 @@ classdef Link < handle
                     if length(dh) > 6
                         % legacy DYN matrix
                         
-                        l.sigma = dh(5);
+                        if dh(5) > 0
+                            l.sigma = 'P';
+                        else
+                            l.sigma = 'R';
+                        end
                         l.mdh = 0;  % default to standard D&H
                         l.offset = 0;
                         
@@ -406,12 +410,12 @@ classdef Link < handle
                 
             tau = l.B * abs(l.G) * qd;
             
-            if issym(l)
-                tau = tau + l.Tc;
-            elseif qd > 0
-                tau = tau + l.Tc(1);
-            elseif qd < 0
-                tau = tau + l.Tc(2);
+            if ~issym(l)
+                if qd > 0
+                    tau = tau + l.Tc(1);
+                elseif qd < 0
+                    tau = tau + l.Tc(2);
+                end
             end
             tau = -abs(l.G) * tau;     % friction opposes motion
         end % friction()
@@ -448,7 +452,7 @@ classdef Link < handle
             %
             % See also SerialLink.nofriction, SerialLink.fdyn.
             
-            l2 = Link(l);
+            l2 = copy(l);
             
             if nargin == 1
                 only = 'coulomb';
@@ -466,20 +470,26 @@ classdef Link < handle
         end
         
         function v = RP(l)
-            %Link.RP Joint type
+            warning('RTB:Link:deprecated', 'use the .type() method instead');
+            v = l.type();
+        end
+        
+        function v = type(l)
+            %Link.type Joint type
             %
-            % c = L.RP() is a character 'R' or 'P' depending on whether joint is revolute or
+            % c = L.type() is a character 'R' or 'P' depending on whether joint is revolute or
             % prismatic respectively.
             % If L is a vector of Link objects return a string of characters in joint order.
             v = '';
             for ll=l
-                if ll.sigma == 0
+                switch ll.sigma
+                    case {0, 'R'}
                     v = strcat(v, 'R');
-                else
+                    case {1, 'P'}
                     v = strcat(v, 'P');
                 end
             end
-        end % RP()
+        end 
         
         function set.r(l, v)
             %Link.r Set centre of gravity
@@ -516,9 +526,9 @@ classdef Link < handle
                 return;
             end
             
-            if isa(v,'sym') && ~isempty(findsym(v))
+            if isa(v,'sym') && ~isempty(symvar(v))
                 l.Tc = sym('Tc');
-            elseif isa(v,'sym') && isempty(findsym(v))
+            elseif isa(v,'sym') && isempty(symvar(v))
                 v = double(v);
             end
             
@@ -582,7 +592,7 @@ classdef Link < handle
             %
             % See also Link.isprismatic.
             
-            v = [L.sigma] == 0;
+            v = [L.sigma] == 0 | [L.sigma] == 'R';
         end
         
         function v = isprismatic(L)
@@ -591,7 +601,7 @@ classdef Link < handle
             % L.isprismatic() is true (1) if joint is prismatic.
             %
             % See also Link.isrevolute.
-            v = [L.sigma] == 1;
+            v = ~L.isrevolute();
         end
         
         
@@ -612,7 +622,7 @@ classdef Link < handle
             else
                 q = q + L.offset;
             end
-            if L.sigma == 0
+            if L.isrevolute
                 % revolute
                 st = sin(q); ct = cos(q);
                 d = L.d;
@@ -637,6 +647,8 @@ classdef Link < handle
                     st*sa   ct*sa   ca  ca*d
                     0       0       0   1];
             end
+            
+            T = SE3(T);
             
         end % A()
         
@@ -678,11 +690,10 @@ classdef Link < handle
             for j=1:length(links)
                 l = links(j);
                 
-                conv = l.RP;
                 if l.mdh == 0
-                    conv = strcat(conv, ',stdDH');
+                    conv = 'std';
                 else
-                    conv = strcat(conv, ',modDH');
+                    conv = 'mod';
                 end
                 if length(links) == 1
                     qname = 'q';
@@ -691,46 +702,68 @@ classdef Link < handle
                 end
                 
                 if from_robot
+                    fmt = '%11g';
                     % invoked from SerialLink.char method, format for table
-                    if l.sigma == 1
+                    if l.isprismatic
                         % prismatic joint
                         js = sprintf('|%3d|%11s|%11s|%11s|%11s|%11s|', ...
                             j, ...
-                            render(l.theta), ...
+                            render(l.theta, fmt), ...
                             qname, ...
-                            render(l.a), ...
-                            render(l.alpha), ...
-                            render(l.offset));
+                            render(l.a, fmt), ...
+                            render(l.alpha, fmt), ...
+                            render(l.offset), fmt);
                     else
                         % revolute joint
                         js = sprintf('|%3d|%11s|%11s|%11s|%11s|%11s|', ...
                             j, ...
                             qname, ...
-                            render(l.d), ...
-                            render(l.a), ...
-                            render(l.alpha), ...
-                            render(l.offset));
+                            render(l.d, fmt), ...
+                            render(l.a, fmt), ...
+                            render(l.alpha, fmt), ...
+                            render(l.offset, fmt));
                     end
                 else
-                    
-                    if l.sigma == 1
+                    if length(links) == 1
+                       if l.isprismatic
                         % prismatic joint
-                        js = sprintf(' theta=%s, d=%s, a=%s, alpha=%s, offset=%s (%s)', ...
+                        js = sprintf('Prismatic(%s): theta=%s, d=%s, a=%s, alpha=%s, offset=%s', ...
+                            conv, ...
+                            render(l.theta,'%g'), ...
+                            qname, ...
+                            render(l.a,'%g'), ...
+                            render(l.alpha,'%g'), ...
+                            render(l.offset,'%g') );
+                    else
+                        % revolute
+                        js = sprintf('Revolute(%s): theta=%s, d=%s, a=%s, alpha=%s, offset=%s', ...
+                            conv, ...
+                            qname, ...
+                            render(l.d,'%g'), ...
+                            render(l.a,'%g'), ...
+                            render(l.alpha,'%g'), ...
+                            render(l.offset,'%g') );
+                    end
+                    else
+                    if l.isprismatic
+                        % prismatic joint
+                        js = sprintf('Prismatic(%s): theta=%s   d=%s a=%s alpha=%s offset=%s', ...
+                            conv, ...
                             render(l.theta), ...
                             qname, ...
                             render(l.a), ...
                             render(l.alpha), ...
-                            render(l.offset), ...
-                            conv);
+                            render(l.offset) );
                     else
                         % revolute
-                        js = sprintf(' theta=%s, d=%s, a=%s, alpha=%s, offset=%s (%s)', ...
+                        js = sprintf('Revolute(%s):  theta=%s   d=%s a=%s alpha=%s offset=%s', ...
+                            conv, ...
                             qname, ...
                             render(l.d), ...
                             render(l.a), ...
                             render(l.alpha), ...
-                            render(l.offset), ...
-                            conv);
+                            render(l.offset) );
+                    end
                     end
                 end
                 if isempty(s)
@@ -796,19 +829,19 @@ classdef Link < handle
         
         % Make a copy of a handle object.
         % http://www.mathworks.com/matlabcentral/newsreader/view_thread/257925
-        function new = copy(this)
-            
-            for j=1:length(this)
-                % Instantiate new object of the same class.
-                %new(j) = feval(class(this(j)));
-                new(j) = Link();
-                % Copy all non-hidden properties.
-                p = properties(this(j));
-                for i = 1:length(p)
-                    new(j).(p{i}) = this(j).(p{i});
-                end
-            end
-        end
+%         function new = copy(this)
+%             
+%             for j=1:length(this)
+%                 % Instantiate new object of the same class.
+%                 %new(j) = feval(class(this(j)));
+%                 new(j) = Link();
+%                 % Copy all non-hidden properties.
+%                 p = properties(this(j));
+%                 for i = 1:length(p)
+%                     new(j).(p{i}) = this(j).(p{i});
+%                 end
+%             end
+%         end
         
         function links = horzcat(this, varargin)
             links = this.toLink();
@@ -882,7 +915,7 @@ end % class
 
 function s = render(v, fmt)
     if nargin < 2
-        fmt = '%11.4g';
+        fmt = '%-11.4g';
     end
     if length(v) == 1
                 if isa(v, 'double')
