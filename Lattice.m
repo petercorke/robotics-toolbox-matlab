@@ -183,12 +183,9 @@ classdef Lattice < Navigation
             p = lp.graph.coord(lp.vpath);
             
             if nargout > 0
-                pp = p;
-                pp(3,:) = angdiff( pp(3,:) * pi/2 );
+                pp = p';
+                pp(:,3) = angdiff( pp(:,3) * pi/2 );
             end
-            
-            pp = pp';
-            
         end
         
         function p = path(lp, start, goal)
