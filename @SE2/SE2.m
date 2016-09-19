@@ -274,7 +274,7 @@ classdef SE2 < SO2
         function v = xyt(obj)
             % VECTORISE
             v = obj.t;
-            v(3) = atan2(obj.R(2,1), obj.R(1,1));
+            v(3) = atan2(obj.data(2,1), obj.data(1,1));
         end
         
         function T = T(obj)
