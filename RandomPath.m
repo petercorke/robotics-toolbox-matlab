@@ -65,6 +65,7 @@
 % TODO
 %  should be a subclass of VehicleDriver
 %  Vehicle should be an abstract superclass
+%  dim should be checked, can be a 4-vector like axis()
 
 classdef RandomPath < handle
     properties
@@ -73,9 +74,11 @@ classdef RandomPath < handle
         veh         % the vehicle we are driving
         dim
         speed       % speed of travel
-        closeenough  % proximity to goal before
+        dthresh  % proximity to goal before
         d_prev
         randstream  % random stream just for Sensors
+        show
+        verbose
     end
 
     methods
@@ -94,15 +97,16 @@ classdef RandomPath < handle
         % See also Vehicle.
 
         % TODO options to specify region, maybe accept a Map object?
+        % dim can be a 4-vector
 
             driver.dim = dim;
 
             opt.speed = 1;
             opt.dthresh = 0.05 * dim;
-            opt = tb_optparse(opt, varargin);
+            opt.show = true;
+            
+            driver = tb_optparse(opt, varargin, driver);
 
-            driver.speed = opt.speed;
-            driver.closeenough = opt.dthresh;
             drive.d_prev = Inf;
             driver.randstream = RandStream.create('mt19937ar');
         end
@@ -116,9 +120,10 @@ classdef RandomPath < handle
         % See also RANDSTREAM.
             driver.goal = [];
             driver.randstream.reset();
+            driver.h_goal = [];
         end
 
-        % not used
+                % called by Vehicle superclass
         function visualize(driver)
             clf
             d = driver.dim;
@@ -130,14 +135,24 @@ classdef RandomPath < handle
 
         % private method, invoked from demand() to compute a new waypoint
         function setgoal(driver)
-            r = driver.randstream.rand(2,1);
-            driver.goal = 0.8 * driver.dim * (r - 0.5)*2;
-            %fprintf('set goal: (%.1f %.1f)\n', driver.goal);
-            if isempty(driver.h_goal)
-                %driver.h_goal = plot(driver.goal(1), driver.goal(2), '*')
-            else
-                %set(driver.h_goal, 'Xdata', driver.goal(1), 'Ydata', driver.goal(2))
-            end
+            
+           % choose a uniform random goal within inner 80% of driving area
+           while true
+               r = driver.randstream.rand(2,1);
+               driver.goal = 0.8 * driver.dim * (r - 0.5)*2;
+               if norm(driver.goal - driver.veh.x(1:2)) > 2*driver.dthresh
+                   break;
+               end
+           end
+           
+           if driver.verbose
+               fprintf('set goal: (%.1f %.1f)\n', driver.goal);
+           end
+           if driver.show && isempty(driver.h_goal)
+               driver.h_goal = plot(driver.goal(1), driver.goal(2), 'rd', 'MarkerSize', 12, 'MarkerFaceColor', 'r')
+           else
+               set(driver.h_goal, 'Xdata', driver.goal(1), 'Ydata', driver.goal(2))
+           end
         end
 
         function [speed, steer] = demand(driver)
@@ -161,10 +176,10 @@ classdef RandomPath < handle
             steer = d_heading;
 
             % if nearly at goal point, choose the next one
-            d = colnorm(driver.veh.x(1:2) - driver.goal);
-            if d < driver.closeenough
+            d = norm(driver.veh.x(1:2) - driver.goal);
+            if d < driver.dthresh
                 driver.setgoal();
-            elseif d > driver.d_prev
+            elseif d > 2*driver.d_prev
                 driver.setgoal();
             end
             driver.d_prev = d;
@@ -191,8 +206,8 @@ classdef RandomPath < handle
         % s = R.char() is a string showing driver parameters and state in in 
         % a compact human readable format. 
             s = 'RandomPath driver object';
-            s = char(s, sprintf('  current goal=(%g,%g), dimension %.1f', ...
-                driver.goal, driver.dim));
+            s = char(s, sprintf('  current goal=(%g,%g), dimension %g, dthresh %g', ...
+                driver.goal, driver.dim, driver.dthresh));
         end
 
     end % methods
