@@ -141,7 +141,10 @@ classdef RTBPose
         function out = simplify(obj)
             out = obj;
             if isa(obj.data, 'sym')
-                out.data = arrayfun(@simplify, obj.data);
+                % simplify every element of data
+                for i=1:numel(obj.data)
+                    out.data(i) = simplify( obj.data(i) );
+                end
             end
         end
         
