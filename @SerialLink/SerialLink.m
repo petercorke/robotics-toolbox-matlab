@@ -123,14 +123,14 @@
 % TODO:
 % fix payload as per GG discussion
 
-classdef SerialLink < handle
+classdef SerialLink < matlab.mixin.Copyable
 
     properties
         name
         gravity
         base
         tool
-        manuf
+        manufacturer
         comment
 
         plotopt  % options for the plot method, follow plot syntax
@@ -182,7 +182,7 @@ classdef SerialLink < handle
     end
 
     methods
-        function r = SerialLink(L, varargin)
+        function r = SerialLink(varargin)
         %SerialLink Create a SerialLink robot object
         %
         % R = SerialLink(LINKS, OPTIONS) is a robot object defined by a vector 
@@ -245,16 +245,101 @@ classdef SerialLink < handle
         %
         % See also Link, Revolute, Prismatic, RevoluteMDH, PrismaticMDH, SerialLink.plot.
 
-            r.name = 'noname';
-            r.manuf = '';
-            r.comment = '';
+
             r.links = [];
             r.n = 0;
-            r.mdh = 0;
-            r.gravity = [0; 0; 9.81];
-            r.base = eye(4,4);
-            r.tool = eye(4,4);
             
+            % default properties
+            default.name = 'noname';
+            default.comment = '';
+            default.manufacturer = '';
+            default.base = eye(4,4);
+            default.tool = eye(4,4);
+            default.gravity = [0; 0; 9.81];
+            
+            
+            % process the rest of the arguments in key, value pairs
+            opt.name = [];
+            opt.comment = [];
+            opt.manufacturer = [];
+            opt.base = [];
+            opt.tool = [];
+            opt.gravity = [];
+            
+            opt.offset = [];
+            opt.qlim = [];
+            opt.plotopt = [];
+            opt.ikine = [];
+            opt.fast = r.fast;
+            opt.modified = false;
+
+            [opt,arg] = tb_optparse(opt, varargin);
+
+            if length(arg) == 1
+                % at least one argument, either a robot or link array
+                
+                L = arg{1};
+                
+                if isa(L, 'Link')
+                    % passed an array of Link objects
+                    r.links = L;
+                    
+                elseif numcols(L) >= 4 && (isa(L, 'double') || isa(L, 'sym'))
+                    % passed a legacy DH matrix
+                    dh_dyn = L;
+                    clear L
+                    for j=1:numrows(dh_dyn)
+                        if opt.modified
+                            L(j) =        Link(dh_dyn(j,:), 'modified');
+                        else
+                            L(j) =        Link(dh_dyn(j,:));
+                        end                      
+                    end
+                    r.links = L;
+                    
+                elseif isa(L, 'SerialLink')
+                    % passed a SerialLink object
+                    if length(L) == 1
+                        % clone the passed robot and the attached links
+                        r = copy(L);
+                        r.links = copy(L.links);
+                        default.name = [L.name ' copy'];
+                    else
+                        % compound the robots in the vector
+                        r = copy(L(1));
+                        
+                        for k=2:length(L)
+                            r.links = [r.links copy(L(k).links)];
+                            r.name = [r.name '+' L(k).name]
+                        end
+                        
+                        r.tool = L(end).tool; % tool of composite robot from the last one
+                        r.gravity = L(1).gravity; % gravity of composite robot from the first one
+                    end
+                    
+                else
+                    error('unknown type passed to robot');
+                end
+                r.n = length(r.links);
+            end
+            
+            
+            % set properties of robot object from passed options or defaults
+            for p=properties(r)'
+                p = p{1};  % property name
+                
+                if isfield(opt, p) && ~isempty( opt.(p) )
+                    % if there's a set option, override what's in the robot
+                    r.(p) = opt.(p);
+                end
+                
+                if isfield(default, p) && isempty( r.(p) ) 
+                    % otherwise if there's a set default, use that
+                    r.(p) = default.(p);
+                end
+            end
+            
+            % other properties
             r.plotopt = {};
             r.plotopt3d = {};
 
@@ -264,89 +349,10 @@ classdef SerialLink < handle
                 r.fast = false;
             end
             
-            % process the rest of the arguments in key, value pairs
-            opt.name = [];
-            opt.comment = [];
-            opt.manufacturer = [];
-            opt.base = [];
-            opt.tool = [];
-            opt.offset = [];
-            opt.qlim = [];
-            opt.plotopt = [];
-            opt.ikine = [];
-            opt.fast = r.fast;
-            opt.modified = false;
-
-            [opt,out] = tb_optparse(opt, varargin);
-            if ~isempty(out)
-                error('unknown option <%s>', out{1});
-            end
-
-            if nargin == 0
-                % zero argument constructor, sets default values
-                return;
-            else
-                % at least one argument, either a robot or link array
-
-                if isa(L, 'SerialLink')
-                    if length(L) == 1
-                        % clone the passed robot
-                        for j=1:L.n
-                            newlinks(j) = copy(L.links(j));
-                        end
-                        r.links = newlinks;
-                        r.name = [L.name ' copy'];
-                        r.base = L.base;
-                        r.tool = L.tool;
-                    else
-                        % compound the robots in the vector
-                        r = L(1);
-                        for k=2:length(L)
-                            r = r * L(k);
-                        end
-                        r.base = L(1).base;
-                        r.tool = L(end).tool;
-                    end
-                elseif isa(L, 'Link')
-                    r.links = L;    % attach the links
-                elseif numcols(L) >= 4 && (isa(L, 'double') || isa(L, 'sym'))
-                    % legacy matrix
-                    dh_dyn = L;
-                    clear L
-                    for j=1:numrows(dh_dyn)
-                        if opt.modified 
-                            L(j) =        Link(dh_dyn(j,:), 'modified');
-                        else
-                            L(j) =        Link(dh_dyn(j,:));
-                            
-                        end
-%                         L(j).theta =  dh_dyn(j,1);
-%                         L(j).d =      dh_dyn(j,2);
-%                         L(j).a =      dh_dyn(j,3);
-%                         L(j).alpha =  dh_dyn(j,4);
-
-%                         if numcols(dh_dyn) > 4
-%                             L(j).sigma = dh_dyn(j,5);
-%                         end
-                    end
-                    r.links = L;
-                else
-                    error('unknown type passed to robot');
-                end
-                r.n = length(r.links);
-            end
-
-
-
-            % copy the properties to robot object
-            p = properties(r);
-            for i=1:length(p)
-                if isfield(opt, p{i}) && ~isempty(getfield(opt, p{i}))
-                    r.(p{i}) = getfield(opt, p{i});
-                end
-            end
             r.ikineType = opt.ikine;
-
+            
+            r.gravity = r.gravity(:);
+            assert(length(r.gravity) == 3, 'RTB:SerialLink:badarg', 'gravity must be a 3-vector');
 
             % set the robot object mdh status flag
             mdh = [r.links.mdh];
@@ -355,7 +361,7 @@ classdef SerialLink < handle
             elseif all (mdh == 1)
                 r.mdh = mdh(1);
             else
-                error('robot has mixed D&H links conventions');
+                error('RTB:SerialLink:badarg', 'robot has mixed D&H links conventions');
             end
         end
 
@@ -392,10 +398,7 @@ classdef SerialLink < handle
         %   discarded since DH convention does not allow for arbitrary intermediate
         %   transformations.
             if isa(l, 'SerialLink')
-                r2 = SerialLink(r);
-                r2.links = [r2.links l.links];
-                r2.base = r.base;
-                r2.n = length(r2.links);
+                r2 = SerialLink([r l]);
             elseif isa(l, 'Link')
                 r2 = SerialLink(r);
                 r2.links = [r2.links l];
@@ -455,17 +458,24 @@ classdef SerialLink < handle
                 if r.issym
                     info = strcat(info, ', Symbolic');;
                 end
-                s = sprintf('%s (%d axis, %s, %s)', r.name, r.n, r.config, info);
+                manuf = '';
+                if ~isempty(r.manufacturer)
+                    manuf = [' [' r.manufacturer ']'];
+                end
+
+                s = sprintf('%s%s:: %d axis, %s, %s', r.name, manuf, r.n, r.config, info);
 
                 % comment and other info
                 line = '';
-                if ~isempty(r.manuf)
-                    line = strcat(line, sprintf(' %s;', r.manuf));
-                end
+%                 if ~isempty(r.manufacturer)
+%                     line = strcat(line, sprintf(' from %s;', r.manufacturer));
+%                 end
                 if ~isempty(r.comment)
-                    line = strcat(line, sprintf(' %s;', r.comment));
+                    line = strcat(line, sprintf(' - %s;', r.comment));
                 end
+                if ~isempty(line)
                 s = char(s, line);
+                end
 
                 % link parameters
                 s = char(s, '+---+-----------+-----------+-----------+-----------+-----------+');
@@ -476,15 +486,21 @@ classdef SerialLink < handle
 
 
                 % gravity, base, tool
-                s_grav = horzcat(char('grav = ', ' ', ' '), mat2str(r.gravity));
-                s_grav = char(s_grav, ' ');
-                s_base = horzcat(char('  base = ',' ',' ', ' '), mat2str(r.base));
+%                s_grav = horzcat(char('grav = ', ' ', ' '), mat2str(r.gravity'));
+%                 s_grav = char(s_grav, ' ');
+%                 s_base = horzcat(char('  base = ',' ',' ', ' '), mat2str(r.base));
+% 
+%                 s_tool = horzcat(char('   tool =  ',' ',' ', ' '), mat2str(r.tool));
+% 
+%                 line = horzcat(s_grav, s_base, s_tool);
+                %s = char(s, sprintf('gravity: (%g, %g, %g)', r.gravity));
+                if ~isidentity(r.base)
+                    s = char(s, ['base:    ' trprint(r.base.T)]);
+                end
+                if ~isidentity(r.tool)
+                    s = char(s, ['tool:    ' trprint(r.tool.T)]);
+                end
 
-                s_tool = horzcat(char('   tool =  ',' ',' ', ' '), mat2str(r.tool));
-
-                line = horzcat(s_grav, s_base, s_tool);
-
-                s = char(s, ' ', line);
                 if j ~= length(robot)
                     s = char(s, ' ');
                 end
@@ -512,7 +528,7 @@ classdef SerialLink < handle
         %
         % Notes::
         % - base and tool transforms are not applied.
-            T = eye(4,4);
+            T = SE3;
             
             for joint=joints
                 T = T * r.links(joint).A(q(joint));
@@ -549,11 +565,9 @@ end
 
         function set.tool(r, v)
             if isempty(v)
-                r.base = eye(4,4);
-            elseif ~ishomog(v)
-                error('tool must be a homogeneous transform');
+                r.base = SE(3);
             else
-                r.tool = v;
+                r.tool = SE3(v);
             end
         end
         
@@ -567,11 +581,9 @@ end
 
         function set.base(r, v)
             if isempty(v)
-                r.base = eye(4,4);
-            elseif ~ishomog(v)
-                error('base must be a homogeneous transform');
+                r.base = SE3();
             else
-                r.base = v;
+                r.base = SE3(v);
             end
         end
 
@@ -641,7 +653,7 @@ end
         function v = get.config(r)
             v = '';
             for i=1:r.n
-                v(i) = r.links(i).RP;
+                v(i) = r.links(i).type;
             end
         end
 
@@ -681,7 +693,7 @@ end
             v =  all([L(1:2).a] == 0) && ...
                 (L(2).d == 0) && ...
                 (all([L(1:2).alpha] == alpha) || all([L(1:2).alpha] == -alpha)) && ...
-                all([L(1:3).sigma] == 0);
+                all([L(1:3).isrevolute]);
         end
         
         function v = isconfig(r, s)
@@ -712,6 +724,22 @@ end
             lastlink.r = p;
         end
         
+        function t = jointdynamics(robot, q)
+            for j=1:robot.n
+                link = robot.links(j);
+                
+                % compute inertia for this joint
+                zero = zeros(1, robot.n);
+                qdd = zero; qdd(j) = 1;
+                M = robot.rne(q, zero, qdd, 'gravity', [0 0 0]);
+                J = link.Jm + M(j)/abs(link.G)^2;
+                
+                % compute friction
+                B = link.B;
+                t(j) = tf(1, [J B]);
+            end
+        end
+        
         function jt = jtraj(r, T1, T2, t, varargin)
             %SerialLink.jtraj Joint space trajectory
             %
@@ -731,42 +759,68 @@ end
             %
             % See also jtraj, SerialLink.ikine, SerialLink.ikine6s.
             if r.isspherical && (r.n == 6)
-                opt.ikine = @r.ikine;
-            else
                 opt.ikine = @r.ikine6s;
+            else
+                opt.ikine = @r.ikine;
             end
             [opt,args] = tb_optparse(opt, varargin);
-
+            
             q1 = opt.ikine(T1, args{:});
             q2 = opt.ikine(T2, args{:});
             
             jt = jtraj(q1, q2, t);
         end
-
-
+        
+        
         function dyn(r, j)
-        %SerialLink.dyn Print inertial properties
-        %
-        % R.dyn() displays the inertial properties of the SerialLink object in a multi-line 
-        % format.  The properties shown are mass, centre of mass, inertia, gear ratio, 
-        % motor inertia and motor friction.
-        %
-        % R.dyn(J) as above but display parameters for joint J only.
-        %
-        % See also Link.dyn.
+            %SerialLink.dyn Print inertial properties
+            %
+            % R.dyn() displays the inertial properties of the SerialLink object in a multi-line
+            % format.  The properties shown are mass, centre of mass, inertia, gear ratio,
+            % motor inertia and motor friction.
+            %
+            % R.dyn(J) as above but display parameters for joint J only.
+            %
+            % See also Link.dyn.
             if nargin == 2
                 r.links(j).dyn()
             else
                 r.links.dyn();
             end
         end
-
+        
         function sr = sym(r)
             sr = SerialLink(r);
             for i=1:r.n
                 sr.links(i) = r.links(i).sym;
             end
         end
+        
+        function p = prismatic(robot)
+            p = robot.links.isprismatic();
+        end
+        
+        function p = revolute(robot)
+            p = robot.links.isrevolute();
+        end
+        
+        function qdeg = todegrees(robot, q)
+            k = robot.revolute;
+            qdeg = q;
+            qdeg(:,k) = qdeg(:,k) * pi/180;
+        end
+        
+        function qrad = toradians(robot, q)
+            k = robot.revolute;
+            qrad = q;
+            qrad(:,k) = qrad(:,k) * 180/pi;
+        end
+        
+        function J = jacobn(robot, varargin)
+            warning('RTB:SerialLink:deprecated', 'Use jacobe instead of jacobn');
+            J = robot.jacobe(varargin{:});
+        end
+        
     end % methods
 
 end % classdef
@@ -800,3 +854,4 @@ function s = mat2str(m)
         s = num2str(m);
     end
 end
+
