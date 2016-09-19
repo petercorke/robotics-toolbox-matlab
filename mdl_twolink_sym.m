@@ -26,6 +26,8 @@
 %
 % See also SerialLink, mdl_puma560, mdl_stanford.
 
+% MODEL: generic, planar, dynamics, 2DOF, symbolic, standard_DH
+
 % Copyright (C) 1993-2014, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
@@ -48,6 +50,10 @@
 
 syms a1 a2 g
 syms c1 c2 m1 m2 Iyy1 Iyy2 b1 b2
+Iyy1 = 0
+Iyy2 = 0
+b1 = 0
+b2 = 0
 
 twolink = SerialLink([
     Revolute('d', 0, 'a', a1, 'alpha', 0, 'm', m1, 'r', [c1 0 0], 'I', [0 Iyy1 0], 'B', b1, 'G', 1, 'Jm', 0, 'standard')
