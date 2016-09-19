@@ -36,26 +36,36 @@
 %
 % http://www.petercorke.com
 
-function delta = tr2delta(T0, T1)
-    if ~ishomog(T0)
-        error('RTB:tr2delta:badarg', 'T0 should be a homogeneous transformation');
-    end
-    if nargin == 1
-        
-        T1 = T0;
-        T0 = eye(4,4);
-    elseif nargin == 2
-        if ~ishomog(T1)
+function delta = tr2delta(A, B)
+
+    if nargin > 0
+        if isa(A, 'SE3')
+            T1 = A.double;
+        elseif ishomog(A)
+            T1 = A;
+        else
             error('RTB:tr2delta:badarg', 'T1 should be a homogeneous transformation');
+        end
+        T0 = eye(4,4);
+    end
+    if nargin > 1
+        T0 = T1;
+        if isa(B, 'SE3')
+            T1 = B.double;
+        elseif ishomog(B)
+            T1 = B;
+        else
+                error('RTB:tr2delta:badarg', 'T0 should be a homogeneous transformation');
         end
     end
     R0 = t2r(T0); R1 = t2r(T1);
     % in world frame
-    delta = [ (T1(1:3,4)-T0(1:3,4)); vex( R1*R0' - eye(3,3)) ];
-    % in T0 frame
-    %delta = [ R0'*(T1(1:3,4)-T0(1:3,4)); R0'*vex( R1*R0' - eye(3,3)) ];
+    %[th,vec] = tr2angvec(R1*R0');
+    dR = vex(R1*R0');
+    %delta = [ (T1(1:3,4)-T0(1:3,4)); th*vec' ];
+    delta = [ (T1(1:3,4)-T0(1:3,4)); dR];
 
-% TODO HACK understand/fix this and update Chapter 2
+% same as above but more complex
 %    delta = [	T1(1:3,4)-T0(1:3,4);
 %        0.5*(	cross(T0(1:3,1), T1(1:3,1)) + ...
 %            cross(T0(1:3,2), T1(1:3,2)) + ...
