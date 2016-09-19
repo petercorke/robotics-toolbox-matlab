@@ -95,7 +95,6 @@
 
 function hout = plot(obj, varargin)
 
-    class(obj)
 %     if size(T,3) > 1
 %         error('RTB:trplot:badarg', 'trplot cannot operate on a sequence');
 %     end
