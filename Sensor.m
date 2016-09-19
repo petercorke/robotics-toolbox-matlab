@@ -111,8 +111,12 @@ classdef Sensor < handle
             
             % there is a sensor line animate it
             
-            xi = s.map.map(:,jf);
-            set(h, 'XData', [s.robot.x(1), xi(1)], 'YData', [s.robot.x(2), xi(2)]);
+            if jf == 0
+                set(h, 'Visible', 'off');
+            else
+                xi = s.map.map(:,jf);
+                set(h, 'Visible', 'on', 'XData', [s.robot.x(1), xi(1)], 'YData', [s.robot.x(2), xi(2)]);
+            end
             pause(s.delay);
 
             drawnow
