@@ -229,10 +229,22 @@ function plot3d(robot, q, varargin)
         end
     end
     
+        % display the wrist coordinate frame
+    if opt.wrist
+        if opt.arrow
+            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), ...
+                'arrow', 'rgb', 'length', 0.4);
+        else
+            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), ...
+                'rgb', 'length', 0.4);
+        end
+    else
+        h.wrist = [];
+    end
+    
     % enable mouse-based 3D rotation
     rotate3d on
     
-    h.wrist = [];  % HACK, should be trplot
     h.robot = robot;
     h.link = [0 h.link];
     set(group, 'UserData', h);
@@ -322,6 +334,10 @@ function opt = plot_options(robot, optin)
         for i=1:robot.n
             reach = reach + abs(L(i).a) + abs(L(i).d);
         end
+        
+%         if opt.wrist
+%             reach = reach + 1;
+%         end
         
         % if we have a floor, quantize the reach to a tile size
         if opt.tiles
