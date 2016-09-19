@@ -120,6 +120,7 @@ classdef ParticleFilter < handle
         seed0
         w0
         x0          % initial particle distribution
+        anim
     end % properties
 
     methods
@@ -172,6 +173,8 @@ classdef ParticleFilter < handle
             opt.seed = [];
             opt.history = true;
             opt.x0 = [];
+            opt.movie = [];
+
 
             opt = tb_optparse(opt, varargin);
 
@@ -200,6 +203,9 @@ classdef ParticleFilter < handle
                 pf.x0 = opt.x0;
             end
 
+            if ~isempty(opt.movie)
+                pf.anim = Animate(opt.movie);
+            end
         end
 
 
@@ -256,6 +262,10 @@ classdef ParticleFilter < handle
             set(pf.h, 'Tag', 'particles');
             
             pf.robot.plot();
+            
+            if ~isempty(pf.anim)
+                pf.anim.add();
+            end
 
             % iterate over time
             for i=1:niter
@@ -295,6 +305,10 @@ classdef ParticleFilter < handle
             if opt.plot
                 pf.robot.plot();
                 drawnow
+            end
+            
+            if ~isempty(pf.anim)
+                pf.anim.add();
             end
 
             if pf.keephistory
