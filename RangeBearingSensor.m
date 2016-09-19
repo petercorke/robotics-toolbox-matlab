@@ -58,6 +58,8 @@ classdef RangeBearingSensor < Sensor
 
         randstream  % random stream just for Sensors
         
+        landmarklog  % time history of observed landmarks
+        
     end
 
     properties (SetAccess = private)
@@ -66,7 +68,7 @@ classdef RangeBearingSensor < Sensor
 
     methods
 
-        function s = RangeBearingSensor(robot, map, W, varargin)
+        function s = RangeBearingSensor(robot, map, varargin)
             %RangeBearingSensor.RangeBearingSensor Range and bearing sensor constructor
             %
             % S = RangeBearingSensor(VEHICLE, MAP, W, OPTIONS) is an object representing
@@ -97,31 +99,37 @@ classdef RangeBearingSensor < Sensor
             s.randstream = RandStream.create('mt19937ar');
 
             opt.range = [];
-            opt.thrange = [];
+            opt.angle = [];
+            opt.covar = zeros(2,2);
 
             [opt,args] = tb_optparse(opt, varargin);
 
-            s.W = W;
+            s.W = opt.covar;
             if ~isempty(opt.range)
                 if length(opt.range) == 1
                     s.r_range = [0 opt.range];
-                elseif length(opt.thrange) == 2
+                elseif length(opt.range) == 2
                     s.r_range = opt.range;
                 end
             end
-            if ~isempty(opt.thrange)
-                if length(opt.thrange) == 1
-                    s.theta_range = [-opt.thrange opt.thrange];
-                elseif length(opt.thrange) == 2
-                    s.theta_range = opt.thrange;
+            if ~isempty(opt.angle)
+                if length(opt.angle) == 1
+                    s.theta_range = [-opt.angle opt.angle];
+                elseif length(opt.angle) == 2
+                    s.theta_range = opt.angle;
                 end
             end
 
             s.count = 0;
+            s.verbose = opt.verbose;
         end
 
+        function init(s)
+            s.landmarklog = [];
+        end
+        
         function k = selectFeature(s)
-            k = s.randstream.randi(s.map.nfeatures);
+            k = s.randstream.randi(s.map.nlandmarks);
         end
 
         function [z,jf] = reading(s)
@@ -132,7 +140,7 @@ classdef RangeBearingSensor < Sensor
             % of covariance W (property W). K is the index of 
             % the map feature that was observed. If no valid measurement, ie. no
             % features within range, interval subsampling enabled or simulated 
-            % failure the return is Z=[] and K=NaN.
+            % failure the return is Z=[] and K=0.
             %
             % See also RangeBearingSensor.h.
             
@@ -143,7 +151,7 @@ classdef RangeBearingSensor < Sensor
 
             % check conditions for NOT returning a value
             z = [];
-            jf = NaN;
+            jf = 0;
             % sample interval
             if mod(s.count, s.interval) ~= 0
                 return;
@@ -152,32 +160,57 @@ classdef RangeBearingSensor < Sensor
             if ~isempty(s.fail) && (s.count >= s.fail(1)) && (s.count <= s.fail(2))
                 return;
             end
-
+            
+            % create a polygon to indicate the active sensing area based on range+angle limits
+            if ~isempty(s.theta_range) && ~isempty(s.r_range)
+                h = findobj(gca, 'tag', 'sensor-area');
+                if isempty(h)
+                    
+                    th=linspace(s.theta_range(1), s.theta_range(2), 20);
+                    x = s.r_range(2) * cos(th);
+                    y = s.r_range(2) * sin(th);
+                    if s.r_range(1) > 0
+                        th = flip(th);
+                        x = [x s.r_range(1) * cos(th)];
+                        y = [y s.r_range(1) * sin(th)];
+                    else
+                        x = [x 0];
+                        y = [y 0];
+                    end
+                    % no sensor zone, create one
+                    plot_poly([x; y], 'fill', 'r', 'alpha', 0.1, 'edge', 'none', 'animate', 'tag', 'sensor-area');
+                else
+                    %hg = get(h, 'Parent');
+                    plot_poly(h, s.robot.x);
+                    
+                end
+            end
+            
             if ~isempty(s.r_range)  || ~isempty(s.theta_range)
                 % if range and bearing angle limits are in place look for
                 % any landmarks that match criteria
                 
-                % get range/bearing to all landmarks
+                % get range/bearing to all landmarks, one per row
                 z = s.h(s.robot.x');
                 jf = 1:numcols(s.map.map);
                 
                 if ~isempty(s.r_range)
                     % find all within range
-                    k = find(z(:,1) >= s.r_range(1) & z(:,1) <= s.r_range(2));
+                    k = find( z(:,1) >= s.r_range(1) & z(:,1) <= s.r_range(2) );
                     z = z(k,:);
                     jf = jf(k);
                 end
                 if ~isempty(s.theta_range)
-                    % find all within angular range
-                    k = find(z(:,2) >= s.theta_range(1) & z(:,2) <= s.theta_range(2));
+                    % find all within angular range as well
+                    k = find( z(:,2) >= s.theta_range(1) & z(:,2) <= s.theta_range(2) );
                     z = z(k,:);
                     jf = jf(k);
                 end
                 
-                if isempty(k)
+                % deal with cases for 0 or > 1 features found
+                if isempty(z)
                     % no landmarks found
-                    z = [];
-                    jf = NaN;
+                    jf = 0;
                 elseif length(k) >= 1
                     % more than 1 in range, pick a random one
                     i = s.randstream.randi(length(k));
@@ -194,11 +227,19 @@ classdef RangeBearingSensor < Sensor
             end
             
             if s.verbose
-                fprintf('Sensor:: feature %d: %.1f %.1f\n', k, z);
+                if isempty(z)
+                    fprintf('Sensor:: no features\n');
+                else
+                    fprintf('Sensor:: feature %d: %.1f %.1f\n', jf, z);
+                end
             end
-            if ~isempty(z) & s.animate
+            if s.animate
                 s.plot(jf);
             end
+            
+            z = z';
+
+            s.landmarklog = [s.landmarklog jf];
         end
 
 
@@ -206,12 +247,12 @@ classdef RangeBearingSensor < Sensor
             %RangeBearingSensor.h Landmark range and bearing
             %
             % Z = S.h(XV, K) is a sensor observation (1x2), range and bearing, from vehicle at 
-            % pose XV (1x3) to the K'th map feature.
+            % pose XV (1x3) to the K'th landmark.
             %
-            % Z = S.h(XV, XF) as above but compute range and bearing to a feature at coordinate XF.
+            % Z = S.h(XV, XF) as above but compute range and bearing to a landmark at coordinate XF.
             %
             % Z = s.h(XV) as above but computes range and bearing to all
-            % map features.  Z has one row per feature.
+            % map features.  Z has one row per landmark.
             %
             % Notes::
             % - Noise with covariance W (propertyW) is added to each row of Z.
@@ -219,17 +260,18 @@ classdef RangeBearingSensor < Sensor
             %
             % See also RangeBearingSensor.Hx, RangeBearingSensor.Hw, RangeBearingSensor.Hxf.
             
+            % get the landmarks, one per row
             if nargin < 3
                 % s.h(XV)
-                xf = s.map.map;
+                xlm = s.map.map';
             elseif length(jf) == 1
                 % s.h(XV, JF)
-                xf = s.map.map(:,jf);
+                xlm = s.map.map(:,jf)';
             else
                 % s.h(XV, XF)
-                xf = jf;
+                xlm = jf(:)';
             end
-
+            
             % Straightforward code:
             %
             % dx = xf(1) - xv(1); dy = xf(2) - xv(2);
@@ -240,10 +282,12 @@ classdef RangeBearingSensor < Sensor
             %
             % Vectorized code:
 
-            dx = xf(1,:) - xv(:,1); dy = xf(2,:) - xv(:,2);
-            z = [sqrt(dx.^2 + dy.^2) atan2(dy, dx)-xv(:,3) ];   % range & bearing measurement
+            % compute range and bearing
+            dx = xlm(:,1) - xv(:,1); dy = xlm(:,2) - xv(:,2);
+            z = [sqrt(dx.^2 + dy.^2) angdiff(atan2(dy, dx), xv(:,3)) ];   % range & bearing measurement
+
             % add noise with covariance W
-            z = z + s.randstream.randn(size(z)) * sqrt(s.W);
+            z = z + s.randstream.randn(size(z)) * sqrtm(s.W) ;
         end
 
         function J = Hx(s, xv, jf)
@@ -359,7 +403,7 @@ classdef RangeBearingSensor < Sensor
                 str = char(str, sprintf('range: %g to %g', s.r_range) );
             end
             if ~isempty(s.theta_range)
-                str = char(str, sprintf('angle: %g to %g', s.r_range) );
+                str = char(str, sprintf('angle: %g to %g', s.theta_range) );
             end
         end
         
