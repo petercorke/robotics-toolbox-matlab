@@ -260,13 +260,14 @@ function [L,R] = pieper(robot, n, which)
         0  0  0  1 ];
     
     T = inv(robot.base) * T * inv(robot.tool);
+    T = T.T;
     
     q = robot.gencoords();
     
     
     % Create the symbolic A matrices
     for j=1:robot.n
-        A{j} = robot.links(j).A(q(j));
+        A{j} = robot.links(j).A(q(j)).T;
     end
     
     switch which
