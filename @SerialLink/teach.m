@@ -74,6 +74,7 @@ function teach(robot, varargin)
     %---- handle options
     opt.deg = true;
     opt.orientation = {'rpy', 'eul', 'approach'};
+    opt.d_2d = false;
     opt.callback = [];    
     [opt,args] = tb_optparse(opt, varargin);
     
@@ -85,14 +86,18 @@ function teach(robot, varargin)
     
     % we need to have qlim set to finite values for a prismatic joint
     qlim = robot.qlim;
-    if any(isinf(qlim))
-        error('RTB:teach:badarg', 'Must define joint coordinate limits for prismatic axes, set qlim properties for prismatic Links');
-    end
+    assert(~any(isinf(qlim(:))), 'RTB:teach:badarg', 'Must define joint coordinate limits for prismatic axes, set qlim properties for prismatic Links');
     
     if isempty(args)
         q = [];
     else
-        q = args{1};
+        if isnumeric(args{1})
+            q = args{1};
+%             if opt.deg
+%                 q = robot.todegrees(q);
+%             end
+            args = args(2:end);
+        end
     end
     
     % set up scale factor, from actual limits in radians/metres to display units
@@ -117,7 +122,7 @@ function teach(robot, varargin)
         c = findobj(0, 'Tag', robot.name);  % check all figures
         if isempty(c)
             % create robot in arbitrary pose
-            robot.plot( zeros(1, robot.n) );
+            robot.plot( zeros(1, robot.n), args{:} );
             ax = gca;
         else
             ax = get(c(1), 'Parent'); % get first axis holding the robot
@@ -130,7 +135,15 @@ function teach(robot, varargin)
     
     % shrink the current axes to make room
     %   [l b w h]
-    set(ax, 'OuterPosition', [0.25 0 0.70 1])
+    
+    if opt.d_2d
+        set(ax, 'ZColor', 'none');
+        set(ax, 'Color', 'none');
+            set(ax, 'Position', [0.22 0.05 0.8 1])
+
+    else
+    set(ax, 'Position', [0.3 0 0.7 1])
+    end
     
     handles.curax = ax;
     
@@ -138,7 +151,7 @@ function teach(robot, varargin)
     panel = uipanel(handles.fig, ...
         'Title', 'Teach', ...
         'BackGroundColor', bgcol,...
-        'Position', [0 0 .25 1]);
+        'Position', [0 0 0.25 1]);
     set(panel, 'Units', 'pixels'); % stop automatic resizing
     handles.panel = panel;
     set(handles.fig, 'Units', 'pixels');
@@ -154,9 +167,8 @@ function teach(robot, varargin)
         rhandles = findobj('Tag', robot.name);
         
         % find the graphical element of this name
-        if isempty(rhandles)
-            error('RTB:teach:badarg', 'No graphical robot of this name found');
-        end
+        assert(~isempty(rhandles), 'RTB:teach:badarg', 'No graphical robot of this name found');
+
         % get the info from its Userdata
         info = get(rhandles(1), 'UserData');
         
@@ -168,7 +180,7 @@ function teach(robot, varargin)
     robot.plot(q);
     end
     handles.q = q;
-    T6 = robot.fkine(q);
+    T6 = robot.fkine(q).T;
 
     
     %---- now make the sliders
@@ -191,6 +203,7 @@ function teach(robot, varargin)
             'Min', qlim(j,1), ...
             'Max', qlim(j,2), ...
             'Value', q(j), ...
+            'TooltipString', sprintf('Joint %d value', j), ...
             'Tag', sprintf('Slider%d', j));
         
         % text box showing slider value, also editable
@@ -223,6 +236,7 @@ function teach(robot, varargin)
         'FontUnits', 'normalized', ...
         'FontSize', 0.8, ...
         'String', sprintf('%.3f', T6(1,4)), ...
+        'TooltipString', 'End-effector x-coordinate', ...
         'Tag', 'T6');
     
     % Y
@@ -240,8 +254,10 @@ function teach(robot, varargin)
         'Position', [0.3 1-2*height 0.6 height], ...
         'FontUnits', 'normalized', ...
         'FontSize', 0.8, ...
+        'TooltipString', 'End-effector y-coordinate', ...
         'String', sprintf('%.3f', T6(2,4)));
     
+    if ~opt.d_2d
     % Z
     uicontrol(panel, 'Style', 'text', ...
         'Units', 'normalized', ...
@@ -257,20 +273,43 @@ function teach(robot, varargin)
         'Position', [0.3 1-3*height 0.6 height], ...
         'FontUnits', 'normalized', ...
         'FontSize', 0.8, ...
+        'TooltipString', 'End-effector z-coordinate', ...
         'String', sprintf('%.3f', T6(3,4)));
+    end
     
     % Orientation
     switch opt.orientation
         case 'approach'
             labels = {'ax:', 'ay:', 'az:'};
+            tips = {'Approach vector - x component', 'Approach vector - y component', 'Approach vector - z component'};
         case 'eul'
             labels = {[char(hex2dec('3c6')) ':'], [char(hex2dec('3b8')) ':'], [char(hex2dec('3c8')) ':']}; % phi theta psi
+            tips = {'Euler angle phi (about Z)', 'Euler angle theta (about Y)', 'Euler angle psi (about Z)'};
         case'rpy'
             labels = {'R:', 'P:', 'Y:'};
+            tips = {'Roll angle (about Z)', 'Pitch angle (about Y)', 'Yaw angle (about X)'};
     end
     
     %---- set up the orientation display box
 
+    if opt.d_2d
+    uicontrol(panel, 'Style', 'text', ...
+        'Units', 'normalized', ...
+        'BackgroundColor', bgcol, ...
+        'Position', [0.05 1-5*height 0.2 height], ...
+        'FontUnits', 'normalized', ...
+        'FontSize', 0.9, ...
+        'HorizontalAlignment', 'left', ...
+        'String', 'Yaw:');
+    
+    handles.t6.r(1) = uicontrol(panel, 'Style', 'text', ...
+        'Units', 'normalized', ...
+        'Position', [0.3 1-5*height 0.6 height], ...
+        'FontUnits', 'normalized', ...
+        'FontSize', 0.8, ...
+        'TooltipString', 'Yaw angle (about Z)', ...
+        'String', sprintf('%.3f', 0));
+    else
     % AX
     uicontrol(panel, 'Style', 'text', ...
         'Units', 'normalized', ...
@@ -286,7 +325,8 @@ function teach(robot, varargin)
         'Position', [0.3 1-5*height 0.6 height], ...
         'FontUnits', 'normalized', ...
         'FontSize', 0.8, ...
-        'String', sprintf('%.3f', T6(1,3)));
+        'TooltipString', tips{1}, ...
+        'String', sprintf('%.3f', 0));
     
     % AY
     uicontrol(panel, 'Style', 'text', ...
@@ -303,7 +343,8 @@ function teach(robot, varargin)
         'Position', [0.3 1-6*height 0.6 height], ...
         'FontUnits', 'normalized', ...
         'FontSize', 0.8, ...
-        'String', sprintf('%.3f', T6(2,3)));
+        'TooltipString', tips{2}, ...
+        'String', sprintf('%.3f', 0));
     
     % AZ
     uicontrol(panel, 'Style', 'text', ...
@@ -320,8 +361,9 @@ function teach(robot, varargin)
         'Position', [0.3 1-7*height 0.6 height], ...
         'FontUnits', 'normalized', ...
         'FontSize', 0.8, ...
-        'String', sprintf('%.3f', T6(3,3)));   
-
+        'TooltipString', tips{3}, ...
+        'String', sprintf('%.3f', 0));   
+    end
     %---- add buttons
     uicontrol(panel, 'Style', 'pushbutton', ...
         'Units', 'normalized', ...
@@ -331,6 +373,7 @@ function teach(robot, varargin)
         'CallBack', @(src,event) quit_callback(robot, handles), ...
         'BackgroundColor', 'white', ...
         'ForegroundColor', 'red', ...
+        'TooltipString', 'Quit', ...
         'String', 'X');
     
     % the record button
@@ -357,9 +400,16 @@ function teach(robot, varargin)
         % slider
         set(handles.slider(j), ...
             'Interruptible', 'off', ...
-            'BusyAction', 'queue', ...
-            'Callback', @(src,event)teach_callback(src, robot.name, j, handles));
+            'BusyAction', 'queue' );
+        
+        % ask for continuous callbacks
+        addlistener(handles.slider(j), 'ContinuousValueChange', ...
+             @(src,event)teach_callback(src, robot.name, j, handles) );
+
     end
+    
+    % refresh the display
+    teach_callback([], robot.name, [], handles)
 end
 
 function teach_callback(src, name, j, handles)
@@ -373,7 +423,8 @@ function teach_callback(src, name, j, handles)
     
     qscale = handles.qscale;
     
-    switch get(src, 'Style')
+    if ~isempty(src)
+        switch get(src, 'Style')
         case 'slider'
             % slider changed, get value and reflect it to edit box
             newval = get(src, 'Value');
@@ -382,6 +433,7 @@ function teach_callback(src, name, j, handles)
             % edit box changed, get value and reflect it to slider
             newval = str2double(get(src, 'String')) / qscale(j);
             set(handles.slider(j), 'Value', newval);
+        end
     end
     %fprintf('newval %d %f\n', j, newval);
     
@@ -400,17 +452,19 @@ function teach_callback(src, name, j, handles)
     % get the info from its Userdata
     info = get(h(1), 'UserData');
     
+    if ~isempty(j)
     % update the stored joint coordinates
     info.q(j) = newval;
     % and save it back to the graphical object
     set(h(1), 'UserData', info);
+    end
     
     % update all robots of this name
     animate(handles.robot, info.q);
     
     
     % compute the robot tool pose
-    T6 = handles.robot.fkine(info.q);
+    T6 = handles.robot.fkine(info.q).T;
     
     % convert orientation to desired format
     switch handles.orientation
@@ -419,13 +473,20 @@ function teach_callback(src, name, j, handles)
         case 'eul'
             orient = tr2eul(T6, 'setopt', handles.opt);
         case'rpy'
-            orient = tr2rpy(T6, 'setopt', handles.opt);
+            orient = tr2rpy(T6, 'xyz', 'setopt', handles.opt);
     end
     
     % update the display in the teach window
-    for i=1:3
-        set(handles.t6.t(i), 'String', sprintf('%.3f', T6(i,4)));
-        set(handles.t6.r(i), 'String', sprintf('%.3f', orient(i)));
+    if handles.opt.d_2d
+        set(handles.t6.t(1), 'String', sprintf('%.3f', T6(1,4)));
+        set(handles.t6.t(2), 'String', sprintf('%.3f', T6(2,4)));
+        
+        set(handles.t6.r(1), 'String', sprintf('%.3f', orient(1)));
+    else
+        for i=1:3
+            set(handles.t6.t(i), 'String', sprintf('%.3f', T6(i,4)));
+            set(handles.t6.r(i), 'String', sprintf('%.3f', orient(i)));
+        end
     end
     
     if ~isempty(handles.callback)
