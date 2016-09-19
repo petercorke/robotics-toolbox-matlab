@@ -1,19 +1,35 @@
-%DISTANCEXFORM Distance transform of occupancy grid
+%DISTANCEXFORM Distance transform
 %
-% D = DISTANCEXFORM(WORLD, GOAL) is the distance transform of the occupancy 
-% grid WORLD with respect to the specified goal point GOAL = [X,Y].  The
-% cells of the grid have values of 0 for free space and 1 for obstacle.
+% D = DISTANCEXFORM(OCCGRID, GOAL, OPTIONS) is the distance transform of
+% the occupancy grid OCCGRID with respect to the specified goal point GOAL
+% = [X,Y].  The cells of the grid have values of 0 for free space and 1 for
+% obstacle. The resulting matrix D has cells whose value is the shortest
+% distance to the goal from that cell, or NaN if the cell corresponds to an
+% obstacle (set to 1 in OCCGRID).
 %
-% D = DISTANCEXFORM(WORLD, GOAL, METRIC) as above but specifies the distance
-% metric as  either 'cityblock' or 'Euclidean' (default).
+% D = DISTANCEXFORM(IM, OPTIONS) is the distance transform of the binary
+% image IM. The elements of D have a value equal to the shortest distance
+% from that element to a non-zero pixel in the input image IM. 
 %
-% D = DISTANCEXFORM(WORLD, GOAL, METRIC, SHOW) as above but shows an animation
-% of the distance transform being formed, with a delay of SHOW seconds between
-% frames.
+% Options:
+% 'euclidean'    Use Euclidean (L2) distance metric (default)
+% 'cityblock'    Use cityblock or Manhattan (L1) distance metric
+% 'show',D       Show the iterations of the computation, with a delay of D seconds
+%                between frames.
+% 'noipt'        Don't use Image Processing Toolbox, even if available
+% 'novlfeat'     Don't use VLFeat, even if available
 %
 % Notes::
-% - The Machine Vision Toolbox function imorph is required.
-% - The goal is [X,Y] not MATLAB [row,col].
+% - For the first case the Machine Vision Toolbox function imorph is required.
+% - imorph is a mex file and must be compiled.
+% - The goal is given as [X,Y] not MATLAB [row,col].
+% - For the second case Image Processing Toolbox (IPT) or VLFeat will be used if
+%   available, searched for in that order.  They use a 2-pass rather than
+%   iterative algorithm and are much faster.
+% - Options can be used to disable use of IPT or VLFeat.
+% - If IPT or VLFeat are not available, or disabled, then imorph is used.
+% - If the 'show' option is given then imorph is used.
+% - Using imorph requires iteration and is slow. 
 %
 % See also IMORPH, DXform.
 
@@ -21,94 +37,156 @@
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
-function d = distancexform(world, goal, metric, show)
+function d = distancexform(occgrid, varargin)
     
-    world = idouble(world);
+    opt.show = 0;
+    opt.ipt = true;
+    opt.vlfeat = true;
+    opt.metric = {'euclidean', 'cityblock'};
+    [opt,args] = tb_optparse(opt, varargin);
+    if opt.show
+        opt.ipt = false;
+        opt.vlfeat = false;
+    end
     
-    if exist('imorph', 'file') ~= 3
-        error('Machine Vision Toolbox is required by this function');
-    end
-
-    if nargin < 4
-        show = 0;
-    end
-
-    % set up the distance metrics
-    if nargin < 3
-        metric = 'cityblock';
-    end
-
-    if strncmpi(metric, 'cityblock', length(metric))
-        m = ones(3,3);
-        m(2,2) = 0;
-    elseif strncmpi(metric, 'euclidean', length(metric))
-        r2 = sqrt(2);
-        m = [r2 1 r2; 1 0 1; r2 1 r2];
-    else
-        error('unknown distance metric');
-    end
-
-    % for the imorph primitive we need to set the target pixel to 0,
-    % obstacles to NaN and the rest to Inf.
-
-    if ~isempty(goal)
-        % specific goal point
-        if world(goal(2), goal(1)) > 0
+    if ~isempty(args) && isvec(args{1}, 2)
+        % path planning interpretation
+        %  distancexform(world, goal, metric, show)
+        
+        goal = args{1};
+        occgrid = idouble(occgrid);
+        
+        if exist('imorph', 'file') ~= 3
+            error('Machine Vision Toolbox is required by this function');
+        end
+        
+        switch opt.metric
+            case 'cityblock'
+                m = ones(3,3);
+                m(2,2) = 0;
+            case 'euclidean'
+                r2 = sqrt(2);
+                m = [r2 1 r2; 1 0 1; r2 1 r2];
+            otherwise
+                error('unknown distance metric');
+        end
+               
+        % check the goal point is sane
+        if occgrid(goal(2), goal(1)) > 0
             error('goal inside obstacle')
         end
-        % point goal case
-        world(world>0) = NaN;
-        world(world==0) = Inf;
-        world(goal(2), goal(1)) = 0;
+        
+        % setup to use imorph
+        %   - set obstacles to NaN
+        %   - set free space to Inf
+        %   - set goal to 0
+        occgrid(occgrid>0) = NaN;
+        occgrid(occgrid==0) = Inf;
+        occgrid(goal(2), goal(1)) = 0;
+        
+        
+        count = 0;
+        ninf = Inf;  % number of infinities in the map
+        while 1
+            occgrid = imorph(occgrid, m, 'plusmin');
+            count = count+1;
+            if opt.show
+                cmap = [1 0 0; gray(count)];
+                colormap(cmap)
+                image(occgrid+1, 'CDataMapping', 'direct');
+                set(gca, 'Ydir', 'normal');
+                xlabel('x');
+                ylabel('y');
+                pause(opt.show);
+            end
+            
+            ninfnow = sum( isinf(occgrid(:)) ); % current number of Infs
+            if ninfnow == ninf
+                % stop if the number of Infs left in the map had stopped reducing
+                % it may never get to zero if there are unreachable cells in the map
+                break;
+            end
+            ninf = ninfnow;
+        end
+        
+        if opt.show
+            fprintf('%d iterations, %d unreachable cells\n', count, ninf);
+        end
+        
+        d = occgrid;
     else
-        world = double(world);
-        world(world==0) = Inf;
-        world(isfinite(world)) = 0;
-        idisp(world)
-    end
-
-    count = 0;
-    ninf = Inf;  % number of infinities in the map
-    while 1
-        world = imorph(world, m, 'plusmin');
-        count = count+1;
-        if show
-            cmap = [1 0 0; gray(count)];
-            colormap(cmap)
-            image(world+1, 'CDataMapping', 'direct');
-            set(gca, 'Ydir', 'normal');
-            xlabel('x');
-            ylabel('y');
-            pause(show);
+        % image processing interpretation
+        %   distancexform(world, [metric])
+        
+        % use other toolboxes if they exist
+        if exist('bwdist') && opt.ipt
+            d = bwdist(occgrid, opt.metric);
+            
+        elseif exist('vl_imdisttf') == 3 && opt.vlfeat
+            im = idouble(occgrid);
+            im(im==0) = inf;
+            im(im==1) = 0;
+            d2 = vl_imdisttf(im);
+            d = sqrt(d2);
+            
+        elseif exist('imorph', 'file') == 3 
+            
+            switch opt.metric
+                case 'cityblock'
+                    m = ones(3,3);
+                    m(2,2) = 0;
+                case 'euclidean'
+                    r2 = sqrt(2);
+                    m = [r2 1 r2; 1 0 1; r2 1 r2];
+                otherwise
+                    error('unknown distance metric');
+            end
+            % setup to use imorph
+            %   - set free space to Inf
+            %   - set goal to 0
+            occgrid = double(occgrid);
+            occgrid(occgrid==0) = Inf;
+            occgrid(isfinite(occgrid)) = 0;
+            
+            count = 0;
+            while 1
+                occgrid = imorph(occgrid, m, 'plusmin');
+                count = count+1;
+                if opt.show
+                    cmap = [1 0 0; gray(count)];
+                    colormap(cmap)
+                    image(occgrid+1, 'CDataMapping', 'direct');
+                    set(gca, 'Ydir', 'normal');
+                    xlabel('x');
+                    ylabel('y');
+                    pause(opt.show);
+                end
+                
+                ninfnow = sum( isinf(occgrid(:)) ); % current number of Infs
+                if ninfnow == 0
+                    % stop if no Infs left in the image
+                    break;
+                end
+            end
+            d = occgrid;
+        else
+            error('Machine Vision Toolbox, Image Processing Toolbox or VLFeat is required by this function');
         end
-
-        ninfnow = sum( isinf(world(:)) ); % current number of Infs
-        if ninfnow == ninf
-            % stop if the number of Infs left in the map had stopped reducing
-            % it may never get to zero if there are unreachable cells in the map
-            break;
-        end
-        ninf = ninfnow;
     end
-
-    if show
-        fprintf('%d iterations, %d unreachable cells\n', count, ninf);
-    end
-
-    d = world;
+    
