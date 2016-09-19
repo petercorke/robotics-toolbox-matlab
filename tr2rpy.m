@@ -70,13 +70,15 @@ function [rpy,order] = tr2rpy(R, varargin)
             rpy(2) = atan2(R(1,3), R(3,3));  % pitch
             rpy(3) = atan2(R(2,1), R(2,2));  % yaw is sum of roll+yaw
         else
-            rpy(3) = atan2(-R(2,3), R(3,3));        % roll
+            rpy(3) = atan2(-R(2,3), R(3,3));        % yaw
             % compute sin/cos of roll angle
+            rpy(1) = atan2(-R(1,2), R(1,1));        % roll
+
             sr = sin(rpy(1));
             cr = cos(rpy(1));
-            rpy(2) = atan2(R(1,3), cr * R(3,3) - sr * R(2,3));  % pitch
-            rpy(1) = atan2(-R(1,2), R(1,1));        % yaw
+            rpy(2) = atan2(R(1,3)*cr, R(1,1));  % pitch
         end
+        
         case {'zyx', 'vehicle'}
                         opt.order = 'zyx';
         % old ZYX order (as per Paul book)
