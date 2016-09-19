@@ -4,19 +4,24 @@
 % rigid body displacement in SE(2) or SE(3).
 %
 % Methods::
-%  s             twist vector (1x3 or 1x6)
-%  S             twist as (augmented) skew-symmetric matrix (3x3 or 4x4)
-%  T             convert to SE(2/3) homogeneous transformation
-%  expm          synonym for T
+%  S             twist vector (1x3 or 1x6)
+%  se             twist as (augmented) skew-symmetric matrix (3x3 or 4x4)
+%  T             convert to homogeneous transformation (3x3 or 4x4)
+%  R             convert rotational part to matrix (2x2 or 3x3)
+%  exp           synonym for T
 %  pitch         pitch of the screw, SE(3) only
-%  point         a point on the line of the screw
+%  pole          a point on the line of the screw
 %  theta         rotation about the screw
 %  line          Plucker line object representing line of the screw
 %  display       print the Twist parameters in human readable form
 %  char          convert to string
 %
+% Conversion methods::
+%   SO3          convert rotational part to SO3 object
+%   SE3          convert to SE3 object
+%
 % Overloaded operators::
-%  +             compose two Twists
+%  *             compose two Twists
 %  *             multiply Twist by a scalar
 %
 % Properties (read only)::
@@ -138,74 +143,83 @@ classdef Twist
             end
         end
         
-        function x = s(tw)
-        %Twist.s Return the twist vector
+        function x = S(tw)
+        %Twist.S Return the twist vector
         %
-        % TW.s is the twist vector in se(2) or se(3) as a vector (1x3 or 1x6).
+        % TW.S is the twist vector in se(2) or se(3) as a vector (1x3 or 1x6).
         %
         % Notes::
         % - Sometimes referred to as the twist coordinate vector.
-            x = [tw.v; tw.w]';
+            x = [tw.v; tw.w];
         end
         
-        function x = S(tw)
-        %Twist.S Return the twist matrix
+        function x = se(tw)
+        %Twist.se Return the twist matrix
         %
-        % TW.S is the twist matrix in se(2) or se(3) which is an augmented
+        % TW.se is the twist matrix in se(2) or se(3) which is an augmented
         % skew-symmetric matrix (3x3 or 4x4).
         %
-
-            x = [skew(tw.w) tw.v(:)];
-            x = [x; zeros(1, numcols(x))];
+        x = skewa(tw.S);
         end
+
         
-        function c = plus(a, b)
-        %Twist.plus Compose twists
+        function c = mtimes(a, b)
+        %Twist.mtimes Multiply twist by twist or scalar
         %
-        % TW1 + TW2 is a new Twist representing the composition of twists TW1 and
+        % TW1 * TW2 is a new Twist representing the composition of twists TW1 and
         % TW2.
         %
+        % TW * S with its twist coordinates scaled by scalar S.
+        %
+            
+            if isa(b, 'Twist')
+                % composition
+                c = Twist( a.exp * b.exp);
 
-            if isa(a, 'Twist') & isa(b, 'Twist')
-                c = Twist(a.s + b.s);
+            elseif isreal(b)
+                c = Twist(a.s * b);
             else
                 error('RTB:Twist: incorrect operands for + operator')
             end
         end
         
-        function c = mtimes(a, b)
-        %Twist.mtimes Linear scaling of a twist
+        function x = exp(tw, varargin)
+        %Twist.exp Convert twist to homogeneous transformation
         %
-        % A*TW is a Twist with its twist coordinates scaled by A.
-        % TW*A as above.
+        % TW.exp is the homogeneous transformation equivalent to the twist (3x3 or 4x4).
         %
-
-            if isa(a, 'Twist') & isreal(b)
-                    c = Twist(a.s * b);
-                elseif isreal(a) & isa(b, 'Twist')
-                    c = Twist(a * b.s);
-                else
-                    error('RTB:Twist: incorrect operands for * operator')
-                end
-            end
-        
-        function x = expm(tw, varargin)
-        %Twist.expm Convert twist to homogeneous transformation
-        %
-        % TW.expm is the homogeneous transformation equivalent to the twist (3x3 or 4x4).
-        %
-        % TW.expm(THETA) as above but with a rotation of THETA about the twist.
+        % TW.exp(THETA) as above but with a rotation of THETA about the twist.
         %
         % Notes::
         % - For the second form the twist must, if rotational, have a unit rotational component.
         %
         % See also Twist.T, trexp, trexp2.
-            if length(tw.v) == 2
-                    x = trexp2( tw.S, varargin{:} );
-                else
-                    x = trexp( tw.S, varargin{:} );
-                end
+        opt.deg = false;
+        [opt,args] = tb_optparse(opt, varargin);
+        
+        if opt.deg && all(tw.w == 0)
+            warning('Twist: using degree mode for a prismatic twist');
+        end
+        
+        if length(args) > 0
+            theta = args{1};
+            
+            if opt.deg
+                theta = theta * pi/180;
             end
+        else
+            theta = 1;
+        end
+        if length(tw.v) == 2
+            x = trexp2( tw.S * theta );
+        else
+            x = trexp( tw.S * theta );
+                end
+        end
+        
+        function x = ad(tw)
+            x = [ skew(tw.w) skew(tw.v); zeros(3,3) skew(tw.w) ];
+        end
         
         function x = T(tw, varargin)
         %Twist.T Convert twist to homogeneous transformation
@@ -218,7 +232,7 @@ classdef Twist
         % - For the second form the twist must, if rotational, have a unit rotational component.
         %
         % See also Twist.exp, trexp, trexp2.
-            x = tw.expm( varargin{:} );
+            x = tw.exp( varargin{:} );
         end
         
         function p = pitch(tw)
@@ -247,13 +261,13 @@ classdef Twist
         % See also Plucker.
         
                 % V = -tw.v - tw.pitch * tw.w;
-                L = Plucker('UV', tw.w, -tw.v - tw.pitch * tw.w);
+                L = Plucker('wv', tw.w, tw.v - tw.pitch * tw.w);
         end
         
-        function p = point(tw)
-        %Twist.point Point on the twist axis
+        function p = pole(tw)
+        %Twist.pole Point on the twist axis
         %
-        % TW.point is a point on the twist axis (2x1 or 3x1).
+        % TW.pole is a point on the twist axis (2x1 or 3x1).
         %
         % Notes::
         % - For pure translation this point is at infinity.
@@ -321,6 +335,14 @@ classdef Twist
             disp([inputname(1), ' = '])
             disp( char(tw) );
         end % display()
+        
+        function out = SE(tw)
+                    if length(tw.v) == 2
+                        out = SE2( tw.T );
+                    else
+                        out = SE3( tw.T );
+                    end
+        end
         
     end
 end
