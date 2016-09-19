@@ -140,10 +140,12 @@ classdef RTBPose
         
         function out = simplify(obj)
             out = obj;
-            if isa(obj.data, 'sym')
-                % simplify every element of data
-                for i=1:numel(obj.data)
-                    out.data(i) = simplify( obj.data(i) );
+            if isa(obj(1).data, 'sym')
+                for k=1:length(obj)
+                    % simplify every element of data
+                    for i=1:numel(obj.data)
+                        out(k).data(i) = simplify( obj(k).data(i) );
+                    end
                 end
             end
         end
