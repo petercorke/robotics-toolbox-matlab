@@ -32,11 +32,11 @@ L(5) = Revolute('d', 0.103+0.271, 'a', 0.010, 'alpha', -pi/2);
 L(6) = Revolute('d', 0,           'a', 0, 'alpha', pi/2);
 L(7) = Revolute('d', 0.28,        'a', 0, 'alpha', 0);
 
-left =  SerialLink(L, 'name', 'Baxter LEFT');
-right = SerialLink(L, 'name', 'Baxter RIGHT');
+left =  SerialLink(L, 'name', 'Baxter LEFT', 'manufacturer', 'Rethink Robotics');
+right = SerialLink(L, 'name', 'Baxter RIGHT', 'manufacturer', 'Rethink Robotics');
 
-left.base = transl(0.064614, 0.25858, 0.119)*rpy2tr(0, 0, pi/4);
-right.base = transl(0.063534, -0.25966, 0.119)*rpy2tr(0, 0, -pi/4);
+left.base = transl(0.064614, 0.25858, 0.119)*rpy2tr(0, 0, pi/4, 'xyz');
+right.base = transl(0.063534, -0.25966, 0.119)*rpy2tr(0, 0, -pi/4, 'xyz');
 
 % define the workspace vectors:
 %   qz         zero joint angle configuration
