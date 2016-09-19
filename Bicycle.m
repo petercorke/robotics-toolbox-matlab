@@ -89,7 +89,7 @@
 %
 % http://www.petercorke.com
 
-classdef Bicycle < Bicycle
+classdef Bicycle < Vehicle
 
     properties
         % state
@@ -123,7 +123,7 @@ classdef Bicycle < Bicycle
         % - Subclasses the MATLAB handle class which means that pass by reference semantics
         %   apply.
             
-            veh = veh@Bicycle(varargin{:});
+            veh = veh@Vehicle(varargin{:});
             
             veh.x = zeros(3,1);
 
@@ -238,8 +238,8 @@ classdef Bicycle < Bicycle
             thp = x(3) + dth;
 
             J = [
-                cos(thp)    0 %-dd*sin(thp)
-                sin(thp)    0 %dd*cos(thp)
+                cos(thp)    0 
+                sin(thp)    0 
                 0           1
                 ];
         end
@@ -252,7 +252,7 @@ classdef Bicycle < Bicycle
         %
         % See also Bicycle.display.
 
-            ss = char@Bicycle(veh); 
+            ss = char@Vehicle(veh); 
 
             s = 'Bicycle object';
             s = char(s, sprintf('  L=%g', veh.L));
