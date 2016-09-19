@@ -433,7 +433,7 @@ classdef SO3 < RTBPose
         
         function s = SE3(obj)
             s = SE3();
-            s.data(1:3,1:3) = obj.data;
+            s.data = [obj.data zeros(3,1); 0 0 0 1];
         end
         
         function q = UnitQuaternion(obj)

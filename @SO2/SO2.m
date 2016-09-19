@@ -85,7 +85,9 @@ classdef SO2 < RTBPose
         end
         
         function RR = R(obj)
-            RR = zeros(2,2,length(obj));
+            if ~isa(obj.data, 'sym')
+                RR = zeros(2,2,length(obj)); % prealloc so long as not symbolic
+            end
             for i=1:length(obj)
                 RR(:,:,i) = obj(i).data(1:2,1:2);
             end
