@@ -98,7 +98,7 @@ function qdd = accel(robot, Q, qd, torque)
 	% compute current manipulator inertia
 	%   torques resulting from unit acceleration of each joint with
 	%   no gravity.
-	M = rne(robot, ones(n,1)*q, zeros(n,n), eye(n), 'grav', [0;0;0]);
+	M = rne(robot, ones(n,1)*q, zeros(n,n), eye(n), 'gravity', [0 0 0]);
 
 	% compute gravity and coriolis torque
 	%    torques resulting from zero acceleration at given velocity &
