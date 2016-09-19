@@ -80,7 +80,7 @@ function animate(robot, qq)
                 else
                     % standard DH case
                     T = robot.base;
-                    vert = transl(T)';
+                    vert = T.t';
                     
                     for L=1:N
                         % for all N links
@@ -101,19 +101,19 @@ function animate(robot, qq)
                         %   (optional) a prismatic joint L, that joins {L} to {L+1}
                         if h.link(L) ~= 0
                             % for plot3d, skip any 0 in the handle list
-                            set(h.link(L), 'Matrix', T);
+                            set(h.link(L), 'Matrix', T.T);
                         end
                         
                         T = T * links(L).A(q(L));
-                        vert = [vert; transl(T)'];
+                        vert = [vert; T.t'];
                     end
                     % update the transform for link N+1 (the tool)
                     T = T*robot.tool;
                     if length(h.link) > N
-                        set(h.link(N+1), 'Matrix', T);
+                        set(h.link(N+1), 'Matrix', T.T);
                     end
 
-                    vert = [vert; transl(T)'];
+                    vert = [vert; T.t'];
                 end
                 
                 % now draw the shadow
@@ -131,7 +131,7 @@ function animate(robot, qq)
                 
                 % animate the wrist frame
                 if ~isempty(h.wrist)
-                    trplot(h.wrist, T);
+                    trplot(T, 'handle', h.wrist);
                 end
                 
                 % add a frame to the movie
