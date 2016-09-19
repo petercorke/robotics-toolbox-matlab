@@ -66,13 +66,17 @@ function tranimate(P2, varargin)
 
     [opt, args] = tb_optparse(opt, varargin);
     
+    ud.opt = opt;
+    ud.args = args;
+    
     if ~isempty(opt.movie)
-        anim = Animate(opt.movie);
+        ud.anim = Animate(opt.movie);
     end
     P1 = [];
     if ~isempty(opt.time) && isempty(opt.fps)
         opt.fps = 1 /(opt.time(2) - opt.time(1));
     end
+
 
     % convert quaternion and rotation matrix to hom transform
     if isrot(P2)
@@ -138,39 +142,68 @@ function tranimate(P2, varargin)
     
     if opt.retain
         hold on
+        ud.hg = [];  % indicate no animation
     else
-        hg = trplot(eye(4,4), args{:});  % create a frame at the origin
+        ud.hg = trplot(eye(4,4), args{:});  % create a frame at the origin
     end
+    ud.Ttraj = Ttraj;
 
+    
     if ~isempty(opt.time)
-        htime = uicontrol('Parent', gcf, 'Style', 'text', ...
+        ud.htime = uicontrol('Parent', gcf, 'Style', 'text', ...
             'HorizontalAlignment', 'left', 'Position', [50 20 100 20]);
     end
     % animate it for all poses in the sequence
-    for i=1:size(Ttraj,3)
-        
-        tic
-        T = Ttraj(:,:,i);
-        
-        if opt.retain
-            trplot(T, args{:});
-        else
-            trplot(T, 'handle', hg);
+    
+
+    t = timer('ExecutionMode', 'fixedRate', ...
+        'BusyMode', 'queue', ...
+        'UserData', ud, ...
+        'TasksToExecute', length(ud.Ttraj), ...
+        'Period', 1/opt.fps/2);
+    t.TimerFcn = @timer_callback;
+    start(t);
+    
+    waitfor(t)
+    delete(t)
+        if opt.cleanup
+            delete(hg);
         end
-        
-        if ~isempty(opt.movie)
-            anim.add();
-        end
-        
-        if ~isempty(opt.time)
-            set(htime, 'String', sprintf('time %g', opt.time(i)));
-        end
-        
-        drawnow
-        dt = toc;
-        pause(1/opt.fps-dt);
+end
+
+function guts(ud, i)
+    if isa(ud.Ttraj, 'SO3')
+        T = ud.Ttraj(i);
+    else
+        T = ud.Ttraj(:,:,i);
+    end
+    if ud.opt.retain
+        trplot(T, ud.args{:});
+    else
+        trplot(T, 'handle', ud.hg);
     end
     
-    if opt.cleanup
-        delete(hg);
+    if ~isempty(ud.opt.movie)
+        anim.add();
+    end
+    
+    if ~isempty(ud.opt.time)
+        set(ud.htime, 'String', sprintf('time %g', ud.opt.time(i)));
+    end
+    drawnow
+              
+end
+
+    function timer_callback(timerObj, ~)
+        ud = get(timerObj, 'UserData');
+                if ~ishandle(ud.hg)
+            % the figure has been closed
+            stop(timerObj);
+            delete(timerObj);
+        end
+
+        i = timerObj.TasksExecuted;
+        
+        guts(ud, i);
+ 
     end
