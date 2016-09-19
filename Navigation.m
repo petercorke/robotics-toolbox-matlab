@@ -396,12 +396,11 @@ robot = start;
         % N.plot(P, OPTIONS) as above but overlays the points along the path (2xM) matrix.
         %
         % Options::
-        %  'colormap',@f    Specify a colormap as a function handle, eg. @hsv
-        %  'beta',V       Specify a beta value to brighten/darken the colormap
-        %  'goal'         Superimpose the start and goal positions if set. Goal is
-        %                 a pentagram, start is a circle.
-        %  'distance',D   Display a distance field D behind the obstacle map.  D is
-        %                 a matrix of the same size as the occupancy grid.
+        %  'colormap',@f   Specify a colormap as a function handle, eg. @hsv
+        %  'beta',V        Superimpose the start and goal positions if set. Goal is
+        %                  a pentagram, start is a circle.
+        %  'distance',D    Display a distance field D behind the obstacle map.  D is
+        %                  a matrix of the same size as the occupancy grid.
         %
         % Notes::
         % - The distance field at a point encodes its distance from the goal, small
@@ -443,16 +442,26 @@ robot = start;
                 % find maximum distance, ignore infinite values in
                 % obstacles
                 d = opt.distance(isfinite(opt.distance));
-                maxdist = max(d(:)) + 1;
+                d = d + 2;   % minimum distance is cmap=2 or black
+                maxdist = max(d(:));
                 
                 % create the color map
+                %  1 = red (obstacle)
+                %  2 = black (zero distance)
+                %  max = white (maximum distance)
                 cmap = [1 0 0; opt.colormap(ceil(maxdist))];
                 
-                % ensure obstacles appear as red pixels
-                opt.distance(occgrid > 0) = 0;
+                % distance of 0 has display value of 2
+                opt.distance = opt.distance + 2;
+                
+                % invalid distances show as black
+                opt.distance(isnan(opt.distance)) = 2;
+                
+                % ensure obstacles appear as red
+                opt.distance(occgrid > 0) = 1;
                 
                 % display it with colorbar
-                image(opt.distance+1, 'CDataMapping', 'direct');
+                image(opt.distance, 'CDataMapping', 'direct');
                 set(gcf, 'Renderer', 'Zbuffer')
                 colormap(cmap)
                 cb = colorbar;
