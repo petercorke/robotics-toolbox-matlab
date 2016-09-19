@@ -76,15 +76,33 @@
 
 
 function varargout = rne(robot, varargin)
-
-    if robot.fast && ~robot.issym()
+    
+    % allow more descriptive arguments
+    opt.gravity = [];
+    opt.fext = [];
+    opt.slow = false;
+    
+    [opt,args] = tb_optparse(opt, varargin);
+    
+    if ~isempty(opt.gravity)
+        assert( isvec(opt.gravity, 3), 'gravity must be a 3-vector');
+        args = [args opt.gravity(:)];
+    end
+    if ~isempty(opt.fext)
+        assert( isvec(opt.fext, 6), 'external force must be a 6-vector');
+        args = [args opt.fext];
+    end
+    
+    if robot.fast && ~opt.slow && ~robot.issym()
         % use the MEX-file implementation
-        [varargout{1:nargout}] = frne(robot, varargin{:});
+        % the fast property is set at constructor time
+        % the mex-file handles DH and MDH variants
+        [varargout{1:nargout}] = frne(robot, args{:});
     else
         % use the M-file implementation
         if robot.mdh == 0
-            [varargout{1:nargout}] = rne_dh(robot, varargin{:});
+            [varargout{1:nargout}] = rne_dh(robot, args{:});
         else
-            [varargout{1:nargout}] = rne_mdh(robot, varargin{:});
+            [varargout{1:nargout}] = rne_mdh(robot, args{:});
         end
     end
