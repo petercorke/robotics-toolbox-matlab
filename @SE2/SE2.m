@@ -264,13 +264,6 @@ classdef SE2 < SO2
         end
 
         
-        function out = simplify(obj)
-            out = obj;
-            if isa(obj.data, 'sym')
-                out.data = simplify(out.data);
-            end
-        end
-        
         function v = xyt(obj)
             % VECTORISE
             v = obj.t;
