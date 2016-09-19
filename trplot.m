@@ -13,23 +13,25 @@
 %
 % H = TRPLOT(R, OPTIONS) as above but returns a handle.
 %
-% TRPLOT(H, R) moves the coordinate frame described by the handle H to
-% the orientation R.
+% H = TRPLOT() creates a default frame EYE(3,3) at the origin and returns a
+% handle.
 %
 % Options::
+% 'handle',h         Update the specified handle
 % 'color',C          The color to draw the axes, MATLAB colorspec C
 % 'noaxes'           Don't display axes on the plot
 % 'axis',A           Set dimensions of the MATLAB axes to A=[xmin xmax ymin ymax zmin zmax]
 % 'frame',F          The coordinate frame is named {F} and the subscript on the axis labels is F.
 % 'framelabel',F     The coordinate frame is named {F}, axes have no subscripts.
 % 'text_opts', opt   A cell array of MATLAB text properties
-% 'handle',H         Draw in the MATLAB axes specified by the axis handle H
+% 'axhandle',A       Draw in the MATLAB axes specified by the axis handle A
 % 'view',V           Set plot view parameters V=[az el] angles, or 'auto' 
 %                    for view toward origin of coordinate frame
 % 'length',s         Length of the coordinate frame arms (default 1)
 % 'arrow'            Use arrows rather than line segments for the axes
 % 'width', w         Width of arrow tips (default 1)
 % 'thick',t          Thickness of lines (default 0.5)
+% 'perspective'      Display the axes with perspective projection
 % '3d'               Plot in 3D using anaglyph graphics
 % 'anaglyph',A       Specify anaglyph colors for '3d' as 2 characters for 
 %                    left and right (default colors 'rc'): chosen from
@@ -94,31 +96,21 @@
 
 function hout = trplot(T, varargin)
 
-    if isscalar(T) && ishandle(T)
-        % trplot(H, T)
-        H = T; T = varargin{1};
-        if isrot(T)
-            T = r2t(T);
-        end
-        set(H, 'Matrix', T);
-        
-        % for the 3D case retrieve the right hgtransform and set it
-        hg2 = get(H, 'UserData');
-        if ~isempty(hg2)
-            set(hg2, 'Matrix', T);
-        end
-        
-        return;
-    end
-
-    if size(T,3) > 1
-        error('trplot cannot operate on a sequence');
-    end
-    if ~ishomog(T) && ~isrot(T)
-        error('trplot operates only on transform (4x4) or rotation matrix (3x3)');
+    if nargin == 0
+        T = eye(3,3);
     end
     
-    opt.color = [];
+    if size(T,3) > 1
+        error('RTB:trplot:badarg', 'trplot cannot operate on a sequence');
+    end
+    if isa(T, 'SE3')
+        T = T.T;
+    elseif ~ishomog(T) && ~isrot(T)
+        error('RTB:trplot:badarg', 'trplot operates only on transform (4x4) or rotation matrix (3x3)');
+    end
+    
+    opt.color = 'b';
+    opt.textcolor = [];
     opt.rgb = false;
     opt.axes = true;
     opt.axis = [];
@@ -129,7 +121,7 @@ function hout = trplot(T, varargin)
     opt.width = 1;
     opt.arrow = false;
     opt.labels = 'XYZ';
-    opt.handle = [];
+    opt.axhandle = [];
     opt.anaglyph = 'rc';
     opt.d_3d = false;
     opt.dispar = 0.1;
@@ -139,9 +131,35 @@ function hout = trplot(T, varargin)
     opt.lefty = false;
     opt.rviz = false;
     opt.framelabeloffset = [0 0];
+    opt.handle = [];
+    opt.perspective = false;
     
-    opt = tb_optparse(opt, varargin);
-        
+    [opt,args] = tb_optparse(opt, varargin);
+    
+    if isscalar(T) && ishandle(T)
+        warning('RTB:trplot:deprecated', 'Use ''handle'' option');
+        % trplot(H, T)
+        opt.handle = T; T = args{1};
+    end
+    
+    % ensure it's SE(3)
+    if isrot(T)
+        T = r2t(T);
+    end
+    
+    if ~isempty(opt.handle)
+        set(opt.handle, 'Matrix', T);
+        % for the 3D case retrieve the right hgtransform and set it
+        hg2 = get(opt.handle, 'UserData');
+        if ~isempty(hg2)
+            set(hg2, 'Matrix', T);
+        end
+        if nargout > 0
+            hout = opt.handle;
+        end
+        return;
+    end
+
     if opt.rviz
         opt.thick = 5;
         opt.arrow = false;
@@ -149,11 +167,11 @@ function hout = trplot(T, varargin)
         opt.text = false;
     end
 
-    if ~isempty(opt.color) && opt.d_3d
-        error('cannot specify ''color'' and ''3d'', use ''anaglyph'' option');
+    if opt.rgb && opt.d_3d
+        error('RTB:trplot:badarg', 'cannot specify ''rgb'' and ''3d'', use ''anaglyph'' option');
     end
-    if isempty(opt.color)
-        opt.color = 'b';
+    if isempty(opt.textcolor)
+        opt.textcolor = opt.color;
     end
     if isempty(opt.text_opts)
         opt.text_opts = {};
@@ -163,6 +181,7 @@ function hout = trplot(T, varargin)
         opt.color = ag_color(opt.anaglyph(1));
     end
     
+    % figure the dimensions of the axes, if not given
     if isempty(opt.axis)
         % determine some default axis dimensions
         
@@ -177,11 +196,9 @@ function hout = trplot(T, varargin)
         opt.axis = [c(1)-d c(1)+d c(2)-d c(2)+d c(3)-d c(3)+d];
         
     end
-    
-    % TODO: should do the 2D case as well
-    
-    if ~isempty(opt.handle)
-        hax = opt.handle;
+        
+    if ~isempty(opt.axhandle)
+        hax = opt.axhandle;
         hold(hax);
     else
         ih = ishold;
@@ -209,7 +226,9 @@ function hout = trplot(T, varargin)
 
     opt.text_opts = [opt.text_opts, 'Color', opt.color];
 
-
+    if opt.perspective
+        hax.Projection = 'perspective';
+    end
     hg = hgtransform('Parent', hax);
 
 
@@ -248,7 +267,7 @@ function hout = trplot(T, varargin)
 %         end
           daspect([1,1,1])
           for i=1:3
-              ha = arrow3(mstart(i,1:3), mend(i,1:3), [axcolors{i} num2str(opt.width)]);
+              ha = arrow3(mstart(i,1:3), mend(i,1:3), axcolors{i}, opt.width);
               set(ha, 'Parent', hg);
           end
     else
@@ -288,10 +307,10 @@ function hout = trplot(T, varargin)
         set(h, 'VerticalAlignment', 'top', ...
             'HorizontalAlignment', 'center', opt.text_opts{:}, ...
             'FontUnits', 'normalized');
-        d = get(h, 'FontSize');
         e = get(h, 'Extent');
-        e(1:2) = e(1:2) + opt.framelabeloffset * d;
-        set(h, 'Extent', e);
+        d = e(4); % use height of text box as a scale factor
+        e(1:2) = e(1:2) - opt.framelabeloffset * d;
+        set(h, 'Position', e(1:2));
 
     end
     
@@ -333,7 +352,7 @@ function hout = trplot(T, varargin)
         set(right, 'CameraTarget', target+off');
         
         % set perspective projections
-                set(left, 'Projection', 'perspective');
+        set(left, 'Projection', 'perspective');
         set(right, 'Projection', 'perspective');
         
         % turn off axes for right view

@@ -5,17 +5,21 @@
 %
 % H = TRPLOT2(T, OPTIONS) as above but returns a handle.
 %
+% H = TRPLOT2() creates a default frame EYE(2,2) at the origin and returns a
+% handle.
+%
 % TRPLOT2(H, T) moves the coordinate frame described by the handle H to
 % the SE(2) pose T (3x3).
 %
 % Options::
+% 'handle',h         Update the specified handle
 % 'axis',A           Set dimensions of the MATLAB axes to A=[xmin xmax ymin ymax]
 % 'color', c         The color to draw the axes, MATLAB colorspec
 % 'noaxes'           Don't display axes on the plot
 % 'frame',F          The frame is named {F} and the subscript on the axis labels is F.
 % 'framelabel',F     The coordinate frame is named {F}, axes have no subscripts.
 % 'text_opts', opt   A cell array of Matlab text properties
-% 'handle', h        Draw in the MATLAB axes specified by h
+% 'axhandle',A       Draw in the MATLAB axes specified by A
 % 'view',V           Set plot view parameters V=[az el] angles, or 'auto' 
 %                    for view toward origin of coordinate frame
 % 'length',s         Length of the coordinate frame arms (default 1)
@@ -65,19 +69,12 @@
 
 function hout = trplot2(T, varargin)
 
-    if isscalar(T) && ishandle(T)
-        % trplot(H, T)
-        H = T; T = varargin{1};
-        set(H, 'Matrix', se2t3(T));
-        return;
+    if nargin == 0
+        T = eye(2,2);
     end
-
-    % convert rotation matrix to homog transform
-    if all(size(T) == [2 2])
-        T = [T [0; 0]; 0 0 1];
-    end
+    
     opt.color = 'b';
-    opt.textcolor = 'k';
+    opt.textcolor = [];
     opt.axes = true;
     opt.axis = [];
     opt.frame = [];
@@ -87,16 +84,43 @@ function hout = trplot2(T, varargin)
     opt.width = 1;
     opt.arrow = false;
     opt.handle = [];
+    opt.axhandle = [];
     opt.length = 1;
     opt.lefty = false;
     opt.framelabeloffset = 0.2*[1 1];
+    opt.handle = [];
+
+    [opt,args] = tb_optparse(opt, varargin);
 
 
-    opt = tb_optparse(opt, varargin);
-
+    if isscalar(T) && ishandle(T)
+        warning('RTB:trplot2:deprecated', 'Use ''handle'' option');
+        % trplot(H, T)
+        opt.handle = T; T = args{1};
+    end
+    
+    % ensure it's SE(2)
+    if all(size(T) == [2 2])
+        T = [T [0; 0]; 0 0 1];
+    end
+    
+    if opt.handle
+        set(opt.handle, 'Matrix', se2t3(T));
+        if nargout > 0
+            hout = opt.handle;
+        end
+        return;
+    end
+    
+    if isempty(opt.textcolor)
+        opt.textcolor = opt.color;
+    end
+   
     if isempty(opt.text_opts)
         opt.text_opts = {};
     end
+    
+    % figure the dimensions of the axes, if not given
     if isempty(opt.axis)
         if all(size(T) == [3 3]) || norm(transl(T)) < eps
             c = transl2(T);
@@ -105,8 +129,8 @@ function hout = trplot2(T, varargin)
         end
     end
 
-    if ~isempty(opt.handle)
-        hax = opt.handle;
+    if ~isempty(opt.axhandle)
+        hax = opt.axhandle;
         hold(hax);
     else
         ih = ishold;
@@ -126,7 +150,7 @@ function hout = trplot2(T, varargin)
         hax = gca;
         hold on
     end
-
+    
     % create unit vectors
     o =  opt.length*[0 0 1]'; o = o(1:2);
     x1 = opt.length*[1 0 1]'; x1 = x1(1:2);
@@ -136,7 +160,9 @@ function hout = trplot2(T, varargin)
     else
         y1 = opt.length*[0 1 1]'; y1 = y1(1:2);
     end
-   
+    
+    opt.text_opts = [opt.text_opts, 'Color', opt.color];
+    
     
     % draw the axes
     
