@@ -43,7 +43,8 @@ function T = trexp(S, theta)
         
         if nargin == 1
             if isvec(S,6)
-                S = [skew(S(4:6)) S(1:3)'; 0 0 0 0];
+                S = S(:);
+                S = [skew(S(4:6)) S(1:3); 0 0 0 0];
             end
             T = expm(S);
         else
