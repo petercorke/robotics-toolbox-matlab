@@ -453,7 +453,9 @@ R
         end
         
         function T = trnorm(obj)
-            T = trnorm(obj.T);
+            for k=1:length(obj)
+                T(k) = SE3( trnorm(obj(k).T) );
+            end
         end
         
         function Pt = homtrans(T, P)
