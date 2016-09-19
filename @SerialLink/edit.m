@@ -25,7 +25,7 @@
                 dh(j,2) = L.d;
                 dh(j,3) = L.a;
                 dh(j,4) = L.alpha;
-                dh(j,5) = L.sigma;
+                dh(j,5) = L.sigma == 'P';
                 dh(j,6) = L.offset;
                 if ~isempty(L.qlim)
                     dh(j,7) = L.qlim(1);
@@ -52,7 +52,7 @@
                     dh(j,23) = L.I(3,1);
                 end
             end
-            headings = {'theta', 'd', 'a', 'alpha', 'sigma', 'offset', 'q_min', 'q_max'};
+            headings = {'theta', 'd', 'a', 'alpha', 'prismatic', 'offset', 'q_min', 'q_max'};
             if isdyn
                 headings = [headings 'mass', 'Jm', 'B', 'G', 'Tc+', 'Tc-', 'rx', 'ry', 'rz', 'Ixx', 'Iyy', 'Izz', 'Ixy', 'Iyz', 'Ixz'];
             end
@@ -86,7 +86,11 @@
                 L.d = dh(j,2);
                 L.a = dh(j,3); 
                 L.alpha = dh(j,4);
-                L.sigma = dh(j,5);
+                if dh(j,5) > 0
+                    L.sigma = 'P';
+                else
+                    L.sigma = 'R';
+                end
                 L.offset = dh(j,6);
                 L.qlim(1) = dh(j,7);
                 L.qlim(2) = dh(j,8);
