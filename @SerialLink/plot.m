@@ -250,9 +250,9 @@ function plot(robot, qq, varargin)
         set(gca, 'Tag', 'RTB.plot');
         set(gcf, 'Units', 'Normalized');
         pf = get(gcf, 'Position');
-        if strcmp( get(gcf, 'WindowStyle'), 'docked') == 0
-            set(gcf, 'Position', [0.1 1-pf(4) pf(3) pf(4)]);
-        end
+%         if strcmp( get(gcf, 'WindowStyle'), 'docked') == 0
+%             set(gcf, 'Position', [0.1 1-pf(4) pf(3) pf(4)]);
+%         end
     end
     
     % deal with a few options that need to be stashed in the SerialLink object
@@ -331,7 +331,7 @@ function h = create_robot(robot, opt)
     
     % create the base
     if opt.base
-        bt = transl(robot.base);
+        bt = robot.base.t;
         bt = [bt'; bt'];
         bt(1,3) = opt.floorlevel;
         line(bt(:,1), bt(:,2), bt(:,3), 'LineWidth', opt.basewidth, 'Color', opt.basecolor);
@@ -339,7 +339,7 @@ function h = create_robot(robot, opt)
     
     % add the robot's name
     if opt.name
-        b = transl(robot.base);
+        b = robot.base.t;
         bz = 0;
         if opt.base
             bz = 0.5*opt.floorlevel;
@@ -362,7 +362,7 @@ function h = create_robot(robot, opt)
         if opt.joints
             % create the body of the joint
             if links(L).isrevolute
-                cyl('z', 2*s, opt.jointdiam/2*s*[-1 1], opt.jointcolor, [], 'Parent', h.link(L));
+                cyl('z', opt.jointdiam*s, opt.jointlen*s*[-1 1], opt.jointcolor, [], 'Parent', h.link(L));
             else
                 % create an additional hgtransform for positioning and scaling the prismatic
                 % element.  The element is created with unit length.
@@ -400,7 +400,7 @@ function h = create_robot(robot, opt)
             % standard DH convention
             if L > 1
                 Ainv = inv(links(L-1).A(0));
-                t = transl(Ainv);
+                t = Ainv.t;
                 if t(1) ~= 0
                     cyl('x', s, [0 t(1)], opt.linkcolor, [], 'Parent', h.link(L));
                 end
@@ -421,20 +421,20 @@ function h = create_robot(robot, opt)
         if opt.jaxes
             line('XData', [0 0], ...
                 'YData', [0 0], ...
-                'ZData', 12*s*[-1 1], ...
+                'ZData', 14*s*[-1 1], ...
                 'LineStyle', ':', 'Parent', h.link(L));
             
             % create the joint axis label
-            text(0, 0, 12*s, sprintf('q%d', L), 'Parent', h.link(L))
+            text(0, 0, 14*s, sprintf('q%d', L), 'Parent', h.link(L))
         end
          % create the joint axis vector
         if opt.jvec
             daspect([1 1 1]);
-            ha = arrow3([0 0 -12*s], [0 0 20*s]);
+            ha = arrow3([0 0 -12*s], [0 0 15*s], 'c');
             set(ha, 'Parent', h.link(L));
             
             % create the joint axis label
-            text(0, 0, -12*s, sprintf('q%d', L), 'Parent', h.link(L))
+            text(0, 0, 20*s, sprintf(' q%d', L), 'Parent', h.link(L))
         end
     end
     if opt.debug
@@ -442,14 +442,15 @@ function h = create_robot(robot, opt)
     end
     % display the tool transform if it exists
     h.link(N+1) = hgtransform('Tag', sprintf('link%d', N+1), 'Parent', group);
-    tool = eye(4,4);
+    tool = SE3();
     if ~robot.mdh
         tool = links(L).A(0);
     end
     if ~isempty(robot.tool)
         tool = tool * robot.tool;
     end
-    t = transl(inv(tool));
+    Tinv = inv(tool);
+    t = Tinv.t;
     if t(1) ~= 0
         cyl('x', s, [0 t(1)], 'r', [], 'Parent', h.link(N+1));
     end
@@ -463,12 +464,16 @@ function h = create_robot(robot, opt)
     % display the wrist coordinate frame
     if opt.wrist
         if opt.arrow
-            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), ...
-                'arrow', 'rgb', 'length', 15*s);
+            % compute arrow3 scale factor...
+            d = axis(gca);
+            d = norm( d(4:6)-d(1:3) ) / 72;
+            extra = {'arrow', 'width', 1.5*s/d};
         else
-            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), ...
-                'rgb', 'length', 15*s);
+            extra = {};
         end
+        h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), ...
+                'rgb', 'length', opt.wristlen*s, extra{:});
+
     else
         h.wrist = [];
     end
@@ -609,11 +614,10 @@ function create_tiled_floor(opt)
     surface(X, Y, Z, C, ...
         'FaceColor','texturemap',...
         'EdgeColor','none',...
+        'SpecularStrength', 0, ...
         'CDataMapping','direct');
 end
 
-    % process a cell array of options and return a struct
-    % define all possible options and their default values
     
 function opt = plot_options(robot, optin)
     
@@ -637,7 +641,7 @@ function opt = plot_options(robot, optin)
 
     % 3D rendering
     opt.shading = true;
-    opt.lightpos = [0 0 20];
+    opt.lightpos = [1 1 20];
     
     % tiled floor
     opt.tiles = true;
@@ -660,6 +664,7 @@ function opt = plot_options(robot, optin)
     opt.wrist = true;
     opt.wristlabel = {'xyz', 'noa'};
     opt.arrow = true;
+    opt.wristlen = 16;
     
     % joint rotation axes
     opt.jaxes = false;
@@ -667,7 +672,8 @@ function opt = plot_options(robot, optin)
     
     % joint cylinders
     opt.joints = true;
-    opt.jointdiam = 5;
+    opt.jointdiam = 1.5;
+    opt.jointlen = 3;
     opt.jointcolor = [0.7 0 0];
     
     % links
@@ -702,26 +708,38 @@ function opt = plot_options(robot, optin)
     end
     
     % figure the size of the figure
-    if isempty(opt.workspace)
-        %
-        % simple heuristic to figure the maximum reach of the robot
-        %
-        L = robot.links;
-        if any(L.isprismatic)
-            error('Prismatic joint(s) present: requires the ''workspace'' option');
-        end
-        reach = 0;
-        for i=1:robot.n
+    
+    %
+    % simple heuristic to figure the maximum reach of the robot
+    %
+    L = robot.links;
+    if any(L.isprismatic)
+        error('Prismatic joint(s) present: requires the ''workspace'' option');
+    end
+    reach = 0;
+    for i=1:robot.n
+        if L(i).isrevolute
             reach = reach + abs(L(i).a) + abs(L(i).d);
+        else
+            reach = reach + abs(L(i).a) + max(abs(L(i).qlim));
         end
-        reach = reach + sum(abs(transl(robot.tool)));
-        reach = reach/opt.zoom;
-        
-        % if we have a floor, quantize the reach to a tile size
-        if opt.tiles
-            reach = opt.tilesize * ceil(reach/opt.tilesize);
-        end
-        
+    end
+    reach = reach + sum(abs(robot.tool.t));
+    if opt.wrist
+        % the wrist axes add to the maximum reach, we need to scale the wrist
+        % length to keep within bounds
+        f = (1 + opt.wristlen/40);
+        reach = reach * f;
+        opt.wristlen = 40*(1-1/f);
+    end
+    reach = reach/opt.zoom;
+    
+    % if we have a floor, quantize the reach to a tile size
+    if opt.tiles
+        reach = opt.tilesize * ceil(reach/opt.tilesize);
+    end
+    
+    if isempty(opt.workspace)
         % now create a 3D volume based on this reach
         opt.workspace = [-reach reach -reach reach -reach reach];
         
@@ -732,7 +750,6 @@ function opt = plot_options(robot, optin)
             opt.floorlevel = -reach;
         end
     else
-        reach = min(abs(diff(reshape(opt.workspace, [2 3]))));
         if opt.tiles
             % set xy limits to be integer multiple of tilesize
             opt.workspace(1:4) = opt.tilesize * round(opt.workspace(1:4)/opt.tilesize);
@@ -744,6 +761,7 @@ function opt = plot_options(robot, optin)
     % the overall workspace dimension
     %  we need that a lot when creating the robot model
     opt.scale = opt.scale * reach/40;
+    
     
     if ~isempty(opt.fps)
         opt.delay = 1/opt.fps;
