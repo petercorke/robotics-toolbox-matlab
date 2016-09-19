@@ -34,8 +34,13 @@ function vellipse(robot, q, varargin)
     end
     
     opt.mode = {'trans', 'rot', '2d'};
+    opt.deg = false;
     [opt,args] = tb_optparse(opt, varargin);
     
+    if opt.deg
+        % in degrees mode, scale the columns corresponding to revolute axes
+        q = robot.todegrees(q);
+    end
     if robot.n == 2
         opt.mode = '2d';
     end
