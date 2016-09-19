@@ -41,8 +41,8 @@ function qplot(t, q)
     plot(t, q(:,1:3))
     plot(t, q(:,4:6), '--')
     grid on
-    xlabel('time')
-    ylabel('q')
+    xlabel('Time (s)')
+    ylabel('Joint coordinates (rad,m)')
     legend('q1', 'q2', 'q3', 'q4', 'q5', 'q6');
     hold off
 
