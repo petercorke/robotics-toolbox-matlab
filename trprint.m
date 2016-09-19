@@ -23,6 +23,10 @@
 %        >> trprint(T1, 'label', 'A')
 %               A:t = (0,0,0), RPY = (-0,0,-0) deg
 %
+% Notes::
+% - If the 'rpy' option is selected, then the particular angle sequence can be
+%   specified with additional options as accepted by tr2rpy().
+%
 % See also TR2EUL, TR2RPY, TR2ANGVEC.
 
 
@@ -58,15 +62,15 @@ function out = trprint(T, varargin)
     opt.radian = false;
     opt.label = '';
 
-    opt = tb_optparse(opt, varargin);
+    [opt,args] = tb_optparse(opt, varargin);
 
     s = '';
 
     if size(T,3) == 1
         if isempty(opt.fmt)
-            opt.fmt = '%g';
+            opt.fmt = '%.3g';
         end
-        s = tr2s(T, opt);
+        s = tr2s(T, opt, args{:});
     else
         if isempty(opt.fmt)
             opt.fmt = '%8.2g';
@@ -74,7 +78,7 @@ function out = trprint(T, varargin)
         
         for i=1:size(T,3)
             % for each 4x4 transform in a possible 3D matrix
-            s = char(s, tr2s(T(:,:,i), opt) );
+            s = char(s, tr2s(T(:,:,i), opt, args{:}) );
         end
     end
 
@@ -86,7 +90,7 @@ function out = trprint(T, varargin)
     end
 end
 
-function s = tr2s(T, opt)
+function s = tr2s(T, opt, varargin)
     % print the translational part if it exists
     if ~isempty(opt.label)
         s = sprintf('%8s: ', opt.label);
@@ -102,8 +106,8 @@ function s = tr2s(T, opt)
         case {'rpy', 'euler'}
             % angle as a 3-vector
             if strcmp(opt.mode, 'rpy')
-                ang = tr2rpy(T);
-                label = 'RPY';
+                [ang,order] = tr2rpy(T, varargin{:});
+                label = ['RPY/' order];
             else
                 ang = tr2eul(T);
                 label = 'EUL';
@@ -133,9 +137,12 @@ end
 function s = vec2s(fmt, v)
     s = '';
     for i=1:length(v)
-        s = strcat(s, sprintf(fmt, v(i)));
+        if abs(v(i)) < 1000*eps
+            v(i) = 0;
+        end
+        s = [s, sprintf(fmt, v(i))];
         if i ~= length(v)
-            s = strcat(s, ', ');
+            s = [s, ', ']; % don't use strcat, removes trailing spaces
         end
     end
 end
