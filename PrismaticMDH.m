@@ -48,7 +48,7 @@ classdef PrismaticMDH < Link
             if ~isempty(L.d)
                 error('d cannot be specified for a prismatic link');
             end
-            L.sigma = 'P';
+            L.jointtype = 'P';
             L.mdh = 1;
         end
     end

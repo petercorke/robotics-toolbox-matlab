@@ -21,23 +21,23 @@
 %
 % Properties (read/write)::
 %
-%  theta    kinematic: joint angle
-%  d        kinematic: link offset
-%  a        kinematic: link length
-%  alpha    kinematic: link twist
-%  sigma    kinematic: 0 if revolute, 1 if prismatic
-%  mdh      kinematic: 0 if standard D&H, else 1
-%  offset   kinematic: joint variable offset
-%  qlim     kinematic: joint variable limits [min max]
+%  theta        kinematic: joint angle
+%  d            kinematic: link offset
+%  a            kinematic: link length
+%  alpha        kinematic: link twist
+%  jointtype    kinematic: 'R' if revolute, 'P' if prismatic
+%  mdh          kinematic: 0 if standard D&H, else 1
+%  offset       kinematic: joint variable offset
+%  qlim         kinematic: joint variable limits [min max]
 %-
-%  m        dynamic: link mass
-%  r        dynamic: link COG wrt link coordinate frame 3x1
-%  I        dynamic: link inertia matrix, symmetric 3x3, about link COG.
-%  B        dynamic: link viscous friction (motor referred)
-%  Tc       dynamic: link Coulomb friction
+%  m            dynamic: link mass
+%  r            dynamic: link COG wrt link coordinate frame 3x1
+%  I            dynamic: link inertia matrix, symmetric 3x3, about link COG.
+%  B            dynamic: link viscous friction (motor referred)
+%  Tc           dynamic: link Coulomb friction
 %-
-%  G        actuator: gear ratio
-%  Jm       actuator: motor inertia (motor referred)
+%  G            actuator: gear ratio
+%  Jm           actuator: motor inertia (motor referred)
 %
 % Examples::
 %
@@ -82,7 +82,7 @@ classdef Link < matlab.mixin.Copyable
         d     % kinematic: link offset
         alpha % kinematic: link twist
         a     % kinematic: link length
-        sigma % revolute='R', prismatic='P'
+        jointtype  % revolute='R', prismatic='P' -- should be an enum
         mdh   % standard DH=0, MDH=1
         offset % joint coordinate offset
         name   % joint coordinate name
@@ -212,7 +212,7 @@ classdef Link < matlab.mixin.Copyable
                 l.a = 0;
                 l.theta = 0;
                 l.d = 0;
-                l.sigma = 'R';
+                l.jointtype = 'R';
                 l.mdh = 0;
                 l.offset = 0;
                 l.flip = false;
@@ -268,13 +268,13 @@ classdef Link < matlab.mixin.Copyable
                     if ~isempty(opt.theta)
                         % constant value of theta means it must be prismatic
                         l.theta = value( opt.theta, opt);
-                        l.sigma = 1;
+                        l.jointtype = 'P';
                     end
                     
                     if ~isempty(opt.d)
                         % constant value of d means it must be revolute
                         l.d = value( opt.d, opt);
-                        l.sigma = 0;
+                        l.jointtype = 'P';
                     end
                     if ~isempty(opt.d) && ~isempty(opt.theta)
                         error('RTB:Link:badarg', 'specify only one of ''d'' or ''theta''');
@@ -312,14 +312,16 @@ classdef Link < matlab.mixin.Copyable
                     l.a = dh(3);
                     l.alpha = dh(4);
                     
-                    l.sigma = 0;
+                    l.jointtype = 'R';  % default to revolute
                     l.offset = 0;
                     l.flip = false;
                     l.mdh = 0;  % default to standard D&H
                     
                     % optionally set sigma and offset
                     if length(dh) >= 5
-                        l.sigma = dh(5);
+                        if dh(5) == 1
+                            l.jointtype = 'P';
+                        end
                     end
                     if length(dh) == 6
                         l.offset = dh(6);
@@ -329,9 +331,9 @@ classdef Link < matlab.mixin.Copyable
                         % legacy DYN matrix
                         
                         if dh(5) > 0
-                            l.sigma = 'P';
+                            l.jointtype = 'P';
                         else
-                            l.sigma = 'R';
+                            l.jointtype = 'R';
                         end
                         l.mdh = 0;  % default to standard D&H
                         l.offset = 0;
@@ -482,11 +484,13 @@ classdef Link < matlab.mixin.Copyable
             % If L is a vector of Link objects return a string of characters in joint order.
             v = '';
             for ll=l
-                switch ll.sigma
-                    case {0, 'R'}
-                    v = strcat(v, 'R');
-                    case {1, 'P'}
-                    v = strcat(v, 'P');
+                switch ll.jointtype
+                    case 'R'
+                        v = strcat(v, 'R');
+                    case 'P'
+                        v = strcat(v, 'P');
+                    otherwise
+                        error('RTB:Link:badval', 'bad value for link jointtype %d', ll.type);
                 end
             end
         end 
@@ -592,7 +596,7 @@ classdef Link < matlab.mixin.Copyable
             %
             % See also Link.isprismatic.
             
-            v = [L.sigma] == 0 | [L.sigma] == 'R';
+            v = [L.jointtype] == 'R';
         end
         
         function v = isprismatic(L)

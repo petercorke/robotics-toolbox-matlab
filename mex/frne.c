@@ -238,7 +238,7 @@ mexFunction(
         break;
     }
     default:
-        mexErrMsgTxt("frne: wrong number of arguments.");
+        error("wrong number of arguments, %d given", nrhs);
     }
 
     /*
@@ -269,7 +269,7 @@ mexFunction(
     /* get pointer to the first link structure */
     link0 = mxGetProperty(mx_robot, (mwIndex) 0, "links");
     if (link0 == NULL)
-        mexErrMsgTxt("couldnt find element link in robot object");
+        error("couldn't find element link in robot object");
 
     /*
      * Elements of the link structure are:
@@ -279,7 +279,7 @@ mexFunction(
      *  theta:
      *  D:
      *  offset:
-     *  sigma:
+     *  jointtype:
      *  mdh:
      *  m:
      *  r:
@@ -307,7 +307,7 @@ mexFunction(
         l->A =      mxGetScalar( mxGetProperty(links, (mwIndex) j, "a") );
         l->theta =  mxGetScalar( mxGetProperty(links, (mwIndex) j, "theta") );
         l->D =      mxGetScalar( mxGetProperty(links, (mwIndex) j, "d") );
-        l->sigma =  mxGetScalar( mxGetProperty(links, (mwIndex) j, "sigma") );
+        l->jointtype =  mxGetScalar( mxGetProperty(links, (mwIndex) j, "jointtype") );
         l->offset = mxGetScalar( mxGetProperty(links, (mwIndex) j, "offset") );
         l->m =      mxGetScalar( mxGetProperty(links, (mwIndex) j, "m") );
         l->rbar =   (Vect *)mxGetPr( mxGetProperty(links, (mwIndex) j, "r") );
@@ -332,13 +332,15 @@ mexFunction(
         for (j = 0; j < njoints; j++) {
             Link    *l = &robot.links[j];
 
-            switch (l->sigma) {
+            switch (l->jointtype) {
             case REVOLUTE:
                 rot_mat(l, MEL(q,p,j)+l->offset, l->D, robot.dhtype);
                 break;
             case PRISMATIC:
                 rot_mat(l, l->theta, MEL(q,p,j)+l->offset, robot.dhtype);
                 break;
+            default:
+                error("Invalid joint type %d (expecting 'R' or 'P')", l->jointtype);
             }
 #ifdef  DEBUG
             rot_print("R", &l->R);
@@ -414,6 +416,8 @@ case MODIFIED:
     l->r.y = -d * sa;
     l->r.z = d * ca;
     break;
+default:
+     error("Invalid DH type %d (expecting 0 = DH or 1 = MDH)", type);
     }
 }
 
@@ -493,5 +497,5 @@ error(char *s, ...)
 
     vsprintf(b, s, ap);
 
-    mexErrMsgTxt(b);
+    mexErrMsgIdAndTxt("RTB:frne:badargs", b);
 }

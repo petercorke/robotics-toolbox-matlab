@@ -18,6 +18,8 @@
                 'Menubar', 'none', ...
                 'Name', r.name);
             dh = zeros(r.n,0);
+            
+            % get the parameters out of the Link structures into a matrix that we can edit
             for j=1:r.n
                 L = r.links(j);
                
@@ -25,7 +27,7 @@
                 dh(j,2) = L.d;
                 dh(j,3) = L.a;
                 dh(j,4) = L.alpha;
-                dh(j,5) = L.sigma == 'P';
+                dh(j,5) = L.jointtype == 'P';
                 dh(j,6) = L.offset;
                 if ~isempty(L.qlim)
                     dh(j,7) = L.qlim(1);
@@ -79,6 +81,8 @@
             
             dh = get(table, 'Data');
             r = get(table, 'UserData');
+            
+            % put the parameters back into the Link objects
             for j=1:r.n
                 L = r.links(j);
                
@@ -87,9 +91,9 @@
                 L.a = dh(j,3); 
                 L.alpha = dh(j,4);
                 if dh(j,5) > 0
-                    L.sigma = 'P';
+                    L.jointtype = 'P';
                 else
-                    L.sigma = 'R';
+                    L.jointtype = 'R';
                 end
                 L.offset = dh(j,6);
                 L.qlim(1) = dh(j,7);
