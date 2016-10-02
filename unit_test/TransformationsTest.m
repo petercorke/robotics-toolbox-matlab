@@ -130,10 +130,10 @@ function SE2_test(testCase)
         [1 0 1; 0 1 2; 0 0 1], 'absTol', 1e-6);
     verifyEqual(testCase,  transl2([2, 3]), ...
         [1 0 2; 0 1 3; 0 0 1], 'absTol', 1e-6);
-    verifyEqual(testCase,  SE2(2, 3, 0), ...
-        [1 0 2; 0 1 3; 0 0 1], 'absTol', 1e-6);
-    verifyEqual(testCase,  SE2(2, 3, pi/2), ...
-        transl2(2,3)*trot2(pi/2), 'absTol', 1e-6);
+%     verifyEqual(testCase,  SE2(2, 3, 0), ...
+%         [1 0 2; 0 1 3; 0 0 1], 'absTol', 1e-6);
+%     verifyEqual(testCase,  SE2(2, 3, pi/2), ...
+%         transl2(2,3)*trot2(pi/2), 'absTol', 1e-6);
 end
 
 function rot2_test(testCase)
@@ -201,9 +201,10 @@ end
 %    tr2angvec                  - HT/RM to angle/vector form
 function tr2angvec_test(testCase)
 	% null rotation
+    % - vector isn't defined here, but RTB sets it (0 0 0)
     [theta, v] = tr2angvec(eye(3,3));
     verifyEqual(testCase, theta, 0.0, 'absTol',1e-6);
-    verifyEqual(testCase, v, [1 0 0], 'absTol',1e-6);
+    verifyEqual(testCase, v, [0 0 0], 'absTol',1e-6);
     
     % canonic rotations
     [theta, v] = tr2angvec(rotx(pi/2));
@@ -221,7 +222,7 @@ function tr2angvec_test(testCase)
     % null rotation
     [theta, v] = tr2angvec(eye(4,4));
     verifyEqual(testCase, theta, 0.0, 'absTol',1e-6);
-    verifyEqual(testCase, v, [1 0 0], 'absTol',1e-6);
+    verifyEqual(testCase, v, [0 0 0], 'absTol',1e-6);
     
     % canonic rotations
     [theta, v] = tr2angvec(trotx(pi/2));
@@ -311,7 +312,7 @@ function rpy2r_test(testCase)
     
     r2d = 180/pi;
     
-    R = rotz(0.1) * roty(0.2) * rotx(0.3);
+    R = rotz(0.3) * roty(0.2) * rotx(0.1);
     
     verifyEqual(testCase, rpy2r(0.1, 0.2, 0.3), R, 'absTol',1e-4); 
     verifyEqual(testCase, rpy2r([0.1, 0.2, 0.3]), R, 'absTol',1e-4);
@@ -327,7 +328,7 @@ function rpy2r_test(testCase)
     verifySize(testCase, Rs, [3 3 3]);
     verifyEqual(testCase, Rs(:,:,2), R, 'absTol',1e-4);
 
-    R = rotx(0.1) * roty(0.2) * rotz(0.3);
+    R = rotx(0.3) * roty(0.2) * rotz(0.1);
     
     verifyEqual(testCase, rpy2r(0.1, 0.2, 0.3, 'xyz'), R, 'absTol',1e-4); 
     verifyEqual(testCase, rpy2r([0.1, 0.2, 0.3], 'xyz'), R, 'absTol',1e-4);
@@ -351,7 +352,7 @@ function rpy2tr_test(testCase)
 
     r2d = 180/pi;
     
-    T = trotz(0.1) * troty(0.2) * trotx(0.3);
+    T = trotz(0.3) * troty(0.2) * trotx(0.1);
     
     verifyEqual(testCase, rpy2tr(0.1, 0.2, 0.3), T, 'absTol',1e-4); 
     verifyEqual(testCase, rpy2tr([0.1, 0.2, 0.3]), T, 'absTol',1e-4);
@@ -367,7 +368,7 @@ function rpy2tr_test(testCase)
     verifySize(testCase, Ts, [4 4 3]);
     verifyEqual(testCase, Ts(:,:,2), T, 'absTol',1e-4);
 
-    T = trotx(0.1) * troty(0.2) * trotz(0.3);
+    T = trotx(0.3) * troty(0.2) * trotz(0.1);
     
     verifyEqual(testCase, rpy2tr(0.1, 0.2, 0.3, 'xyz'), T, 'absTol',1e-4); 
     verifyEqual(testCase, rpy2tr([0.1, 0.2, 0.3], 'xyz'), T, 'absTol',1e-4);
@@ -415,7 +416,7 @@ function tr2eul_test(testCase)
     verifyEqual(testCase, x(2,:), eul*180/pi,'absTol',1e-4);
 
     %test for scalar input
-    verifyError(testCase, @()tr2eul(1),'MATLAB:badsubscript');
+    verifyError(testCase, @()tr2eul(1),'RTB:SO3:check:badarg');
 end
     
 function tr2rpy_test(testCase)
