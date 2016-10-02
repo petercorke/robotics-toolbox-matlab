@@ -176,6 +176,22 @@ function arith_test(tc)
     
 end
 
+function conversions_test(tc)
+    
+    
+    %%  SE2                     convert to SE2 class
+
+    TT = SE2(1, 2, 0.3);
+    
+    verifyClass(tc, TT.SE3, 'SE3');
+    verifyEqual(tc, double(TT.SE3), transl(1, 2, 0) * trotz(0.3), 'AbsTol', 1e-10 );
+    
+    %% Lie stuff
+    th = 0.3; 
+    RR = SO2(th);
+    verifyEqual(tc, RR.log, skew(th), 'AbsTol', 1e-10 );
+
+end
 
 function adjoint_test(tc)
     R = rpy2r( randn(1,3) );  t = randn(3,1); T = rt2tr(R, t);
@@ -200,16 +216,7 @@ function interp_test(tc)
     
 end
 
-function conversions_test(tc)
-    
-    
-    
-    %%  SO2                     convert to SO2 class
 
-    T = SE2(1, 2, 0.3);
-    verifyEqual(tc, double(T.SO2), rot2(0.3), 'AbsTol', 1e-10 );
-
-end
 
 function miscellany_test(tc)
     

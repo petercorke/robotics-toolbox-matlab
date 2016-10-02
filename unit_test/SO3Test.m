@@ -280,7 +280,7 @@ function conversions_test(tc)
     
     %% Lie stuff
     th = 0.3; v = [0 1 0];
-    RR = angvec2r( th, v);
+    RR = SO3.angvec( th, v);
     verifyEqual(tc, RR.log, skew(v)*th);
 end
 

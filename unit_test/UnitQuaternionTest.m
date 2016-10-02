@@ -335,6 +335,8 @@ end
 
 function miscellany_test(tc)
     
+    % AbsTol not used since Quaternion supports eq() operator
+    
     rx = UnitQuaternion.Rx(pi/2);
     ry = UnitQuaternion.Ry(pi/2);
     rz = UnitQuaternion.Rz(pi/2);
@@ -355,10 +357,10 @@ function miscellany_test(tc)
 
     %% interp
     q = rx*ry*rz;
-    verifyEqual(tc, q.interp(0), u, 'AbsTol', 1e-10  );
-    verifyEqual(tc, q.interp(1), q, 'AbsTol', 1e-10  );
-    verifyEqual(tc, q.interp(rx, 0), q, 'AbsTol', 1e-10  );
-    verifyEqual(tc, q.interp(rx, 1), rx, 'AbsTol', 1e-10  );
+    verifyEqual(tc, q.interp(0), u);
+    verifyEqual(tc, q.interp(1), q );
+     verifyEqual(tc, q.interp(rx, 0), q );
+    verifyEqual(tc, q.interp(rx, 1), rx );
     
     verifyEqual(tc, q^0, u, 'AbsTol', 1e-10  );
     verifyEqual(tc, q^(-1), inv(q), 'AbsTol', 1e-10  );

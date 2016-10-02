@@ -142,12 +142,7 @@ function conversions_test(tc)
     
 
     
-    %%  SE2                     convert to SE2 class
 
-    RR = SO2(0.3);
-    
-    verifyClass(tc, RR.SE3, 'SE3');
-    verifyEqual(tc, double(RR.SE3), trot2(0.3), 'AbsTol', 1e-10 );
     
     %% Lie stuff
     th = 0.3; 

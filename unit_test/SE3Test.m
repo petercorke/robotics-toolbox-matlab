@@ -1,4 +1,4 @@
-function tests = SO3Test
+function tests = SE3Test
     tests = functiontests(localfunctions);
 end
 
@@ -12,13 +12,15 @@ function constructor_test(tc)
 
     
     %% null
-    verifyEqual(tc, SE3().double, eye(4,4));
+    tc.verifyEqual(SE3().double, eye(4,4));
     
     %% translation only
     t = [1 2 3];
     verifyEqual(tc, SE3(t).double, transl(t));
     verifyEqual(tc, SE3(t').double, transl(t));
     verifyEqual(tc, SE3(t(1), t(2), t(3)).double, transl(t));
+    
+
     
     %% R,t
     R = roty(-pi/2);
@@ -44,6 +46,16 @@ function constructor_test(tc)
     verifyEqual(tc, length(tt), size(TT, 3) );
     verifyEqual(tc, tt.T, TT);
     
+    t = rand(10,3);
+    s = SE3(t);
+    tc.verifyLength(s, 10);
+    tc.verifyEqual(s(4).t, t(4,:)');
+    
+    %% symbolic version
+    syms x y z
+    
+        verifyClass(tc, SE3(x, y, z), 'SE3');
+
 end
 
 function staticconstructors_test(tc)
