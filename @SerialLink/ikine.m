@@ -45,6 +45,8 @@
 % 'q0',Q            initial joint configuration (default all zeros)
 % 'search'          search over all configurations
 % 'slimit',L        maximum number of search attempts (default 100)
+% 'transpose',A     use Jacobian transpose with step size A, rather than
+%                   Levenberg-Marquadt
 %
 % References::
 % - Robotics, Vision & Control, Section 8.4,
@@ -117,6 +119,7 @@ function qt = ikine(robot, tr, varargin)
     opt.verbose = false;
     opt.mask = [1 1 1 1 1 1];
     opt.q0 = zeros(1, n);
+    opt.transpose = NaN;
     
     [opt,args] = tb_optparse(opt, varargin);
     
@@ -148,7 +151,7 @@ function qt = ikine(robot, tr, varargin)
                 return;
             end
         end
-        error('no solution found, are you sure the point in reachable?');
+        error('no solution found, are you sure the point is reachable?');
         qt = [];
         return
     end
@@ -165,7 +168,7 @@ function qt = ikine(robot, tr, varargin)
     q = opt.q0;
     
     failed = false;
-    revolutes = [robot.links.sigma] == 0;
+    revolutes = robot.revolute();
     
     for i=1:length(TT)
         T = TT(i);
@@ -197,41 +200,47 @@ function qt = ikine(robot, tr, varargin)
             J = jacob0(robot, q);
             
             JtJ = J'*W*J;
-            dq = inv(JtJ + (lambda + opt.lambdamin) * eye(size(JtJ)) ) * J' * W * e;
             
-            % compute possible new value of
-            qnew = q + dq';
-            
-            enew = errfunc(T, robot.fkine(qnew));
-            
-            
-            % was it a good update?
-            if norm(W*enew) < norm(W*e)
-                % step is accepted
-                q = qnew;
-                e = enew;
-                lambda = lambda/2;
-                rejcount = 0;
-                if opt.debug
-                    fprintf('ACCEPTED: |e|=%g, |dq|=%g\n', norm(W*enew), norm(dq));
-                end
+            if ~isnan(opt.transpose)
+                % do the simple Jacobian transpose with constant gain
+                dq = opt.transpose * J' * e;
             else
-                % step is rejected, increase the damping and retry
-                lambda = lambda*2;
-                rejcount = rejcount + 1;
-                if opt.debug
-                    fprintf('rejected: |e|=%g, |dq|=%g\n', norm(W*enew), norm(dq));
-                end
-                if rejcount > opt.rlimit
-                    if ~opt.quiet
-                        warning('ikine: rejected-step limit %d exceeded (pose %d), final err %g', ...
-                            opt.rlimit, i, norm(W*enew));
-                    end
-                    failed = true;
-                    break;
-                end
+                % do the damped inverse with Levenberg-Marquadt
+                dq = inv(JtJ + (lambda + opt.lambdamin) * eye(size(JtJ)) ) * J' * W * e;
                 
-                continue;
+                % compute possible new value of
+                qnew = q + dq';
+                
+                % and figure out the new error
+                enew = errfunc(T, robot.fkine(qnew));
+                
+                % was it a good update?
+                if norm(W*enew) < norm(W*e)
+                    % step is accepted
+                    q = qnew;
+                    e = enew;
+                    lambda = lambda/2;
+                    rejcount = 0;
+                    if opt.debug
+                        fprintf('ACCEPTED: |e|=%g, |dq|=%g\n', norm(W*enew), norm(dq));
+                    end
+                else
+                    % step is rejected, increase the damping and retry
+                    lambda = lambda*2;
+                    rejcount = rejcount + 1;
+                    if opt.debug
+                        fprintf('rejected: |e|=%g, |dq|=%g\n', norm(W*enew), norm(dq));
+                    end
+                    if rejcount > opt.rlimit
+                        if ~opt.quiet
+                            warning('ikine: rejected-step limit %d exceeded (pose %d), final err %g', ...
+                                opt.rlimit, i, norm(W*enew));
+                        end
+                        failed = true;
+                        break;
+                    end
+                    continue;  % try again
+                end
             end
             
             
