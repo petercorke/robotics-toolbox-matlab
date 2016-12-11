@@ -34,28 +34,23 @@
 
 function R = t2r(T)
     
-    if isa(T, 'SE3') || isa(T, 'SE2')
-        R = T.R;
+    assert(isfloat(T), 'RTB:t2r:badarg', 'expecting real matrix argument');
+    
+    % check dimensions: T is SE(2) or SE(3)
+    d = size(T);
+    assert(d(1) == d(2), 'RTB:t2r:badarg', 'matrix must be square');
+    assert(any(d(1) == [3 4], 'RTB:t2r:badarg', 'argument is not a homogeneous transform (sequence)');
+    
+    n = d(1);     % works for SE(2) or SE(3)
+    
+    if numel(d) == 2
+        % single matrix case
+        R = T(1:n-1,1:n-1);
     else
-        % check dimensions: T is SE(2) or SE(3)
-        d = size(T);
-        if d(1) ~= d(2)
-            error('RTB:t2r:badarg', 'matrix must be square');
-        end
-        if ~any(d(1) == [3 4])
-            error('RTB:t2r:badarg', 'argument is not a homogeneous transform (sequence)');
-        end
-        
-        n = d(1);     % works for SE(2) or SE(3)
-        
-        if numel(d) == 2
-            % single matrix case
-            R = T(1:n-1,1:n-1);
-        else
-            %  matrix sequence case
-            R = zeros(3,3,d(3));
-            for i=1:d(3)
-                R(:,:,i) = T(1:n-1,1:n-1,i);
-            end
+        %  matrix sequence case
+        R = zeros(3,3,d(3));
+        for i=1:d(3)
+            R(:,:,i) = T(1:n-1,1:n-1,i);
         end
     end
+end
