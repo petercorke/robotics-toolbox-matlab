@@ -16,16 +16,18 @@
 %
 % Options::
 %  'deg'   Compute angles in degrees (radians default)
-%  'xyz'   Return solution for sequential rotations about X, Y, Z axes
+%  'xyz'   Rotations about X, Y, Z axes (for a robot gripper)
+%  'yxz'   Rotations about Y, X, Z axes (for a camera)
+%
 %
 % Note::
-% - Toolbox rel 8-9 has the reverse angle sequence.
+% - Toolbox rel 8-9 has the reverse angle sequence as default.
 % - ZYX order is appropriate for vehicles with direction of travel in the X
 %   direction.  XYZ order if direction of travel in the Z direction.
 %
 % See also TR2RPY, EUL2TR.
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2016, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

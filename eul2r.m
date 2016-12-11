@@ -1,6 +1,6 @@
 %EUL2R Convert Euler angles to rotation matrix
 %
-% R = EUL2R(PHI, THETA, PSI, OPTIONS) is an SO(2) orthonornal rotation
+% R = EUL2R(PHI, THETA, PSI, OPTIONS) is an SO(3) orthonornal rotation
 % matrix (3x3) equivalent to the specified Euler angles.  These correspond
 % to rotations about the Z, Y, Z axes respectively. If PHI, THETA, PSI are
 % column vectors (Nx1) then they are assumed to represent a trajectory and
@@ -23,7 +23,7 @@
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2016, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

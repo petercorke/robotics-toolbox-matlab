@@ -1,11 +1,12 @@
 %EUL2TR Convert Euler angles to homogeneous transform
 %
 % T = EUL2TR(PHI, THETA, PSI, OPTIONS) is a SE(3) homogeneous
-% transformation matrix (4x4) equivalent to the specified Euler angles.
-% These correspond to rotations about the Z, Y, Z axes respectively. If
-% PHI, THETA, PSI are column vectors (Nx1) then they are assumed to
-% represent a trajectory and R is a three-dimensional matrix (4x4xN), where
-% the last index corresponds to rows of PHI, THETA, PSI.
+% transformation matrix (4x4) with zero translation and rotation equivalent
+% to the specified Euler angles. These correspond to rotations about the Z,
+% Y, Z axes respectively. If PHI, THETA, PSI are column vectors (Nx1) then
+% they are assumed to represent a trajectory and R is a three-dimensional
+% matrix (4x4xN), where the last index corresponds to rows of PHI, THETA,
+% PSI.
 %
 % T = EUL2TR(EUL, OPTIONS) as above but the Euler angles are taken from
 % consecutive columns of the passed matrix EUL = [PHI THETA PSI].  If EUL
@@ -24,7 +25,7 @@
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2016, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
