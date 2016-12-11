@@ -74,7 +74,7 @@ end
         switch opt.analytic
             case 'rpy'
                 rpy = tr2rpy(Tn);
-                A = rpy2jac(rpy);
+                A = rpy2jac(rpy, 'xyz');
                 if rcond(A) < eps
                     error('Representational singularity');
                 end

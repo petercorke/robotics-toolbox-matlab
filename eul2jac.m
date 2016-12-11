@@ -9,7 +9,7 @@
 % Notes::
 % - Used in the creation of an analytical Jacobian.
 %
-% See also RPY2JAC, SerialLink.JACOBN.
+% See also RPY2JAC, SerialLink.JACOB0.
 
 
 
