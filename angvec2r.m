@@ -7,11 +7,9 @@
 % - If THETA == 0 then return identity matrix.
 % - If THETA ~= 0 then V must have a finite length.
 %
-% See also eul2r, rpy2r, tr2angvec.
+% See also eul2r, rpy2r, tr2angvec, trexp, SO3.angvec.
 
-
-
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2016, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

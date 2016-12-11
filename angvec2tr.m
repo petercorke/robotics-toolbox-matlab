@@ -6,11 +6,9 @@
 % Note::
 % - The translational part is zero.
 %
-% See also EUL2TR, RPY2TR, ANGVEC2R, TR2ANGVEC.
+% See also EUL2TR, RPY2TR, ANGVEC2R, TR2ANGVEC, TREXP, SO3.angvec.
 
-
-
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2016, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
