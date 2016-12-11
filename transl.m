@@ -26,11 +26,9 @@
 % - Somewhat unusually this function performs a function and its inverse.  An
 %   historical anomaly.
 %
-% See also CTRAJ.
+% See also SE3.t, SE3.transl, CTRAJ.
 
-
-
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2016, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -51,16 +49,7 @@
 
 function [t1,t2,t3] = transl(x, y, z)
     if nargin == 1
-        if isa(x, 'SE3')
-            if nargout == 1 || nargout == 0
-                t1 = x.t;
-            else
-                t = x.t;
-                t1 = t(1);
-                t2 = t(2);
-                t3 = t(3);
-            end
-        elseif ishomog(x)
+        if ishomog(x)
             if ndims(x) == 3
                 % transl(T)  -> P, trajectory case
                 if nargout == 1 
