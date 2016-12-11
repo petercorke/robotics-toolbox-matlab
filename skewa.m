@@ -4,15 +4,16 @@
 % 
 % If V (1x3) then
 %
-%           S = |  0  -v1  v2 |
-%               | v1    0  v3 |
+%           S = |  0  -v3  v1 |
+%               | v3    0  v2 |
 %               |  0    0   0 |
 %
 % and if V (1x6) then
 %
-%               |  0  -v3   v2  v4 |
-%           S = | v3    0  -v1  v5 |
-%               |-v2   v1    0  v6 |
+%               |  0  -v6   v5  v1 |
+%           S = | v6    0  -v4  v2 |
+%               |-v5   v4    0  v3 |
+%               |  0    0    0   0 |
 %
 % Notes::
 % - These are the generator matrices for se(2) and se(3).

@@ -56,5 +56,5 @@ function v = vex(S)
     elseif all(size(S) == [2 2])
         v = 0.5*(S(2,1)-S(1,2));
     else
-        error('RTB:vex:badarg', 'argument must be a 3x3 matrix');
+        error('RTB:vex:badarg', 'argument must be a 2x2 or 3x3 matrix');
     end
