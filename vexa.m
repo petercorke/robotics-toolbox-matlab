@@ -5,16 +5,17 @@
 %
 % In the case that S (3x3) then V is 1x3
 %
-%           S = |  0  -v1  v2 |
-%               | v1    0  v3 |
+%           S = |  0  -v3  v1 |
+%               | v3    0  v2 |
 %               |  0    0   0 |
 %
 %In the case that S (6x6) then V is 1x6
 %
 %
-%               |  0  -v3   v2  v4 |
-%           S = | v3    0  -v1  v5 |
-%               |-v2   v1    0  v6 |
+%               |  0  -v6   v5  v1 |
+%           S = | v6    0  -v4  v2 |
+%               |-v5   v4    0  v3 |
+%               |  0    0    0   0 |
 %
 % Notes::
 % - The matrices are the generator matrices for se(2) and se(3).
@@ -46,9 +47,14 @@
 % http://www.petercorke.com
 
 function s = vexa(Omega)
-        if ~all(size(Omega) == [4 4])
-        error('RTB:vexa:badarg', 'expecting a 4x4 matrix');
-        end
-    
+
+    if all(size(Omega) == [4 4])
         s = [transl(Omega); vex(Omega(1:3,1:3))];
+    elseif all(size(Omega) == [3 3 ])
+        s = [transl2(Omega); vex(Omega(1:2,1:2))];
+    else
+        error('RTB:vexa:badarg', 'argument must be a 3x3 or 4x4 matrix');
+    end
+    
+    
 end
