@@ -7,17 +7,23 @@
 %           S = | 0  -v |
 %               | v   0 |
 %
-% and if V (3x3) then
+% and if V (1x3) then
 %
-%               | 0   -vz  vy|
-%           S = | vz   0  -vx|
-%               |-vy   vx  0 |
+%               |  0  -vz   vy |
+%           S = | vz    0  -vx |
+%               |-vy   vx    0 |
 %
-% See also VEX.
+%
+% Notes::
+% - These are the generator matrices for so(2) and so(3).
+%
+% References::
+% - Robotics, Vision & Control: Second Edition, Chap 2,
+%   P. Corke, Springer 2016.
+%
+% See also SKEWA, VEX.
 
-
-
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2016, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
