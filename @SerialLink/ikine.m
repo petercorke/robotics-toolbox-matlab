@@ -176,6 +176,11 @@ function qt = ikine(robot, tr, varargin)
 
         iterations = 0;
         
+        if opt.debug
+            e = tr2delta(robot.fkine(q), T);
+            fprintf('Initial:  |e|=%g\n', norm(W*e));
+        end
+        
         while true
             % update the count and test against iteration limit
             iterations = iterations + 1;
@@ -188,16 +193,15 @@ function qt = ikine(robot, tr, varargin)
                 break
             end
             
-            e = errfunc(T, robot.fkine(q));
+            e = tr2delta(robot.fkine(q), T);
             
             % are we there yet
             if norm(W*e) < opt.tol
                 break;
             end
             
-            
             % compute the Jacobian
-            J = jacob0(robot, q);
+            J = jacobe(robot, q);
             
             JtJ = J'*W*J;
             
@@ -205,32 +209,32 @@ function qt = ikine(robot, tr, varargin)
                 % do the simple Jacobian transpose with constant gain
                 dq = opt.transpose * J' * e;
             else
-                % do the damped inverse with Levenberg-Marquadt
+                % do the damped inverse Gauss-Newton with Levenberg-Marquadt
                 dq = inv(JtJ + (lambda + opt.lambdamin) * eye(size(JtJ)) ) * J' * W * e;
                 
                 % compute possible new value of
                 qnew = q + dq';
                 
                 % and figure out the new error
-                enew = errfunc(T, robot.fkine(qnew));
+                enew = tr2delta(robot.fkine(qnew), T);
                 
                 % was it a good update?
                 if norm(W*enew) < norm(W*e)
                     % step is accepted
+                    if opt.debug
+                        fprintf('ACCEPTED: |e|=%g, |dq|=%g, lambda=%g\n', norm(W*enew), norm(dq), lambda);
+                    end
                     q = qnew;
                     e = enew;
                     lambda = lambda/2;
                     rejcount = 0;
-                    if opt.debug
-                        fprintf('ACCEPTED: |e|=%g, |dq|=%g\n', norm(W*enew), norm(dq));
-                    end
                 else
                     % step is rejected, increase the damping and retry
+                    if opt.debug
+                        fprintf('rejected: |e|=%g, |dq|=%g, lambda=%g\n', norm(W*enew), norm(dq), lambda);
+                    end
                     lambda = lambda*2;
                     rejcount = rejcount + 1;
-                    if opt.debug
-                        fprintf('rejected: |e|=%g, |dq|=%g\n', norm(W*enew), norm(dq));
-                    end
                     if rejcount > opt.rlimit
                         if ~opt.quiet
                             warning('ikine: rejected-step limit %d exceeded (pose %d), final err %g', ...
@@ -274,13 +278,4 @@ function qt = ikine(robot, tr, varargin)
     end
     
     
-end
-
-function e = errfunc(T, Tq)
-     e = tr2delta( Tq.T , T.T );
-%    e = tr2delta( Tq.T * inv(T.T) );
-%     e(1:3) = Tq.t - T.t;
-%     [a,v] = tr2angvec(Tq.R * T.R');
-%     e(4:6) = a*v;
-%     e = e(:);
 end
