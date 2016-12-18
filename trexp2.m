@@ -1,24 +1,25 @@
 %TREXP2 matrix exponential for so(2) and se(2)
 %
-% R = TREXP2(S) is the matrix exponential (2x2) of the so(2) element S that
+% SO(2)::
+%
+% R = TREXP2(OMEGA) is the matrix exponential (2x2) of the so(2) element OMEGA that
 % yields a rotation matrix (2x2).
 %
-% R = TREXP2(S, THETA) as above, but so(2) rotation of S*THETA, S must be
-% unit norm.
+% R = TREXP2(THETA) as above, but rotation by THETA (1x1). 
 %
-% R = TREXP2(THETA) as above, but the so(2) value is expressed as a scalar. 
+% SE(2)::
 %
 % T = TREXP2(SIGMA) is the matrix exponential (3x3) of the se(2) element
 % SIGMA that yields a homogeneous transformation  matrix (3x3).
 %
-% T = TREXP2(SIGMA, THETA) as above, but se(2) rotation of SIGMA*THETA, the
-% rotation part of SIGMA must be unit norm.
-%
-% T = TREXP2(VW) as above, but the se(2) value is expressed as a vector VW
+% T = TREXP2(TW) as above, but the se(2) value is expressed as a vector TW
 % (1x3).
 %
-% T = TREXP(VW, THETA) as above, but se(2) rotation of VW*THETA, the
-% rotation part of VW must be unit norm.
+% T = TREXP2(SIGMA, THETA) as above, but se(2) rotation of SIGMA*THETA, the
+% rotation part of SIGMA (3x3) must be unit norm.
+%
+% T = TREXP(TW, THETA) as above, but se(2) rotation of TW*THETA, the
+% rotation part of TW must be unit norm.
 %
 % Notes::
 % - Efficient closed-form solution of the matrix exponential for arguments that are
@@ -27,10 +28,31 @@
 %   skew-symmetric matrix from a unit vector.
 %
 % References::
+% - Robotics, Vision & Control: Second Edition, Chap 2,
+%   P. Corke, Springer 2016.
 % - "Mechanics, planning and control"
-%   Park & Lynch, Cambridge, 2016.
+%   Park & Lynch, Cambridge, 2017.
 %
-% See also trlog, trexp, Twist.
+% See also TREXP, SKEW, SKEWA, Twist.
+
+% Copyright (C) 1993-2016, by Peter I. Corke
+%
+% This file is part of The Robotics Toolbox for MATLAB (RTB).
+% 
+% RTB is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Lesser General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% RTB is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Lesser General Public License for more details.
+% 
+% You should have received a copy of the GNU Leser General Public License
+% along with RTB.  If not, see <http://www.gnu.org/licenses/>.
+%
+% http://www.petercorke.com
 
 function T = trexp2(S, theta)
 
@@ -39,7 +61,8 @@ function T = trexp2(S, theta)
         % input is se(2)
         if nargin == 1
             if isvec(S,3)
-                S = [skew(S(3)) S(1:2)'; 0 0 0];
+                S = S(:);
+                S = [skew(S(3)) S(1:2); 0 0 0];
             end
             T = expm(S);
         else
