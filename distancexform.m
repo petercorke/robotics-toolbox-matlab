@@ -1,15 +1,15 @@
 %DISTANCEXFORM Distance transform
 %
+% D = DISTANCEXFORM(IM, OPTIONS) is the distance transform of the binary
+% image IM. The elements of D have a value equal to the shortest distance
+% from that element to a non-zero pixel in the input image IM. 
+%
 % D = DISTANCEXFORM(OCCGRID, GOAL, OPTIONS) is the distance transform of
 % the occupancy grid OCCGRID with respect to the specified goal point GOAL
 % = [X,Y].  The cells of the grid have values of 0 for free space and 1 for
 % obstacle. The resulting matrix D has cells whose value is the shortest
 % distance to the goal from that cell, or NaN if the cell corresponds to an
 % obstacle (set to 1 in OCCGRID).
-%
-% D = DISTANCEXFORM(IM, OPTIONS) is the distance transform of the binary
-% image IM. The elements of D have a value equal to the shortest distance
-% from that element to a non-zero pixel in the input image IM. 
 %
 % Options:
 % 'euclidean'    Use Euclidean (L2) distance metric (default)
@@ -20,16 +20,16 @@
 % 'novlfeat'     Don't use VLFeat, even if available
 %
 % Notes::
-% - For the first case the Machine Vision Toolbox function imorph is required.
-% - imorph is a mex file and must be compiled.
-% - The goal is given as [X,Y] not MATLAB [row,col].
-% - For the second case Image Processing Toolbox (IPT) or VLFeat will be used if
+% - For the first case Image Processing Toolbox (IPT) or VLFeat will be used if
 %   available, searched for in that order.  They use a 2-pass rather than
 %   iterative algorithm and are much faster.
 % - Options can be used to disable use of IPT or VLFeat.
 % - If IPT or VLFeat are not available, or disabled, then imorph is used.
 % - If the 'show' option is given then imorph is used.
 % - Using imorph requires iteration and is slow. 
+% - For the second case the Machine Vision Toolbox function imorph is required.
+% - imorph is a mex file and must be compiled.
+% - The goal is given as [X,Y] not MATLAB [row,col].
 %
 % See also IMORPH, DXform.
 
