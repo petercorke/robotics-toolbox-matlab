@@ -58,6 +58,6 @@ function M = inertia(robot, q)
 
 	M = zeros(n,n,0);
 	for Q = q.'
-		m = rne(robot, ones(n,1)*Q.', zeros(n,n), eye(n), 'grav', [0 0 0]);
+		m = rne(robot, ones(n,1)*Q.', zeros(n,n), eye(n), 'gravity', [0 0 0]);
 		M = cat(3, M, m);
 	end
