@@ -93,7 +93,7 @@ function varargout = rne(robot, varargin)
         args = [args opt.fext];
     end
     
-    if robot.fast && ~opt.slow && ~robot.issym()
+    if robot.fast && ~opt.slow && ~robot.issym() && (nargout < 2)
         % use the MEX-file implementation
         % the fast property is set at constructor time
         % the mex-file handles DH and MDH variants
