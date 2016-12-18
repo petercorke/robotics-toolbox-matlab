@@ -315,13 +315,13 @@ classdef RangeBearingSensor < Sensor
             ];
         end
 
-        function J = Hxf(s, xv, jf)
-            %RangeBearingSensor.Hxf Jacobian dh/dxf
+        function J = Hp(s, xv, jf)
+            %RangeBearingSensor.Hp Jacobian dh/dpi
             %
-            % J = S.Hxf(XV, K) is the Jacobian dh/dxv (2x2) at the vehicle
+            % J = S.Hp(XV, K) is the Jacobian dh/dxv (2x2) at the vehicle
             % state XV (3x1) for map feature K.
             %
-            % J = S.Hxf(XV, XF) as above but for a feature at coordinate XF (1x2).
+            % J = S.Hp(XV, XF) as above but for a feature at coordinate XF (1x2).
             %
             % See also RangeBearingSensor.h.
             if length(jf) == 1
