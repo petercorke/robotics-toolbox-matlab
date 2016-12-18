@@ -96,8 +96,8 @@ else
     end
 end
 
-if isa(t.T, 'sym')
-    t = simplify(t.T);
+if issym(t)
+    t = simplify(t);
 else
     t = trnorm(t);
 end
