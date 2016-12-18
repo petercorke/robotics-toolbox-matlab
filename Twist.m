@@ -5,10 +5,11 @@
 %
 % Methods::
 %  S             twist vector (1x3 or 1x6)
-%  se             twist as (augmented) skew-symmetric matrix (3x3 or 4x4)
+%  se            twist as (augmented) skew-symmetric matrix (3x3 or 4x4)
 %  T             convert to homogeneous transformation (3x3 or 4x4)
 %  R             convert rotational part to matrix (2x2 or 3x3)
 %  exp           synonym for T
+%  ad            logarithm of adjoint
 %  pitch         pitch of the screw, SE(3) only
 %  pole          a point on the line of the screw
 %  theta         rotation about the screw
@@ -17,8 +18,8 @@
 %  char          convert to string
 %
 % Conversion methods::
-%   SO3          convert rotational part to SO3 object
-%   SE3          convert to SE3 object
+%  SE            convert to SE2 or SE3 object
+%  double        convert to real vector
 %
 % Overloaded operators::
 %  *             compose two Twists
@@ -46,6 +47,8 @@ classdef Twist
         %
         % TW = Twist(T) is a Twist object representing the SE(2) or SE(3)
         % homogeneous transformation matrix T (3x3 or 4x4).
+        %
+        % TW = Twist(V) is a twist object where the vector is specified directly.
         %
         % 3D CASE::
         %
@@ -128,7 +131,7 @@ classdef Twist
                     tw.v = v;
                     tw.w = vex(skw)';
                 end
-            elseif numrows(T) == 1
+            elseif isvector(T)
                 % its a row vector form of twist, unpack it
                 switch length(T)
                     case 3
@@ -146,11 +149,21 @@ classdef Twist
         function x = S(tw)
         %Twist.S Return the twist vector
         %
-        % TW.S is the twist vector in se(2) or se(3) as a vector (1x3 or 1x6).
+        % TW.S is the twist vector in se(2) or se(3) as a vector (3x1 or 6x1).
         %
         % Notes::
         % - Sometimes referred to as the twist coordinate vector.
             x = [tw.v; tw.w];
+        end
+        
+        function x = double(tw)
+        %Twist.double Return the twist vector
+        %
+        % double(TW) is the twist vector in se(2) or se(3) as a vector (1x3 or 1x6).
+        %
+        % Notes::
+        % - Sometimes referred to as the twist coordinate vector.
+            x = [tw.v; tw.w]';
         end
         
         function x = se(tw)
@@ -172,14 +185,16 @@ classdef Twist
         % TW * S with its twist coordinates scaled by scalar S.
         %
             
-            if isa(b, 'Twist')
+            if isa(a, 'Twist') && isa(b, 'Twist')
                 % composition
                 c = Twist( a.exp * b.exp);
-
-            elseif isreal(b)
-                c = Twist(a.s * b);
+                
+            elseif isreal(a) && isa(b, 'Twist')
+                c = Twist(a * b.S);
+            elseif isa(a, 'Twist') && isreal(b)
+                c = Twist(a.S * b);
             else
-                error('RTB:Twist: incorrect operands for + operator')
+                error('RTB:Twist: incorrect operand types for * operator')
             end
         end
         
@@ -218,9 +233,29 @@ classdef Twist
         end
         
         function x = ad(tw)
+        %Twist.ad Logarithm of adjoint
+        %
+        % TW.ad is the logarithm of the adjoint matrix of the corresponding
+        % homogeneous transformation.
+        %
+        % See also SE3.Ad.
             x = [ skew(tw.w) skew(tw.v); zeros(3,3) skew(tw.w) ];
         end
         
+        
+        function out = SE(tw)
+        %Twist.SE Convert twist to SE2 or SE3 object
+        %
+        % TW.SE is an SE2 or SE3 object representing the homogeneous transformation equivalent to the twist.
+        %
+        % See also Twist.T, SE2, SE3.
+                    if length(tw.v) == 2
+                        out = SE2( tw.T );
+                    else
+                        out = SE3( tw.T );
+                    end
+        end 
+                
         function x = T(tw, varargin)
         %Twist.T Convert twist to homogeneous transformation
         %
@@ -336,13 +371,7 @@ classdef Twist
             disp( char(tw) );
         end % display()
         
-        function out = SE(tw)
-                    if length(tw.v) == 2
-                        out = SE2( tw.T );
-                    else
-                        out = SE3( tw.T );
-                    end
-        end
+
         
     end
 end
