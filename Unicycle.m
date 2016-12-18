@@ -89,7 +89,7 @@
 %
 % http://www.petercorke.com
 
-classdef Unicycle < Unicycle
+classdef Unicycle < Vehicle
 
     properties
         % state
@@ -120,7 +120,7 @@ classdef Unicycle < Unicycle
         % - Subclasses the MATLAB handle class which means that pass by reference semantics
         %   apply.
             
-            veh = veh@Unicycle(varargin{:});
+            veh = veh@Vehicle(varargin{:});
             
             veh.x = zeros(3,1);
 
