@@ -1,31 +1,489 @@
+%RTBPose Superclass for SO2, SO3, SE2, SE3
+%
+% This class provides common methods for the 2D and 3D orientation and pose
+% classes.
+%
+% Methods::
+%
+%  dim         dimension of the underlying matrix
+%  isSE        true for SE2 and SE3
+%  issym       true if value is symbolic
+%  plot        graphically display coordinate frame for pose
+%  animate     graphically display coordinate frame for pose
+%  print       print the pose in single line format
+%  trprint     print the pose in single line format
+%  display     print the pose in human readable matrix form
+%  char        convert to human readable matrix as a string
+%--
+%  double      convert to homogeneous transformation matrix
+%  simplify    apply symbolic simplification to all elements
+%
+% Operators::
+%  +           elementwise addition, result is a matrix
+%  -           elementwise subtraction, result is a matrix
+%  *           multiplication within group, also group x vector
+%  .*          multiplication within group followed by normalization
+%
+% A number of compatibility methods give the same behaviour as the
+% classical RTB functions:
+%
+%  tr2rt       convert to rotation matrix and translation vector
+%  t2r         convert to rotation matrix
+%  trprint     print single line representation
+%  trprint2    print single line representation
+%  trplot      plot coordinate frame
+%  trplot2     plot coordinate frame
+%  tranimate   aimate coordinate frame
+%
+% Notes::
+% - Multiplication operations are performed in the subclasses
+% - SO3 is polymorphic with UnitQuaternion making it easy to change
+%   rotational representations
+%
+% See also SO2, SO3, SE2, SE3.
+
+% Copyright (C) 1993-2016, by Peter I. Corke
+%
+% This file is part of The Robotics Toolbox for MATLAB (RTB).
+%
+% RTB is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Lesser General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% RTB is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Leser General Public License
+% along with RTB.  If not, see <http://www.gnu.org/licenses/>.
+%
+% http://www.petercorke.comclassdef RTBPose
+
+
 classdef RTBPose
     
-    % Base class for SO(n), SE(n)
-    %
-    % container for matrix data plus some methods for display and conversion
-    %
-    % X-X  is a matrix of elementwise differences
-    % -X   is a matrix of elements with negated signs
-    % dim(x) ??
-    % X.isSE  true if SE2 or SE3
-    % simplify(X)  map simplify over all elements
-    % display(X)
-    % char(X)
-    % X.print  single line display
-    % trprint(X)
-    % [R,t] = tr2rt(X) split into rotation and translation
-    % double(X) convert to matrix
-
-    
     properties(Access=protected, Hidden=true)
-        data
+        data   % this is a 2x2, 3x3 or 4x4 matrix, possibly symbolic
     end
     
     
     methods
         
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%  INFORMATION METHODS
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function n = dim(obj)
+            %RTBPose.dim  Dimension
+            %
+            % N = P.dim() is the dimension of the group object, 2 for SO2, 3 for SE2
+            % and SO3, and 4 for SE3.
+            
+            n = size(obj(1).data, 2);
+        end
+        
+        function t = isSE(T)
+            %RTBPose.isSE  Test if pose
+            %
+            % P.isSE() is true if the object is of type SE2 or SE3.
+            
+            s = class(T);
+            t = s(2) == 'E';
+        end
+        
+        function t = issym(obj)
+            %RTBPose.issym  Test if pose is symbolic
+            %
+            % P.issym() is true if the pose has symbolic rather than real values.
+            t = isa(obj(1).data, 'sym');
+        end
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%  OPERATORS
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function v = plus(a, b)
+            %RTBPose.plus Add poses
+            %
+            % P1+P2 is the elementwise summation of the matrix elements of the two
+            % poses.  The result is a matrix not the input class type since the result
+            % of addition is not in the group.
+            v = a.data - b.data;
+        end
+        
+        function v = minus(a, b)
+            %RTBPose.minus Subtract poses
+            %
+            % P1-P2 is the elementwise difference of the matrix elements of the two
+            % poses.  The result is a matrix not the input class type since the result
+            % of subtraction is not in the group.
+            v = a.data - b.data;
+        end
+        
+        %         function v = uminus(obj)
+        %             v = -v.data;
+        %         end
+        
+        function out = simplify(obj)
+            %RTBPose.simplify Symbolic simplification
+            %
+            % P2 = P.simplify() applies symbolic simplification to each element of
+            % internal matrix representation of the pose.
+            %
+            % See also simplify.
+            out = obj;
+            if isa(obj(1).data, 'sym')
+                for k=1:length(obj)
+                    % simplify every element of data
+                    for i=1:numel(obj.data)
+                        out(k).data(i) = simplify( obj(k).data(i) );
+                    end
+                end
+            end
+        end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %  COMPOSITION
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function out = mtimes(obj, a)
+            %SO2.mtimes  Compound SO2 objects
+            %
+            % R = P*Q is a pose object representing the composition of the two
+            % poses described by the objects P and Q, which is  multiplication
+            % of their equivalent matrices.
+            %
+            % If either, or both, of P or Q are vectors, then the result is a vector.
+            %
+            % If P is a vector (1xN) then R is a vector (1xN) such that R(i) = P(i)*Q.
+            %
+            % If Q is a vector (1xN) then R is a vector (1xN) such thatR(i) = P*Q(i).
+            %
+            % If both P and Q are vectors (1xN) then R is a vector (1xN) such that
+            % R(i) = P(i)*R(i).
+            %
+            % W = P*V is a column vector (2x1) which is the transformation of the
+            % column vector V (2x1) by the rotation described by the SO2 object P.
+            % P can be a vector and/or V can be a matrix, a columnwise set of vectors.
+            %
+            % If P is a vector (1xN) then W is a matrix (2xN) such that W(:,i) = P(i)*V.
+            %
+            % If V is a matrix (2xN) V is a matrix (2xN) then W is a matrix (2xN) such
+            % that W(:,i) = P*V(:,i).
+            %
+            % If P is a vector (1xN) and V is a matrix (2xN) then W is a matrix (2xN)
+            % such that W(:,i) = P(i)*V(:,i).
+            %
+            % See also RTBPose.mrdivide.
+            
+            obj1 = obj(1);
+            n = obj1.dim;
+            
+            if strcmp(class(obj1), class(a))
+                % obj * obj
+                out = repmat(obj1, 1, max(length(obj),length(a)));
+                if length(obj) == length(a)
+                    % do objvector*objvector and objscalar*objscalar case
+                    for i=1:length(obj)
+                        out(i) = obj1.new( obj(i).data * a(i).data);
+                    end
+                elseif length(obj) == 1
+                    % objscalar*objvector case
+                    for i=1:length(a)
+                        out(i) = obj1.new( obj.data * a(i).data);
+                    end
+                elseif length(a) == 1
+                    % objvector*objscalar case
+                    for i=1:length(obj)
+                        out(i) = obj1.new( obj(i).data * a.data);
+                    end
+                else
+                    error('RTB:RTBPose:badops', 'invalid operand lengths to * operator');
+                end
+                
+            elseif isfloat(a)
+                % obj * vectors (nxN), result is nxN
+                
+                if obj1.isSE
+                    % is SE(n) convert to homogeneous form
+                    assert(numrows(a) == n-1, 'RTB:RTBPose:badops', 'LHS should be matrix with %d rows', n-1);
+                    a = [a; ones(1, numcols(a))];
+                else
+                    assert(numrows(a) == n, 'RTB:RTBPose:badops', 'LHS should be matrix with %d rows', n);
+                end
+                
+                out = zeros(n, max(length(obj),numcols(a)));  % preallocate space
+                
+                if length(obj) == numcols(a)
+                    % do objvector*vector and objscalar*scalar case
+                    for i=1:length(obj)
+                        out(:,i) = obj(i).data * a(:,i);
+                    end
+                elseif length(obj) == 1
+                    % objscalar*vector case
+                    for i=1:length(obj)
+                        out = obj.data * a;
+                    end
+                elseif numcols(a) == 1
+                    % objvector*scalar case
+                    for i=1:length(obj)
+                        out(:,i) = obj(i).data * a;
+                    end
+                else
+                    error('RTB:RTBPose:badops', 'unequal vector lengths to * operator');
+                end
+                
+                if obj1.isSE
+                    % is SE(n) convert to homogeneous form
+                    out = out(1:end-1,:);
+                end
+            else
+                error('RTB:RTBPose:badops', 'invalid operand types to * operator');
+            end
+        end
+        
+        function out = mrdivide(obj, a)
+            %SO2.mrdivide  Compound SO2 object with inverse
+            %
+            % R = P/Q is a pose object representing the composition of the pose object P by the
+            % inverse of the pose object Q, which is matrix multiplication
+            % of their equivalent matrices with the second one inverted.
+            %
+            % If either, or both, of P or Q are vectors, then the result is a vector.
+            %
+            % If P is a vector (1xN) then R is a vector (1xN) such that R(i) = P(i)/Q.
+            %
+            % If Q is a vector (1xN) then R is a vector (1xN) such thatR(i) = P/Q(i).
+            %
+            % If both P and Q are vectors (1xN) then R is a vector (1xN) such that
+            % R(i) = P(i)/R(i).
+            %
+            % See also RTBPose.mtimes.
+            
+            obj1 = obj(1);
+            n = obj1.dim;
+            
+            if strcmp(class(obj1), class(a))
+                % obj / obj
+                out = repmat(obj1, 1, max(length(obj),length(a)));
+                if length(obj) == length(a)
+                    % do vector*vector and scalar*scalar case
+                    for i=1:length(obj)
+                        out(i) = obj1.new( obj(i).data * inv(a(i).data));
+                    end
+                elseif length(obj) == 1
+                    % scalar*vector case
+                    for i=1:length(obj)
+                        out(i) = obj1.new( inv(obj.data) * a(i).data);
+                    end
+                elseif length(a) == 1
+                    % vector*scalar case
+                    for i=1:length(obj)
+                        out(i) = obj1.new( obj(i).data * inv(a.data));
+                    end
+                else
+                    error('RTB:RTBPose:badops', 'unequal vector lengths to / operator');
+                end 
+            else
+                error('RTB:RTBPose:badops', 'invalid operand types to / operator');
+            end
+        end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%  COMPATABILITY/CONVERSION METHODS
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function [R,t] = tr2rt(obj)
+            %tr2rt  Split rotational and translational components  (compatibility)
+            %
+            % [R,t] = tr2rt(P) returns the rotation matrix and translation vector
+            % corresponding to the pose P which is either SE2 or SE3.
+            %
+            % Compatible with matrix function [R,t] = tr2rt(T)
+            n = numcols(obj.data);
+            
+            assert(isSE(obj), 'only applicable to SE2/3 class');
+            if length(obj) > 1
+                R = zeros(3,3,length(obj));
+                t = zeros(length(obj), 3);
+                for i=1:length(obj)
+                    R(:,:,i) = obj(i).R;
+                    t(i,:) = obj(i).t';
+                end
+            else
+                R = obj.R;
+                t = obj.t;
+            end
+        end
+        
+        function R = t2r(obj)
+            %t2r  Get rotation matrix  (compatibility)
+            %
+            % R = t2r(P) returns the rotation matrix corresponding to the pose P which is either SE2 or SE3.
+            %
+            % Compatible with matrix function R = t2r(T)
+            n = numcols(obj.data);
+            
+            assert(isSE(obj), 'only applicable to SE2/3 class');
+            if length(obj) > 1
+                R = zeros(3,3,length(obj));
+                for i=1:length(obj)
+                    R(:,:,i) = obj(i).R;
+                end
+            else
+                R = obj.R;
+            end
+        end
+        
+        function out = trprint(obj, varargin)
+            %TRPRINT Compact display of homogeneous transformation  (compatibility)
+            %
+            % trprint(P, OPTIONS) displays the homogoneous transform in a compact single-line
+            % format.  If P is a vector then each element is printed on a separate
+            % line.
+            %
+            % Compatible with matrix function trprint(T).
+            %
+            % Options (inherited from trprint)::
+            % 'rpy'        display with rotation in roll/pitch/yaw angles (default)
+            % 'euler'      display with rotation in ZYX Euler angles
+            % 'angvec'     display with rotation in angle/vector format
+            % 'radian'     display angle in radians (default is degrees)
+            % 'fmt', f     use format string f for all numbers, (default %g)
+            % 'label',l    display the text before the transform
+            %
+            % See also RTBPose.print, trprint.
+            if nargout == 0
+                print(obj, varargin{:});
+            else
+                out = print(obj, varargin{:});
+            end
+        end
+        
+        function out = trprint2(obj, varargin)
+            %TRPRINT2 Compact display of homogeneous transformation  (compatibility)
+            %
+            % trprint2(P, OPTIONS) displays the homogoneous transform in a compact single-line
+            % format.  If P is a vector then each element is printed on a separate
+            % line.
+            %
+            % Compatible with matrix function trprint2(T).
+            %
+            % Options (inherited from trprint2)::
+            % 'radian'     display angle in radians (default is degrees)
+            % 'fmt', f     use format string f for all numbers, (default %g)
+            % 'label',l    display the text before the transform
+            %
+            % See also RTBPose.print, trprint2.
+            if nargout == 0
+                print(obj, varargin{:});
+            else
+                out = print(obj, varargin{:});
+            end
+            
+        end
+        
+        function trplot(obj, varargin)
+            %TRPLOT Draw a coordinate frame (compatibility)
+            %
+            % trplot(P, OPTIONS) draws a 3D coordinate frame represented by P which is
+            % SO2, SO3, SE2, SE3.
+            %
+            % Compatible with matrix function trplot(T).
+            %
+            % Options (inherited from trplot)::
+            % 'handle',h         Update the specified handle
+            % 'color',C          The color to draw the axes, MATLAB colorspec C
+            % 'noaxes'           Don't display axes on the plot
+            % 'axis',A           Set dimensions of the MATLAB axes to A=[xmin xmax ymin ymax zmin zmax]
+            % 'frame',F          The coordinate frame is named {F} and the subscript on the axis labels is F.
+            % 'framelabel',F     The coordinate frame is named {F}, axes have no subscripts.
+            % 'text_opts', opt   A cell array of MATLAB text properties
+            % 'axhandle',A       Draw in the MATLAB axes specified by the axis handle A
+            % 'view',V           Set plot view parameters V=[az el] angles, or 'auto'
+            %                    for view toward origin of coordinate frame
+            % 'length',s         Length of the coordinate frame arms (default 1)
+            % 'arrow'            Use arrows rather than line segments for the axes
+            % 'width', w         Width of arrow tips (default 1)
+            % 'thick',t          Thickness of lines (default 0.5)
+            % 'perspective'      Display the axes with perspective projection
+            % '3d'               Plot in 3D using anaglyph graphics
+            % 'anaglyph',A       Specify anaglyph colors for '3d' as 2 characters for
+            %                    left and right (default colors 'rc'): chosen from
+            %                    r)ed, g)reen, b)lue, c)yan, m)agenta.
+            % 'dispar',D         Disparity for 3d display (default 0.1)
+            % 'text'             Enable display of X,Y,Z labels on the frame
+            % 'labels',L         Label the X,Y,Z axes with the 1st, 2nd, 3rd character of the string L
+            % 'rgb'              Display X,Y,Z axes in colors red, green, blue respectively
+            % 'rviz'             Display chunky rviz style axes
+            %
+            % See also RTBPose.plot, trplot.
+            obj.plot(varargin{:});
+        end
+        
+        function trplot2(obj, varargin)
+            %TRPLOT2 Draw a coordinate frame (compatibility)
+            %
+            % trplot2(P, OPTIONS) draws a 2D coordinate frame represented by P
+            %
+            % Compatible with matrix function trplot2(T).
+            %
+            % Options (inherited from trplot)::
+            % 'handle',h         Update the specified handle
+            % 'axis',A           Set dimensions of the MATLAB axes to A=[xmin xmax ymin ymax]
+            % 'color', c         The color to draw the axes, MATLAB colorspec
+            % 'noaxes'           Don't display axes on the plot
+            % 'frame',F          The frame is named {F} and the subscript on the axis labels is F.
+            % 'framelabel',F     The coordinate frame is named {F}, axes have no subscripts.
+            % 'text_opts', opt   A cell array of Matlab text properties
+            % 'axhandle',A       Draw in the MATLAB axes specified by A
+            % 'view',V           Set plot view parameters V=[az el] angles, or 'auto'
+            %                    for view toward origin of coordinate frame
+            % 'length',s         Length of the coordinate frame arms (default 1)
+            % 'arrow'            Use arrows rather than line segments for the axes
+            % 'width', w         Width of arrow tips
+            %
+            % See also RTBPose.plot, trplot2.
+            obj.plot(varargin{:});
+        end
+        
+        function tranimate(obj, varargin)
+            %TRANIMATE Animate a coordinate frame (compatibility)
+            %
+            % TRANIMATE(P1, P2, OPTIONS) animates a 3D coordinate frame moving from
+            % pose P1 to pose P2, which can be SO2, SO3, SE2 or SE3.
+            %
+            % TRANIMATE(P, OPTIONS) animates a coordinate frame moving from the identity pose
+            % to the pose P represented by any of the types listed above.
+            %
+            % TRANIMATE(PV, OPTIONS) animates a trajectory, where PV is a vector of
+            % SO2, SO3, SE2, SE3 objects.
+            %
+            % Compatible with matrix function tranimate(T), tranimate(T1, T2).
+            %
+            % Options (inherited from tranimate)::
+            %  'fps', fps    Number of frames per second to display (default 10)
+            %  'nsteps', n   The number of steps along the path (default 50)
+            %  'axis',A      Axis bounds [xmin, xmax, ymin, ymax, zmin, zmax]
+            %  'movie',M     Save frames as files in the folder M
+            %  'cleanup'     Remove the frame at end of animation
+            %  'noxyz'       Don't label the axes
+            %  'rgb'         Color the axes in the order x=red, y=green, z=blue
+            %  'retain'      Retain frames, don't animate
+            %  Additional options are passed through to TRPLOT.
+            %
+            % See also RTBPose.animate, tranimate.
+            
+            obj.plot(varargin{:});
+        end
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%  DISPLAY METHODS
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function display(obj)
-            %Pose.display Display a pose
+            %RTBPose.display Display a pose
             %
             % P.display() displays the pose.
             %
@@ -33,55 +491,146 @@ classdef RTBPose
             % - This method is invoked implicitly at the command line when the result
             %   of an expression is an RTBPose subclass object and the command has no trailing
             %   semicolon.
+            % - If the function cprintf is found is used to colorise the matrix,
+            %   rotational elements in red, translational in blue.
             %
             % See also SO2, SO3, SE2, SE3.
+            
             loose = strcmp( get(0, 'FormatSpacing'), 'loose');
             if loose
                 disp(' ');
             end
-            obj.render(inputname(1));
-        end % display()
-        
-        function n = dim(obj)
-            n = size(obj.data, 2);
+            
+            obj.render(inputname(1));  % the hard work done in render
         end
         
-        function v = minus(a, b)
-            v = a.data - b.data;
-        end
-        
-%         function v = uminus(obj)
-%             v = -v.data;
-%         end
-        
-        % compatibility methods
-        function [R,t] = tr2rt(T)
-            n = numcols(T.data);
-
-            assert(isSE(T), 'only applicable to SE2/3 class');
-            if length(T) > 1
-                R = zeros(3,3,length(T));
-                t = zeros(length(T), 3);
-                for i=1:length(T)
-                    R(:,:,i) = T(i).R;
-                    t(i,:) = T(i).t';
-                end
-            else
-                R = T.R;
-                t = T.t;
+        function s2 = char(obj)
+            %RTBPose.char Convert to string
+            %
+            % s = P.char() is a string showing homogeneous transformation elements as
+            % a matrix.
+            %
+            % See also RTBPose.display.
+            s = num2str(obj.data, '%10.4g'); %num2str(obj.data, 4);
+            for i=1:numrows(s);
+                s2(i,:) = ['    ', s(i,:)];
             end
         end
         
-        function t = isSE(T)
-            s = class(T);
-            t = s(2) == 'E';
+        function d = double(obj)
+            %RTBPose.double  Convert to matrix
+            %
+            % T = P.double() is a matrix representation of the pose P, either a
+            % rotation matrix or a homogeneous transformation matrix.
+            %
+            % Notes::
+            % - if the pose is symbolic the result will be a symbolic matrix.
+            d = obj.data;
         end
         
+        function out = print(obj, varargin)
+            %RTBPose.print Compact display of pose
+            %
+            % P.print(OPTIONS) displays the homogoneous transform in a compact single-line
+            % format.  If P is a vector then each element is printed on a separate
+            % line.
+            %
+            % Options are passed through to trprint or trprint2 depending on the object
+            % type.
+            %
+            % See also trprint, trprint2.
+            if nargout == 0
+                for T=obj
+                    trprint(T.T, varargin{:});
+                end
+            else
+                out = '';
+                
+                for T=obj
+                    out = strvcat(out, trprint(T.T, varargin{:}));
+                end
+            end
+        end
+        
+        function animate(obj, varargin)
+            %RTBPose.animate Animate a coordinate frame
+            %
+            % RTBPose.animate(P1, P2, OPTIONS) animates a 3D coordinate frame moving from
+            % pose P1 to pose P2, which can be SO3 or SE3.
+            %
+            % RTBPose.animate(P, OPTIONS) animates a coordinate frame moving from the identity pose
+            % to the pose P represented by any of the types listed above.
+            %
+            % RTBPose.animate(PV, OPTIONS) animates a trajectory, where PV is a vector of
+            % SO2, SO3, SE2, SE3 objects.
+            %
+            % Compatible with matrix function tranimate(T), tranimate(T1, T2).
+            %
+            % Options (inherited from tranimate)::
+            %  'fps', fps    Number of frames per second to display (default 10)
+            %  'nsteps', n   The number of steps along the path (default 50)
+            %  'axis',A      Axis bounds [xmin, xmax, ymin, ymax, zmin, zmax]
+            %  'movie',M     Save frames as files in the folder M
+            %  'cleanup'     Remove the frame at end of animation
+            %  'noxyz'       Don't label the axes
+            %  'rgb'         Color the axes in the order x=red, y=green, z=blue
+            %  'retain'      Retain frames, don't animate
+            %  Additional options are passed through to TRPLOT.
+            %
+            % See also tranimate.
+            switch class(obj)
+                case 'SO2'
+                    tranimate2(obj.R, varargin{:});
+                    
+                case 'SE2'
+                    tranimate2(obj.T, varargin{:});
+                    
+                case 'SO3'
+                    tranimate(obj.R, varargin{:});
+                    
+                case 'SE3'
+                    tranimate(obj.T, varargin{:});
+            end
+        end
+        
+        function plot(obj, varargin)
+            %TRPLOT Draw a coordinate frame (compatibility)
+            %
+            % trplot(P, OPTIONS) draws a 3D coordinate frame represented by P which is
+            % SO2, SO3, SE2 or SE3.
+            %
+            % Compatible with matrix function trplot(T).
+            %
+            % Options are passed through to trplot or trplot2 depending on the object
+            % type.
+            %
+            % See also trplot, trplot2.
+            switch class(obj)
+                case 'SO2'
+                    trplot2(obj.R, varargin{:});
+                    
+                case 'SE2'
+                    trplot2(obj.T, varargin{:});
+                    
+                case 'SO3'
+                    trplot(obj.R, varargin{:});
+                    
+                case 'SE3'
+                    trplot(obj.T, varargin{:});
+            end
+        end
+        
+        
+    end
+    
+    methods (Access=private)
         function render(obj, varname)
             
             if isa(obj(1).data, 'sym')
+                % use MATLAB default disp() function for symbolic object
                 disp(obj.data);
             else
+                % else render the elements with specified format and color
                 fmtR = '%10.4f';
                 fmtt = '%10.4g';
                 fmt0 = '%10.0f';
@@ -106,21 +655,21 @@ classdef RTBPose
                         
                     end
                     M(abs(M)<1000*eps) = 0;
-
+                    
                     for row=1:nr
                         for col=1:(nr+nt)
                             if col <= nr
                                 % rotation matrix
                                 v = M(row,col);
-
+                                
                                 if fix(v) == v
-                                    print('Errors', fmt0, v);
+                                    print('Errors', fmt0, v); % red
                                 else
-                                    print('Errors', fmtR, v);
+                                    print('Errors', fmtR, v); % red
                                 end
                             else
                                 % translation
-                                print('Keywords', fmtt, M(row,col));
+                                print('Keywords', fmtt, M(row,col)); % blue
                             end
                         end
                         fprintf('\n');
@@ -132,93 +681,9 @@ classdef RTBPose
                         end
                         fprintf('\n');
                     end
-                    
-                    
                 end
-            end
-        end
-        
-        function out = simplify(obj)
-            out = obj;
-            if isa(obj(1).data, 'sym')
-                for k=1:length(obj)
-                    % simplify every element of data
-                    for i=1:numel(obj.data)
-                        out(k).data(i) = simplify( obj(k).data(i) );
-                    end
-                end
-            end
-        end
-        
-        function animate(obj, varargin)
-            switch class(obj)
-                case 'SO2'
-                    tranimate2(obj.R, varargin{:});
-                    
-                case 'SE2'
-                    tranimate2(obj.T, varargin{:});
-                    
-                case 'SO3'
-                    tranimate(obj.R, varargin{:});
-                    
-                case 'SE3'
-                    tranimate(obj.T, varargin{:});
-            end
-        end
-        
-                function plot(obj, varargin)
-            switch class(obj)
-                case 'SO2'
-                    trplot2(obj.R, varargin{:});
-                    
-                case 'SE2'
-                    trplot2(obj.T, varargin{:});
-                    
-                case 'SO3'
-                    trplot(obj.R, varargin{:});
-                    
-                case 'SE3'
-                    trplot(obj.T, varargin{:});
-            end
-        end
-        
-        % conversion methods
-        
-        function s2 = char(obj)
-            s = num2str(obj.data, '%10.4g'); %num2str(obj.data, 4);
-            for i=1:numrows(s);
-                s2(i,:) = ['    ', s(i,:)];
-            end
-        end
-        
-        function d = double(obj)
-            d = obj.data;
-        end
-        
-        
-        function out = print(obj, varargin)
-            if nargout == 0
-                for T=obj
-                    trprint(T.T, varargin{:});
-                end
-            else
-                out = '';
-                
-                for T=obj
-                    out = strvcat(out, trprint(T.T, varargin{:}));
-                end
-            end
-        end
-        
-        function out = trprint(obj, varargin)
-            
-            if nargout == 0
-                print(obj, varargin{:});
-            else
-                out = print(obj, varargin{:});
             end
         end
     end
-    
     
 end
