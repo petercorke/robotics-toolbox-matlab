@@ -144,8 +144,7 @@ classdef SerialLink < matlab.mixin.Copyable
         trail   % to support trail option
         
         % to support plot method
-        moviepath
-        framenum
+        movie
         delay
         loop
         
@@ -495,10 +494,10 @@ classdef SerialLink < matlab.mixin.Copyable
 %                 line = horzcat(s_grav, s_base, s_tool);
                 %s = char(s, sprintf('gravity: (%g, %g, %g)', r.gravity));
                 if ~isidentity(r.base)
-                    s = char(s, ['base:    ' trprint(r.base.T)]);
+                    s = char(s, ['base:    ' trprint(r.base.T, 'xyz')]);
                 end
                 if ~isidentity(r.tool)
-                    s = char(s, ['tool:    ' trprint(r.tool.T)]);
+                    s = char(s, ['tool:    ' trprint(r.tool.T, 'xyz')]);
                 end
 
                 if j ~= length(robot)
@@ -710,21 +709,44 @@ end
         end
         
         function payload(r, m, p)
-        %SerialLink.payload Add payload mass
-        %
-        % R.payload(M, P) adds a payload with point mass M at position P 
-        % in the end-effector coordinate frame.
-        %
-        % Notes::
-        % - An added payload will affect the inertia, Coriolis and gravity terms.
-        %
-        % See also SerialLink.rne, SerialLink.gravload.
+            %SerialLink.payload Add payload mass
+            %
+            % R.payload(M, P) adds a payload with point mass M at position P 
+            % in the end-effector coordinate frame.
+            %
+            % R.payload(0) removes added payload
+            %
+            % Notes::
+            % - An added payload will affect the inertia, Coriolis and gravity terms.
+            % - Sets, rather than adds, the payload.  Mass and CoM of the last link is
+            %   overwritten.
+            %
+            % See also SerialLink.rne, SerialLink.gravload.
+
             lastlink = r.links(r.n);
-            lastlink.m = m;
-            lastlink.r = p;
+
+            if nargin == 3
+                lastlink.m = m;
+                lastlink.r = p;
+            elseif nargin == 2 && m == 0
+                % clear/reset the payload
+                lastlink.m = m;
+            end
         end
         
         function t = jointdynamics(robot, q)
+            %SerialLink.jointdyamics Transfer function of joint actuator
+            %
+            % TF = R.jointdynamic(Q) is a vector of N continuous-time transfer function objects
+            % that represent the transfer function 1/(Js+B) for each joint based on the 
+            % dynamic parameters of the robot and the configuration Q.  N is the number of robot
+            % joints.
+            %
+            % Notes::
+            % - Coulomb friction is ignoredf.
+            %
+            % See also tf, SerialLink.rne.
+            
             for j=1:robot.n
                 link = robot.links(j);
                 
