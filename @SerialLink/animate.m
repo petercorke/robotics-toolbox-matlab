@@ -135,10 +135,8 @@ function animate(robot, qq)
                 end
                 
                 % add a frame to the movie
-                if ~isempty(h.robot.framenum)
-                    % write the frame to the movie folder
-                    print( '-dpng', fullfile(h.robot.moviepath, sprintf('%04d.png', h.robot.framenum)) );
-                    h.robot.framenum = h.robot.framenum+1;
+                if ~isempty(h.robot.movie)
+                    h.robot.movie.add();
                 end
                 
                 if h.robot.delay > 0

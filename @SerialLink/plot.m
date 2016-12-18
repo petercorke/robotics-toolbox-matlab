@@ -13,7 +13,7 @@
 % 'fps',fps         Number of frames per second for display, inverse of 'delay' option
 % '[no]loop'        Loop over the trajectory forever
 % '[no]raise'       Autoraise the figure
-% 'movie',M         Save frames as files in the folder M
+% 'movie',M         Save an animation to the movie M
 % 'trail',L         Draw a line recording the tip path, with line style L
 %-
 % 'scale',S         Annotation scale factor
@@ -123,11 +123,14 @@
 %           bob.plot(q');
 %         end
 %
-% Making an animation movie::
-% - The 'movie' options saves frames as files NNNN.png into the specified folder
-% - The specified folder will be created
-% - To convert frames to a movie use a command like:
-%        ffmpeg -r 10 -i %04d.png out.avi
+% Making an animation::
+%
+% The 'movie' options saves the animation as a movie file or separate frames in a folder
+% - 'movie','folder' saves as files NNNN.png into the specified folder
+%   - The specified folder will be created
+%   - To convert frames to a movie use a command like:
+%          ffmpeg -r 10 -i %04d.png out.avi
+% - 'movie','file.mp4' saves as an MP4 movie called file.mp4
 %
 % Notes::
 % - The options are processed when the figure is first drawn, to make different options come
@@ -258,10 +261,7 @@ function plot(robot, qq, varargin)
     % deal with a few options that need to be stashed in the SerialLink object
     % movie mode has not already been flagged
     if opt.movie
-        robot.framenum = 0;
-        robot.moviepath = opt.movie;
-    else
-        robot.framenum = [];
+        robot.movie = Animate(opt.movie);
     end
     robot.delay = opt.delay;
     robot.loop = opt.loop;   
@@ -293,12 +293,11 @@ function plot(robot, qq, varargin)
     % enable mouse-based 3D rotation
     rotate3d on
     
-    if ~isempty(opt.movie)
-        mkdir(opt.movie);
-        framenum = 1;
-    end
     robot.animate(qq);
     
+    if opt.movie
+        robot.movie.close();
+    end
 end
 
 % Create a new graphical robot in the current figure.
