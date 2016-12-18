@@ -39,7 +39,7 @@ function R = t2r(T)
     % check dimensions: T is SE(2) or SE(3)
     d = size(T);
     assert(d(1) == d(2), 'RTB:t2r:badarg', 'matrix must be square');
-    assert(any(d(1) == [3 4], 'RTB:t2r:badarg', 'argument is not a homogeneous transform (sequence)');
+    assert(any(d(1) == [3 4]), 'RTB:t2r:badarg', 'argument is not a homogeneous transform (sequence)');
     
     n = d(1);     % works for SE(2) or SE(3)
     
