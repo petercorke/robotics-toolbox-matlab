@@ -15,11 +15,11 @@
 % - Robot manipulators: mathematis, programming and control
 %   Richard Paul, MIT Press, 1981.
 %
-% See also RPY2TR, EUL2TR, OA2R.
+% See also RPY2TR, EUL2TR, OA2R, SE3.oa.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2016, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
