@@ -826,7 +826,7 @@ classdef EKF < handle
                         xf = xm_pred(jx:jx+1);
 
                         % compute Jacobian for this particular landmark
-                        Hx_k = ekf.sensor.Hxf(xv_pred', xf);
+                        Hx_k = ekf.sensor.Hp(xv_pred', xf);
                         % create the Jacobian for all landmarks
                         Hx = zeros(2, length(xm_pred));
                         Hx(:,jx:jx+1) = Hx_k;
