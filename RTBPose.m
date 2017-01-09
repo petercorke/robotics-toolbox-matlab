@@ -15,17 +15,17 @@
 %  display     print the pose in human readable matrix form
 %  char        convert to human readable matrix as a string
 %--
-%  double      convert to homogeneous transformation matrix
+%  double      convert to real rotation or homogeneous transformation matrix
 %  simplify    apply symbolic simplification to all elements
 %
 % Operators::
 %  +           elementwise addition, result is a matrix
 %  -           elementwise subtraction, result is a matrix
-%  *           multiplication within group, also group x vector
-%  .*          multiplication within group followed by normalization
+%  *           multiplication within group, also SO3 x vector
+%  /           multiplication within group by inverse
 %
 % A number of compatibility methods give the same behaviour as the
-% classical RTB functions:
+% classic RTB functions:
 %
 %  tr2rt       convert to rotation matrix and translation vector
 %  t2r         convert to rotation matrix
@@ -36,7 +36,7 @@
 %  tranimate   aimate coordinate frame
 %
 % Notes::
-% - Multiplication operations are performed in the subclasses
+% - Multiplication and division with normalization operations are performed in the subclasses
 % - SO3 is polymorphic with UnitQuaternion making it easy to change
 %   rotational representations
 %
@@ -149,7 +149,7 @@ classdef RTBPose
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function out = mtimes(obj, a)
-            %SO2.mtimes  Compound SO2 objects
+            %RTBPose.mtimes  Compound pose objects
             %
             % R = P*Q is a pose object representing the composition of the two
             % poses described by the objects P and Q, which is  multiplication
