@@ -9,7 +9,7 @@
 % T = TRINTERP(T1, S) as above but interpolated between the identity matrix
 % when S=0 to T1 when S=1.
 %
-% See also CTRAJ, QUATERNION.
+% See also CTRAJ, UnitQuaternion.
 
 
 

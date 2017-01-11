@@ -30,10 +30,10 @@
 % - To convert frames to a movie use a command like:
 %        ffmpeg -r 10 -i %04d.png out.avi
 %
-% See also TRPLOT, Animate.
+% See also TRPLOT, Animate, SE3.animate.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2016, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
