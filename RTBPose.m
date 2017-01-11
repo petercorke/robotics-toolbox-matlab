@@ -11,7 +11,6 @@
 %  plot        graphically display coordinate frame for pose
 %  animate     graphically display coordinate frame for pose
 %  print       print the pose in single line format
-%  trprint     print the pose in single line format
 %  display     print the pose in human readable matrix form
 %  char        convert to human readable matrix as a string
 %--
@@ -36,9 +35,12 @@
 %  tranimate   aimate coordinate frame
 %
 % Notes::
-% - Multiplication and division with normalization operations are performed in the subclasses
+% - Multiplication and division with normalization operations are performed
+%   in the subclasses.
 % - SO3 is polymorphic with UnitQuaternion making it easy to change
-%   rotational representations
+%   rotational representations.
+% - If the File Exchange function cprintf is available it is used to print
+%   the matrix in color: red for rotation and blue for translation.
 %
 % See also SO2, SO3, SE2, SE3.
 
@@ -336,6 +338,19 @@ classdef RTBPose
             end
         end
         
+                
+        function d = double(obj)
+            %RTBPose.double  Convert to matrix
+            %
+            % T = P.double() is a matrix representation of the pose P, either a
+            % rotation matrix or a homogeneous transformation matrix.
+            %
+            % Notes::
+            % - if the pose is symbolic the result will be a symbolic matrix.
+            d = obj.data;
+        end
+        
+        
         function out = trprint(obj, varargin)
             %TRPRINT Compact display of homogeneous transformation  (compatibility)
             %
@@ -478,6 +493,22 @@ classdef RTBPose
             obj.plot(varargin{:});
         end
         
+        function v = isrot(obj)
+            v = obj.dim == 3 && ~obj.isSE;
+        end
+        
+        function v = isrot2(obj)
+            v = obj.dim == 2 && ~obj.isSE;
+        end
+        
+        function v = ishomog(obj)
+            v = obj.dim == 4 && obj.isSE;
+        end
+        
+        function v = ishomog2(obj)
+            v = obj.dim == 3 && obj.isSE;
+        end
+        
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%  DISPLAY METHODS
@@ -516,17 +547,7 @@ classdef RTBPose
                 s2(i,:) = ['    ', s(i,:)];
             end
         end
-        
-        function d = double(obj)
-            %RTBPose.double  Convert to matrix
-            %
-            % T = P.double() is a matrix representation of the pose P, either a
-            % rotation matrix or a homogeneous transformation matrix.
-            %
-            % Notes::
-            % - if the pose is symbolic the result will be a symbolic matrix.
-            d = obj.data;
-        end
+
         
         function out = print(obj, varargin)
             %RTBPose.print Compact display of pose
