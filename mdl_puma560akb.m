@@ -17,7 +17,7 @@
 %    Armstrong, Khatib and Burdick
 %    1986
 %
-% See also SerialLink, mdl_puma560, mdl_stanford_mdh.
+% See also mdl_puma560, mdl_stanford_mdh, SerialLink.
 
 % MODEL: Unimation, Puma560, dynamics, 6DOF, modified_DH
 

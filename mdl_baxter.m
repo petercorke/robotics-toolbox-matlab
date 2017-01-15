@@ -1,8 +1,8 @@
 %MDL_BAXTER Kinematic model of Baxter dual-arm robot
 %
-% MDL_BAXTER is a script that creates the workspace variables LEFT and
-% RIGHT which describes the kinematic characteristics of the two arms of a
-% Rethink Robotics Baxter robot using standard DH conventions.
+% MDL_BAXTER is a script that creates the workspace variables left and
+% right which describes the kinematic characteristics of the two 7-joint
+% arms of a Rethink Robotics Baxter robot using standard DH conventions.
 %
 % Also define the workspace vectors:
 %   qz         zero joint angle configuration
@@ -16,7 +16,7 @@
 % "Kinematics Modeling and Experimental Verification of Baxter Robot"
 % Z. Ju, C. Yang, H. Ma, Chinese Control Conf, 2015.
 %
-% See also SerialLink, mdl_nao.
+% See also mdl_nao, SerialLink.
 
 
 % MODEL: Baxter, Rethink Robotics, 7DOF, standard_DH
@@ -24,16 +24,18 @@
 
 %     th  d  a  alpha
 
-L(1) = Revolute('d', 0.27,        'a', 0.069, 'alpha', -pi/2);
-L(2) = Revolute('d', 0,           'a', 0, 'alpha', pi/2, 'offset', pi/2);
-L(3) = Revolute('d', 0.102+0.262, 'a', 0.069, 'alpha', -pi/2);
-L(4) = Revolute('d', 0,           'a', 0, 'alpha', pi/2);
-L(5) = Revolute('d', 0.103+0.271, 'a', 0.010, 'alpha', -pi/2);
-L(6) = Revolute('d', 0,           'a', 0, 'alpha', pi/2);
-L(7) = Revolute('d', 0.28,        'a', 0, 'alpha', 0);
+links = [
+        Revolute('d', 0.27,        'a', 0.069, 'alpha', -pi/2)
+        Revolute('d', 0,           'a', 0, 'alpha', pi/2, 'offset', pi/2)
+        Revolute('d', 0.102+0.262, 'a', 0.069, 'alpha', -pi/2)
+        Revolute('d', 0,           'a', 0, 'alpha', pi/2)
+        Revolute('d', 0.103+0.271, 'a', 0.010, 'alpha', -pi/2)
+        Revolute('d', 0,           'a', 0, 'alpha', pi/2)
+        Revolute('d', 0.28,        'a', 0, 'alpha', 0)
+];
 
-left =  SerialLink(L, 'name', 'Baxter LEFT', 'manufacturer', 'Rethink Robotics');
-right = SerialLink(L, 'name', 'Baxter RIGHT', 'manufacturer', 'Rethink Robotics');
+left =  SerialLink(links, 'name', 'Baxter LEFT', 'manufacturer', 'Rethink Robotics');
+right = SerialLink(links, 'name', 'Baxter RIGHT', 'manufacturer', 'Rethink Robotics');
 
 left.base = transl(0.064614, 0.25858, 0.119)*rpy2tr(0, 0, pi/4, 'xyz');
 right.base = transl(0.063534, -0.25966, 0.119)*rpy2tr(0, 0, -pi/4, 'xyz');

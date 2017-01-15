@@ -14,10 +14,10 @@
 % - SI units of metres are used.
 %
 % References::
-% - Robotics, Vision & Control, Sec 7.3.4,
-%   P. Corke, Springer 2011.
+% - Robotics, Vision & Control, 1st edn,
+%   P. Corke, Springer 2011.  Sec 7.3.4.
 %
-% See also SerialLink, mdl_puma560.
+% See also mdl_puma560, SerialLink.
 
 % MODEL: Unimation, Puma560, on XY base, redundant, 8DOF, standard_DH
 

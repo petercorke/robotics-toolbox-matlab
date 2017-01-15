@@ -1,22 +1,20 @@
 %MDL_IR140 Create model of the ABB IRB 140 manipulator
 %
-%      mdl_irb140_mod
-%
-% Script creates the workspace variable irb which describes the 
-% kinematic characteristics of an ABB IRB 140 manipulator using 
-% modified DH conventions.
+% MDL_IRB140_MOD is a script that creates the workspace variable irb140 which
+% describes the kinematic characteristics of an ABB IRB 140 manipulator
+% using modified DH conventions.
 %
 % Also define the workspace vectors:
 %   qz         zero joint angle configuration
 %
 % Reference::
 % - ABB IRB 140 data sheet
-% - "THE MODELING OF A SIX DEGREE-OF-FREEDOM INDUSTRIAL ROBOT FOR 
-%   THE PURPOSE OF EFFICIENT PATH PLANNING"
-%   Master of Science Thesis, Penn State U, May 2009
+% - "The modeling of a six degree-of-freedom industrial robot for 
+%   the purpose of efficient path planning",
+%   Master of Science Thesis, Penn State U, May 2009,
 %   Tyler Carter
 %
-% See also SerialLink, mdl_irb140, mdl_puma560, mdl_stanford, mdl_twolink.
+% See also mdl_irb140, mdl_puma560, mdl_stanford, mdl_twolink, SerialLink.
 %
 % Notes::
 % - SI units of metres are used.
@@ -25,10 +23,6 @@
 %   horizontal.
 
 % MODEL: ABB, IRB140, 6DOF, modified_DH
-
-% Reference::
-
-
 
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
@@ -83,7 +77,7 @@ L(3).I = [
     -1863252.17 75152670.69 -15204130.09
     934875.78 -15204130.09 515424754.34]*1e-9;
 
-irb = SerialLink(L, 'name', 'IRB 140', ...
+irb140 = SerialLink(L, 'name', 'IRB 140', ...
     'manufacturer', 'ABB', 'comment', 'modified DH');
 
 %

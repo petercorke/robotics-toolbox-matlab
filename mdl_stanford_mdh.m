@@ -1,10 +1,8 @@
 %MDL_STANFORD_MDH Create model of Stanford arm using MDH conventions
 %
-%      mdl_stanford_mdh
-%
-% Script creates the workspace variable stanf which describes the 
-% kinematic and dynamic characteristics of the Stanford (Scheinman) arm
-% using modified Denavit-Hartenberg parameters.
+% MDL_STANFORD is a script that creates the workspace variable stanf which
+% describes the kinematic and dynamic characteristics of the Stanford
+% (Scheinman) arm using modified Denavit-Hartenberg parameters.
 %
 % Also defines the vectors:
 %   qz   zero joint angle configuration.
@@ -18,7 +16,7 @@
 % - Dynamic data from "Robot manipulators: mathematics, programming and control"
 %   Paul 1981, Tables 6.5, 6.6
 % 
-% See also SerialLink, mdl_puma560, mdl_puma560akb.
+% See also mdl_puma560, mdl_puma560akb, SerialLink.
 
 
 % MODEL: Stanford, Stanford arm, prismatic, 6DOF, modified_DH

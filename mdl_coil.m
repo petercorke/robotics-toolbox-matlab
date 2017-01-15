@@ -18,7 +18,7 @@
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, mdl_ball.
+% See also mdl_ball, SerialLink.
 
 % MODEL: generic, coil, hyper redundant, 50DOF, standard_DH
 

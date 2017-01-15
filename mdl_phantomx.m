@@ -37,11 +37,12 @@
 %
 % http://www.petercorke.com
 
-clear L
-L(1) = Revolute('d', 40, 'alpha', -pi/2);
-L(2) = Revolute('a', -105, 'alpha', pi, 'offset', pi/2);
-L(3) = Revolute('a', -105);
-L(4) = Revolute('a', -105);
+links = [
+	Revolute('d', 40, 'alpha', -pi/2)
+	Revolute('a', -105, 'alpha', pi, 'offset', pi/2)
+	Revolute('a', -105)
+	Revolute('a', -105)
+	];
 
 % Note alpha_2 = pi, needed to account for rotation axes of joints 3 and 4 having
 % opposite sign to joint 2.
@@ -49,7 +50,7 @@ L(4) = Revolute('a', -105);
 % s='Rz(q1) Tz(L1) Ry(q2) Tz(L2) Ry(q3) Tz(L3) Ry(q4) Tz(L4)'
 % DHFactor(s)
 
-px = SerialLink(L, 'name', 'PhantomX', 'manufacturer', 'Trossen Robotics', ...
+px = SerialLink(links, 'name', 'PhantomX', 'manufacturer', 'Trossen Robotics', ...
     'plotopt', {'tilesize', 50});
 qz = [0 0 0 0];
 px.tool = trotz(-pi/2) * trotx(pi/2);

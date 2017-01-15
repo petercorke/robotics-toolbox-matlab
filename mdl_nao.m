@@ -31,7 +31,7 @@
 % - TODO; add joint limits
 % - TODO; add dynamic parameters
 %
-% See also SerialLink, Revolute.
+% See also mdl_baxter, SerialLink.
 
 % MODEL: Aldebaran, NAO, humanoid, 4DOF, standard_DH
 

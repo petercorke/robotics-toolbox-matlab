@@ -14,7 +14,7 @@
 % - Moves in the XY plane.
 % - No dynamics in this model.
 %
-% See also SerialLink, mdl_twolink, mdl_planar1, mdl_planar3.
+% See also mdl_twolink, mdl_planar1, mdl_planar3, SerialLink.
 
 
 % MODEL: generic, planar, 2DOF, symbolic, standard_DH

@@ -13,13 +13,13 @@
 %
 % [R,QZ] = MDL_HYPER2D(N) as above but also returns a vector of zero joint angles.
 %
-%
 % Notes::
+% - All joint axes are parallel to z-axis.
 % - The manipulator in default pose is a straight line 1m long.
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, mdl_hyper3d, mdl_coil, mdl_ball, mdl_twolink.
+% See also mdl_hyper3d, mdl_coil, mdl_ball, mdl_twolink, SerialLink.
 
 % MODEL: planar, hyper redundant, 10DOF, standard_DH
 

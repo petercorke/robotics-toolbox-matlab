@@ -16,7 +16,7 @@
 % References::
 %  - Based on Fig 3-6 (p73) of Spong and Vidyasagar (1st edition).  
 %
-% See also SerialLink, mdl_twolink, mdl_planar1.
+% See also mdl_twolink, mdl_planar1, SerialLink.
 
 % MODEL: generic, planar, 1DOF, standard_DH
 

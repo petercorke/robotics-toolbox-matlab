@@ -1,30 +1,29 @@
 %MDL_TWOLINK_SYM Create symbolic model of a simple 2-link mechanism
 %
-%      mdl_twolink_sym
-%
-% Script creates the workspace variable twolink which describes the 
-% kinematic and dynamic characteristics of a simple planar 2-link mechanism in
-% symbolic form.  The symbolic parameters are:
-%  * link lengths: a1, a2
-%  * link masses: m1, m2
-%  * link CoMs in the link frame x-direction: c1, c2
-%  * link inertias: Iyy1, Iyy2
-%  * viscous friction: b1, b2
-%  * gravitational acceleration: g
-%  * joint angles: q1, q2
-%  * joint angle velocities: qd1, qd2
-%  * joint angle accelerations: qdd1, qdd2
-%
-% Gear ratio is 1 and motor inertia is 0.
+% MDL_TWOLINK_SYM is a script that creates the workspace variable twolink
+% which describes in symbolic form the kinematic and dynamic
+% characteristics of a simple planar 2-link mechanism moving in the
+% xz-plane, it experiences gravity loading.  The symbolic parameters are:
+%  - link lengths: a1, a2
+%  - link masses: m1, m2
+%  - link CoMs in the link frame x-direction: c1, c2
+%  - gravitational acceleration: g
+%  - joint angles: q1, q2
+%  - joint angle velocities: qd1, qd2
+%  - joint angle accelerations: qdd1, qdd2
 %
 % Notes::
-% - It is a planar mechanism operating in the XY (horizontal) plane and is 
-%   therefore not affected by gravity.
+% - It is a planar mechanism operating in the vertical plane and is 
+%   therefore affected by gravity (unlike mdl_planar2 in the horizontal
+%   plane).
+% - Gear ratio is 1 and motor inertia is 0.
+% - Link inertias Iyy1, Iyy2 are 0.
+% - Viscous and Coulomb friction is 0. 
 %
 % References::
 %  - Based on Fig 3-6 (p73) of Spong and Vidyasagar (1st edition).  
 %
-% See also SerialLink, mdl_puma560, mdl_stanford.
+% See also mdl_puma560, mdl_stanford, SerialLink.
 
 % MODEL: generic, planar, dynamics, 2DOF, symbolic, standard_DH
 
@@ -49,7 +48,9 @@
 
 
 syms a1 a2 g
-syms c1 c2 m1 m2 Iyy1 Iyy2 b1 b2
+syms c1 c2 m1 m2 
+
+%syms Iyy1 Iyy2 b1 b2
 Iyy1 = 0
 Iyy2 = 0
 b1 = 0
@@ -64,3 +65,5 @@ twolink = SerialLink([
 twolink = twolink.sym();
 twolink.gravity = [0; 0; g];
 twolink.base = trotx(sym('pi')/2);
+
+syms q1 q2 q1d q2d q1dd q2dd

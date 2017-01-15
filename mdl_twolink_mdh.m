@@ -1,6 +1,6 @@
 %MDL_TWOLINK_MDH Create model of a 2-link mechanism using modified DH convention
 %
-% MDL_TWOLINK_MDH is a script that the workspace variable tl which
+% MDL_TWOLINK_MDH is a script that the workspace variable twolink which
 % describes the kinematic and dynamic characteristics of a simple planar
 % 2-link mechanism using modified Denavit-Hartenberg conventions.
 %
@@ -9,13 +9,13 @@
 %
 % Notes::
 % - SI units of metres are used.
-% - It is a planar mechanism operating in the XY (horizontal) plane and is 
+% - It is a planar mechanism operating in the xz-plane (vertical)  and is 
 %   therefore not affected by gravity.
 %
 % References::
 %  - Based on Fig 3.8 (p71) of Craig (3rd edition).  
 %
-% See also SerialLink, mdl_onelink, mdl_twolink, mdl_planar2.
+% See also mdl_twolink, mdl_onelink, mdl_planar2, SerialLink.
 
 % MODEL: generic, planar, 2DOF, modified_DH
 
@@ -54,3 +54,7 @@ twolink = SerialLink([
     'comment', 'from Craig');
 qz = [0 0];
 qn = [pi/6, -pi/6];
+% the robot defined above moves in the XY plane and is not influenced by
+% the default gravity vector, acting in the Z-direction.  We choose to
+% rotate the robot so that it moves in the XZ plane.
+twolink.base = trotx(pi/2);

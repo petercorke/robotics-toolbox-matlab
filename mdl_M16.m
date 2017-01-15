@@ -1,6 +1,6 @@
 %MDL_M16 Create model of Fanuc M16 manipulator
 %
-% MDL_M16 is a script that creates the workspace variable mico which
+% MDL_M16 is a script that creates the workspace variable m16 which
 % describes the kinematic characteristics of a Fanuc M16 manipulator using
 % standard DH conventions.
 %
@@ -9,18 +9,18 @@
 %   qr         vertical 'READY' configuration
 %   qd         lower arm horizontal as per data sheet
 %
-% Reference::
+% References::
 % - "Fanuc  M-16iB data sheet", http://www.robots.com/fanuc/m-16ib.
 % - "Utilizing the Functional Work Space Evaluation Tool for Assessing a 
-%    System Design and Reconfiguration Alternatives"
-%    A. Djuric and R. J. Urbanic
+%   System Design and Reconfiguration Alternatives",
+%   A. Djuric and R. J. Urbanic
 %
 % Notes::
 % - SI units of metres are used.
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, mdl_irb140, mdl_fanuc10l, mdl_motomanHP6, mdl_S4ABB2p8, mdl_puma560.
+% See also mdl_irb140, mdl_fanuc10l, mdl_motomanHP6, mdl_S4ABB2p8, mdl_puma560, SerialLink.
 
 
 % MODEL: Fanuc, M16, 6DOF, standard_DH

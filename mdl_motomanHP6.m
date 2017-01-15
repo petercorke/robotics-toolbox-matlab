@@ -1,6 +1,6 @@
 %MDL_MotomanHP6  Create kinematic data of a Motoman HP6 manipulator
 %
-% MDL_MotomanHP6 is a script that creates the workspace variable R which
+% MDL_MotomanHP6 is a script that creates the workspace variable hp6 which
 % describes the kinematic characteristics of a Motoman HP6 manipulator
 % using standard DH conventions.
 %
@@ -9,13 +9,13 @@
 %
 % Author::
 %  Wynand Swart,
-%  Mega Robots CC, P/O Box 8412, Pretoria, 0001, South Africa
+%  Mega Robots CC, P/O Box 8412, Pretoria, 0001, South Africa,
 %  wynand.swart@gmail.com
 %
 % Notes::
 % - SI units of metres are used.
 %
-% See also SerialLink, mdl_irb140, mdl_m16, mdl_fanuc10l, mdl_S4ABB2p8, mdl_puma560.
+% See also mdl_irb140, mdl_m16, mdl_fanuc10l, mdl_S4ABB2p8, mdl_puma560, SerialLink.
 
 % MODEL: Motoman, HP6, 6DOF, standard_DH
 
@@ -55,5 +55,5 @@ L(6) = Link([ 0      -0.095  0       pi     0]);
 %Pose 0; At ZERO position
 %##########################################################
 q0 =[0   -pi/2   0   0   -pi/2   0];
-R=SerialLink(L, 'name', 'Motoman HP6');
+hp6 = SerialLink(L, 'name', 'Motoman HP6');
 %##########################################################

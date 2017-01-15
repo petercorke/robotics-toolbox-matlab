@@ -1,9 +1,8 @@
 %MDL_STANFORD Create model of Stanford arm
 %
-%      mdl_stanford
-%
-% Script creates the workspace variable stanf which describes the 
-% kinematic and dynamic characteristics of the Stanford (Scheinman) arm.
+% MDL_STANFORD is a script that creates the workspace variable stanf which
+% describes the kinematic and dynamic characteristics of the Stanford
+% (Scheinman) arm.
 %
 % Also defines the vectors:
 %   qz   zero joint angle configuration.
@@ -21,7 +20,7 @@
 % - Dobrotin & Scheinman, "Design of a computer controlled manipulator for
 %   robot research", IJCAI, 1973.
 % 
-% See also SerialLink, mdl_puma560, mdl_puma560akb.
+% See also mdl_puma560, mdl_puma560akb, SerialLink.
 
 
 % MODEL: Stanford, Stanford Arm, prismatic, 6DOF, standard_DH

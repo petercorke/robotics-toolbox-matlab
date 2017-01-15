@@ -1,18 +1,18 @@
 %MDL_S4ABB2p8  Create kinematic model of ABB S4 2.8robot 
 %
-% MDL_S4ABB2p8 is a script creates the workspace variable R which describes
-% the kinematic characteristics of an ABB S4 2.8 robot using standard DH
-% conventions.
+% MDL_S4ABB2p8 is a script that creates the workspace variable s4 which
+% describes the kinematic characteristics of an ABB S4 2.8 robot using
+% standard DH conventions.
 %
 % Also defines the workspace vector:
 %   q0   mastering position.
 %
 % Author::
 %  Wynand Swart,
-%  Mega Robots CC, P/O Box 8412, Pretoria, 0001, South Africa
+%  Mega Robots CC, P/O Box 8412, Pretoria, 0001, South Africa,
 %  wynand.swart@gmail.com
 %
-% See also SerialLink, mdl_fanuc10l, mdl_m16, mdl_motormanHP6, mdl_irb140, mdl_puma560.
+% See also mdl_fanuc10l, mdl_m16, mdl_motormanHP6, mdl_irb140, mdl_puma560, SerialLink.
 
 % MODEL: ABB, S4_2.8, S4 2.8m reach version, 6DOF, standard_DH
 
@@ -49,5 +49,5 @@ L(6) = Link([ 0      0.2    0      -pi/2   0]);
 %Pose 0; At SYNCHRONISATION position
 %##########################################################
 q0 = [0     -pi/2         0       0      0     -pi/2];
-R=SerialLink(L, 'name', 'S4 ABB 2.8');
+s4=SerialLink(L, 'name', 'S4 ABB 2.8');
 %##########################################################

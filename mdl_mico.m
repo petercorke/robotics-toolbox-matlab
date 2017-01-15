@@ -17,7 +17,7 @@
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, Revolute, mdl_jaco, mdl_puma560, mdl_twolink.
+% See also Revolute, mdl_jaco, mdl_puma560, mdl_twolink, SerialLink.
 
 % MODEL: Kinova, Mico, 6DOF, standard_DH
 

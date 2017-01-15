@@ -11,7 +11,7 @@
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, mdl_simple6, mdl_puma560, mdl_twolink.
+% See also mdl_simple6, mdl_puma560, mdl_twolink, SerialLink.
 
 % MODEL: generic, 6DOF, standard_DH
 

@@ -14,11 +14,14 @@
 % [R,QZ] = MDL_HYPER3D(N) as above but also returns a vector of zero joint angles.
 %
 % Notes::
+% - In the zero configuration joint axes alternate between being parallel
+%   to the z- and y-axes.
+% - A crude snake or elephant trunk robot.
 % - The manipulator in default pose is a straight line 1m long.
 % - Unlike most other mdl_xxx scripts this one is actually a function that
 %   behaves like a script and writes to the global workspace.
 %
-% See also SerialLink, mdl_hyper2d, mdl_ball, mdl_coil.
+% See also mdl_hyper2d, mdl_ball, mdl_coil, SerialLink.
 
 % MODEL: hyper redundant, 10DOF, standard_DH
 
@@ -49,12 +52,7 @@ function [r,qq] = mdl_hyper3d(N)
     
     % create the links
     for i=1:N
-        if mod(i,2) == 0
-            links(i) = Link([0 0 1/N, 0]);
-        else
-            links(i) = Link([0 0 1/N, pi/2]);
-
-        end
+        links(i) = Link([0 0 1/N, pi/2]);
         q(i) = 0;
     end
     
