@@ -29,6 +29,7 @@ tbpath = fileparts(which('Link'));
 addpath( fullfile(tbpath, 'demos') );
 addpath( fullfile(tbpath, 'examples') );
 addpath( fullfile(tbpath, 'mex') );
+addpath( fullfile(tbpath, 'models') );
 javaaddpath( fullfile(tbpath, 'DH.jar') );
 addpath( fullfile(tbpath, 'interfaces', 'VREP') );
 % add the contrib code to the path
