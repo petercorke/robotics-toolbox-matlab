@@ -59,7 +59,7 @@ function r = mdl_offset6()
     if nargout == 1
         r = robot;
     elseif nargout == 0
-        assignin('base', 'off6', robot);
-        assignin('base', 'qz', [0 0 0 0 0 0]); % zero angles, arm up
+        assignin('caller', 'off6', robot);
+        assignin('caller', 'qz', [0 0 0 0 0 0]); % zero angles, arm up
     end
 end

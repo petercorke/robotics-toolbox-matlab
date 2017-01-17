@@ -74,10 +74,10 @@ function r = mdl_irb140()
     if nargin == 1
         r = robot;
     elseif nargin == 0
-        assignin('base', 'irb140', robot);
-        assignin('base', 'qz', [0 0 0 0 0 0]); % zero angles
-        assignin('base', 'qd', [0 -90 180 0 0 -90]*deg); % data sheet pose, horizontal
-        assignin('base', 'qr', [0 -90 90 0 90 -90]*deg); % ready pose, arm up
+        assignin('caller', 'irb140', robot);
+        assignin('caller', 'qz', [0 0 0 0 0 0]); % zero angles
+        assignin('caller', 'qd', [0 -90 180 0 0 -90]*deg); % data sheet pose, horizontal
+        assignin('caller', 'qr', [0 -90 90 0 90 -90]*deg); % ready pose, arm up
     end
 end
 

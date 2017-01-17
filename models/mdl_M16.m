@@ -75,10 +75,10 @@ function r = mdl_m16()
     if nargin == 1
         r = robot;
     elseif nargin == 0
-        assignin('base', 'm16', robot);
-        assignin('base', 'qz', [0 0 0 0 0 0]); % zero angles
-        assignin('base', 'qd', [0 -90 0 0 -180 180]*deg); % data sheet pose, horizontal
-        assignin('base', 'qr', [0 -90 90 0 -180 180]*deg); % ready pose, arm up
+        assignin('caller', 'm16', robot);
+        assignin('caller', 'qz', [0 0 0 0 0 0]); % zero angles
+        assignin('caller', 'qd', [0 -90 0 0 -180 180]*deg); % data sheet pose, horizontal
+        assignin('caller', 'qr', [0 -90 90 0 -180 180]*deg); % ready pose, arm up
     end
 end
 

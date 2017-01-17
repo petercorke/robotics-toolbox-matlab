@@ -62,8 +62,8 @@ function [r,qq] = mdl_hyper3d(N)
     
     % place the variables into the global workspace
     if nargout == 0
-        assignin('base', 'h3d', robot);
-        assignin('base', 'qz', q);
+        assignin('caller', 'h3d', robot);
+        assignin('caller', 'qz', q);
     elseif nargout == 1
         r = robot;
     elseif nargout == 2

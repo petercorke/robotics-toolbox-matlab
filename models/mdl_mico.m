@@ -97,9 +97,9 @@ function r = mdl_mico()
     if nargin == 1
         r = robot;
     elseif nargin == 0
-        assignin('base', 'mico', robot);
-        assignin('base', 'qz', [0 0 0 0 0 0]); % zero angles, arm up
-        assignin('base', 'qr', [270 180 180 0 0 180]*deg); % vertical pose as per Fig 2
+        assignin('caller', 'mico', robot);
+        assignin('caller', 'qz', [0 0 0 0 0 0]); % zero angles, arm up
+        assignin('caller', 'qr', [270 180 180 0 0 180]*deg); % vertical pose as per Fig 2
     end
 end
 

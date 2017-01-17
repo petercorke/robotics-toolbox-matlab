@@ -84,8 +84,8 @@ function r = mdl_jaco()
     if nargin == 1
         r = robot;
     elseif nargin == 0
-        assignin('base', 'jaco', robot);
-        assignin('base', 'qz', [0 0 0 0 0 0]); % zero angles
-        assignin('base', 'qr', [270 180 180 0 0 0]*deg); % vertical pose as per Fig 2
+        assignin('caller', 'jaco', robot);
+        assignin('caller', 'qz', [0 0 0 0 0 0]); % zero angles
+        assignin('caller', 'qr', [270 180 180 0 0 0]*deg); % vertical pose as per Fig 2
     end
 end

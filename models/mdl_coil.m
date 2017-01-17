@@ -58,6 +58,6 @@ function r = mdl_coil(N)
     if nargin == 1
         r = robot;
     elseif nargin == 0
-        assignin('base', 'coil', robot);
-        assignin('base', 'q', 10*pi/N*ones(1,N));
+        assignin('caller', 'coil', robot);
+        assignin('caller', 'q', 10*pi/N*ones(1,N));
     end

@@ -56,7 +56,7 @@ function r = mdl_simple6()
     if nargout == 1
         r = robot;
     elseif nargout == 0
-        assignin('base', 's6', robot);
-        assignin('base', 'qz', [0 0 0 0 0 0]); % zero angles, arm up
+        assignin('caller', 's6', robot);
+        assignin('caller', 'qz', [0 0 0 0 0 0]); % zero angles, arm up
     end
 end

@@ -60,8 +60,8 @@ function r = mdl_ball(N)
     if nargin == 1
         r = robot;
     elseif nargin == 0
-        assignin('base', 'ball', robot);
-        assignin('base', 'q', q);     
+        assignin('caller', 'ball', robot);
+        assignin('caller', 'q', q);     
     end
     
     
