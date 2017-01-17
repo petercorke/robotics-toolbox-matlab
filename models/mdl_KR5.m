@@ -44,3 +44,4 @@ KR5.model3d = 'KUKA/KR5_arc';
 qk1=[pi/4 pi/3 pi/4 pi/6 pi/4 pi/6];
 qk2=[pi/4 pi/3 pi/6 pi/3 pi/4 pi/6];
 qk3=[pi/6 pi/3 pi/6 pi/3 pi/6 pi/3];
+qz = [0 0 0 0 0 0];
