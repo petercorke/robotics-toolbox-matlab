@@ -64,14 +64,16 @@ function name_ = models(query)
         fclose(fid);
     end
     
-    % now sort and print the matching models
-    for i = sort(info)'
-        fprintf('%s\n', i{1});
-    end
+
     
     % optionally return a list of model names
     if nargout == 1
-        name_ = name;
+        name_ = name';
+    else
+        % now sort and print the matching models
+        for i = sort(info)'
+            fprintf('%s\n', i{1});
+        end
     end
     
 end
