@@ -53,5 +53,5 @@ p560.links(1).d = 30 * 0.0254;
 p8 = SerialLink( [platform, p560], 'name', 'P8');
 
 % set the range for the prismatic links
-p8.links(1).qlim=[-1 1]
-p8.links(2).qlim=[-1 1]
+p8.links(1).qlim=[-1 1];
+p8.links(2).qlim=[-1 1];
