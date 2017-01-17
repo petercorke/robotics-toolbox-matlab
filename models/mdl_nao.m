@@ -127,12 +127,12 @@ rightleg = SerialLink( [
 
 
 % plot the legs and arms in a nominal sized workspace
-clf
-leftleg.plot([0 0 0 0 0 0], 'workspace', 400*[-1 1 -1 1 -1 1]);
-hold on
-rightleg.plot([0 0 0 0 0 0], 'workspace', 400*[-1 1 -1 1 -1 1]);
-leftarm.plot([0 0 0 0], 'workspace', 400*[-1 1 -1 1 -1 1]);
-rightarm.plot([0 0 0 0], 'workspace', 400*[-1 1 -1 1 -1 1]);
+% clf
+% leftleg.plot([0 0 0 0 0 0], 'workspace', 400*[-1 1 -1 1 -1 1]);
+% hold on
+% rightleg.plot([0 0 0 0 0 0], 'workspace', 400*[-1 1 -1 1 -1 1]);
+% leftarm.plot([0 0 0 0], 'workspace', 400*[-1 1 -1 1 -1 1]);
+% rightarm.plot([0 0 0 0], 'workspace', 400*[-1 1 -1 1 -1 1]);
 
 
     
