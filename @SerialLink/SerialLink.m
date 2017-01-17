@@ -309,7 +309,7 @@ classdef SerialLink < matlab.mixin.Copyable
                         
                         for k=2:length(L)
                             r.links = [r.links copy(L(k).links)];
-                            r.name = [r.name '+' L(k).name]
+                            r.name = [r.name '+' L(k).name];
                         end
                         
                         r.tool = L(end).tool; % tool of composite robot from the last one
