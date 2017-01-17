@@ -36,7 +36,7 @@ links = [
 		Link([0        0           0       0])
 	];
 
-KR5=SerialLink(L, 'name', 'Kuka KR5');
+KR5=SerialLink(links, 'name', 'Kuka KR5');
 KR5.tool=transl(0,0,0.115);
 KR5.ikineType = 'kr5';
 KR5.model3d = 'KUKA/KR5_arc';
