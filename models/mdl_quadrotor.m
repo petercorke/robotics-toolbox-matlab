@@ -47,7 +47,6 @@
 %
 % See also sl_quadrotor.
 
-% MODEL: quadrotor
 
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
