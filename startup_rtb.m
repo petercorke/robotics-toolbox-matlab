@@ -1,7 +1,15 @@
 %STARTUP_RTB Initialize MATLAB paths for Robotics Toolbox
 %
-% Adds demos, examples to the MATLAB path, and adds also to 
+% Adds demos, data, and examples to the MATLAB path, and adds also to 
 % Java class path.
+%
+% Notes::
+% - This sets the paths for the current session only.
+% - To make the settings persistent across sessions you can:
+%   - Add this script to your MATLAB startup.m script.
+%   - After running this script run PATHTOOL and save the path.
+%
+% See also PATH, ADDPATH, PATHTOOL, JAVAADDPATH.
 
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
@@ -30,7 +38,7 @@ addpath( fullfile(tbpath, 'demos') );
 addpath( fullfile(tbpath, 'examples') );
 addpath( fullfile(tbpath, 'mex') );
 addpath( fullfile(tbpath, 'models') );
-javaaddpath( fullfile(tbpath, 'DH.jar') );
+javaaddpath( fullfile(tbpath, 'java', 'DHFactor.jar') );
 addpath( fullfile(tbpath, 'interfaces', 'VREP') );
 % add the contrib code to the path
 a = fullfile(rvcpath, 'contrib', 'arte');

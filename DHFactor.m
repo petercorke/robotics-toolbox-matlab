@@ -36,7 +36,7 @@
 %   last line above.
 % - Implemented in Java.
 % - Not all sequences can be converted to DH format, if conversion cannot be 
-%   achieved an error is generated.
+%   achieved an error is reported.
 %
 % Reference::
 % - A simple and systematic approach to assigning Denavit-Hartenberg parameters,
