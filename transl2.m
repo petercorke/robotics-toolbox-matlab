@@ -1,8 +1,8 @@
-%TRANSL2 Create or unpack an SE2 translational transform
+%TRANSL2 Create or unpack an SE(2) translational homogeneous transform
 %
-% Create a translational transformation matrix::
+% Create a translational SE(2) matrix::
 %
-% T = TRANSL2(X, Y) is an SE2 homogeneous transform (3x3) representing a
+% T = TRANSL2(X, Y) is an SE(2) homogeneous transform (3x3) representing a
 % pure translation.
 %
 % T = TRANSL2(P) is a homogeneous transform representing a translation or
@@ -10,7 +10,7 @@
 % sequence of homogenous transforms such that T(:,:,i) corresponds to the
 % i'th row of P.
 %
-% Unpack the translational part of a transformation matrix::
+% Extract the translational part of an SE(2) matrix::
 %
 % P = TRANSL2(T) is the translational part of a homogeneous transform as a
 % 2-element column vector.  If T (3x3xM) is a homogeneous transform

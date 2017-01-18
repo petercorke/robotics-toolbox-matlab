@@ -1,6 +1,6 @@
-%TRANSL Create or unpack an SE3 translational transform
+%TRANSL Create or unpack an SE(3) translational homogeneous transform
 %
-% Create a translational transformation matrix::
+% Create a translational SE(3) matrix::
 %
 % T = TRANSL(X, Y, Z) is an SE(3) homogeneous transform (4x4) representing
 % a pure translation of X, Y and Z.
@@ -10,7 +10,7 @@
 % (4x4xM) is a sequence of homogeneous transforms such that T(:,:,i)
 % corresponds to the i'th row of P.
 %
-% Unpack the translational part of a transformation matrix::
+% Extract the translational part of an SE(3) matrix::
 %
 % P = TRANSL(T) is the translational part of a homogeneous transform T as a
 % 3-element column vector.  If T (4x4xM) is a homogeneous transform
@@ -26,7 +26,7 @@
 % - Somewhat unusually this function performs a function and its inverse.  An
 %   historical anomaly.
 %
-% See also SE3.t, SE3.transl, CTRAJ.
+% See also SE3.t, SE3.transl.
 
 % Copyright (C) 1993-2016, by Peter I. Corke
 %
@@ -85,4 +85,6 @@ function [t1,t2,t3] = transl(x, y, z)
         % transl(x,y,z) -> T
         t = [x; y; z];
         t1 =    rt2tr( eye(3), t);
+    else
+        error('RTB:transl:badargs', 'should be 1 or 3 arguments');
     end
