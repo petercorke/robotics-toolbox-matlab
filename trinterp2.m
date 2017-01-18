@@ -1,15 +1,14 @@
-%TRINTERP Interpolate SE(3) homogeneous transformations
+%TRINTERP2 Interpolate SE(2) homogeneous transformations
 %
-% T = TRINTERP(T0, T1, S) is a homogeneous transform (4x4) interpolated
+% T = TRINTERP2(T0, T1, S) is a homogeneous transform (3x3) interpolated
 % between T0 when S=0 and T1 when S=1.  T0 and T1 are both homogeneous
-% transforms (4x4).  Rotation is interpolated using quaternion spherical
-% linear interpolation (slerp).  If S (Nx1) then T (4x4xN) is a sequence of
+% transforms (3x3).  If S (Nx1) then T (3x3xN) is a sequence of
 % homogeneous transforms corresponding to the interpolation values in S.
 %
-% T = TRINTERP(T1, S) as above but interpolated between the identity matrix
+% T = TRINTERP2(T1, S) as above but interpolated between the identity matrix
 % when S=0 to T1 when S=1.
 %
-% See also CTRAJ, SE3.interp, UnitQuaternion, trinterp2.
+% See also trinterp, SE3.interp, UnitQuaternion.
 
 
 
@@ -32,7 +31,7 @@
 %
 % http://www.petercorke.com
 
-function T = trinterp(A, B, C)
+function T = trinterp2(A, B, C)
     
     if nargin == 3
         %	TR = TRINTERP(T0, T1, r)
@@ -42,42 +41,41 @@ function T = trinterp(A, B, C)
             % integer value
             r = [0:(r-1)] / (r-1);
         end
-        assert(all(r>=0 & r<=1), 'RTB:trinterp:badarg', 'values of S outside interval [0,1]');
+        assert(all(r>=0 & r<=1), 'RTB:trinterp2:badarg', 'values of S outside interval [0,1]');
         
-        q0 = UnitQuaternion(T0);
-        q1 = UnitQuaternion(T1);
+        th0 = atan2(T0(2,1), T0(1,1));
+        th1 = atan2(T1(2,1), T1(1,1))
         
-        p0 = transl(T0);
-        p1 = transl(T1);
+        p0 = transl2(T0);
+        p1 =transl2(T1);
         
         for i=1:length(r)
-            
-            qr = q0.interp(q1, r(i));
+            th = th0*(1-r(i)) + r(i)*th1;
             pr = p0*(1-r(i)) + r(i)*p1;
             
-            T(:,:,i) = rt2tr(qr.R, pr);
+            T(:,:,i) = rt2tr(rot2(th), pr);
         end
     elseif nargin == 2
         %	TR = TRINTERP(T, r)
-        T0 = A; r = B;
+        T0 = SE2.check(A); r = B;
         
         if length(r) == 1 && r > 1 && (r == floor(r))
             % integer value
             r = [0:(r-1)] / (r-1);
         elseif any(r<0 | r>1)
-            error('RTB:trinterp', 'values of S outside interval [0,1]');
+            error('RTB:trinterp2:badarg', 'values of S outside interval [0,1]');
         end
         
-        q0 = UnitQuaternion(T0);
-        p0 = T0.t;
+        th0 = atan2(T0(2,1), T0(1,1));
+        p0 = transl2(T0);
         
         for i=1:length(r)
-            qr = q0.interp(r);
+            th = th0*(1-r(i)) + r(i)*th1;
             pr = r*p0;
             
-            T(:,:,i) = rt2tr(qr.R, pr);
+            T(:,:,i) = rt2tr(rot2(th), pr);
         end
 
     else
-        error('RTB:trinterp:badarg', 'must be 2 or 3 arguments');
+        error('RTB:trinterp2:badarg', 'must be 2 or 3 arguments');
     end    
