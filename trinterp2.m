@@ -44,7 +44,7 @@ function T = trinterp2(A, B, C)
         assert(all(r>=0 & r<=1), 'RTB:trinterp2:badarg', 'values of S outside interval [0,1]');
         
         th0 = atan2(T0(2,1), T0(1,1));
-        th1 = atan2(T1(2,1), T1(1,1))
+        th1 = atan2(T1(2,1), T1(1,1));
         
         p0 = transl2(T0);
         p1 =transl2(T1);

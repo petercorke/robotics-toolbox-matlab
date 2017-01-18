@@ -104,7 +104,7 @@ function hout = trplot2(T, varargin)
         T = [T [0; 0]; 0 0 1];
     end
     
-    if opt.handle
+    if ~isempty(opt.handle)
         set(opt.handle, 'Matrix', se2t3(T));
         if nargout > 0
             hout = opt.handle;
@@ -140,7 +140,7 @@ function hout = trplot2(T, varargin)
             if ~isempty(opt.axis)
                 axis(opt.axis);
             end
-            %axis equal
+            axis equal
             
             if opt.axes
                 xlabel( 'X');
