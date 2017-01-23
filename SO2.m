@@ -2,41 +2,47 @@
 %
 % This subclasss of RTBPose is an object that represents an SO(2) rotation
 %
-% Methods::
+% Constructor methods::
+%  SO2          general constructor
+%  SO2.exp      exponentiate an so(2) matrix
+%  SO2.rand     random orientation
 %  new          new SO2 object
+%
+% Information and test methods::
 %  dim*         returns 2
 %  isSE*        returns false
 %  issym*       true if rotation matrix has symbolic elements
+%  isa          check if matrix is SO2
+%
+% Display and print methods::
 %  plot*        graphically display coordinate frame for pose
 %  animate*     graphically animate coordinate frame for pose
 %  print*       print the pose in single line format
 %  display*     print the pose in human readable matrix form
-%  char*         convert to human readable matrix as a string
-%--
+%  char*        convert to human readable matrix as a string
+%
+% Operation methods::
 %  det          determinant of matrix component
 %  eig          eigenvalues of matrix component
 %  log          logarithm of rotation matrix
 %  inv          inverse
 %  simplify*    apply symbolic simplication to all elements
-%  interp        interpolate between rotations
-%--
+%  interp       interpolate between rotations
+%
+% Conversion methods::
+%  check        convert object or matrix to SO2 object
 %  theta        return rotation angle
 %  double       convert to rotation matrix
 %  R            convert to rotation matrix
 %  SE2          convert to SE2 object with zero translation
 %  T            convert to homogeneous transformation matrix with zero translation
-%--
+%
+% Compatibility methods::
 %  isrot2*      returns true
 %  ishomog2*    returns false
-%  ishomog*     returns false
 %  trprint2*    print single line representation
 %  trplot2*     plot coordinate frame
-%  tranimate*   animate coordinate frame
-%
-% Static methods::
-%  check        convert object or matrix to SO2 object
-%  exp          exponentiate an so(2) matrix                         
-%  isa          check if matrix is SO2
+%  tranimate2*  animate coordinate frame
 %
 % * means inherited from RTBPose
 %
@@ -45,6 +51,8 @@
 %  -           elementwise subtraction, result is a matrix
 %  *           multiplication within group, also group x vector
 %  /           multiply by inverse
+%  ==          test equality
+%  ~=          test inequality
 %
 % See also SE2, SO3, SE3, RTBPose.
 
@@ -101,9 +109,15 @@ classdef SO2 < RTBPose
             if nargin == 0
                 % null rotation
                 obj.data = eye(2,2);
-            elseif isreal(t) && isvector(t)
+            elseif isa(t, 'SO2')
+                % copy an existing SO2 object
+                obj.data = t.data;
+            elseif isvector(t)
                 % for specified angle
-                t = t(:)';
+                if isfloat(t)
+                    assert(isreal(t), 'argument cannot be complex');
+                end
+                t = t(:).';
                 if nargin > 1 && strcmp(deg, 'deg')
                     t = t *pi/180;
                 end
@@ -114,9 +128,7 @@ classdef SO2 < RTBPose
                         sin(th)   cos(th)
                         ];
                 end
-            elseif isa(t, 'SO2')
-                % copy an existing SO2 object
-                obj.data = t.data;
+
             elseif SO2.isa(t)
                 % from a 2x2 matrix
                 for i=1:size(t, 3)
@@ -167,13 +179,28 @@ classdef SO2 < RTBPose
                 TT(3,3,i) = 1;
             end
         end
+        
+        function th = angle(obj)
+            %SO2.theta  Rotation angle
+            %
+            % THETA = P.angle() is the rotation angle, in radians, associated with the
+            % SO2 object P.
+            th = atan2(obj.data(2,1), obj.data(1,1));
+        end
   
         function th = theta(obj)
             %SO2.theta  Rotation angle
             %
             % THETA = P.theta() is the rotation angle, in radians, associated with the
             % SO2 object P.
-            th = atan2(obj.data(2,1), obj.data(1,1));
+            %
+            % Notes::
+            % - Deprecated, use angle() instead.
+            
+            % TODO: remove
+            
+            warning('RTB:SO2:deprecfun', 'the theta() method is deprecated use angle()');
+            th = obj.angle();
         end
 
                 
@@ -258,23 +285,35 @@ classdef SO2 < RTBPose
             %
             % P1.interp(P2, s) is an SO2 object representing interpolation
             % between rotations represented by SO2 objects P1 and P2.  s varies from 0
-            % (P1) to 1 (P2).
+            % (P1) to 1 (P2). If s is a vector (1xN) then the result will be a vector
+            % of SO2 objects.
+            %
+            % Notes::
+            % - It is an error if S is outside the interval 0 to 1.
             %
             % See also SO2.angle.
-            assert(s>=0 && s<=1, 'RTB:SO2:interp:badarg', 's must be in the interval [0,1]');
+            assert(all(s>=0 & s<=1), 'RTB:SO2:interp:badarg', 's must be in the interval [0,1]');
             
-            th1 = obj1.theta; th2 = obj2.theta;
+            th1 = obj1.angle; th2 = obj2.angle;
             
             R = SO2( th1 + s*(th2-th1) );
         end
         
-                function n = new(obj, varargin)
+        function n = new(obj, varargin)
             %SE2.new  Construct a new object of the same type
             %
-            % P2 = P.new() creates a new object of the same type as P, this is polymorphic
-            % across all RTBPose derived classes.
+            % P2 = P.new(X) creates a new object of the same type as P, by invoking the SO2 constructor on the matrix
+            % X (2x2).
             %
-            % P2 = P.new(P1) as above but the value of P2 is set equal to P1 which is a matrix (3x3).
+            % P2 = P.new() as above but defines a null motion.
+            %
+            % Notes::
+            % - Serves as a dynamic constructor.
+            % - This method is polymorphic across all RTBPose derived classes, and
+            %   allows easy creation of a new object of the same class as an existing
+            %   one.
+            %
+            % See also SE3.new, SO3.new, SE2.new.
             
             n = SO2(varargin{:});
         end
@@ -335,6 +374,12 @@ classdef SO2 < RTBPose
         end
         
         function T = rand()
+            %SO2.rand Construct a random SO(2) object
+            %
+            % SO2.rand() is an SO2 object with a uniform random orientation.
+            % Random numbers are in the interval 0 to 1.
+            %
+            % See also RAND.
             T = SO2(rand(1,1));
         end
     end

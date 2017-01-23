@@ -2,24 +2,41 @@
 %
 % This subclasss of RTBPose is an object that represents an SO(3) rotation
 %
-% Methods::
+% Constructor methods::
+%  SO3              general constructor
+%  SO3.exp          exponentiate an so(3) matrix                         
+%  SO3.angvec       rotation about vector
+%  SO3.eul          rotation defined by Euler angles
+%  SO3.oa           rotation defined by o- and a-vectors
+%  SO3.rpy          rotation defined by roll-pitch-yaw angles
+%  SO3.Rx           rotation about x-axis
+%  SO3.Ry           rotation about y-axis
+%  SO3.Rz           rotation about z-axis
+%  SO3.rand         random orientation
 %  new              new SO3 object
+%
+% Information and test methods::
 %  dim*             returns 3
 %  isSE*            returns false
 %  issym*           true if rotation matrix has symbolic elements
+%
+% Display and print methods::
 %  plot*            graphically display coordinate frame for pose
 %  animate*         graphically animate coordinate frame for pose
 %  print*           print the pose in single line format
 %  display*         print the pose in human readable matrix form
 %  char*            convert to human readable matrix as a string
-%--
+%
+% Operation methods::
 %  det              determinant of matrix component
 %  eig              eigenvalues of matrix component
 %  log              logarithm of rotation matrix
 %  inv              inverse
 %  simplify*        apply symbolic simplication to all elements
 %  interp           interpolate between rotations
-%--
+%
+% Conversion methods::
+%  SO3.check        convert object or matrix to SO3 object
 %  theta            return rotation angle
 %  double           convert to rotation matrix
 %  R                convert to rotation matrix
@@ -29,7 +46,8 @@
 %  toangvec         convert to rotation about vector form
 %  toeul            convert to Euler angles
 %  torpy            convert to roll-pitch-yaw angles
-%--
+%
+% Compatibility methods::
 %  isrot*           returns true
 %  ishomog*         returns false
 %  trprint*         print single line representation
@@ -60,6 +78,13 @@
 %  .*              multiplication within group followed by normalization
 %  /               multiply by inverse
 %  ./              multiply by inverse followed by normalization
+%  ==          test equality
+%  ~=          test inequality
+%
+% Properties::
+%  n              normal (x) vector
+%  o              orientation (y) vector
+%  a              approach (z) vector
 %
 % See also SE2, SO2, SE3, RTBPose.
 
@@ -310,10 +335,14 @@ classdef SO3 < RTBPose
             %
             % P1.interp(P2, s) is an SO3 object representing a slerp interpolation
             % between rotations represented by SO3 objects P1 and P2.  s varies from 0
-            % (P1) to 1 (P2).
+            % (P1) to 1 (P2).  If s is a vector (1xN) then the result will be a vector
+            % of SO3 objects.
+            %
+            % Notes::
+            % - It is an error if S is outside the interval 0 to 1.
             %
             % See also UnitQuaternion.
-            assert(s>=0 && s<=1, 'RTB:SE3:interp:badarg', 's must be in the interval [0,1]');
+            assert(all(s>=0 & s<=1), 'RTB:SO3:interp:badarg', 's must be in the interval [0,1]');
             R = SO3( obj1.UnitQuaternion.interp(obj2.UnitQuaternion, s) );
         end
 
@@ -464,9 +493,10 @@ classdef SO3 < RTBPose
             % P2 = P.new() as above but defines a null rotation.
             %
             % Notes::
-            % - this method is polymorphic across all RTBPose derived classes, and
-            %  allows easy creation of a new object of the same class as an existing
-            %  one.
+            % - Serves as a dynamic constructor.
+            % - This method is polymorphic across all RTBPose derived classes, and
+            %   allows easy creation of a new object of the same class as an existing
+            %   one.
             %
             % See also SE3.new, SO2.new, SE2.new.
             n = SO3(varargin{:});
@@ -665,6 +695,13 @@ classdef SO3 < RTBPose
         end
         
         function T = rand()
+            %SO3.rand Construct a random SO(3) object
+            %
+            % SO3.rand() is an SO3 object with a uniform random RPY/ZYX orientation.
+            % Random numbers are in the interval 0 to 1.
+            %
+            % See also RAND.
+
             T = SO3.rpy(rand(1,3));
         end
     end

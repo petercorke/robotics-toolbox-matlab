@@ -1,7 +1,7 @@
 %RTBPose Superclass for SO2, SO3, SE2, SE3
 %
-% This class provides common methods for the 2D and 3D orientation and pose
-% classes.
+% This abstract class provides common methods for the 2D and 3D orientation and pose
+% classes: SO2, SE2, SO3 and SE3.
 %
 % Methods::
 %
@@ -22,6 +22,8 @@
 %  -           elementwise subtraction, result is a matrix
 %  *           multiplication within group, also SO3 x vector
 %  /           multiplication within group by inverse
+%  ==          test equality
+%  ~=          test inequality
 %
 % A number of compatibility methods give the same behaviour as the
 % classic RTB functions:
@@ -64,7 +66,7 @@
 % http://www.petercorke.comclassdef RTBPose
 
 
-classdef RTBPose
+classdef (Abstract) RTBPose
     
     properties(Access=protected, Hidden=true)
         data   % this is a 2x2, 3x3 or 4x4 matrix, possibly symbolic
@@ -102,6 +104,20 @@ classdef RTBPose
             t = isa(obj(1).data, 'sym');
         end
         
+%         function e = isequal(obj1, obj2)
+%             %ISEQUAL Test quaternion element equality
+%             %
+%             % ISEQUAL(Q1,Q2) is true if the quaternions Q1 and Q2 are equal.
+%             %
+%             % Notes::
+%             % - Used by test suite verifyEqual in addition to eq().
+%             % - Invokes eq().
+%             %
+%             % See also Quaternion.eq.
+%             e = isa(obj2, classname(obj1)) && ...
+%                 length(obj1) == length(obj2) &&
+%                 alleq(q1, q2);
+%         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%  OPERATORS
@@ -112,7 +128,11 @@ classdef RTBPose
             % P1+P2 is the elementwise summation of the matrix elements of the two
             % poses.  The result is a matrix not the input class type since the result
             % of addition is not in the group.
-            v = a.data - b.data;
+            
+            assert(isa(b, class(a)) && length(a) == length(b), 'RTB:RTBPose:plus:badarg', 'operands don''t conform');
+            for i=1:length(a)
+                v(:,:,i) = a(i).data + b(i).data;
+            end
         end
         
         function v = minus(a, b)
@@ -121,12 +141,12 @@ classdef RTBPose
             % P1-P2 is the elementwise difference of the matrix elements of the two
             % poses.  The result is a matrix not the input class type since the result
             % of subtraction is not in the group.
-            v = a.data - b.data;
+            
+            assert(isa(b, class(a)) && length(a) == length(b), 'RTB:RTBPose:minus:badarg', 'operands don''t conform');
+            for i=1:length(a)
+                v(:,:,i) = a(i).data - b(i).data;
+            end
         end
-        
-        %         function v = uminus(obj)
-        %             v = -v.data;
-        %         end
         
         function out = simplify(obj)
             %RTBPose.simplify Symbolic simplification
@@ -144,6 +164,26 @@ classdef RTBPose
                     end
                 end
             end
+        end
+        
+        function e = isequal(obj1, obj2)
+            e = eq(obj1, obj2);
+        end
+        
+        function e = eq(obj1, obj2)
+            e = false;
+            
+            if ~isa(obj2, class(obj2)) || ~(length(obj1) == length(obj2))
+                return;
+            end
+            
+            t = [obj1.data] == [obj2.data];
+            e = all(t(:));
+            
+        end
+        
+        function e = ne(obj1, obj2)
+            e = ~eq(obj1, obj2);
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

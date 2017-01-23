@@ -11,21 +11,37 @@
 % T = SE3.Rx(THETA) as above represents a pure rotation about the x-axis.
 %
 %
-% Methods::
+% Constructor methods::
+%  SE3              general constructor
+%  SE3.exp          exponentiate an se(3) matrix                         
+%  SE3.angvec       rotation about vector
+%  SE3.eul          rotation defined by Euler angles
+%  SE3.oa           rotation defined by o- and a-vectors
+%  SE3.rpy          rotation defined by roll-pitch-yaw angles
+%  SE3.Rx           rotation about x-axis
+%  SE3.Ry           rotation about y-axis
+%  SE3.Rz           rotation about z-axis
+%  SE3.rand         random transformation
 %  new              new SE3 object
+%
+% Information and test methods::
 %  dim*             returns 4
 %  isSE*            returns true
 %  issym*           true if rotation matrix has symbolic elements
 %  isidentity       true for null motion
+%  SE3.isa          check if matrix is SO2
+%
+% Display and print methods::
 %  plot*            graphically display coordinate frame for pose
 %  animate*         graphically animate coordinate frame for pose
 %  print*           print the pose in single line format
 %  display*         print the pose in human readable matrix form
 %  char*            convert to human readable matrix as a string
-%--
+%
+% Operation methods::
 %  det              determinant of matrix component
 %  eig              eigenvalues of matrix component
-%  log              logarithm of rotation matrix
+%  log              logarithm of rotation matrixr>=0 && r<=1ub
 %  inv              inverse
 %  simplify*        apply symbolic simplication to all elements
 %  Ad               adjoint matrix (6x6)
@@ -33,8 +49,10 @@
 %  interp           interpolate poses
 %  velxform         compute velocity transformation
 %  interp           interpolate between poses
-%--
-%  theta            return rotation angle
+%  ctraj            Cartesian motion
+%
+% Conversion methods::
+%  SE3.check        convert object or matrix to SE3 object
 %  double           convert to rotation matrix
 %  R                return rotation matrix
 %  SO3              return rotation part as an SO3 object 
@@ -45,7 +63,8 @@
 %  torpy            convert to roll-pitch-yaw angles
 %  t                translation column vector
 %  tv               translation column vector for vector of SE3
-%--
+%
+% Compatibility methods::
 %  homtrans         apply to vector
 %  isrot*           returns false
 %  ishomog*         returns true
@@ -58,12 +77,6 @@
 %  tr2rpy           convert to roll-pitch-yaw angles
 %  trnorm           normalize the rotation matrix
 %  transl           return translation as a row vector  
-
-%
-% Static methods::
-%  check        convert object or matrix to SO2 object
-%  exp          exponentiate an so(2) matrix                         
-%  isa          check if matrix is SO2
 %
 % * means inherited from RTBPose
 %
@@ -74,20 +87,15 @@
 %  .*              multiplication within group followed by normalization
 %  /               multiply by inverse
 %  ./              multiply by inverse followed by normalization
-%
-% Static methods::
-%  check            convert object or matrix to SO2 object
-%  exp              exponentiate an so(3) matrix                         
-%  isa              check if matrix is 3x3
-%  angvec           rotation about vector
-%  eul              rotation defined by Euler angles
-%  oa               rotation defined by o- and a-vectors
-%  rpy              rotation defined by roll-pitch-yaw angles
-%  Rx               rotation about x-axis
-%  Ry               rotation about y-axis
-%  Rz               rotation about z-axis
+%  ==          test equality
+%  ~=          test inequality
 %
 % Properties::
+%  n              normal (x) vector
+%  o              orientation (y) vector
+%  a              approach (z) vector
+%  t              translation vector
+%
 % For single SE3 objects only, for a vector of SE3 objects use the
 % equivalent methods
 % t       translation as a 3x1 vector (read/write)
@@ -389,7 +397,7 @@ classdef SE3 < SO3
             it = SE3( obj.R', -obj.R'*obj.t);
         end
         
-        function Ti = interp(varargin)
+        function Ti = interp(obj1, obj2, s)
             %SE3.interp Interpolate SE3 poses
             %
             % T = TRINTERP(T0, T1, S) is a homogeneous transform (4x4) interpolated
@@ -401,8 +409,51 @@ classdef SE3 < SO3
             % T = TRINTERP(T1, S) as above but interpolated between the identity matrix
             % when S=0 to T1 when S=1.
             %
+            % Notes::
+            % - The rotational interpolation (slerp) can be interpretted
+            %   as interpolation along a great circle arc on a sphere.
+            % - It is an error if S is outside the interval 0 to 1.
+            %
             % See also TRINTERP, UnitQuaternion.
-            Ti = SE3( trinterp(varargin{:}) );
+            assert(all(s>=0 & s<=1), 'RTB:SE3:interp:badarg', 's must be in the interval [0,1]');
+            Ti = SE3( trinterp(obj1, obj2, s) );
+        end
+        
+        function traj = ctraj(T0, T1, t)
+            %SE3.ctraj Cartesian trajectory between two poses
+            %
+            % TC = T0.ctraj(T1, N) is a Cartesian trajectory defined by a vector of SE3
+            % objects (1xN) from pose T0 to T1, both described by SE3 objects.  There
+            % are N points on the trajectory that follow a trapezoidal velocity profile
+            % along the trajectory.
+            % 
+            % TC = CTRAJ(T0, T1, S) as above but the elements of S (Nx1) specify the 
+            % fractional distance  along the path, and these values are in the range [0 1].
+            % The i'th point corresponds to a distance S(i) along the path.
+            %
+            % Notes::
+            % - In the second case S could be generated by a scalar trajectory generator
+            %   such as TPOLY or LSPB (default).
+            % - Orientation interpolation is performed using quaternion interpolation.
+            %
+            % Reference::
+            % Robotics, Vision & Control, Sec 3.1.5,
+            % Peter Corke, Springer 2011
+            %
+            % See also LSPB, MSTRAJ, TRINTERP, CTRAJ, UnitQuaternion.interp.
+
+            assert(isa(T1, 'SE3'), 'second transform must be SE3');
+            
+            % distance along path is a smooth function of time
+            if isscalar(t)
+                s = lspb(0, 1, t);
+            else
+                s = t(:);
+            end
+
+            for i=1:length(s)    
+                traj(i) = T0.interp(T1, s(i));
+            end
         end
         
         function m = log(obj)
@@ -576,10 +627,19 @@ classdef SE3 < SO3
         function n = new(obj, varargin)
             %SE3.new  Construct a new object of the same type
             %
-            % P2 = P.new() creates a new object of the same type as P, this is polymorphic
-            % across all RTBPose derived classes.
+            % P2 = P.new(X) creates a new object of the same type as P, by invoking the SE3 constructor on the matrix
+            % X (4x4).
             %
-            % P2 = P.new(P1) as above and clones P1.
+            % P2 = P.new() as above but defines a null motion.
+            %
+            % Notes::
+            % - Serves as a dynamic constructor.
+            % - This method is polymorphic across all RTBPose derived classes, and
+            %   allows easy creation of a new object of the same class as an existing
+            %   one.
+            %
+            % See also SO3.new, SO2.new, SE2.new.
+
             n = SE3(varargin{:});
         end
         
@@ -738,6 +798,17 @@ classdef SE3 < SO3
             obj = SE3( SO3.eul(varargin{:}) );
         end
         
+        function T = rand()
+            %SE3.rand Construct a random SE(3) object
+            %
+            % SE3.rand() is an SE3 object with a uniform random translation and a
+            % uniform random RPY/ZYX orientation.  Random numbers are in the interval 0 to
+            % 1.
+            %
+            % See also RAND.
+            T = SE3( rand(3,1) ) * SE3.rpy(rand(1,3));
+        end
+        
         function obj = delta(obj1, obj2)
             %SE3.delta SE3 object from differential motion vector
             %
@@ -813,10 +884,7 @@ classdef SE3 < SO3
                 h = false;
             end
         end
-        
-        function T = rand()
-            T = SE3( rand(3,1) ) * SE3.rpy(rand(1,3));
-        end
+       
         
     end
 end

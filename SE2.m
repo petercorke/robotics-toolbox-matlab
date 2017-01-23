@@ -3,31 +3,43 @@
 % This subclasss of SO2 < RTBPose is an object that represents an SE(2)
 % rigid-body motion.
 %
-% Methods::
-%  new          new SO2 object
+% Constructor methods::
+%  SE2          general constructor
+%  SE2.exp      exponentiate an se(2) matrix  
+%  SE2.rand     random transformation
+%  new          new SE2 object
+%
+% Information and test methods::
 %  dim*         returns 2
 %  isSE*        returns true
 %  issym*       true if rotation matrix has symbolic elements
+%  isa          check if matrix is SE2
+%
+% Display and print methods::
 %  plot*        graphically display coordinate frame for pose
 %  animate*     graphically animate coordinate frame for pose
 %  print*       print the pose in single line format
 %  display*     print the pose in human readable matrix form
-%  char*         convert to human readable matrix as a string
-%--
+%  char*        convert to human readable matrix as a string
+%
+% Operation methods::
 %  det          determinant of matrix component
 %  eig          eigenvalues of matrix component
 %  log          logarithm of rotation matrix
 %  inv          inverse
 %  simplify*    apply symbolic simplication to all elements
-%  interp        interpolate between poses
-%--
+%  interp       interpolate between poses
+%
+% Conversion methods::
+%  check        convert object or matrix to SE2 object
 %  theta        return rotation angle
 %  double       convert to rotation matrix
 %  R            convert to rotation matrix
 %  SE2          convert to SE2 object with zero translation
 %  T            convert to homogeneous transformation matrix
 %  t            translation column vector
-%--
+%
+% Compatibility methods::
 %  isrot2*      returns false
 %  ishomog2*    returns true
 %  tr2rt*       convert to rotation matrix and translation vector
@@ -35,12 +47,11 @@
 %  trprint2*    print single line representation
 %  trplot2*     plot coordinate frame
 %  tranimate2*  animate coordinate frame
-%  transl       return translation as a row vector  
+%  transl2      return translation as a row vector  
 %
 % Static methods::
 %  check        convert object or matrix to SO2 object
-%  exp          exponentiate an so(2) matrix                         
-%  isa          check if matrix is SO2
+
 %
 % * means inherited from RTBPose
 %
@@ -49,7 +60,8 @@
 %  -           elementwise subtraction, result is a matrix
 %  *           multiplication within group, also group x vector
 %  /           multiply by inverse
-
+%  ==          test equality
+%  ~=          test inequality
 %
 % See also SE2, SO3, SE3, RTBPose.
 
@@ -145,10 +157,11 @@ classdef SE2 < SO2
                 obj.data = sym(obj.data);
             end
             
+            obj.data = eye(3,3);
+
             switch length(args)
                 case 0
                     % null motion
-                    obj.data = eye(3,3);
                     return
                 case 1
                     % 1 argument
@@ -161,13 +174,12 @@ classdef SE2 < SO2
                     elseif isvec(a, 3)
                         % ([x y th])
                         a = a(:);
-                        T(1:2,1:2) = rot2(a(3)*scale);
-                        T(1:2,3) = a(1:2);
-                        obj.data = T;
+                        obj.data(1:2,1:2) = rot2(a(3)*scale);
+                        obj.t = a(1:2);
                         
                     elseif SO2.isa(a)
                         % (R)
-                        obj.data = r2t(a);
+                        obj.data(1:2,1:2) = a;
                         
                     elseif SE2.isa(a)
                         % (T)
@@ -225,9 +237,10 @@ classdef SE2 < SO2
             end
             
             % add the last row if required
-            if numrows(obj.data) == 2
-                obj.data = [obj.data; 0 0 1];
-            end
+%             if numrows(obj.data) == 2
+%                 obj.data = [obj.data; 0 0 1];
+%             end
+            assert(all(size(obj(1).data) == [3 3]), 'RTB:SE2:SE2', 'created wrong size data element');
             %% HACK
         end
         
@@ -362,12 +375,16 @@ classdef SE2 < SO2
             %
             % P1.interp(P2, s) is an SE2 object representing interpolation
             % between rotations represented by SE3 objects P1 and P2.  s varies from 0
-            % (P1) to 1 (P2).
+            % (P1) to 1 (P2). If s is a vector (1xN) then the result will be a vector
+            % of SE2 objects.
+            %
+            % Notes::
+            % - It is an error if S is outside the interval 0 to 1.
             %
             % See also SO2.angle.
-            assert(s>=0 && s<=1, 'RTB:SO2:interp:badarg', 's must be in the interval [0,1]');
+            assert(all(s>=0 & s<=1), 'RTB:SE2:interp:badarg', 's must be in the interval [0,1]');
             
-            th1 = obj1.theta; th2 = obj2.theta;
+            th1 = obj1.angle; th2 = obj2.angle;
             xy1 = obj1.t; xy2 = obj2.t;
             
             T = SE2( xy1 + s*(xy2-xy1), th1 + s*(th2-th1) );
@@ -397,14 +414,16 @@ classdef SE2 < SO2
             % P2 = P.new(X) creates a new object of the same type as P, by invoking the SE2 constructor on the matrix
             % X (3x3).
             %
-            % P2 = P.new() as above but defines a null rigid-body motion.
+            % P2 = P.new() as above but defines a null motion.
             %
             % Notes::
-            % - this method is polymorphic across all RTBPose derived classes, and
-            %  allows easy creation of a new object of the same class as an existing
-            %  one.
+            % - Serves as a dynamic constructor.
+            % - This method is polymorphic across all RTBPose derived classes, and
+            %   allows easy creation of a new object of the same class as an existing
+            %   one.
             %
             % See also SE3.new, SO3.new, SO2.new.
+            
             n = SE2(varargin{:});
         end
         
@@ -465,6 +484,13 @@ classdef SE2 < SO2
         end
                 
         function T = rand()
+            %SE2.rand Construct a random SE(2) object
+            %
+            % SE2.rand() is an SE2 object with a uniform random translation and a
+            % uniform random orientation.  Random numbers are in the interval 0 to
+            % 1.
+            %
+            % See also RAND.
             T = SE2(rand(1,3));
         end
     end
