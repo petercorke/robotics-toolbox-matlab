@@ -37,4 +37,4 @@
 % http://www.petercorke.com
 
 function it = itorque(robot, q, qdd)
-	it = rne(robot, q, zeros(size(q)), qdd, [0;0;0]);
+	it = rne(robot, q, zeros(size(q)), qdd, 'gravity', [0;0;0]);
