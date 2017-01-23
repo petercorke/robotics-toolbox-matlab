@@ -20,7 +20,7 @@
 % Robotics, Vision & Control, Sec 3.1.5,
 % Peter Corke, Springer 2011
 %
-% See also LSPB, MSTRAJ, TRINTERP, UnitQuaternion.interp, SE3.interp.
+% See also LSPB, MSTRAJ, TRINTERP, UnitQuaternion.interp, SE3.ctraj.
 
 
 

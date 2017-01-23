@@ -1,15 +1,14 @@
 %RT2TR Convert rotation and translation to homogeneous transform
 %
-% TR = RT2TR(R, t) is a homogeneous transformation matrix (MxM) formed from an 
-% orthonormal rotation matrix R (NxN) and a translation vector t (Nx1) where
-% M=N+1.
-%
-% For a sequence R (NxNxK) and t (NxK) results in a transform sequence (MxMxK).
-%
-% Notes::
-% - Works for R in SO(2) or SO(3)
+% TR = RT2TR(R, t) is a homogeneous transformation matrix (N+1xN+1) formed
+% from an orthonormal rotation matrix R (NxN) and a translation vector t
+% (Nx1).  Works for R in SO(2) or SO(3):
 %  - If R is 2x2 and t is 2x1, then TR is 3x3
 %  - If R is 3x3 and t is 3x1, then TR is 4x4
+%
+% For a sequence R (NxNxK) and t (NxK) results in a transform sequence (N+1xN+1xK).
+%
+% Notes::
 % - The validity of R is not checked
 %
 % See also T2R, R2T, TR2RT.

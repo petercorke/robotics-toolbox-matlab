@@ -9,7 +9,7 @@
 % are attached to the same moving body.  The pose of {B} relative to {A} is
 % represented by the homogeneous transform TAB (4x4).
 %
-% See also WTRANS, TR2DELTA, DELTA2TR.
+% See also WTRANS, TR2DELTA, DELTA2TR, SE3.velxform.
 
 
 

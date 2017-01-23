@@ -9,7 +9,7 @@
 % QPLOT(T, Q) as above but displays the joint angle trajectory versus time
 % given the time vector T (Mx1).
 %
-% See also JTRAJ, PLOT.
+% See also JTRAJ, PLOTP, PLOT.
 
 
 % Copyright (C) 1993-2015, by Peter I. Corke

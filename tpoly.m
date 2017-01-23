@@ -1,8 +1,9 @@
 %TPOLY Generate scalar polynomial trajectory
 %
-% [S,SD,SDD] = TPOLY(S0, SF, M) is a scalar trajectory (Mx1) that varies 
+% [S,SD,SDD] = TPOLY(S0, SF, M) is a scalar trajectory (Mx1) that varies
 % smoothly from S0 to SF in M steps using a quintic (5th order) polynomial.
-% Velocity and acceleration can be optionally returned as SD (Mx1) and SDD (Mx1).
+% Velocity and acceleration can be optionally returned as SD (Mx1) and SDD
+% (Mx1) respectively.
 %
 % TPOLY(S0, SF, M) as above but plots S, SD and SDD versus time in a single
 % figure.

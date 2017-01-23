@@ -3,21 +3,22 @@
 % V = VEXA(S) is the vector which has the corresponding augmented skew-symmetric 
 % matrix S.  
 %
-% In the case that S (3x3) then V is 1x3
+% V is 1x3 in the case that S (3x3) = 
 %
-%           S = |  0  -v3  v1 |
+%               |  0  -v3  v1 |
 %               | v3    0  v2 |
 %               |  0    0   0 |
 %
-%In the case that S (6x6) then V is 1x6
+% V is 1x6 in the case that S (6x6) = 
 %
 %
 %               |  0  -v6   v5  v1 |
-%           S = | v6    0  -v4  v2 |
+%               | v6    0  -v4  v2 |
 %               |-v5   v4    0  v3 |
 %               |  0    0    0   0 |
 %
 % Notes::
+% - This is the inverse of the function SKEWA().
 % - The matrices are the generator matrices for se(2) and se(3).
 % - This function maps se(2) and se(3) to twist vectors.
 %

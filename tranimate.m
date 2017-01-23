@@ -16,7 +16,7 @@
 %  'fps', fps    Number of frames per second to display (default 10)
 %  'nsteps', n   The number of steps along the path (default 50)
 %  'axis',A      Axis bounds [xmin, xmax, ymin, ymax, zmin, zmax]
-%  'movie',M     Save frames as files in the folder M
+%  'movie',M     Save frames as a movie or sequence of frames
 %  'cleanup'     Remove the frame at end of animation
 %  'noxyz'       Don't label the axes
 %  'rgb'         Color the axes in the order x=red, y=green, z=blue
@@ -25,10 +25,6 @@
 %
 % Notes::
 % - Uses the Animate helper class to record the frames.
-% - Poses X1 and X2 must both be of the same type
-% - The 'movie' options saves frames as files NNNN.png.
-% - To convert frames to a movie use a command like:
-%        ffmpeg -r 10 -i %04d.png out.avi
 %
 % See also TRPLOT, Animate, SE3.animate.
 

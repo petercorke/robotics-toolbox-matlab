@@ -8,6 +8,10 @@
 % H = TRPLOT2() creates a default frame EYE(2,2) at the origin and returns a
 % handle.
 %
+% Animation::
+%
+% Firstly, create a plot and keep the the handle as per above.
+%
 % TRPLOT2(H, T) moves the coordinate frame described by the handle H to
 % the SE(2) pose T (3x3).
 %
@@ -33,6 +37,7 @@
 %       trplot2(T1, 'frame', 'A', 'text_opts', {'FontSize', 10, 'FontWeight', 'bold'})
 %
 % Notes::
+% - Multiple frames can be added using the HOLD command
 % - The arrow option requires the third party package arrow3 from File
 %   Exchange.
 % - When using the form TRPLOT(H, ...) to animate a frame it is best to set 

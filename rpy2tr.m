@@ -8,12 +8,11 @@
 % R is a three-dimensional matrix (4x4xN), where the last index corresponds
 % to rows of ROLL, PITCH, YAW.
 %
-% T = RPY2TR(RPY, OPTIONS) as above but the roll, pitch, yaw angles angles
-% angles are taken from consecutive columns of the passed matrix RPY =
-% [ROLL, PITCH, YAW].  If RPY is a matrix (Nx3) then they are assumed to
-% represent a trajectory and T is a three-dimensional matrix (4x4xN), where
-% the last index corresponds to rows of RPY which are assumed to be [ROLL,
-% PITCH, YAW].
+% T = RPY2TR(RPY, OPTIONS) as above but the roll, pitch, yaw angles are
+% taken from the vector (1x3) RPY=[ROLL,PITCH,YAW]. If RPY is a matrix
+% (Nx3) then R is a three-dimensional matrix (4x4xN), where the last index
+% corresponds to rows of RPY which are assumed to be
+% ROLL,PITCH,YAW].
 %
 % Options::
 %  'deg'   Compute angles in degrees (radians default)
@@ -23,7 +22,8 @@
 % Note::
 % - Toolbox rel 8-9 has the reverse angle sequence as default.
 % - ZYX order is appropriate for vehicles with direction of travel in the X
-%   direction.  XYZ order if direction of travel in the Z direction.
+%   direction.  XYZ order is appropriate if direction of travel is in the Z
+%   direction.
 %
 % See also TR2RPY, RPY2R, EUL2TR.
 

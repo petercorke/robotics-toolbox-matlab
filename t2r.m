@@ -6,7 +6,8 @@
 % - If T is 3x3, then R is 2x2.
 %
 % Notes::
-% - For a homogeneous transform sequence returns a rotation matrix sequence
+% - For a homogeneous transform sequence (KxKxN) returns a rotation matrix
+%   sequence (K-1xK-1xN).
 % - The validity of rotational part is not checked
 %
 % See also R2T, TR2RT, RT2TR.

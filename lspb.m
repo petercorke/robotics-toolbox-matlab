@@ -1,9 +1,10 @@
 %LSPB  Linear segment with parabolic blend
 %
-% [S,SD,SDD] = LSPB(S0, SF, M) is a scalar trajectory (Mx1) that varies 
-% smoothly from S0 to SF in M steps using a constant velocity segment and 
-% parabolic blends (a trapezoidal path).  Velocity and acceleration can be
-% optionally returned as SD (Mx1) and SDD (Mx1).
+% [S,SD,SDD] = LSPB(S0, SF, M) is a scalar trajectory (Mx1) that varies
+% smoothly from S0 to SF in M steps using a constant velocity segment and
+% parabolic blends (a trapezoidal velocity profile).  Velocity and
+% acceleration can be optionally returned as SD (Mx1) and SDD (Mx1)
+% respectively.
 %
 % [S,SD,SDD] = LSPB(S0, SF, M, V) as above but specifies the velocity of 
 % the linear segment which is normally computed automatically.

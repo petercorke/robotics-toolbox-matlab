@@ -5,7 +5,7 @@
 % represents an infinitessimal motion, and is an approximation to the spatial 
 % velocity multiplied by time.
 %
-% See also TR2DELTA.
+% See also tr2delta, SE3.delta.
 
 
 

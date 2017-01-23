@@ -18,8 +18,7 @@
 % - Used to prevent finite word length arithmetic causing transforms to 
 %   become `unnormalized'.
 %
-% See also OA2TR.
-
+% See also OA2TR, SO3.trnorm, SE3.trnorm.
 
 
 % Copyright (C) 1993-2015, by Peter I. Corke

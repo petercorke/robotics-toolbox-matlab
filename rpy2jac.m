@@ -13,7 +13,7 @@
 % Notes::
 % - Used in the creation of an analytical Jacobian.
 %
-% See also EUL2JAC, SerialLink.JACOB0.
+% See also EUL2JAC, SerialLink.JACOBE.
 
 
 

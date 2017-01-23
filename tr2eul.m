@@ -18,6 +18,7 @@
 % Notes::
 % - There is a singularity for the case where THETA=0 in which case PHI is arbitrarily
 %   set to zero and PSI is the sum (PHI+PSI).
+% - Translation component is ignored.
 %
 % See also  EUL2TR, TR2RPY.
 

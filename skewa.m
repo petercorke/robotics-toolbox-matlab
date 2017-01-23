@@ -2,21 +2,22 @@
 %
 % S = SKEWA(V) is an augmented skew-symmetric matrix formed from V.
 % 
-% If V (1x3) then
+% If V (1x3) then S =
 %
-%           S = |  0  -v3  v1 |
-%               | v3    0  v2 |
-%               |  0    0   0 |
+%           |  0  -v3  v1 |
+%           | v3    0  v2 |
+%           |  0    0   0 |
 %
-% and if V (1x6) then
+% and if V (1x6) then S =
 %
-%               |  0  -v6   v5  v1 |
-%           S = | v6    0  -v4  v2 |
-%               |-v5   v4    0  v3 |
-%               |  0    0    0   0 |
+%           |  0  -v6   v5  v1 |
+%           | v6    0  -v4  v2 |
+%           |-v5   v4    0  v3 |
+%           |  0    0    0   0 |
 %
 % Notes::
-% - These are the generator matrices for se(2) and se(3).
+% - This is the inverse of the function VEXA().
+% - These are the generator matrices for the Lie algebras se(2) and se(3).
 % - Map twist vectors in 2D and 3D space to se(2) and se(3).
 %
 % References::

@@ -7,7 +7,7 @@
 % - If THETA == 0 then return identity matrix.
 % - If THETA ~= 0 then V must have a finite length.
 %
-% See also eul2r, rpy2r, tr2angvec, trexp, SO3.angvec.
+% See also angvec2tr, eul2r, rpy2r, tr2angvec, trexp, SO3.angvec.
 
 % Copyright (C) 1993-2016, by Peter I. Corke
 %

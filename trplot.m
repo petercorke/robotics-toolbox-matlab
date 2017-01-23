@@ -5,9 +5,6 @@
 %
 % H = TRPLOT(T, OPTIONS) as above but returns a handle.
 %
-% TRPLOT(H, T) moves the coordinate frame described by the handle H to
-% the pose T (4x4).
-%
 % TRPLOT(R, OPTIONS) as above but the coordinate frame is rotated about the
 % origin according to the orthonormal rotation matrix R (3x3).
 %
@@ -15,6 +12,13 @@
 %
 % H = TRPLOT() creates a default frame EYE(3,3) at the origin and returns a
 % handle.
+%
+% Animation::
+%
+% Firstly, create a plot and keep the the handle as per above.
+%
+% TRPLOT(H, T) moves the coordinate frame described by the handle H to
+% the pose T (4x4).
 %
 % Options::
 % 'handle',h         Update the specified handle
@@ -56,6 +60,7 @@
 %       trplot(T, '3d');
 %
 % Notes::
+% - Multiple frames can be added using the HOLD command
 % - The 'rviz' option is equivalent to 'rgb', 'notext', 'noarrow', 
 %   'thick', 5.
 % - The arrow option requires the third party package arrow3 from File

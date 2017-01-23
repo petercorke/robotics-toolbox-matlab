@@ -2,20 +2,21 @@
 %
 % S = SKEW(V) is a skew-symmetric matrix formed from V.
 % 
-% If V (1x1) then
+% If V (1x1) then S =
 %
-%           S = | 0  -v |
-%               | v   0 |
+%           | 0  -v |
+%           | v   0 |
 %
-% and if V (1x3) then
+% and if V (1x3) then S =
 %
-%               |  0  -vz   vy |
-%           S = | vz    0  -vx |
-%               |-vy   vx    0 |
+%           |  0  -vz   vy |
+%           | vz    0  -vx |
+%           |-vy   vx    0 |
 %
 %
 % Notes::
-% - These are the generator matrices for so(2) and so(3).
+% - This is the inverse of the function VEX().
+% - These are the generator matrices for the Lie algebras so(2) and so(3).
 %
 % References::
 % - Robotics, Vision & Control: Second Edition, Chap 2,

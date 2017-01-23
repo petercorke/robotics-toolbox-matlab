@@ -5,8 +5,10 @@
 %
 % Note::
 % - The translational part is zero.
+% - If THETA == 0 then return identity matrix.
+% - If THETA ~= 0 then V must have a finite length.
 %
-% See also EUL2TR, RPY2TR, ANGVEC2R, TR2ANGVEC, TREXP, SO3.angvec.
+% See also angvec2r, eul2tr, rpy2tr, angvec2r, tr2angvec, trexp, SO3.angvec.
 
 % Copyright (C) 1993-2016, by Peter I. Corke
 %

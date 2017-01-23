@@ -15,6 +15,9 @@
 % 'deg'   Return angle in degrees
 %
 % Notes::
+% - For an identity rotation matrix both THETA and V are set to zero.
+% - The rotation angle is always in the interval [0 pi], negative rotation
+%   is handled by inverting the direction of the rotation axis.
 % - If no output arguments are specified the result is displayed.
 %
 % See also ANGVEC2R, ANGVEC2TR, TRLOG.

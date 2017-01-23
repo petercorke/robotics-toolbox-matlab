@@ -19,6 +19,7 @@
 % Notes::
 % - There is a singularity for the case where P=pi/2 in which case R is arbitrarily
 %   set to zero and Y is the sum (R+Y).
+% - Translation component is ignored.
 % - Toolbox rel 8-9 has the reverse default angle sequence as default
 %
 % See also  rpy2tr, tr2eul.
