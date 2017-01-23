@@ -17,7 +17,7 @@
 %
 % Two measures can be computed:
 % - Yoshikawa's manipulability measure is based on the shape of the velocity
-%   ellipsoid and depends only on kinematic parameters.
+%   ellipsoid and depends only on kinematic parameters (default).
 % - Asada's manipulability measure is based on the shape of the acceleration
 %   ellipsoid which in turn is a function of the Cartesian inertia matrix and
 %   the dynamic parameters.  The scalar measure computed here is the ratio of 
@@ -37,7 +37,7 @@
 % - The 'all' option includes rotational and translational dexterity, but
 %   this involves adding different units.  It can be more useful to look at the
 %   translational and rotational manipulability separately.
-% - Examples in the RVC book can be replicated by using the 'all' option
+% - Examples in the RVC book (1st edition) can be replicated by using the 'all' option
 %
 % References::
 %
@@ -50,6 +50,7 @@
 %   H. Asada, 
 %   Journal of Dynamic Systems, Measurement, and Control,
 %   vol. 105, p. 131, 1983.
+% - Robotics, Vision & Control, P. Corke, Springer 2011.
 %
 % See also SerialLink.inertia, SerialLink.jacob0.
 

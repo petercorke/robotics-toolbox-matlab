@@ -44,15 +44,12 @@
 % '[no]base'        Enable display of base shape
 %
 % Notes::
-% - Solid models of the robot links are required as STL ascii format files,
-%   with extensions .stl
-% - Suitable STL files can be found in the package ARTE: A ROBOTICS TOOLBOX
-%   FOR EDUCATION by Arturo Gil, https://arvc.umh.es/arte
-% - The root of the solid models is an installation of ARTE with an empty
-%   file called arte.m at the top level
+% - Solid models of the robot links are required as STL files (ascii or
+%   binary) with extension .stl.
+% - The solid models live in RVCTOOLS/robot/data/ARTE.
 % - Each STL model is called 'linkN'.stl where N is the link number 0 to N
 % - The specific folder to use comes from the SerialLink.model3d property
-% - The path of the folder containing the STL files can be specified using
+% - The path of the folder containing the STL files can be overridden using
 %   the 'path' option
 % - The height of the floor is set in decreasing priority order by:
 %   - 'workspace' option, the fifth element of the passed vector
@@ -60,11 +57,16 @@
 %   - the lowest z-coordinate in the link1.stl object
 %
 % Authors::
-% - Peter Corke, based on existing code for plot()
-% - Bryan Moutrie, demo code on the Google Group for connecting ARTE and RTB
-% - acknowledging the various authors of STL reading code on file exchange, see stlRead.m
+% - Peter Corke, based on existing code for plot().
+% - Bryan Moutrie, demo code on the Google Group for connecting ARTE and
+%   RTB.
 %
-% See also SerialLink.plot, plotbotopt3d, SerialLink.animate, SerialLink.teach, SerialLink.fkine.
+% Acknowledgments::
+% - STL files are from ARTE: A ROBOTICS TOOLBOX FOR EDUCATION by Arturo Gil
+%   (https://arvc.umh.es/arte) are included, with permission.
+% - The various authors of STL reading code on file exchange, see stlRead.m
+%
+% See also SerialLink.plot, plotbotopt3d, SerialLink.animate, SerialLink.teach, stlRead.
 
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
@@ -89,9 +91,7 @@
 function plot3d(robot, q, varargin)
     
     
-    if robot.mdh
-        error('RTB:plot3d:badmodel', '3D models are defined for standard, not modified, DH parameters');
-    end
+    assert( ~robot.mdh, 'RTB:plot3d:badmodel', '3D models are defined for standard, not modified, DH parameters');
     
     clf
     opt = plot_options(robot, varargin);
@@ -105,13 +105,13 @@ function plot3d(robot, q, varargin)
         
         if isempty(opt.path)
             % first find the path to the models
-            pth = which('arte.m');
+            pth = which('rotx.m');
             if ~pth
                 error('RTB:plot3d:nomodel', 'no 3D model found, install the RTB contrib zip file');
             end
             
             % find the path to this specific model
-            pth = fullfile(fileparts(pth), 'robots', robot.model3d);
+            pth = fullfile(fileparts(pth), 'data/ARTE', robot.model3d);
         else
             pth = opt.path;
         end
@@ -119,12 +119,15 @@ function plot3d(robot, q, varargin)
         % now load the STL files
         robot.points = cell(1, robot.n+1);
         robot.faces = cell(1, robot.n+1);
+        fprintf('Loading STL models from ARTE Robotics Toolbox for Education  by Arturo Gil (http://arvc.umh.es/arte)');
         for i=1:nshapes
             %[F,P] = rndread( fullfile(pth, sprintf('link%d.stl', i-1)) );
             [P,F] = stlRead( fullfile(pth, sprintf('link%d.stl', i-1)) );
             robot.points{i} = P;
             robot.faces{i} = F;
+            fprintf('.');
         end
+        fprintf('\n');
     end
     
     % if a base is specified set the floor height to this

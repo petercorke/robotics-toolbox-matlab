@@ -11,7 +11,7 @@
 % TAUG = R.gravload(Q, GRAV) as above but the gravitational 
 % acceleration vector GRAV is given explicitly.
 %
-% See also SerialLink.rne, SerialLink.itorque, SerialLink.coriolis.
+% See also SerialLink.gravjac, SerialLink.rne, SerialLink.itorque, SerialLink.coriolis.
 
 
 

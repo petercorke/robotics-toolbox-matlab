@@ -1,9 +1,10 @@
 %SerialLink.ikine6s Analytical inverse kinematics
 %
-% Q = R.ikine6s(T) is the joint coordinates (1xN) corresponding to the robot
-% end-effector pose T represented by an SE(3) homogenenous transform (4x4).  This
-% is a analytic solution for a 6-axis robot with a spherical wrist (the most
-% common form for industrial robot arms).
+% Q = R.ikine(T) are the joint coordinates (1xN) corresponding to the robot
+% end-effector pose T which is an SE3 object or homogenenous transform
+% matrix (4x4), and N is the number of robot joints.  This is a analytic
+% solution for a 6-axis robot with a spherical wrist (the most common form
+% for industrial robot arms).
 %
 % If T represents a trajectory (4x4xM) then the inverse kinematics is
 % computed for all M poses resulting in Q (MxN) with each row representing
@@ -19,13 +20,20 @@
 % 'n'   wrist not flipped (default)
 % 'f'   wrist flipped (rotated by 180 deg)
 %
+% Trajectory operation::
+%
+% In all cases if T is a vector of SE3 objects (1xM) or a homogeneous
+% transform sequence (4x4xM) then R.ikcon() returns the joint coordinates
+% corresponding to each of the transforms in the sequence.
+%
 % Notes::
 % - Treats a number of specific cases:
-%  - Robot with no shoulder offset
-%  - Robot with a shoulder offset (has lefty/righty configuration)
-%  - Robot with a shoulder offset and a prismatic third joint (like Stanford arm)
-%  - The Puma 560 arms with shoulder and elbow offsets (4 lengths parameters)
-%  - The Kuka KR5 with many offsets (7 length parameters)
+%   - Robot with no shoulder offset
+%   - Robot with a shoulder offset (has lefty/righty configuration)
+%   - Robot with a shoulder offset and a prismatic third joint (like Stanford arm)
+%   - The Puma 560 arms with shoulder and elbow offsets (4 lengths parameters)
+%   - The Kuka KR5 with many offsets (7 length parameters)
+% - The inverse kinematics for the various cases determined using ikine_sym.
 % - The inverse kinematic solution is generally not unique, and
 %   depends on the configuration string.
 % - Joint offsets, if defined, are added to the inverse kinematics to
@@ -45,7 +53,7 @@
 %   Autobirdz Systems Pvt. Ltd.,  SIDBI Office,
 %   Indian Institute of Technology Kanpur, Kanpur, Uttar Pradesh.
 %
-% See also SerialLink.FKINE, SerialLink.IKINE.
+% See also SerialLink.fkine, SerialLink.ikine, SerialLink.ikine_sym.
 
 function thetavec = ikine6s(robot, TT, varargin)
     

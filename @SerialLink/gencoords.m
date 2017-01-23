@@ -7,6 +7,8 @@
 %
 % [Q,QD,QDD] = R.gencoords() as above but QDD is a vector (1xN) of 
 % symbols [qdd1 qdd2 ... qddN].
+%
+% See also SerialLink.genforces.
 
 
 % Copyright (C) 1993-2015, by Peter I. Corke

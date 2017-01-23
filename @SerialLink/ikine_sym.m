@@ -3,7 +3,7 @@
 % Q = R.IKINE_SYM(K, OPTIONS) is a cell array (Cx1) of inverse kinematic
 % solutions of the SerialLink object ROBOT.  The cells of Q represent the
 % different possible configurations.  Each cell of Q is a vector (Nx1), and
-% element J is the symbolic expressions for the J'th joint angle.  The
+% the J'th element is the symbolic expression for the J'th joint angle.  The
 % solution is in terms of the desired end-point pose of the robot which is
 % represented by the symbolic matrix (3x4) with elements
 %      nx ox ax tx
@@ -32,8 +32,14 @@
 %         q1 = s1(1);      % the expression for q1
 %         q2 = s1(2);      % the expression for q2
 %
+% References::
+% - Robot manipulators: mathematics, programming and control
+%   Richard Paul, MIT Press, 1981.
+% - The kinematics of manipulators under computer control, 
+%   D.L. Pieper, Stanford report AI 72, October 1968.
+%
 % Notes::
-% - Requires the Symbolic Toolbox for MATLAB.
+% - Requires the MATLAB Symbolic Math Toolbox.
 % - This code is experimental and has a lot of diagnostic prints.
 % - Based on the classical approach using Pieper's method.
 

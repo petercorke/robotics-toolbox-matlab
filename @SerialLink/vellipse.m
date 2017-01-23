@@ -1,28 +1,29 @@
+%SerialLink.vellipse Velocity ellipsoid for seriallink manipulator
+%
+% R.vellipse(Q, OPTIONS) displays the velocity ellipsoid for the 
+% robot R at pose Q.  The ellipsoid is centered at the tool tip position.
+%
+% Options::
+% '2d'       Ellipse for translational xy motion, for planar manipulator
+% 'trans'    Ellipsoid for translational motion (default)
+% 'rot'      Ellipsoid for rotational motion
+%
+% Display options as per plot_ellipse to control ellipsoid face and edge
+% color and transparency.
+%
+% Example::
+%  To interactively update the velocity ellipsoid while using sliders
+%  to change the robot's pose:
+%          robot.teach('callback', @(r,q) r.vellipse(q))
+%
+% Notes::
+% - The ellipsoid is tagged with the name of the robot prepended to
+%   ".vellipse".
+% - Calling the function with a different pose will update the ellipsoid.
+%
+% See also SerialLink.jacob0, SerialLink.fellipse, plot_ellipse.
+
 function vellipse(robot, q, varargin)
-    %SerialLink.vellipse Velocity ellipsoid for seriallink manipulator
-    %
-    % R.vellipse(Q, OPTIONS) displays the velocity ellipsoid for the 
-    % robot R at pose Q.  The ellipsoid is centered at the tool tip position.
-    %
-    % Options::
-    % '2d'       Ellipse for translational xy motion, for planar manipulator
-    % 'trans'    Ellipsoid for translational motion (default)
-    % 'rot'      Ellipsoid for rotational motion
-    %
-    %  Display options as per plot_ellipse to control ellipsoid face and edge
-    % color and transparency.
-    %
-    % Example::
-    %  To interactively update the velocity ellipsoid while using sliders
-    %  to change the robot's pose:
-    %          robot.teach('callback', @(r,q) r.vellipse(q))
-    %
-    % Notes::
-    % - The ellipsoid is tagged with the name of the robot prepended to
-    %   ".vellipse".
-    % - Calling the function with a different pose will update the ellipsoid.
-    %
-    % See also SerialLink.jacob0, SerialLink.fellipse, plot_ellipse.
     
     name = [robot.name '.vellipse'];
     

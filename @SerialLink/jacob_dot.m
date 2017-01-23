@@ -4,12 +4,14 @@
 % Jacobian (in the world frame) and the joint rates.
 %
 % Notes::
-% - Useful for operational space control XDD = J(Q)QDD + JDOT(Q)QD
+% - This term appears in the formulation for operational space control XDD = J(Q)QDD + JDOT(Q)QD
 % - Written as per the reference and not very efficient.
 %
 % References::
 % - Fundamentals of Robotics Mechanical Systems (2nd ed)
 %   J. Angleles, Springer 2003.
+% - A unified approach for motion and force control of robot manipulators: The operational space formulation
+%  O Khatib, IEEE Journal on Robotics and Automation, 1987.
 %
 % See also SerialLink.jacob0, diff2tr, tr2diff.
 

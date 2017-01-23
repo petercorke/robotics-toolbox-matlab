@@ -1,36 +1,10 @@
-%SerialLink.ikine Numerical inverse kinematics
+%SerialLink.ikine Inverse kinematics by optimization without joint limits
 %
 % Q = R.ikine(T) are the joint coordinates (1xN) corresponding to the robot
-% end-effector pose T which is an SE3 object.
+% end-effector pose T which is an SE3 object or homogenenous transform
+% matrix (4x4), and N is the number of robot joints.
 %
 % This method can be used for robots with any number of degrees of freedom.
-%
-% Underactuated robots::
-%
-% For the case where the manipulator has fewer than 6 DOF the solution
-% space has more dimensions than can be spanned by the manipulator joint
-% coordinates.
-%
-% In this case we specify the 'mask' option where the mask
-% vector (1x6) which specifies the Cartesian DOF (in the wrist coordinate
-% frame) that will be ignored in reaching a solution.  The mask vector
-% has six elements that correspond to translation in X, Y and Z, and rotation
-% about X, Y and Z respectively.  The value should be 0 (for ignore) or 1.
-% The number of non-zero elements should equal the number of manipulator DOF.
-%
-% For example when using a 3 DOF manipulator rotation orientation might be
-% unimportant in which case use the option pair 'mask', [1 1 1 0 0 0].
-%
-% For robots with 4 or 5 DOF this method is very difficult to use since
-% orientation is specified by T in world coordinates and the achievable
-% orientations are a function of the tool position.
-%
-% Trajectory operation::
-%
-% In all cases if T is an array of SE3 objects then R.ikine() returns the joint
-% coordinates corresponding to each of the objects in the sequence.  Q is MxN 
-% where N is the number of robot joints. The initial estimate of Q for each 
-% time step is taken as the solution from the previous time step.
 %
 % Options::
 % 'ilimit',L        maximum number of iterations (default 500)
@@ -48,11 +22,40 @@
 % 'transpose',A     use Jacobian transpose with step size A, rather than
 %                   Levenberg-Marquadt
 %
+% Trajectory operation::
+%
+% In all cases if T is a vector of SE3 objects (1xM) or a homogeneous
+% transform sequence (4x4xM) then returns the joint coordinates
+% corresponding to each of the transforms in the sequence.  Q is MxN where
+% N is the number of robot joints. The initial estimate of Q for each time
+% step is taken as the solution from the previous time step.
+%
+% Underactuated robots::
+%
+% For the case where the manipulator has fewer than 6 DOF the solution
+% space has more dimensions than can be spanned by the manipulator joint
+% coordinates.
+%
+% In this case we specify the 'mask' option where the mask
+% vector (1x6) specifies the Cartesian DOF (in the wrist coordinate
+% frame) that will be ignored in reaching a solution.  The mask vector
+% has six elements that correspond to translation in X, Y and Z, and rotation
+% about X, Y and Z respectively.  The value should be 0 (for ignore) or 1.
+% The number of non-zero elements should equal the number of manipulator DOF.
+%
+% For example when using a 3 DOF manipulator rotation orientation might be
+% unimportant in which case use the option: 'mask', [1 1 1 0 0 0].
+%
+% For robots with 4 or 5 DOF this method is very difficult to use since
+% orientation is specified by T in world coordinates and the achievable
+% orientations are a function of the tool position.
+%
 % References::
-% - Robotics, Vision & Control, Section 8.4,
-%   P. Corke, Springer 2011.
+% - Robotics, Vision & Control, P. Corke, Springer 2011, Section 8.4.
 %
 % Notes::
+% - This has been completely reimplemented in RTB 9.11
+% - Does NOT require MATLAB Optimization Toolbox.
 % - Solution is computed iteratively.
 % - Implements a Levenberg-Marquadt variable step size solver.
 % - The tolerance is computed on the norm of the error between current
@@ -105,7 +108,7 @@ function qt = ikine(robot, tr, varargin)
     
     n = robot.n;
     
-    TT = SE3(tr);
+    TT = SE3.check(tr);
         
     %  set default parameters for solution
     opt.ilimit = 500;
@@ -168,7 +171,7 @@ function qt = ikine(robot, tr, varargin)
     q = opt.q0;
     
     failed = false;
-    revolutes = robot.revolute();
+    revolutes = robot.isrevolute();
     
     for i=1:length(TT)
         T = TT(i);

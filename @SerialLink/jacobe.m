@@ -10,6 +10,7 @@
 % 'rot'     Return rotational submatrix of Jacobian 
 %
 % Notes::
+% - Was joacobn() is earlier version of the Toolbox.
 % - This Jacobian accounts for a tool transform if one is set.
 % - This Jacobian is often referred to as the geometric Jacobian.
 % - Prior to release 10 this function was named jacobn.
@@ -21,8 +22,6 @@
 %    pp. 456-460
 %
 % See also SerialLink.jacob0, jsingu, delta2tr, tr2delta.
-
-
 
 
 % Copyright (C) 1993-2015, by Peter I. Corke

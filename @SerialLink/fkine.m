@@ -20,7 +20,7 @@
 %   result.
 % - Joint offsets, if defined, are added to Q before the forward kinematics are
 %   computed.
-% - If the result is symbolic then automatically simplify each element.
+% - If the result is symbolic then each element is simplified.
 %
 % See also SerialLink.ikine, SerialLink.ikine6s.
 

@@ -1,4 +1,4 @@
-%SerialLink.issym Check if SerialLink object is a symbolic model
+%SerialLink.issym Test if SerialLink object is a symbolic model
 %
 % res = R.issym() is true if the SerialLink manipulator R has symbolic parameters
 %

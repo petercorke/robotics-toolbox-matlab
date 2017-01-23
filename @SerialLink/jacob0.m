@@ -7,7 +7,7 @@
 %
 % Options::
 % 'rpy'     Compute analytical Jacobian with rotation rate in terms of 
-%           roll-pitch-yaw angles
+%           XYZ roll-pitch-yaw angles
 % 'eul'     Compute analytical Jacobian with rotation rates in terms of 
 %           Euler angles
 % 'exp'     Compute analytical Jacobian with rotation rates in terms of 
@@ -16,13 +16,16 @@
 % 'rot'     Return rotational submatrix of Jacobian 
 %
 % Note::
+% - End-effector spatial velocity is a vector (6x1): the first 3 elements
+%   are translational velocity, the last 3 elements are rotational velocity
+%   as angular velocity (default), RPY angle rate or Euler angle rate.
 % - This Jacobian accounts for a base and/or tool transform if set.
 % - The Jacobian is computed in the end-effector frame and transformed to
 %   the world frame.
 % - The default Jacobian returned is often referred to as the geometric 
 %   Jacobian.
 %
-% See also SerialLink.jacobn, jsingu, deltatr, tr2delta, jsingu.
+% See also SerialLink.jacobe, jsingu, deltatr, tr2delta, jsingu.
 
 
 % Copyright (C) 1993-2015, by Peter I. Corke

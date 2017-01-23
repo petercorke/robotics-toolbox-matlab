@@ -16,7 +16,7 @@
 % '[no]deg'    Express angles in degrees rather than radians (default deg)
 % 'sym'        Replace length parameters by symbolic values L1, L2 etc.
 %
-% See also trchain, trotx, troty, trotz, transl.
+% See also trchain, trotx, troty, trotz, transl, DHFactor.
 
 % Copyright (C) 1993-2015, by Peter I. Corke
 %

@@ -1,7 +1,8 @@
-%SerialLink.IKCON Numerical inverse kinematics with joint limits
+%SerialLink.IKCON Inverse kinematics by optimization with joint limits
 %
-% Q = R.ikcon(T) are the joint coordinates (1xN) corresponding to the robot 
-% end-effector pose T (4x4) which is a homogenenous transform.
+% Q = R.ikcon(T) are the joint coordinates (1xN) corresponding to the robot
+% end-effector pose T which is an SE3 object or homogenenous transform
+% matrix (4x4), and N is the number of robot joints.
 %
 % [Q,ERR] = robot.ikcon(T) as above but also returns ERR which is the
 % scalar final value of the objective function.
@@ -17,8 +18,8 @@
 %
 % Trajectory operation::
 %
-% In all cases if T is 4x4xM it is taken as a homogeneous transform
-% sequence and R.ikcon() returns the joint coordinates corresponding to
+% In all cases if T is a vector of SE3 objects (1xM) or a homogeneous transform
+% sequence (4x4xM) then returns the joint coordinates corresponding to
 % each of the transforms in the sequence.  Q is MxN where N is the number
 % of robot joints. The initial estimate of Q for each time step is taken as
 % the solution from the previous time step.
@@ -27,7 +28,7 @@
 % for the corresponding trajectory step.
 %
 % Notes::
-% - Requires fmincon from the Optimization Toolbox.
+% - Requires fmincon from the MATLAB Optimization Toolbox.
 % - Joint limits are considered in this solution.
 % - Can be used for robots with arbitrary degrees of freedom.
 % - In the case of multiple feasible solutions, the solution returned
@@ -68,8 +69,10 @@
 function [qstar, error, exitflag] = ikcon(robot, T, q0, options)
     
     % check if Optimization Toolbox exists, we need it
-    if ~exist('fmincon')
-        error('rtb:ikcon:nosupport', 'Optimization Toolbox required');
+    assert( exist('fmincon'), 'rtb:ikcon:nosupport', 'Optimization Toolbox required');
+
+    if isa(T, 'SE3')
+        T = T.T;
     end
     
     % create output variables

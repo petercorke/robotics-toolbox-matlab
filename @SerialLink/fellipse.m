@@ -1,28 +1,29 @@
+%SerialLink.fellipse Force ellipsoid for seriallink manipulator
+%
+% R.fellipse(Q, OPTIONS) displays the force ellipsoid for the 
+% robot R at pose Q.  The ellipsoid is centered at the tool tip position.
+%
+% Options::
+% '2d'       Ellipse for translational xy motion, for planar manipulator
+% 'trans'    Ellipsoid for translational motion (default)
+% 'rot'      Ellipsoid for rotational motion
+%
+%  Display options as per plot_ellipse to control ellipsoid face and edge
+% color and transparency.
+%
+% Example::
+%  To interactively update the force ellipsoid while using sliders
+%  to change the robot's pose:
+%          robot.teach('callback', @(r,q) r.fellipse(q))
+%
+% Notes::
+% - The ellipsoid is tagged with the name of the robot prepended to
+%   ".fellipse".
+% - Calling the function with a different pose will update the ellipsoid.
+%
+% See also SerialLink.jacob0, SerialLink.vellipse, plot_ellipse.
+
 function fellipse(robot, q, varargin)
-    %SerialLink.fellipse Force ellipsoid for seriallink manipulator
-    %
-    % R.fellipse(Q, OPTIONS) displays the force ellipsoid for the 
-    % robot R at pose Q.  The ellipsoid is centered at the tool tip position.
-    %
-    % Options::
-    % '2d'       Ellipse for translational xy motion, for planar manipulator
-    % 'trans'    Ellipsoid for translational motion (default)
-    % 'rot'      Ellipsoid for rotational motion
-    %
-    %  Display options as per plot_ellipse to control ellipsoid face and edge
-    % color and transparency.
-    %
-    % Example::
-    %  To interactively update the force ellipsoid while using sliders
-    %  to change the robot's pose:
-    %          robot.teach('callback', @(r,q) r.fellipse(q))
-    %
-    % Notes::
-    % - The ellipsoid is tagged with the name of the robot prepended to
-    %   ".fellipse".
-    % - Calling the function with a different pose will update the ellipsoid.
-    %
-    % See also SerialLink.jacob0, SerialLink.vellipse, plot_ellipse.
     
     name = [robot.name '.fellipse'];
     

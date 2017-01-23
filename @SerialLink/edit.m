@@ -1,9 +1,9 @@
-        %SerialLink.edit Edit kinematic and dynamic parameters of a seriallink manipulator
+        %SerialLink.edit Edit kinematic and dynamic parameters
         %
         % R.edit displays the kinematic parameters of the robot as an editable
         % table in a new figure.
         %
-        % R.edit('dyn') as above but also displays the dynamic parameters.
+        % R.edit('dyn') as above but also includes the dynamic parameters in the table.
         %
         % Notes::
         % - The 'Save' button copies the values from the table to the SerialLink
