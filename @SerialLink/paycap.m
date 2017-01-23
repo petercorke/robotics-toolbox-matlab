@@ -4,7 +4,7 @@
 % payload wrench WMAX (1x6) applied at the end-effector, and the index of
 % the joint J which hits its force/torque limit at that wrench.  Q (1xN) is
 % the manipulator pose, W the payload wrench (1x6), F the wrench reference
-% frame (either '0' or 'n') and TLIM (2xN) is a matrix of joint
+% frame (either '0' or 'e') and TLIM (2xN) is a matrix of joint
 % forces/torques (first row is maximum, second row minimum).
 %
 % Trajectory operation::
@@ -14,7 +14,7 @@
 %
 % Notes::
 % - Wrench vector and Jacobian must be from the same reference frame
-% - Tool transforms are taken into consideration for F = 'n'.
+% - Tool transforms are taken into consideration for F = 'e'.
 %
 % Author::
 % Bryan Moutrie
@@ -47,12 +47,14 @@ function [wM, j] = paycap(robot, q, w, f, tauR)
     if robot.fast
         tauB = robot.gravload(q);
         tauP = robot.rne(q, zeros(size(q)), zeros(size(q)), [0; 0; 0], unit(w));
-    elseif f == '0'
-        [tauB, J] = gravjac(robot, q);
-        tauP = robot.pay(unit(w), J);
-    elseif f == 'n'
-        tauB = gravjac(robot, q);
-        tauP = robot.pay(unit(w), q, 'n');
+    else switch f
+            case '0'
+                [tauB, J] = gravjac(robot, q);
+                tauP = robot.pay(unit(w), J);
+            case {'n', 'e'}
+                tauB = gravjac(robot, q);
+                tauP = robot.pay(unit(w), q, 'e');
+        end
     end
     
     M = tauP > 0;

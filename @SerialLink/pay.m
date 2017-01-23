@@ -5,7 +5,7 @@
 % N is the number of robot joints.
 %
 % TAU = R.PAY(Q, W, F) as above but the Jacobian is calculated at pose Q
-% (1xN) in the frame given by F which is '0' for world frame, 'n' for
+% (1xN) in the frame given by F which is '0' for world frame, 'e' for
 % end-effector frame.
 %
 % Uses the formula TAU = J'W, where W is a wrench vector applied at the end
@@ -18,13 +18,13 @@
 %
 % Notes::
 % - Wrench vector and Jacobian must be from the same reference frame.
-% - Tool transforms are taken into consideration when F = 'n'.
+% - Tool transforms are taken into consideration when F = 'e'.
 % - Must have a constant wrench - no trajectory support for this yet.
 %
 % Author::
 % Bryan Moutrie
 %
-% See also SerialLink.paycap, SerialLink.jacob0, SerialLink.jacobn.
+% See also SerialLink.paycap, SerialLink.jacob0, SerialLink.jacobe.
 
 % Copyright (C) Bryan Moutrie, 2013-2015
 % Licensed under the GNU Lesser General Public License
@@ -59,14 +59,15 @@ function tauP = pay(robot, varargin)
         f = varargin{3};
         n = robot.n;
         J = zeros(6,n,size(q,1));
-        if f == '0'
-            for i= 1: size(q,1)
-                J(:,:,i) = robot.jacob0(q(i,:));
-            end
-        elseif f == 'n'
-            for i= 1: size(q,1)
-                J(:,:,i) = robot.jacobn(q(i,:));
-            end
+        switch f
+            case '0'
+                for i= 1: size(q,1)
+                    J(:,:,i) = robot.jacob0(q(i,:));
+                end
+            case {'n', 'e'}
+                for i= 1: size(q,1)
+                    J(:,:,i) = robot.jacobe(q(i,:));
+                end
         end
     end
     
