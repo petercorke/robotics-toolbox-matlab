@@ -15,8 +15,8 @@
 % - TSEG (1xM) are the durations for each of the K segments
 % - Q0 (1xN) are the initial axis coordinates
 % - DT is the time step
-% - TACC (1x1) this acceleration time is applied to all segment transitions
-% - TACC (1xM) acceleration time for each segment, TACC(i) is the acceleration 
+% - TACC (1x1) is the acceleration time used for all segment transitions
+% - TACC (1xM) is the acceleration time per segment, TACC(i) is the acceleration 
 %   time for the transition from segment i to segment i+1.  TACC(1) is also 
 %   the acceleration time at the start of segment 1.
 %
@@ -27,7 +27,7 @@
 % 'verbose'    Show details.
 %
 % Notes::
-% - Only one of QDMAX or TSEG should be specified, the other is set to [].
+% - Only one of QDMAX or TSEG can be specified, the other is set to [].
 % - If no output arguments are specified the trajectory is plotted.
 % - The path length K is a function of the number of via points, Q0, DT
 %   and TACC.
@@ -68,12 +68,7 @@ function [TG, t, info]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargi
     ns = numrows(segments);
     nj = numcols(segments);
 
-    if ~isempty(qdmax) && ~isempty(tsegment)
-        error('Can only specify one of qdmax or tsegment');
-    end
-    if isempty(qdmax) && isempty(tsegment)
-        error('Must specify one of qdmax or tsegment');
-    end
+    assert(xor(~isempty(qdmax), ~isempty(tsegment)), 'RTB:mstraj:badarg', 'Must specify either qdmax or tsegment, but not both');
 
     [opt,args] = tb_optparse([], varargin);
 
