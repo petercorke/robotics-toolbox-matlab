@@ -1,20 +1,34 @@
-%LINK Robot manipulator Link class
+%LinkRobot manipulator Link class
 %
-% A Link object holds all information related to a robot link such as
+% A Link object holds all information related to a robot joint and link such as
 % kinematics parameters, rigid-body inertial parameters, motor and
 % transmission parameters.
 %
-% Methods::
-%  A             link transform matrix
-%  RP            joint type: 'R' or 'P'
-%  friction      friction force
-%  nofriction    Link object with friction parameters set to zero
+% Constructors::
+%  Link           general constructor
+%  Prismatic      construct a prismatic joint+link using standard DH
+%  PrismaticMDH   construct a prismatic joint+link using modified DH
+%  Revolute       construct a revolute joint+link using standard DH
+%  RevoluteMDH    construct a revolute joint+link using modified DH
+%
+% Information/display methods::
+%  display       print the link parameters in human readable form
 %  dyn           display link dynamic parameters
+%  type          joint type: 'R' or 'P'
+%
+% Conversion methods::
+%  char          convert to string
+%
+% Operation methods::
+%  A             link transform matrix
+%  friction      friction force
+%  nofriction    Link object with friction parameters set to zero%
+%
+% Testing methods::
 %  islimit       test if joint exceeds soft limit
 %  isrevolute    test if joint is revolute
 %  isprismatic   test if joint is prismatic
-%  display       print the link parameters in human readable form
-%  char          convert to string
+%  issym         test if joint+link has symbolic parameters
 %
 % Overloaded operators::
 %  +             concatenate links, result is a SerialLink object
@@ -48,10 +62,11 @@
 % Notes::
 % - This is a reference class object.
 % - Link objects can be used in vectors and arrays.
+% - Convenience subclasses are Revolute, Prismatic, RevoluteMDH and
+%   PrismaticMDH.
 %
 % References::
-% - Robotics, Vision & Control, Chap 7,
-%   P. Corke, Springer 2011.
+% - Robotics, Vision & Control, P. Corke, Springer 2011, Chap 7.
 %
 % See also Link, Revolute, Prismatic, SerialLink, RevoluteMDH, PrismaticMDH.
 
@@ -102,14 +117,14 @@ classdef Link < matlab.mixin.Copyable
     
     methods
         function l = Link(varargin)
-            %LINK Create robot link object
+            %Link Create robot link object
             %
             % This the class constructor which has several call signatures.
             %
             % L = Link() is a Link object with default parameters.
             %
             % L = Link(LNK) is a Link object that is a deep copy of the link
-            % object LNK.
+            % object LNK and has type Link, even if LNK is a subclass.
             %
             % L = Link(OPTIONS) is a link object with the kinematic and dynamic
             % parameters specified by the key/value pairs.
@@ -136,7 +151,10 @@ classdef Link < matlab.mixin.Copyable
             % 'modified'    for modified D&H parameters.
             % 'sym'         consider all parameter values as symbolic not numeric
             %
+            % Notes::
             % - It is an error to specify both 'theta' and 'd'
+            % - The joint variable, either theta or d, is provided as an argument to
+            %   the A() method.
             % - The link inertia matrix (3x3) is symmetric and can be specified by giving
             %   a 3x3 matrix, the diagonal elements [Ixx Iyy Izz], or the moments and products
             %   of inertia [Ixx Iyy Izz Ixy Iyz Ixz].
@@ -147,10 +165,10 @@ classdef Link < matlab.mixin.Copyable
             % Old syntax::
             % L = Link(DH, OPTIONS) is a link object using the specified kinematic
             % convention  and with parameters:
-            %  - DH = [THETA D A ALPHA SIGMA OFFSET] where OFFSET is a constant displacement
-            %    between the user joint angle vector and the true kinematic solution.
-            %  - DH = [THETA D A ALPHA SIGMA] where SIGMA=0 for a revolute and 1 for a
-            %    prismatic joint, OFFSET is zero.
+            %  - DH = [THETA D A ALPHA SIGMA OFFSET] where SIGMA=0 for a revolute and 1
+            %    for a prismatic joint; and OFFSET is a constant displacement between the
+            %    user joint variable and the value used by the kinematic model.
+            %  - DH = [THETA D A ALPHA SIGMA] where OFFSET is zero.
             %  - DH = [THETA D A ALPHA], joint is assumed revolute and OFFSET is zero.
             %
             % Options::
@@ -159,6 +177,12 @@ classdef Link < matlab.mixin.Copyable
             % 'modified'    for modified D&H parameters.
             % 'revolute'    for a revolute joint, can be abbreviated to 'r' (default)
             % 'prismatic'   for a prismatic joint, can be abbreviated to 'p'
+            %
+            % Notes::
+            % - The parameter D is unused in a revolute joint, it is simply a placeholder
+            %   in the vector and the value given is ignored.
+            % - The parameter THETA is unused in a prismatic joint, it is simply a placeholder
+            %   in the vector and the value given is ignored.
             %
             % Examples::
             % A standard Denavit-Hartenberg link
@@ -185,10 +209,6 @@ classdef Link < matlab.mixin.Copyable
             % Notes::
             % - Link object is a reference object, a subclass of Handle object.
             % - Link objects can be used in vectors and arrays.
-            % - The parameter D is unused in a revolute joint, it is simply a placeholder
-            %   in the vector and the value given is ignored.
-            % - The parameter THETA is unused in a prismatic joint, it is simply a placeholder
-            %   in the vector and the value given is ignored.
             % - The joint offset is a constant added to the joint angle variable before
             %   forward kinematics and subtracted after inverse kinematics.  It is useful
             %   if you  want the robot to adopt a 'sensible' pose for zero joint angle
@@ -199,7 +219,7 @@ classdef Link < matlab.mixin.Copyable
             % - The gear ratio is set to 1 by default, meaning that motor friction and
             %   inertia will be considered if they are non-zero.
             %
-            % See also Revolute, Prismatic.
+            % See also Revolute, Prismatic, RevoluteMDH, PrismaticMDH.
             
             %TODO eliminate legacy dyn matrix
             
@@ -231,7 +251,17 @@ classdef Link < matlab.mixin.Copyable
                 l.Tc = [0 0];
             elseif nargin == 1 && isa(varargin{1}, 'Link')
                 % clone the passed Link object
-                l = copy(varargin{1});
+                this = varargin{1};
+                
+                for j=1:length(this)
+                    l(j) = Link();
+                    
+                    % Copy all non-hidden properties.
+                    p = properties(this(j));
+                    for i = 1:length(p)
+                        l(j).(p{i}) = this(j).(p{i});
+                    end
+                end
                 
             else
                 % Create a new Link based on parameters
@@ -399,19 +429,29 @@ classdef Link < matlab.mixin.Copyable
         function  tau = friction(l, qd)
             %Link.friction Joint friction force
             %
-            % F = L.friction(QD) is the joint friction force/torque for link velocity QD.
+            % F = L.friction(QD) is the joint friction force/torque (1xN) for joint
+            % velocity QD (1xN). The friction model includes:
+            % - Viscous friction which is a linear function of velocity.
+            % - Coulomb friction which is proportional to sign(QD).
             %
             % Notes::
+            % - The friction value should be added to the motor output torque, it has a
+            %   negative value when QD>0. 
             % - The returned friction value is referred to the output of the gearbox.
             % - The friction parameters in the Link object are referred to the motor.
             % - Motor viscous friction is scaled up by G^2.
             % - Motor Coulomb friction is scaled up by G.
             % - The appropriate Coulomb friction value to use in the non-symmetric case
             %   depends on the sign of the joint velocity, not the motor velocity.
+            % - The absolute value of the gear ratio is used.  Negative gear ratios are
+            %   tricky: the Puma560 has negative gear ratio for joints 1 and 3.
+            %
+            % See also Link.nofriction.
             
-                
+            % viscous friction   
             tau = l.B * abs(l.G) * qd;
             
+            % Coulomb friction
             if ~issym(l)
                 if qd > 0
                     tau = tau + l.Tc(1);
@@ -419,6 +459,8 @@ classdef Link < matlab.mixin.Copyable
                     tau = tau + l.Tc(2);
                 end
             end
+            
+            % scale up by gear ratio
             tau = -abs(l.G) * tau;     % friction opposes motion
         end % friction()
         
@@ -452,7 +494,7 @@ classdef Link < matlab.mixin.Copyable
             % Notes::
             % - Forward dynamic simulation can be very slow with finite Coulomb friction.
             %
-            % See also SerialLink.nofriction, SerialLink.fdyn.
+            % See also Link.friction, SerialLink.nofriction, SerialLink.fdyn.
             
             l2 = copy(l);
             
@@ -479,9 +521,11 @@ classdef Link < matlab.mixin.Copyable
         function v = type(l)
             %Link.type Joint type
             %
-            % c = L.type() is a character 'R' or 'P' depending on whether joint is revolute or
-            % prismatic respectively.
-            % If L is a vector of Link objects return a string of characters in joint order.
+            % c = L.type() is a character 'R' or 'P' depending on whether joint is
+            % revolute or prismatic respectively. If L is a vector of Link objects
+            % return an array of characters in joint order.
+            %
+            % See also SerialLink.config.
             v = '';
             for ll=l
                 switch ll.jointtype
@@ -612,14 +656,18 @@ classdef Link < matlab.mixin.Copyable
         function T = A(L, q)
             %Link.A Link transform matrix
             %
-            % T = L.A(Q) is the link homogeneous transformation matrix (4x4) corresponding
-            % to the link variable Q which is either the Denavit-Hartenberg parameter THETA (revolute)
-            % or D (prismatic).
-            %
+            % T = L.A(Q) is an SE3 object representing the transformation between link
+            % frames when the link variable Q which is either the Denavit-Hartenberg
+            % parameter THETA (revolute) or D (prismatic).  For:
+            %  - standard DH parameters, this is from the previous frame to the current.
+            %  - modified DH parameters, this is from the current frame to the next.
+            % 
             % Notes::
             % - For a revolute joint the THETA parameter of the link is ignored, and Q used instead.
             % - For a prismatic joint the D parameter of the link is ignored, and Q used instead.
             % - The link offset parameter is added to Q before computation of the transformation matrix.
+            %
+            % See also SerialLink.fkine.
             sa = sin(L.alpha); ca = cos(L.alpha);
             if L.flip
                 q = -q + L.offset;
@@ -716,7 +764,7 @@ classdef Link < matlab.mixin.Copyable
                             qname, ...
                             render(l.a, fmt), ...
                             render(l.alpha, fmt), ...
-                            render(l.offset), fmt);
+                            render(l.offset, fmt));
                     else
                         % revolute joint
                         js = sprintf('|%3d|%11s|%11s|%11s|%11s|%11s|', ...
@@ -847,40 +895,65 @@ classdef Link < matlab.mixin.Copyable
 %             end
 %         end
         
-        function links = horzcat(this, varargin)
-            links = this.toLink();
+        function links = horzcat(varargin)
+            %Link.horzcat  Concatenate link objects
+            %
+            % [L1 L2] is a vector that contains deep copies of the Link class objects
+            % L1 and L2.  
+            %
+            % Notes::
+            % - The elements of the vector are all of type Link.
+            % - If the elements were of a subclass type they are convered to type Link.
+            % - Extends to arbitrary number of objects in list.
+            %
+            % See also Link.plus.
             
-            for i=1:length(varargin)
-                links = cat(2, links, varargin{i}.toLink());
-            end
+            % convert all elements to Link type
+            l = cellfun(@Link, varargin, 'UniformOutput', 0);
+            
+            % convert to vector, cell2mat won't do this for me
+            links = cat(2, l{:});
         end
         
         function links = vertcat(this, varargin)
             links = this.horzcat(varargin{:});
         end
         
-        function new = toLink(this)
-            for j=1:length(this)
-                new(j) = Link();
-                
-                % Copy all non-hidden properties.
-                p = properties(this(j));
-                for i = 1:length(p)
-                    new(j).(p{i}) = this(j).(p{i});
-                end
-            end
+        
+        function R = plus(L1, L2)
+            %Link.plus  Concatenate link objects into a robot
+            %
+            % L1+L2 is a SerialLink object formed from deep copies of the Link class objects
+            % L1 and L2.  
+            %
+            % Notes::
+            % - The elements can belong to any of the Link subclasses.
+            % - Extends to arbitrary number of objects, eg. L1+L2+L3+L4.
+            %
+            % See also SerialLink, SerialLink.plus, Link.horzcat.
+            assert( isa(L1, 'Link') && isa(L2, 'Link'), 'RTB:Link: second operand for + operator must be a Link class');
+            
+            R = SerialLink([L1 L2]);
             
         end
         
         function res = issym(l)
             %Link.issym Check if link is a symbolic model
             %
-            % res = L.issym() is true if the Link L has symbolic parameters.
+            % res = L.issym() is true if the Link L has any symbolic parameters.
+            %
+            % See also Link.sym.
  
-            res = isa(l.alpha,'sym');
+            res = any( cellfun(@(x) isa(l.(x), 'sym'), properties(l)) );
         end
         
         function sl = sym(l)
+            %Link.sym Convert link parameters to symbolic type
+            %
+            % LS = L.sym is a Link object in which all the parameters are symbolic
+            % ('sym') type.
+            %
+            % See also Link.issym.
             
             sl = Link(l);   % clone the link
             
@@ -902,16 +975,9 @@ classdef Link < matlab.mixin.Copyable
             sl.G = sym(sl.G);
             sl.B = sym(sl.B);
             sl.Tc = sym(sl.Tc);
-            
         end
         
-        function R = plus(L1, L2)
-            if isa(L1, 'Link') && isa(L2, 'Link')
-                R = SerialLink([L1 L2]);
-            else
-                error('RTB:Link: second operand for + operator must be a Link class')
-            end
-        end
+
     end % methods
     
 

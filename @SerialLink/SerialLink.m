@@ -1,66 +1,82 @@
 %SerialLink Serial-link robot class
 %
-% A concrete class that represents a serial-link arm-type robot.  The
-% mechanism is described using Denavit-Hartenberg parameters, one set
-% per joint.
+% A concrete class that represents a serial-link arm-type robot.  Each link
+% and joint in the chain is described by a Link-class object using Denavit-Hartenberg
+% parameters (standard or modified).
 %
-% Methods::
+% Constructor methods::
+%  SerialLink    general constructor
+%  L1+L2         construct from Link objects
 %
+% Display/plot methods::
+%  animate       animate robot model
+%  display       print the link parameters in human readable form
+%  dyn           display link dynamic parameters
+%  edit          display and edit kinematic and dynamic parameters
+%  getpos        get position of graphical robot
 %  plot          display graphical representation of robot
 %  plot3d        display 3D graphical model of robot
 %  teach         drive the graphical robot
-%  getpos        get position of graphical robot
-%-
-%  jtraj         a joint space trajectory
-%-
-%  edit          display and edit kinematic and dynamic parameters
-%-
-%  isspherical   test if robot has spherical wrist
+%
+% Testing methods::
 %  islimit       test if robot at joint limit
 %  isconfig      test robot joint configuration
-%-
-%  fkine         forward kinematics
+%  issym         test if robot has symbolic parameters
+%  isprismatic   index of prismatic joints
+%  isrevolute    index of revolute joints
+%  isspherical   test if robot has spherical wrist
+%
+% Conversion methods::
+%  char          convert to string
+%  sym           convert to symbolic parameters
+%  todegrees     convert joint angles to degrees
+%  toradians     convert joint angles to radians
+
+% Kinematic methods::
 %  A             link transforms
-%  trchain       forward kinematics as a chain of elementary transforms
-%-
+%  fkine         forward kinematics
 %  ikine6s       inverse kinematics for 6-axis spherical wrist revolute robot
 %  ikine         inverse kinematics using iterative numerical method
 %  ikunc         inverse kinematics using optimisation
 %  ikcon         inverse kinematics using optimisation with joint limits
 %  ikine_sym     analytic inverse kinematics obtained symbolically
-%-
+%  trchain       forward kinematics as a chain of elementary transforms
+%
+% Velocity kinematic methods::
+%  fellipse      display force ellipsoid
 %  jacob0        Jacobian matrix in world frame
-%  jacobn        Jacobian matrix in tool frame
+%  jacobe        Jacobian matrix in end-effector frame
 %  jacob_dot     Jacobian derivative
 %  maniplty      manipulability
 %  vellipse      display velocity ellipsoid
-%  fellipse      display force ellipsoid
 %  qmincon       null space motion to centre joints between limits
+%
+% Dynamics methods::
+%  accel           joint acceleration
+%  cinertia        Cartesian inertia matrix
+%  coriolis        Coriolis joint force
+%  fdyn            forward dynamics
+%  friction        friction force
+%  gravjac         gravity load and Jacobian
+%  gravload        gravity joint force
+%  inertia         joint inertia matrix
+%  itorque         inertial torque
+%  jointdynamics   model of LTI joint dynamics
+%  nofriction      set friction parameters to zero
+%  perturb         randomly perturb link dynamic parameters
+%  rne             inverse dynamics
 %-
-%  accel         joint acceleration
-%  coriolis      Coriolis joint force
-%  dyn           show dynamic properties of links
-%  friction      friction force
-%  gravload      gravity joint force
-%  inertia       joint inertia matrix
-%  cinertia      Cartesian inertia matrix
-%  nofriction    set friction parameters to zero
-%  rne           inverse dynamics
-%  fdyn          forward dynamics
-%-
-%  payload       add a payload in end-effector frame
-%  perturb       randomly perturb link dynamic parameters
-%  gravjac       gravity load and Jacobian
-%  paycap        payload capacity
-%  pay           payload effect
-%-
-%  sym           a symbolic version of the object
+%  pay             payload effect
+%  payload         add a payload in end-effector frame
+%  gravjac         gravity load and Jacobian
+%  paycap          payload capacity
+%
+% Operation methods::
+%  jtraj         joint space trajectory
 %  gencoords     symbolic generalized coordinates
 %  genforces     symbolic generalized forces
-%  issym         test if object is symbolic
 %
 % Properties (read/write)::
-%
 %  links      vector of Link objects (1xN)
 %  gravity    direction of gravity [gx gy gz]
 %  base       pose of robot's base (4x4 homog xform)
@@ -75,7 +91,6 @@
 %             file exists.  Default is true.
 %
 % Properties (read only)::
-%
 %  n           number of joints
 %  config      joint configuration string, eg. 'RRRRRR'
 %  mdh         kinematic convention boolean (0=DH, 1=MDH)
@@ -185,22 +200,22 @@ classdef SerialLink < matlab.mixin.Copyable
         %SerialLink Create a SerialLink robot object
         %
         % R = SerialLink(LINKS, OPTIONS) is a robot object defined by a vector 
-        % of Link class objects which can be instances of Link, Revolute,
+        % of Link class objects which includes the subclasses Revolute,
         % Prismatic, RevoluteMDH or PrismaticMDH.
         %
         % R = SerialLink(OPTIONS) is a null robot object with no links.
         %
         % R = SerialLink([R1 R2 ...], OPTIONS) concatenate robots, the base of
-        % R2 is attached to the tip of R1.  Can also be written R1*R2 etc.
+        % R2 is attached to the tip of R1.  Can also be written as R1*R2 etc.
         %
         % R = SerialLink(R1, options) is a deep copy of the robot object R1, 
         % with all the same properties.
         %
-        % R = SerialLink(DH, OPTIONS) is a robot object with kinematics defined
-        % by the matrix DH which has one row per joint and each row is
-        % [theta d a alpha] and joints are assumed revolute.  An optional 
-        % fifth column sigma indicate revolute (sigma=0, default) or 
-        % prismatic (sigma=1).
+        % R = SerialLink(DH, OPTIONS) is a robot object with kinematics defined by
+        % the matrix DH which has one row per joint and each row is [theta d a
+        % alpha] and joints are assumed revolute.  An optional fifth column sigma
+        % indicate revolute (sigma=0) or prismatic (sigma=1).  An optional sixth
+        % column is the joint offset.
         %
         % Options::
         %
@@ -378,12 +393,21 @@ classdef SerialLink < matlab.mixin.Copyable
         %}
         
         function r2 = plus(R, L)
-            if isa(L, 'Link')
-                R.links = [R.links L];
-                r2 = R;
-            else
-                error('RTB:SerialLink: second operand for + operator must be a Link class')
-            end
+            %SerialLink.plus  Append a link objects to a robot
+            %
+            % R+L is a SerialLink object formed appending a deep copy of the Link L to the SerialLink
+            % robot R.
+            %
+            % Notes::
+            % - The link L can belong to any of the Link subclasses.
+            % - Extends to arbitrary number of objects, eg. R+L1+L2+L3+L4.
+            %
+            % See also Link.plus.
+            assert( isa(L, 'Link'), 'RTB:SerialLink: second operand for + operator must be a Link class');
+            
+            R.links = [R.links L];
+            r2 = R;
+
         end
         
         function r2 = mtimes(r, l)
@@ -394,7 +418,7 @@ classdef SerialLink < matlab.mixin.Copyable
         %
         % Notes::
         % - If R1 has a tool transform or R2 has a base transform these are 
-        %   discarded since DH convention does not allow for arbitrary intermediate
+        %   discarded since DH convention does not allow for general intermediate
         %   transformations.
             if isa(l, 'SerialLink')
                 r2 = SerialLink([r l]);
@@ -509,11 +533,12 @@ classdef SerialLink < matlab.mixin.Copyable
         function T = A(r, joints, q)
         %SerialLink.A Link transformation matrices
         %
-        % S = R.A(J, QJ) is an SE(3) homogeneous transform (4x4) that transforms
-        % from link frame {J-1} to frame {J} which is a function of the J'th joint
-        % variable QJ.
+        % S = R.A(J, Q) is an SE3 object (4x4) that transforms between link frames
+        % for the J'th joint.  Q is a vector (1xN) of joint variables. For:
+        %  - standard DH parameters, this is from frame {J-1} to frame {J}.
+        %  - modified DH parameters, this is from frame {J} to frame {J+1}.
         %
-        % S = R.A(jlist, q) as above but is a composition of link transform
+        % S = R.A(JLIST, Q) as above but is a composition of link transform
         % matrices given in the list JLIST, and the joint variables are taken from
         % the corresponding elements of Q.
         %
@@ -522,11 +547,13 @@ classdef SerialLink < matlab.mixin.Copyable
         %          robot.A(4, q4)
         %
         % The link transform for  joints 3 through 6 is
-        %          robot.A([3 4 5 6], q)
+        %          robot.A(3:6, q)
         % where q is 1x6 and the elements q(3) .. q(6) are used.
         %
         % Notes::
-        % - base and tool transforms are not applied.
+        % - Base and tool transforms are not applied.
+        %
+        % See also Link.A.
             T = SE3;
             
             for joint=joints
@@ -535,27 +562,27 @@ classdef SerialLink < matlab.mixin.Copyable
         end
         
         function q = getpos(robot)
-        %SerialLink.getpos Get joint coordinates from graphical display
-        %
-        % q = R.getpos() returns the joint coordinates set by the last plot or
-        % teach operation on the graphical robot.
-        %
-        % See also SerialLink.plot, SerialLink.teach.
-    
-        rhandles = findobj('Tag', robot.name);
-        
-        % find the graphical element of this name
-        if isempty(rhandles)
-            error('RTB:getpos:badarg', 'No graphical robot of this name found');
+            %SerialLink.getpos Get joint coordinates from graphical display
+            %
+            % q = R.getpos() returns the joint coordinates set by the last plot or
+            % teach operation on the graphical robot.
+            %
+            % See also SerialLink.plot, SerialLink.teach.
+            
+            rhandles = findobj('Tag', robot.name);
+            
+            % find the graphical element of this name
+            if isempty(rhandles)
+                error('RTB:getpos:badarg', 'No graphical robot of this name found');
+            end
+            % get the info from its Userdata
+            info = get(rhandles(1), 'UserData');
+            
+            % the handle contains current joint angles (set by plot)
+            if ~isempty(info.q)
+                q = info.q;
+            end
         end
-        % get the info from its Userdata
-        info = get(rhandles(1), 'UserData');
-        
-        % the handle contains current joint angles (set by plot)
-        if ~isempty(info.q)
-            q = info.q;
-        end
-end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %   set/get methods
@@ -665,8 +692,10 @@ end
         % false (0) if Q(i) is within the joint limits, else true (1).
         %
         % Notes::
-        % - Joint limits are purely advisory and are not used in any
-        %   other function.  Just seemed like a useful thing to include...
+        % - Joint limits are not used by many methods, exceptions being:
+        %   - ikcon() to specify joint constraints for inverse kinematics.
+        %   - by plot() for prismatic joints to help infer the size of the
+        %     workspace
         %
         % See also Link.islimit.
             L = r.links;
@@ -734,13 +763,16 @@ end
             end
         end
         
-        function t = jointdynamics(robot, q)
+        function t = jointdynamics(robot, q, qd)
             %SerialLink.jointdyamics Transfer function of joint actuator
             %
-            % TF = R.jointdynamic(Q) is a vector of N continuous-time transfer function objects
-            % that represent the transfer function 1/(Js+B) for each joint based on the 
-            % dynamic parameters of the robot and the configuration Q.  N is the number of robot
-            % joints.
+            % TF = R.jointdynamic(Q) is a vector of N continuous-time transfer function
+            % objects that represent the transfer function 1/(Js+B) for each joint
+            % based on the dynamic parameters of the robot and the configuration Q
+            % (1xN).  N is the number of robot joints.
+            %
+            % % TF = R.jointdynamic(Q, QD) as above but include the linearized effects
+            % of Coulomb friction when operating at joint velocity QD (1xN).
             %
             % Notes::
             % - Coulomb friction is ignoredf.
@@ -758,7 +790,15 @@ end
                 
                 % compute friction
                 B = link.B;
-                t(j) = tf(1, [J B]);
+                if nargin == 3
+                    % add linearized Coulomb friction at the operating point
+                    if qd > 0
+                        B = B + link.Tc(1)/qd;
+                    elseif qd < 0
+                        B = B + link.Tc(2)/qd;
+                    end
+                    t(j) = tf(1, [J B]);
+                end
             end
         end
         
@@ -767,17 +807,19 @@ end
             %
             % Q = R.jtraj(T1, T2, K, OPTIONS) is a joint space trajectory (KxN) where
             % the joint coordinates reflect motion from end-effector pose T1 to T2 in K
-            % steps  with default zero boundary conditions for velocity and
-            % acceleration. The trajectory Q has one row per time step, and one column
-            % per joint, where N is the number of robot joints.
+            % steps, where N is the number of robot joints. T1 and T2 are SE3 objects or homogeneous transformation
+            % matrices (4x4). The trajectory Q has one row per time step, and one
+            % column per joint.
             %
             % Options::
             % 'ikine',F   A handle to an inverse kinematic method, for example
             %             F = @p560.ikunc.  Default is ikine6s() for a 6-axis spherical
             %             wrist, else ikine().
             %
-            % Additional options are passed as trailing arguments to the inverse
-            % kinematic function.
+            % Notes::
+            % - Zero boundary conditions for velocity and acceleration are assumed.
+            % - Additional options are passed as trailing arguments to the
+            % inverse kinematic function.
             %
             % See also jtraj, SerialLink.ikine, SerialLink.ikine6s.
             if r.isspherical && (r.n == 6)
@@ -818,11 +860,11 @@ end
             end
         end
         
-        function p = prismatic(robot)
+        function p = isprismatic(robot)
             p = robot.links.isprismatic();
         end
         
-        function p = revolute(robot)
+        function p = isrevolute(robot)
             p = robot.links.isrevolute();
         end
         
