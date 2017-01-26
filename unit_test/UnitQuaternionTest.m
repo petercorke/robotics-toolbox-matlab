@@ -82,7 +82,12 @@ end
 function primitive_convert_test(tc)
     % char
     
-    s = char( UnitQuaternion() );
+    u = UnitQuaternion();
+    
+    s = char( u );
+    s = char( [u u u] );
+    u
+    [u u]
     
     %% s,v
     verifyEqual(tc, UnitQuaternion([1 0 0 0]).s, 1);
@@ -99,7 +104,7 @@ function primitive_convert_test(tc)
 
     
     %% R,T
-     verifyEqual(tc, UnitQuaternion( eye(3,3) ).R, eye(3,3), 'AbsTol', 1e-10  );
+    verifyEqual(tc, u.R, eye(3,3), 'AbsTol', 1e-10  );
    
     verifyEqual(tc, UnitQuaternion( rotx(pi/2) ).R, rotx(pi/2), 'AbsTol', 1e-10  );
     verifyEqual(tc, UnitQuaternion( roty(-pi/2) ).R, roty(-pi/2), 'AbsTol', 1e-10  );
@@ -108,6 +113,9 @@ function primitive_convert_test(tc)
     verifyEqual(tc, UnitQuaternion( rotx(pi/2) ).T, trotx(pi/2), 'AbsTol', 1e-10  );
     verifyEqual(tc, UnitQuaternion( roty(-pi/2) ).T, troty(-pi/2), 'AbsTol', 1e-10  );
     verifyEqual(tc, UnitQuaternion( rotz(pi) ).T, trotz(pi), 'AbsTol', 1e-10  );
+    
+    verifyEqual(tc, UnitQuaternion.q2r(u.double), eye(3,3), 'AbsTol', 1e-10  );
+
 end
 
 function staticconstructors_test(tc)
@@ -328,6 +336,11 @@ function conversions_test(tc)
     verifyEqual(tc, a, th, 'AbsTol', 1e-10  );
     verifyEqual(tc, b, v, 'AbsTol', 1e-10  );
     
+    % null rotation case
+    th = 0; v = unit([1 2 3]);
+    a = UnitQuaternion.angvec(th, v ).toangvec;
+    verifyEqual(tc, a, th, 'AbsTol', 1e-10  );
+    
 
 %  SO3                     convert to SO3 class
 %  SE3                     convert to SE3 class
@@ -355,25 +368,61 @@ function miscellany_test(tc)
     verifyEqual(tc, rx.inner(ry), 0.5, 'AbsTol', 1e-10  );
     verifyEqual(tc, rz.inner(rz), 1, 'AbsTol', 1e-10  );
 
-    %% interp
+
     q = rx*ry*rz;
-    verifyEqual(tc, q.interp(0), u);
-    verifyEqual(tc, q.interp(1), q );
-     verifyEqual(tc, q.interp(rx, 0), q );
-    verifyEqual(tc, q.interp(rx, 1), rx );
-    
+        
     verifyEqual(tc, q^0, u, 'AbsTol', 1e-10  );
     verifyEqual(tc, q^(-1), inv(q), 'AbsTol', 1e-10  );
     verifyEqual(tc, q^2, q*q, 'AbsTol', 1e-10  );
+    
+    %% angle
+    verifyEqual(tc, angle(u, u), 0, 'AbsTol', 1e-10  );
+    verifyEqual(tc, angle(u, rx), pi/4, 'AbsTol', 1e-10  );
+    verifyEqual(tc, angle(u, [rx u]), pi/4*[1 0], 'AbsTol', 1e-10  );
+    verifyEqual(tc, angle([rx u], u), pi/4*[1 0], 'AbsTol', 1e-10  );
+    verifyEqual(tc, angle([rx u], [u rx]), pi/4*[1 1], 'AbsTol', 1e-10  );
+
+    
+    %% increment
+    w = [0.02 0.03 0.04];
+    
+    verifyEqual(tc, rx.increment(w), rx*UnitQuaternion.omega(w));
+
+end
+
+function interp_test(tc)
+        
+    rx = UnitQuaternion.Rx(pi/2);
+    ry = UnitQuaternion.Ry(pi/2);
+    rz = UnitQuaternion.Rz(pi/2);
+    u = UnitQuaternion();
+    
+    q = rx*ry*rz;
+    
+    % from null
+    verifyEqual(tc, q.interp(0), u);
+    verifyEqual(tc, q.interp(1), q );
+    
+    verifyEqual(tc, length(q.interp(linspace(0,1, 10))), 10);
+    verifyTrue(tc, all( q.interp([0 1]) == [u q]));
+    
+    % between two quaternions
+    verifyEqual(tc, q.interp(rx, 0), q );
+    verifyEqual(tc, q.interp(rx, 1), rx );
+    
+    verifyTrue(tc, all( q.interp(rx, [0 1]) == [q rx]));
+
+end
+
+function logical_test(tc)
+        rx = UnitQuaternion.Rx(pi/2);
+    ry = UnitQuaternion.Ry(pi/2);
     
     %% equality tests
     verifyTrue(tc, rx == rx);
     verifyFalse(tc, rx ~= rx);
     verifyFalse(tc, rx == ry);
-    
-
-
-end
+    end
 
 function dot_test(tc)
     q = UnitQuaternion();
@@ -382,16 +431,45 @@ function dot_test(tc)
     verifyEqual(tc, q.dot(omega), [0 omega/2]');
     verifyEqual(tc, q.dotb(omega), [0 omega/2]');
     
-    q = UnitQuaternion(rotx(pi/2));
-    verifyEqual(tc, q.dot(omega), double(0.5*Quaternion.pure(omega)*q)' );
-    verifyEqual(tc, q.dotb(omega), double(0.5*q*Quaternion.pure(omega))' );
+    q = UnitQuaternion.Rx(pi/2);
+    verifyEqual(tc, q.dot(omega), double(0.5*Quaternion.pure(omega)*q)', 'AbsTol', 1e-10 );
+    verifyEqual(tc, q.dotb(omega), double(0.5*q*Quaternion.pure(omega))', 'AbsTol', 1e-10 );
 
 end
 
+function matrix_test(tc)
+    
+    q1 = UnitQuaternion.rpy(0.1, 0.2, 0.3);
+    q2 = UnitQuaternion.rpy(0.2, 0.3, 0.4);
+    
+    q12 = q1 * q2;
+    
+    verifyEqual(tc, double(q12)', q1.matrix() * q2.double', 'AbsTol', 1e-10);
+end
+
+function vec3_test(tc)
+    
+    q1 = UnitQuaternion.rpy(0.1, 0.2, 0.3);
+    q2 = UnitQuaternion.rpy(0.2, 0.3, 0.4);
+    
+    q12 = q1 * q2;
+    
+    q1v = q1.tovec; q2v = q2.tovec;
+    
+    q12v = UnitQuaternion.qvmul(q1v, q2v);
+    
+    q12_ = UnitQuaternion.vec(q12v);
+    
+    verifyEqual(tc, q12, q12_);
+end
+
+
+    
+    
 function display_test(tc)
         ry = UnitQuaternion.Ry(pi/2);
 
-        
-        ry.plot
-        ry.animate
+        ry.plot();
+        h = ry.plot();
+        ry.animate();
 end

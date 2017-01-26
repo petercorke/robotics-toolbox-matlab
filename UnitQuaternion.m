@@ -1,4 +1,4 @@
-%UnitQuaternion UnitQuaternion class
+%UnitQuaternion Unit quaternion class
 %
 % A UnitQuaternion is a compact method of representing a 3D rotation that has
 % computational advantages including speed and numerical robustness.
@@ -10,8 +10,23 @@
 %
 %         q = cos (theta/2) < v sin(theta/2)>
 %
-% Methods::
-%  UnitQuaternion          constructor
+% Constructors::
+%  UnitQuaternion          general constructor
+%  UnitQuaternion.eul      constructor, from Euler angles
+%  UnitQuaternion.rpy      constructor, from roll-pitch-yaw angles
+%  UnitQuaternion.angvec   constructor, from (angle and vector)
+%  UnitQuaternion.omega    constructor for angle*vector
+%  UnitQuaternion.Rx       constructor, from x-axis rotation
+%  UnitQuaternion.Ry       constructor, from y-axis rotation
+%  UnitQuaternion.Rz       constructor, from z-axis rotation
+%  UnitQuaternion.vec      constructor, from 3-vector
+%
+% Display methods::
+%  display                 print in human readable form
+%  plot                    plot a coordinate frame representing orientation of quaternion
+%  animate                 animates a coordinate frame representing changing orientation
+%                          of quaternion sequence
+% Operation methods::
 %  inv                     inverse
 %  conj                    conjugate
 %  unit                    unitized quaternion
@@ -19,12 +34,14 @@
 %  norm                    norm, or length
 %  inner                   inner product
 %  angle                   angle between two quaternions
-%  plot                    plot a coordinate frame representing orientation of quaternion
-%  animate                 animates a coordinate frame representing changing orientation
-%                          of quaternion sequence
 %  interp                  interpolation (slerp) between two quaternions
+%  UnitQuaternion.qvmul    multiply unit-quaternions in 3-vector form
 %
 % Conversion methods::
+%  char                    convert to string
+%  double                  convert to 4-vector
+%  matrix                  convert to 4x4 matrix
+%  tovec                   convert to 3-vector 
 %  R                       convert to 3x3 rotation matrix
 %  T                       convert to 4x4 homogeneous transform matrix
 %  toeul                   convert to Euler angles
@@ -32,41 +49,33 @@
 %  toangvec                convert to angle vector form
 %  SO3                     convert to SO3 class
 %  SE3                     convert to SE3 class
-%  double                  convert to 4-vector
-%  matrix                  convert to 4x4 matrix
-%  tovec                   convert to 3-vector 
 %
 % Overloaded operators::
 %  q*q2                    quaternion (Hamilton) product
 %  q.*q2                   quaternion (Hamilton) product followed by unitization
+%  q*s                     quaternion times scalar
 %  q/q2                    q*q2.inv
 %  q./q2                   q*q2.inv followed by unitization
+%  q/s                     quaternion divided by scalar
 %  q^n                     q to power n (integer only)
 %  q+q2                    elementwise sum of quaternion elements (result is a Quaternion)
 %  q-q2                    elementwise difference of quaternion elements (result is a Quaternion)
 %  q1==q2                  test for quaternion equality
 %  q1~=q2                  test for quaternion inequality
 %
-% Static methods::
-%  eul      constructor, from Euler angles
-%  rpy      constructor, from roll-pitch-yaw angles
-%  angvec   constructor, from (angle vector)
-%  omega    constructor for angle*vector
-%  Rx       constructor, from x-axis rotation
-%  Ry       constructor, from y-axis rotation
-%  Rz       constructor, from z-axis rotation
-%  vec      constructor, from 3-vector
-%  qvmul    multiply unit-quaternions in 3-vector form
-%
 % Properties (read only)::
 %  s         real part
 %  v         vector part
 %
 % Notes::
+% - Many methods and operators are inherited from the Quaternion superclass.
 % - UnitQuaternion objects can be used in vectors and arrays.
 % - A subclass of Quaternion
-% - Most operators return a UnitQuaternion object, except for + and - which
-%   return a Quaternion object.
+% - The + and - operators return a Quaternion object not a UnitQuaternion
+% since the result is not, in general, a valid UnitQuaternion.
+% - For display purposes a Quaternion differs from a UnitQuaternion by
+%   using << >> notation rather than < >.
+% - To a large extent polymorphic with the SO3 class.
 %
 % References::
 % - Animating rotation with quaternion curves,
@@ -78,7 +87,7 @@
 % - Robotics, Vision & Control,
 %   P. Corke, Springer 2011.
 %
-% See also Quaternion, SO3, SE3.
+% See also Quaternion, SO3.
 
 % Copyright (C) 1993-2016, by Peter I. Corke
 %
@@ -114,7 +123,7 @@ classdef UnitQuaternion < Quaternion
     methods
 
         function uq = UnitQuaternion(s, v)
-            %UnitQuaternion.Quaternion Constructor for quaternion objects
+            %UnitQuaternion.Quaternion Create a unit quaternion object
             %
             % Construct a UnitQuaternion from various other orientation representations.
             %
@@ -141,7 +150,9 @@ classdef UnitQuaternion < Quaternion
             % Notes::
             % - Only the R and T forms are vectorised.
             %
-            % See also UnitQuaternion.eul, UnitQuaternion.rpy, UnitQuaternion.angvec, UnitQuaternion.omega, UnitQuaternion.Rx.
+            % See also UnitQuaternion.eul, UnitQuaternion.rpy, UnitQuaternion.angvec,
+            % UnitQuaternion.omega, UnitQuaternion.Rx, UnitQuaternion.Ry,
+            % UnitQuaternion.Rz.
             if nargin == 0
                 % null constructor
                 %             uq.v = [0,0,0];
@@ -184,8 +195,6 @@ classdef UnitQuaternion < Quaternion
             
         end
         
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% UNIT QUATERNION FUNCTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
@@ -196,7 +205,7 @@ classdef UnitQuaternion < Quaternion
             % QI = Q.inv() is a UnitQuaternion object representing the inverse of Q.
             %
             % Notes::
-            % - Supports quaternion vector.
+            % - Is vectorized, can operate on a vector of UnitQuaternion objects.
             
             for i=1:length(q)
                 qi(i) = UnitQuaternion(q(i).s, -q(i).v);
@@ -289,16 +298,16 @@ classdef UnitQuaternion < Quaternion
             %
             % See also tr2delta.
             
-            qu = q .* UnitQuaternion.omega( w );
+            qu = obj .* UnitQuaternion.omega( w );
         end
 
         function th = angle(q1, q2)
             %UnitQuaternion.angle Angle between two UnitQuaternions
             %
-            % Q.theta(Q2) is the angle (in radians) between two UnitQuaternions Q and Q2.
+            % Q1.theta(Q2) is the angle (in radians) between two UnitQuaternions Q1 and Q2.
             %
             % Notes::
-            % - Either or both Q and Q2 can be a vector.
+            % - Either or both Q1 and Q2 can be a vector.
             %
             % References::
             % - Metrics for 3D rotations: comparison and analysis
@@ -308,19 +317,17 @@ classdef UnitQuaternion < Quaternion
             % See also Quaternion.angvec.
             
             c = zeros(1, max(length(q1), length(q2)));
+                                q1d = q1.double; q2d = q2.double;
+
             if length(q1) == length(q2)
-                %for i=1:length(q1)
-                    %c(i) = q1(i).inner(q2(i));
-                    q1d = q1.double; q2d = q2.double;
-                    th = atan2( colnorm((q1d-q2d)'), colnorm((q1d+q2d)') );
-                %end
+                    th = 2*atan2( colnorm((q1d-q2d)'), colnorm((q1d+q2d)') );
             elseif length(q1) == 1
                 for i=1:length(q2)
-                    c(i) = q1.inner(q2(i));
+                    th(i) = 2*atan2( colnorm((q1d-q2d(i,:))'), colnorm((q1d+q2d(i,:))') );
                 end
             elseif length(q2) == 1
                 for i=1:length(q1)
-                    c(i) = q1(i).inner(q2);
+                    th(i) = 2*atan2( colnorm((q1d(i,:)-q2d)'), colnorm((q1d(i,:)+q2d)') );
                 end
             else
                 error('RTB:Quaternion:badarg', 'angle arguments must be vectors of same length');
@@ -336,12 +343,18 @@ classdef UnitQuaternion < Quaternion
         function qd = dot(q, omega)
             %UnitQuaternion.dot Quaternion derivative
             %
-            % QD = Q.dot(omega) is the rate of change of a frame with attitude Q and
-            % angular velocity OMEGA (1x3) expressed as a quaternion.
+            % QD = Q.dot(omega) is the rate of change in the world frame of a body
+            % frame with attitude Q and angular velocity OMEGA (1x3) expressed as a
+            % quaternion.
             %
             % Notes::
             % - This is not a group operator, but it is useful to have the result as a
             %   quaternion.
+            %
+            % Reference::
+            %  - Robotics, Vision & Control, 2nd edition, Peter Corke, Chap 3.
+            %
+            % See also UnitQuaternion.dotb.
             
             % UnitQuaternion.pure(omega) * q
             E = q.s*eye(3,3) - skew(q.v);
@@ -353,12 +366,18 @@ classdef UnitQuaternion < Quaternion
         function qd = dotb(q, omega)
             %UnitQuaternion.dot Quaternion derivative
             %
-            % QD = Q.dot(omega) is the rate of change of a frame with attitude Q and
-            % angular velocity OMEGA (1x3) expressed as a quaternion.
+            % QD = Q.dot(omega) is the rate of change in the body frame of a body frame
+            % with attitude Q and angular velocity OMEGA (1x3) expressed as a
+            % quaternion.
             %
             % Notes::
             % - This is not a group operator, but it is useful to have the result as a
             %   quaternion.
+            %
+            % Reference::
+            %  - Robotics, Vision & Control, 2nd edition, Peter Corke, Chap 3.
+            %
+            % See also UnitQuaternion.dot.
             
             % q * UnitQuaternion.pure(omega)
 
@@ -370,14 +389,14 @@ classdef UnitQuaternion < Quaternion
         function [theta_,n_] = toangvec(q, varargin)
             %UnitQuaternion.angvec Convert to angle-vector form
             %
-            % Q.angvec(OPTIONS) prints a compact single line representation of the rotational angle and rotation vector
-            % corresponding to this quaternion.
-            %
             % TH = Q.angvec(OPTIONS) is the rotational angle, about some vector,
             % corresponding to this quaternion.
             %
             % [TH,V] = Q.angvec(OPTIONS) as above but also returns a unit vector
             % parallel to the rotation axis.
+            %
+            % Q.angvec(OPTIONS) prints a compact single line representation of the
+            % rotational angle and rotation vector corresponding to this quaternion.
             %
             % Options::
             %  'deg'     Display/return angle in degrees rather than radians
@@ -432,10 +451,12 @@ classdef UnitQuaternion < Quaternion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 
         function qp = mtimes(q1, q2)
-            %UnitQuaternion.mtimes Multiply a quaternion object
+            %UnitQuaternion.mtimes Multiply unit quaternions
             %
-            % Q1*Q2   is a quaternion formed by the Hamilton product of two quaternions.
-            % Q*V     is a vector formed by rotating the vector V by the quaternion Q.
+            % Q1*Q2   is a UnitQuaternion object formed by Hamilton product 
+            % of Q1 and Q2 where Q1 and Q2 are both UnitQuaternion objects.
+            %
+            % Q*V     is a vector (3x1) formed by rotating the vector V (3x1)by the UnitQuaternion Q.
             %
             % Notes::
             % - Overloaded operator '*'
@@ -445,8 +466,12 @@ classdef UnitQuaternion < Quaternion
             %   element.
             % - For case Q1*Q2 if Q2 scalar and Q1 a vector, each element multiplies
             %   scalar.
-            % - If the two multiplicands are UnitQuaternions, the product will be a
-            %   unit quaternion.
+            % - For case Q*V where Q (1xN) and V (3xN), result (3xN) is elementwise
+            %   product of UnitQuaternion and columns of V.
+            % - For case Q*V where Q (1x1) and V (3xN), result (3xN) is the product
+            %   of the UnitQuaternion by each column of V.
+            % - For case Q*V where Q (1xN) and V (3x1), result (3xN) is the product of each element
+            %   of Q by the vector V.
             %
             % See also Quaternion.mrdivide, Quaternion.mpower, Quaternion.plus, Quaternion.minus.
             
@@ -509,7 +534,8 @@ classdef UnitQuaternion < Quaternion
         function qp = times(q1, q2)
             %UnitQuaternion.times Multiply a quaternion object and unitize
             %
-            % Q1.*Q2   is a guaranteed unit quaternion formed by the Hamilton product of two quaternions.
+            % Q1.*Q2   is a UnitQuaternion object formed by Hamilton product of Q1 and
+            % Q2. The result is explicitly unitized.
             %
             % Notes::
             % - Overloaded operator '.*'
@@ -518,8 +544,7 @@ classdef UnitQuaternion < Quaternion
             % - For case Q1.*Q2 if Q1 scalar and Q2 a vector, scalar multiplies each
             %   element.
             % - For case Q1.*Q2 if Q2 scalar and Q1 a vector, each element multiplies
-            %   scalar.        % - If the two multiplicands are UnitQuaternions, the product will be a
-            %   unit quaternion since it is explicitly enforced.
+            %   scalar.
             %
             % See also Quaternion.mtimes.
             if isa(q2, 'UnitQuaternion')
@@ -532,9 +557,10 @@ classdef UnitQuaternion < Quaternion
         
         
         function qq = mrdivide(q1, q2)
-            %UnitQuaternion.mrdivide Quaternion quotient.
+            %UnitQuaternion.mrdivide Divide unit quaternions
             %
-            % Q1/Q2   is a quaternion formed by Hamilton product of Q1 and inv(Q2).
+            % Q1/Q2   is a UnitQuaternion object formed by Hamilton product of Q1 and
+            % inv(Q2) where Q1 and Q2 are both UnitQuaternion objects.
             %
             % Notes::
             % - Overloaded operator '/'
@@ -560,9 +586,11 @@ classdef UnitQuaternion < Quaternion
         end
 
         function qp = rdivide(q1, q2)
-            %UnitQuaternion.rdivide Quaternion quotient and unitize
+            %UnitQuaternion.rdivide Divide unit quaternions and unitize
             %
-            % Q1./Q2   is a quaternion formed by the Hamilton product of two quaternions.
+            % Q1./Q2   is a UnitQuaternion object formed by Hamilton product of Q1 and
+            % inv(Q2) where Q1 and Q2 are both UnitQuaternion objects.  The result is
+            % explicitly unitized.
             %
             % Notes::
             % - Overloaded operator '.*'
@@ -572,8 +600,6 @@ classdef UnitQuaternion < Quaternion
             %   element.
             % - For case Q1./Q2 if Q2 scalar and Q1 a vector, each element divided by
             %   scalar.
-            % - The res will be a
-            %   unit quaternion since it is explicitly enforced.
             %
             % See also Quaternion.mtimes.
             if isa(q2, 'UnitQuaternion')
@@ -592,7 +618,14 @@ classdef UnitQuaternion < Quaternion
             %
             % Q.plot(options) plots the quaternion as an oriented coordinate frame.
             %
-            % h = Q.plot(options) as above but returns a handle which can be used for animation.
+            % H = Q.plot(options) as above but returns a handle which can be used for animation.
+            %
+            % Animation::
+            %
+            % Firstly, create a plot and keep the the handle as per above.
+            %
+            % Q.plot('handle', H) updates the coordinate frame described by the handle H to
+            % the orientation of Q.
             %
             % Options::
             % Options are passed to trplot and include:
@@ -684,8 +717,8 @@ classdef UnitQuaternion < Quaternion
         function t = T(q)
             %UnitQuaternion.T Convert to homogeneous transformation matrix
             %
-            % T = Q.T() is the equivalent SE(3) homogeneous transformation matrix
-            % (4x4).    If Q represents a sequence (Nx1) then T is 4x4xN.
+            % T = Q.T() is the equivalent SE(3) homogeneous transformation 
+            % matrix (4x4).  If Q is a sequence (Nx1) then T is 4x4xN.
             %
             % Notes:
             % - Has a zero translational component.
@@ -702,7 +735,7 @@ classdef UnitQuaternion < Quaternion
         function obj = SO3(q)
             %UnitQuaternion.SO3 Convert to SO3 object
             %
-            % X = Q.SO3() is the equivalent SO3 object.
+            % X = Q.SO3() is an SO3 object with equivalent rotation.
             %
             % Notes::
             % - If Q is a vector then an equivalent vector of SO3 objects is created.
@@ -718,7 +751,7 @@ classdef UnitQuaternion < Quaternion
         function obj = SE3(q)
             %UnitQuaternion.SE3 Convert to SE3 object
             %
-            % X = Q.SE3() is the equivalent SE3 object.
+            % X = Q.SE3() is an SE3 object with equivalent rotation and zero translation.
             %
             % Notes::
             % - The translational part of the SE3 object is zero
@@ -733,7 +766,7 @@ classdef UnitQuaternion < Quaternion
         end
         
         function rpy = torpy(q, varargin)
-            %UnitQuaternion.torpy Convert UnitQuaternion to roll-pitch-yaw angle form.
+            %UnitQuaternion.torpy Convert to roll-pitch-yaw angle form.
             %
             % RPY = Q.torpy(OPTIONS) are the roll-pitch-yaw angles (1x3) corresponding to
             % the UnitQuaternion.  These correspond to rotations about the Z, Y, X axes
@@ -742,6 +775,7 @@ classdef UnitQuaternion < Quaternion
             % Options::
             %  'deg'   Compute angles in degrees (radians default)
             %  'xyz'   Return solution for sequential rotations about X, Y, Z axes
+            %  'yxz'   Return solution for sequential rotations about Y, X, Z axes
             %
             % Notes::
             % - There is a singularity for the case where P=pi/2 in which case R is arbitrarily
@@ -755,19 +789,18 @@ classdef UnitQuaternion < Quaternion
         end
         
         function eul = toeul(q, varargin)
-            %UnitQuaternion.torpy Convert UnitQuaternion to roll-pitch-yaw angle form.
+            %UnitQuaternion.torpy Convert to roll-pitch-yaw angle form.
             %
-            % RPY = Q.torpy(OPTIONS) are the roll-pitch-yaw angles (1x3) corresponding to
-            % the UnitQuaternion.  These correspond to rotations about the Z, Y, X axes
-            % respectively. RPY = [ROLL, PITCH, YAW].
+            % EUL = Q.toeul(OPTIONS) are the Euler angles (1x3) corresponding to
+            % the UnitQuaternion.  These correspond to rotations about the Z, Y, Z axes
+            % respectively. EUL = [PHI,THETA,PSI].
             % 
             % Options::
             %  'deg'   Compute angles in degrees (radians default)
-            %  'xyz'   Return solution for sequential rotations about X, Y, Z axes
             %
             % Notes::
-            % - There is a singularity for the case where P=pi/2 in which case R is arbitrarily
-            %   set to zero and Y is the sum (R+Y).
+            % - There is a singularity for the case where THETA=0 in which case PHI is arbitrarily
+            %   set to zero and PSI is the sum (PHI+PSI).
             %
             % See also UnitQuaternion.toeul, tr2rpy.
             eul = zeros(length(q), 3);
@@ -777,7 +810,7 @@ classdef UnitQuaternion < Quaternion
         end
         
         function qv = tovec(q)
-            %UnitQuaternion.tovec Convert UnitQuaternion to unique 3-vector.
+            %UnitQuaternion.tovec Convert to unique 3-vector
             %
             % V = Q.tovec() is a vector (1x3) that uniquely represents the UnitQuaternion.  The scalar
             % component can be recovered by 1 - norm(V) and will always be positive.
@@ -798,15 +831,18 @@ classdef UnitQuaternion < Quaternion
     end % methods
     
     methods (Access=private)
+        
+        %TOROT   Convert UnitQuaternion to homogeneous transform
+        %
+        %   T = q2tr(Q)
+        %
+        %   Return the rotational homogeneous transform corresponding to the unit
+        %   quaternion Q.
+        %
+        %   See also: TR2Q
+            
         function R = torot(q)
-            %TOROT   Convert UnitQuaternion to homogeneous transform
-            %
-            %   T = q2tr(Q)
-            %
-            %   Return the rotational homogeneous transform corresponding to the unit
-            %   quaternion Q.
-            %
-            %   See also: TR2Q
+
             
             q = double(q);
             s = q(1);
@@ -845,7 +881,7 @@ classdef UnitQuaternion < Quaternion
         end
 
         function uq = Rx(varargin)
-            %UnitQuaternion.Rx UnitQuaternion constructor for rotation about x-axis.
+            %UnitQuaternion.Rx Construct from rotation about x-axis
             %
             % Q = UnitQuaternion.Rx(ANGLE) is a UnitQuaternion representing rotation of ANGLE about the x-axis.
             %
@@ -856,7 +892,7 @@ classdef UnitQuaternion < Quaternion
         end
         
         function uq = Ry(varargin)
-            %UnitQuaternion.Ry UnitQuaternion constructor for rotation about y-axis.
+            %UnitQuaternion.Ry Construct from rotation about y-axis
             %
             % Q = UnitQuaternion.Ry(ANGLE) is a UnitQuaternion representing rotation of ANGLE about the y-axis.
             %
@@ -867,7 +903,7 @@ classdef UnitQuaternion < Quaternion
         end
         
         function uq = Rz(varargin)
-            %UnitQuaternion.Rz UnitQuaternion constructor for rotation about z-axis.
+            %UnitQuaternion.Rz Construct from rotation about z-axis
             %
             % Q = UnitQuaternion.Rz(ANGLE) is a UnitQuaternion representing rotation of ANGLE about the z-axis.
             %
@@ -878,7 +914,7 @@ classdef UnitQuaternion < Quaternion
         end
         
         function uq = omega(w)
-            %UnitQuaternion.omega UnitQuaternion constructor for rotation in angle-vector form.
+            %UnitQuaternion.omega Construct from angle times rotation vector
             %
             % Q = UnitQuaternion.omega(W) is a UnitQuaternion representing rotation of |W| about the vector W (3x1).
             %
@@ -892,9 +928,9 @@ classdef UnitQuaternion < Quaternion
         end
         
         function uq = angvec(theta, v)
-            %UnitQuaternion.angvec UnitQuaternion constructor for rotation in angle-vector form.
+            %UnitQuaternion.angvec Construct from angle and rotation vector
             %
-            % Q = UnitQuaternion.omega(TH, V) is a UnitQuaternion representing rotation of TH about the vector V (3x1).
+            % Q = UnitQuaternion.angvec(TH, V) is a UnitQuaternion representing rotation of TH about the vector V (3x1).
             %
             % See also UnitQuaternion.omega.              
             assert(isvec(v), 'RTB:UnitQuaternion:bad arg', 'must be a 3-vector');
@@ -905,19 +941,23 @@ classdef UnitQuaternion < Quaternion
         end
         
         function uq = rpy(varargin)
-            %UnitQuaternion.rpy UnitQuaternion constructor for rotation in roll-pitch-yaw angle form.
+            %UnitQuaternion.rpy Construct from roll-pitch-yaw angles
             %
             % Q = UnitQuaternion.rpy(ROLL, PITCH, YAW, OPTIONS) is a UnitQuaternion
             % representing rotation equivalent to the specified roll, pitch, yaw angles
             % angles. These correspond to rotations about the Z, Y, X axes
             % respectively.
             %
-            % Q = UnitQuaternion.rpy(RPY, OPTIONS) as above but the angles angles are
-            % taken from consecutive columns of the passed matrix RPY = [ROLL, PITCH, YAW].
+            % Q = UnitQuaternion.rpy(RPY, OPTIONS) as above but the angles are given by
+            % the passed vector RPY = [ROLL, PITCH, YAW].  If RPY is a matrix (Nx3)
+            % then Q is a vector (1xN) of UnitQuaternion objects where the index
+            % corresponds to rows of RPY which are assumed to be [ROLL,PITCH,YAW].
             % 
             % Options::
             % 'deg'   Compute angles in degrees (radians default)
             % 'xyz'   Return solution for sequential rotations about X, Y, Z axes.
+            % 'yxz'   Return solution for sequential rotations about Y, X, Z axes.
+
             %
             % Notes::
             % - Is vectorised, see rpy2r for details.
@@ -932,15 +972,17 @@ classdef UnitQuaternion < Quaternion
         end
         
         function uq = eul(varargin)
-            %UnitQuaternion.eul UnitQuaternion constructor for rotation in Euler angle form.
+            %UnitQuaternion.eul Construct from Euler angles
             %
             % Q = UnitQuaternion.eul(PHI, THETA, PSI, OPTIONS) is a UnitQuaternion
-            % representing rotation equivalent to the specified roll, pitch, yaw angles
+            % representing rotation equivalent to the specified Euler angles
             % angles. These correspond to rotations about the Z, Y, Z axes
             % respectively.
             %
-            % Q = UnitQuaternion.eul(EUL, OPTIONS) as above but the angles angles are
-            % taken from consecutive columns of the passed matrix RPY = [ROLL, PITCH, YAW].
+            % Q = UnitQuaternion.eul(EUL, OPTIONS) as above but the Euler angles are
+            % taken from the vector (1x3) EUL = [PHI THETA PSI]. If EUL is a matrix
+            % (Nx3) then Q is a vector (1xN) of UnitQuaternion objects where the index
+            % corresponds to rows of EUL which are assumed to be [PHI,THETA,PSI].
             % 
             % Options::
             % 'deg'   Compute angles in degrees (radians default)
@@ -957,15 +999,15 @@ classdef UnitQuaternion < Quaternion
         end
         
         function uq = vec(qv)
-            %UnitQuaternion.vec Convert 3-vector to UnitQuaternion.
+            %UnitQuaternion.vec Construct from 3-vector
             %
             % Q = UnitQuaternion.vec(V) is a UnitQuaternion constructed from just its vector
             % component (1x3) and the scalar part is 1 - norm(V) and will always be positive.
             % 
             % Notes::
-            % - This vector representation of a UnitQuaternion is used for bundle adjustment.
+            % - This unique and concise vector representation of a UnitQuaternion is used for bundle adjustment.
             %
-            % See also UnitQuaternion.tovec.
+            % See also UnitQuaternion.tovec, UnitVector.qvmul.
             s = sqrt(1 - sum(qv.^2));
             uq = UnitQuaternion(s, qv);
         end
@@ -1052,13 +1094,10 @@ classdef UnitQuaternion < Quaternion
             % QV = UnitQuaternion.QVMUL(QV1, QV2) multiplies two unit-quaternions
             % defined only by their vector components QV1 and QV2 (3x1).  The result is
             % similarly the vector component of the product (3x1).
-            
             %
-            %    OUT1 = QVMUL(QX,QY,QZ,QX2,QY2,QZ2)
+            % See also UnitQuaternion.tovec, UnitQuaternion.vec.
             
-            %    This function was generated by the Symbolic Math Toolbox version 6.3.
-            %    04-Nov-2015 15:51:32
-            
+            % generated symbolically then hand simplified.
 
 %             %
 %             %          qp = qvmul(qax, qay, qaz, qbx, qby, qbz)
@@ -1095,7 +1134,6 @@ classdef UnitQuaternion < Quaternion
 %             t6 = sqrt(t5);
             t6 = sqrt(1 - sum(qa.^2));
             
-
 %             t7 = qb(1).^2;
 %             t8 = qb(2).^2;
 %             t9 = qb(3).^2;

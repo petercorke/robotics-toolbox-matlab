@@ -6,9 +6,14 @@
 % A quaternion of unit length can be used to represent 3D orientation and
 % is implemented by the subclass UnitQuaternion.
 %
-% Methods::
-%  Quaternion        constructor
-%  Quaternion.pure   constructor, pure quaternion
+% Constructors::
+%  Quaternion        general constructor
+%  Quaternion.pure   pure quaternion
+%
+% Display methods::
+%  display           print in human readable form
+%
+% Operation methods::
 %  inv               inverse
 %  conj              conjugate
 %  norm              norm, or length
@@ -16,8 +21,9 @@
 %  inner             inner product
 %
 % Conversion methods::
-%  double    quaternion elements as 4-vector
-%  matrix    quaternion as a 4x4 matrix
+%  char              convert to string
+%  double            quaternion elements as 4-vector
+%  matrix            quaternion as a 4x4 matrix
 %
 % Overloaded operators::
 %  q*q2      quaternion (Hamilton) product
@@ -85,7 +91,7 @@ classdef Quaternion
     methods
         
         function q = Quaternion(s, v)
-            %Quaternion.Quaternion Constructor for quaternion objects
+            %Quaternion.Quaternion Construct a quaternion object
             %
             % Q = Quaternion is a zero quaternion
             %
@@ -95,7 +101,8 @@ classdef Quaternion
             % part V (1x3)
             %
             % Notes::
-            % - The constructor does not handle the vector case.
+            % - The constructor is not vectorized, it cannot create a vector of
+            %   Quaternions.
             
             if nargin == 0
                 q.v = [0,0,0];
@@ -117,6 +124,9 @@ classdef Quaternion
         end
 
         function qo = set.s(q, s)
+            %Quaternion.set.s Set scalar component
+            %
+            % Q.s = S sets the scalar part of the Quaternion object to S.
             if ~isa(s, 'sym') && ( ~isreal(s) || ~isscalar(s) )
                 error('RTB:Quaternion:badarg', 's must be real scalar');
             end
@@ -126,6 +136,9 @@ classdef Quaternion
         end
         
         function qo = set.v(q, v)
+            %Quaternion.set.v Set vector component
+            %
+            % Q.v = V sets the vector part of the Quaternion object to V (1x3).
             if ~isvec(v,3)
                 error('RTB:Quaternion:badarg', 'v must be a real 3-vector');
             end
@@ -155,6 +168,8 @@ classdef Quaternion
             %   semicolon.
             % - The vector part is displayed with double brackets << 1, 0, 0 >> to
             %   distinguish it from a UnitQuaternion which displays as < 1, 0, 0 >
+            % - If Q is a vector of Quaternion objects the elements are displayed on
+            %   consecutive lines.
             %
             % See also Quaternion.char.
             
@@ -183,7 +198,9 @@ classdef Quaternion
             % QI = Q.conj() is a quaternion object representing the conjugate of Q.
             %
             % Notes::
-            % - Supports quaternion vector.
+            % - Conjugatation changes the sign of the vector component.
+            %
+            % See also Quaternion.inv.
             c = q.new(q.s, -q.v);
         end
         
@@ -193,7 +210,9 @@ classdef Quaternion
             % QI = Q.inv() is a quaternion object representing the inverse of Q.
             %
             % Notes::
-            % - Supports quaternion vector.
+            % - Is vectorized.
+            %
+            % See also Quaternion.conj.
             
             for i=1:length(q)
                 n2 = sum( q(i).double.^2 );
@@ -207,9 +226,9 @@ classdef Quaternion
             % QU = Q.unit() is a UnitQuaternion object representing the same orientation as Q.
             %
             % Notes::
-            % - Supports quaternion vector.
+            % - Is vectorized.
             %
-            % See also Quaternion.norm.
+            % See also Quaternion.norm, UnitQuaternion.
             
             for i=1:length(q)
                 qu(i) = UnitQuaternion( q(i).double / norm(q(i)) );
@@ -235,8 +254,9 @@ classdef Quaternion
             %
             % M = Q.matrix() is a matrix (4x4) representation of the Quaternion Q.
             %
-            % Quaternion (Hamilton) multiplication can be implemented as a matrix-vector product,
-            % where the column-vector is the elements of a second quaternion:
+            % Quaternion, or Hamilton, multiplication can be implemented as a
+            % matrix-vector product, where the column-vector is the elements of a
+            % second quaternion:
             %
             %          matrix(Q1) * double(Q2)'
             %
@@ -276,6 +296,7 @@ classdef Quaternion
             %
             % Q1*Q2   is a quaternion formed by the Hamilton product of two quaternions.
             % Q*S     is the element-wise multiplication of quaternion elements by the scalar S.
+            % S*Q     is the element-wise multiplication of quaternion elements by the scalar S.
             %
             % Notes::
             % - Overloaded operator '*'
@@ -415,7 +436,9 @@ classdef Quaternion
                 %
                 
                 assert(isscalar(q2), 'RTB:Quaternion:badarg', 'quaternion-double quotient: must be a scalar');
-                qq = Quaternion( double(q1)/q2);
+                for i=1:length(q1)
+                    qq(i) = Quaternion( double(q1(i))/q2);
+                end
             
             else
                 error('RTB:Quaternion:badarg', 'quaternion quotient: incorrect right hand operand');
@@ -426,7 +449,7 @@ classdef Quaternion
         function qp = mpower(q, p)
             %Quaternion.mpower Raise quaternion to integer power
             %
-            % Q^N is the quaternion Q raised to the integer power N.
+            % Q^N is the Quaternion Q raised to the integer power N.
             %
             % Notes::
             % - Overloaded operator '^'
@@ -434,7 +457,7 @@ classdef Quaternion
             % - If the argument is a unit-quaternion, the result will be a
             %   unit quaternion.
             %
-            % See also Quaternion.mrdivide, Quaternion.mpower, Quaternion.plus, Quaternion.minus.
+            % See also Quaternion.mtimes.
             
             % check that exponent is an integer
             if (p - floor(p)) ~= 0
@@ -462,8 +485,10 @@ classdef Quaternion
         function qp = plus(q1, q2)
             %PLUS Add quaternions
             %
-            % Q1+Q2 is the element-wise sum of quaternion elements.
-            % Q1+V  is the element-wise sum of Q1 and vector V (1x4)
+            % Q1+Q2 is a Quaternion formed from the element-wise sum of quaternion elements.
+            %
+            % Q1+V  is a Quaternion formed from the element-wise sum of Q1 and the
+            % vector V (1x4).
             %
             % Notes::
             % - Overloaded operator '+'
@@ -485,7 +510,10 @@ classdef Quaternion
         function qp = minus(q1, q2)
             %Quaternion.minus Subtract quaternions
             %
-            % Q1-Q2 is the element-wise difference of quaternion elements.
+            % Q1-Q2 is a Quaternion formed from the element-wise difference of quaternion elements.
+            %
+            % Q1-V  is a Quaternion formed from the element-wise difference of Q1 and the
+            % vector V (1x4).
             %
             % Notes::
             % - Overloaded operator '-'
@@ -497,6 +525,11 @@ classdef Quaternion
             if isa(q2, 'Quaternion')
                 
                 qp = Quaternion(double(q1) - double(q2));
+            elseif isvec(q2, 4)
+                qp = Quaternion(q1);
+                q2 = q2(:)';
+                qp.s = qp.s - q2(1);
+                qp.v = qp.v - q2(2:4);
             end
         end
         
@@ -525,8 +558,8 @@ classdef Quaternion
             %
             % Notes::
             % - Overloaded operator '=='.
-            % - Note that for unit Quaternions Q and -Q are the equivalent
-            %   rotation, so non-equality does not mean rotations are not
+            % - This method is invoked for unit Quaternions where Q and -Q represent
+            %   the equivalent rotation, so non-equality does not mean rotations are not
             %   equivalent.
             % - If Q1 is a vector of quaternions, each element is compared to
             %   Q2 and the result is a logical array of the same length as Q1.
@@ -561,7 +594,7 @@ classdef Quaternion
         function e = ne(q1, q2)
             %NE Test quaternion inequality
             %
-            % Q1~=Q2 is true if the quaternions Q1 and Q2 are not equal.
+            % Q1 ~= Q2 is true if the quaternions Q1 and Q2 are not equal.
             %
             % Notes::
             % - Overloaded operator '~='
@@ -623,10 +656,9 @@ classdef Quaternion
         function v = double(q)
             %Quaternion.double Convert a quaternion to a 4-element vector
             %
-            % V = Q.double() is a 4-vector comprising the quaternion.
-            %
-            % Notes::
-            % - Supports quaternion vector, result is 6xN matrix.
+            % V = Q.double() is a row vector (1x4) comprising the quaternion elements,
+            % scalar then vector.  If Q is a vector (1xN) of Quaternion objects then V is a
+            % matrix (Nx4) with rows corresponding to the Quaternion elements.
             %
             % elements [s vx vy vz].
             

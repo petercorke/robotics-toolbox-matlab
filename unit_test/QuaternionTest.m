@@ -40,8 +40,14 @@ end
 
 function primitive_convert_test(tc)
     % char
+    u = Quaternion();
     
-    s = char( Quaternion() );
+    s = char( u );
+    s = char( [u u u] );
+    
+    % display
+    u
+    [u u]  
     
     %% s,v
     verifyEqual(tc, Quaternion([1 0 0 0]).s, 1);
@@ -114,7 +120,12 @@ function multiply_test(tc)
     verifyEqual(tc, [q1 q2 q3] * 5, [5*q1 5*q2 5*q3], 'AbsTol', 1e-10);
     
     %% matrix form of multiplication
-    verifyEqual(tc, q1.mat44 * q2.double', double(q1*q2)' );
+    verifyEqual(tc, q1.matrix * q2.double', double(q1*q2)' );
+    
+    %% quat-scalar product
+    verifyEqual(tc, double(q1*2), double(q1)*2);
+    verifyEqual(tc, double([q1 q2]*2), double([q1 q2])*2);
+
 
 
 end
@@ -128,7 +139,8 @@ function divide_test(tc)
     
     u = Quaternion([1 0 0 0]);
     
-        % scalar / scalar
+    %% quat-quat quotient
+    % scalar / scalar
 
     verifyEqual(tc, q1/u, q1, 'AbsTol', 1e-10);
     verifyEqual(tc, q2/u, q2, 'AbsTol', 1e-10);
@@ -140,7 +152,12 @@ function divide_test(tc)
     verifyEqual(tc, [q1 q2 q3] / [q2 q3 q1], [q1/q2 q2/q3 q3/q1]);
     
     % vector / scalar
-    verifyEqual(tc, [q1 q2 q3] / q2, [q1/q2 q2/q2 q3/q2]);    
+    verifyEqual(tc, [q1 q2 q3] / q2, [q1/q2 q2/q2 q3/q2]); 
+    
+    %% quat-scalar quotient
+    verifyEqual(tc, double(q1/2), double(q1)/2);
+    verifyEqual(tc, double([q1 q2]/2), double([q1 q2])/2);
+
 end
 
     
@@ -179,23 +196,31 @@ end
 function basic_multiply_test(tc)
     % test run multiplication tests on quaternions
     q = Quaternion([1 0 0 0]) * Quaternion([1 0 0 0]);
-    verifyEqual(tc, q.double, [1 0 0 0 ],'absTol',1e-4);
+    verifyEqual(tc, q.double, [1 0 0 0 ],'absTol',1e-10);
     
     q = Quaternion([1 0 0 0]) * Quaternion([1 2 3 4]);
-    verifyEqual(tc, q.double, [1 2 3 4],'absTol',1e-4);
+    verifyEqual(tc, q.double, [1 2 3 4],'absTol',1e-10);
     
     q = Quaternion([1 2 3 4]) * Quaternion([1 2 3 4]);
-    verifyEqual(tc, q.double, [-28 4 6 8],'absTol',1e-4);    
+    verifyEqual(tc, q.double, [-28 4 6 8],'absTol',1e-10);    
 end
     
 function add_sub_test(tc)
     v1 = [1 2 3 4]; v2 = [2 2 4 7];
+    
+    %% plus
     q = Quaternion(v1) + Quaternion(v2);
+    q2 = Quaternion(v1) + v2;
     
-    verifyEqual(tc, q.double, v1+v2, 'absTol',1e-4);
+    verifyEqual(tc, q.double, v1+v2, 'absTol',1e-10);
+    verifyEqual(tc, q2.double, v1+v2, 'absTol',1e-10);
+        
+    %% minus
     q = Quaternion(v1) - Quaternion(v2);
-    
-    verifyEqual(tc, q.double, v1-v2, 'absTol',1e-4);
+    q2 = Quaternion(v1) - v2;
+    verifyEqual(tc, q.double, v1-v2, 'absTol',1e-10);
+    verifyEqual(tc, q2.double, v1-v2, 'absTol',1e-10);
+
 end
 
     
