@@ -400,14 +400,13 @@ classdef SE3 < SO3
         function Ti = interp(obj1, obj2, s)
             %SE3.interp Interpolate SE3 poses
             %
-            % T = TRINTERP(T0, T1, S) is a homogeneous transform (4x4) interpolated
-            % between T0 when S=0 and T1 when S=1.  T0 and T1 are both homogeneous
-            % transforms (4x4).  Rotation is interpolated using quaternion spherical
-            % linear interpolation (slerp).  If S (Nx1) then T (4x4xN) is a sequence of
-            % homogeneous transforms corresponding to the interpolation values in S.
+            % P1.interp(P2, s) is an SE3 object representing an interpolation
+            % between poses represented by SE3 objects P1 and P2.  s varies from 0
+            % (P1) to 1 (P2).  If s is a vector (1xN) then the result will be a vector
+            % of SO3 objects.
             %
-            % T = TRINTERP(T1, S) as above but interpolated between the identity matrix
-            % when S=0 to T1 when S=1.
+            % P1.interp(P2,N) as above but returns a vector (1xN) of SE3 objects
+            % interpolated between P1 and P2 in N steps.
             %
             % Notes::
             % - The rotational interpolation (slerp) can be interpretted
@@ -415,8 +414,12 @@ classdef SE3 < SO3
             % - It is an error if S is outside the interval 0 to 1.
             %
             % See also TRINTERP, UnitQuaternion.
-            assert(all(s>=0 & s<=1), 'RTB:SE3:interp:badarg', 's must be in the interval [0,1]');
-            Ti = SE3( trinterp(obj1, obj2, s) );
+            
+            try
+                Ti = SE3( trinterp(obj1, obj2, s) );
+            catch
+                error('RTB:SE3:interp:badarg', 'error in trinterp');
+            end
         end
         
         function traj = ctraj(T0, T1, t)

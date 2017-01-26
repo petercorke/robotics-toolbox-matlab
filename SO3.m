@@ -338,11 +338,20 @@ classdef SO3 < RTBPose
             % (P1) to 1 (P2).  If s is a vector (1xN) then the result will be a vector
             % of SO3 objects.
             %
+            % P1.interp(P2,N) as above but returns a vector (1xN) of SO3 objects
+            % interpolated between P1 and P2 in N steps.
+            %
             % Notes::
             % - It is an error if S is outside the interval 0 to 1.
             %
             % See also UnitQuaternion.
-            assert(all(s>=0 & s<=1), 'RTB:SO3:interp:badarg', 's must be in the interval [0,1]');
+            
+            if (length(s) == 1) && (floor(s) == s) && (s > 1)
+                % is an integer, interpolate a sequence this long
+                s = linspace(0, 1, s);
+            else
+                assert(all(s>=0 & s<=1), 'RTB:SO3:interp:badarg', 's must be in the interval [0,1]');
+            end
             R = SO3( obj1.UnitQuaternion.interp(obj2.UnitQuaternion, s) );
         end
 
