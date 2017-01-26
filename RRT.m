@@ -13,20 +13,12 @@
 % char         Convert to string
 %
 % Example::
-%
 %        goal = [0,0,0];
 %        start = [0,2,0];
-%        veh = Vehicle([], 'stlim', 1.2);
-%        rrt = RRT([], veh, 'goal', goal, 'range', 5);
+%        veh = Bicycle('steermax', 1.2);
+%        rrt = RRT(veh, 'goal', goal, 'range', 5);
 %        rrt.plan()             % create navigation tree
-%        rrt.path(start, goal)  % animate path from this start location
-%
-%  Robotics, Vision & Control compatability mode:
-%        goal = [0,0,0];
-%        start = [0,2,0];
-%        rrt = RRT();           % create navigation object
-%        rrt.plan()             % create navigation tree
-%        rrt.path(start, goal)  % animate path from this start location
+%        rrt.query(start, goal)  % animate path from this start location
 %
 % References::
 % - Randomized kinodynamic planning,
@@ -223,9 +215,7 @@ classdef RRT < Navigation
             if ~isvec(rrt.root, 3)
                 error('root must be 3-vector');
             end
-            if rrt.occupied(rrt.root)
-                error('root node cell is occupied')
-            end
+            assert( ~rrt.isoccupied(rrt.root), 'root node cell is occupied')
 
             % add the goal point as the first node
             vroot = rrt.graph.add_node(rrt.root);
@@ -246,8 +236,6 @@ classdef RRT < Navigation
             npoints = 0;
             while npoints < rrt.npoints       % build the tree
 
-
-                
                 % Step 3
                 % find random state x,y
 
@@ -263,7 +251,7 @@ classdef RRT < Navigation
                         
                         % test if lies in the obstacle map
                         try
-                            if ~rrt.occupied(xy)
+                            if ~rrt.isoccupied(xy)
                                 break;
                             end
                         catch
@@ -336,10 +324,10 @@ classdef RRT < Navigation
         end
 
         function p_ = query(rrt, xstart, xgoal)
-        %RRT.path Find a path between two points
+        %RRT.query Find a path between two points
         %
-        % X = R.path(START, GOAL) finds a path (Nx3) from state START (1x3) 
-        % to the GOAL (1x3).
+        % X = R.path(START, GOAL) finds a path (Nx3) from pose START (1x3) 
+        % to pose GOAL (1x3).  The pose is expressed as [X,Y,THETA]. 
         %
         % R.path(START, GOAL) as above but plots the path in 3D.  The nodes
         % are shown as circles and the line segments are blue for forward motion
@@ -352,6 +340,7 @@ classdef RRT < Navigation
         %
         % See also RRT.plot.
 
+            assert(rrt.graph.n > 0, 'RTB:RRT: there is no plan');
             rrt.checkquery(xstart, xgoal);
             
             g = rrt.graph;
@@ -359,10 +348,10 @@ classdef RRT < Navigation
             vgoal = g.closest(xgoal);
 
             % find path through the graph using A* search
-            [path,cost] = g.Astar(vstart, vgoal)
+            [path,cost] = g.Astar(vstart, vgoal);
             
             fprintf('A* path cost %g\n', cost);
-            
+          
             % concatenate the vehicle motion segments
             cpath = [];
             for i = 1:length(path)
@@ -384,8 +373,8 @@ classdef RRT < Navigation
                 plot2(g.coord(path)', 'o');     % plot the node coordinates
                 
                 for i = 1:length(path)
-                    p = path(i)
-                    b = g.data(p);            % get path data for segment
+                    p = path(i);
+                    b = g.vdata(p);            % get path data for segment
                     
                     % draw segment with direction dependent color
                     if ~isempty(b)
@@ -527,7 +516,7 @@ hold on
             try
                 % test that all points along the path do not lie within an obstacle
                 for pp=xy'
-                    if rrt.occupied(pp) > 0
+                    if rrt.isoccupied(pp) > 0
                         c = false;
                         return;
                     end
