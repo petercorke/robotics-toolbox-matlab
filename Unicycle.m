@@ -1,9 +1,9 @@
 %Unicycle vehicle class
 %
-% This class models the kinematics of a differential steer vehicle (unicycle
-% model) on a plane that moves in SE(2).  For given steering and velocity 
-% inputs it updates the true vehicle state and returns noise-corrupted 
-% odometry readings.
+% This concrete class models the kinematics of a differential steer vehicle
+% (unicycle model) on a plane.  For given steering and velocity inputs it
+% updates the true vehicle state and returns noise-corrupted odometry
+% readings.
 %
 % Methods::
 %   init         initialize vehicle state
@@ -40,12 +40,14 @@
 %
 % Examples::
 %
-% Create a vehicle with odometry covariance
-%       v = Unicycle( diag([0.1 0.01].^2 );
+% Odometry covariance (per timstep) is
+%       V = diag([0.02, 0.5*pi/180].^2);
+% Create a vehicle with this noisy odometry
+%       v = Bicycle( 'covar', diag([0.1 0.01].^2 );
 % and display its initial state
 %       v 
 % now apply a speed (0.2m/s) and steer angle (0.1rad) for 1 time step
-%       odo = v.update([0.2, 0.1])
+%       odo = v.step(0.2, 0.1)
 % where odo is the noisy odometry estimate, and the new true vehicle state
 %       v
 %
@@ -93,23 +95,23 @@ classdef Unicycle < Vehicle
 
     properties
         % state
-        L           % length of vehicle
+        W           % wheel separation
         
         accelmax
         vprev
         steerprev
-
     end
 
     methods
 
         function veh = Unicycle(varargin)
-        %Unicycle Unicycle object constructor
+        %Unicycle.Unicycle Unicycle object constructor
         %
-        % V = Unicycle(V_ACT, OPTIONS)  creates a Unicycle object with actual odometry 
-        % covariance V_ACT (2x2) matrix corresponding to the odometry vector [dx dtheta].
+        % V = Unicycle(VA, OPTIONS)  creates a Unicycle object with actual odometry 
+        % covariance VA (2x2) matrix corresponding to the odometry vector [dx dtheta].
         %
         % Options::
+        % 'W',W          Wheel separation [m] (default 1)
         % 'vmax',S        Maximum speed (default 5m/s)
         % 'x0',x0         Initial state (default (0,0,0) )
         % 'dt',T          Time interval
@@ -124,6 +126,7 @@ classdef Unicycle < Vehicle
             
             veh.x = zeros(3,1);
 
+            opt.W = 1;
             opt.accelmax = Inf;
 
             veh = tb_optparse(opt, veh.options, veh);
@@ -144,7 +147,7 @@ classdef Unicycle < Vehicle
                 w = [0 0];
             end
 
-            dd = odo(1) + w(1); dth = odo(2);
+            dd = odo(1) + w(1); dth = odo(2) + w(2);
 
             % straightforward code:
             % thp = x(3) + dth;
@@ -156,7 +159,7 @@ classdef Unicycle < Vehicle
             % vectorized code:
 
             thp = x(:,3) + dth;
-            xnext = x + [(dd+w(1))*cos(thp)  (dd+w(1))*sin(thp) ones(size(x,1),1)*dth+w(2)];
+            xnext = x + [dd*cos(thp)  dd*sin(thp) ones(size(x,1),1)*dth];
         end
 
         function dx = deriv(veh, t, x, u)
@@ -164,23 +167,22 @@ classdef Unicycle < Vehicle
             
             % implement acceleration limit if required
             if ~isinf(veh.accelmax)
-
-                if (u(1) - vprev)/(t - tprev) > veh.accelmax
-                    u(1) = vprev + veh.accelmax * (t - tprev);
-                elseif (u(1) - vprev)/(t - tprev) < -veh.accelmax
-                    u(1) = vprev - veh.accelmax * (t - tprev);
+                if (u(1) - veh.vprev)/veh.dt > veh.accelmax
+                    u(1) = veh.vprev + veh.accelmax * veh.dt;
+                elseif (u(1) - veh.vprev)/veh.dt < -veh.accelmax
+                    u(1) = veh.vprev - veh.accelmax * veh.dt;
                 end
+                veh.vprev = u(1);
             end
             
             % implement speed and steer angle limits
             u(1) = min(veh.speedmax, max(u(1), -veh.speedmax));
-            u(2) = min(veh.steermax, max(u(2), -veh.steermax));
 
             % compute the derivative
             dx = zeros(3,1);
             dx(1) = u(1)*cos(x(3));
             dx(2) = u(1)*sin(x(3));
-            dx(3) = u(1)/veh.L * tan(u(2));
+            dx(3) = u(2)/veh.W;
         end
         
         function odo = update(veh, u)
@@ -230,7 +232,7 @@ classdef Unicycle < Vehicle
             %
             % See also Unicycle.F, Vehicle.Fx.
             dd = odo(1); dth = odo(2);
-            thp = x(3) + dth;
+            thp = x(3);
 
             J = [
                 cos(thp)    0 %-dd*sin(thp)
@@ -247,13 +249,11 @@ classdef Unicycle < Vehicle
         %
         % See also Unicycle.display.
 
-            ss = char@Unicycle(veh); 
+            ss = char@Vehicle(veh);
 
-            s = 'Bicycle object';
-            s = char(s, sprintf('  L=%g', veh.L));
+            s = 'Unicycle object';
+            s = char(s, sprintf('  W=%g', veh.W));
             s = char(s, ss);
-
-
         end
     end % method
 

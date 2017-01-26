@@ -1,28 +1,28 @@
 %Bicycle Car-like vehicle class
 %
-% This class models the kinematics of a car-like vehicle (bicycle model) on
-% a plane that moves in SE(2).  For given steering and velocity inputs it
+% This concrete class models the kinematics of a car-like vehicle (bicycle
+% or Ackerman model) on a plane.  For given steering and velocity inputs it
 % updates the true vehicle state and returns noise-corrupted odometry
 % readings.
 %
 % Methods::
+%   Bicycle      constructor
+%   add_driver   attach a driver object to this vehicle
+%   control      generate the control inputs for the vehicle
 %   init         initialize vehicle state
 %   f            predict next state based on odometry
-%   step         move one time step and return noisy odometry
-%   control      generate the control inputs for the vehicle
-%   update       update the vehicle state
-%   run          run for multiple time steps
 %   Fx           Jacobian of f wrt x
 %   Fv           Jacobian of f wrt odometry noise
-%   gstep        like step() but displays vehicle
-%   plot         plot/animate vehicle on current figure
-%   plot_xy      plot the true path of the vehicle
-%   add_driver   attach a driver object to this vehicle
-%   display      display state/parameters in human readable form
-%   char         convert to string
+%   update       update the vehicle state
+%   run          run for multiple time steps
+%   step         move one time step and return noisy odometry
 %
-% Class methods::
-%   plotv        plot/animate a pose on current figure
+% Plotting/display methods::
+%   char             convert to string
+%   display          display state/parameters in human readable form
+%   plot             plot/animate vehicle on current figure
+%   plot_xy          plot the true path of the vehicle
+%   Vehicle.plotv    plot/animate a pose on current figure
 %
 % Properties (read/write)::
 %   x               true vehicle state: x, y, theta (3x1)
@@ -40,12 +40,14 @@
 %
 % Examples::
 %
-% Create a vehicle with odometry covariance
-%       v = Bicycle( diag([0.1 0.01].^2 );
+% Odometry covariance (per timstep) is
+%       V = diag([0.02, 0.5*pi/180].^2);
+% Create a vehicle with this noisy odometry
+%       v = Bicycle( 'covar', diag([0.1 0.01].^2 );
 % and display its initial state
 %       v 
 % now apply a speed (0.2m/s) and steer angle (0.1rad) for 1 time step
-%       odo = v.update([0.2, 0.1])
+%       odo = v.step(0.2, 0.1)
 % where odo is the noisy odometry estimate, and the new true vehicle state
 %       v
 %
@@ -99,25 +101,32 @@ classdef Bicycle < Vehicle
         accelmax
         vprev
         steerprev
-
     end
 
     methods
 
         function veh = Bicycle(varargin)
-        %Bicycle Vehicle object constructor
+        %Bicycle.Bicycle Vehicle object constructor
         %
-        % V = Bicycle(V_ACT, OPTIONS)  creates a Vehicle object with actual odometry 
-        % covariance V_ACT (2x2) matrix corresponding to the odometry vector [dx dtheta].
+        % V = Bicycle(OPTIONS)  creates a Bicycle object with the kinematics of a
+        % bicycle (or Ackerman) vehicle.
         %
         % Options::
-        % 'stlim',A       Steering angle limited to -A to +A (default 0.5 rad)
-        % 'vmax',S        Maximum speed (default 5m/s)
+        % 'steermax',M    Maximu steer angle [rad] (default 0.5)
+        % 'accelmax',M    Maximum acceleration [m/s2] (default Inf)
+        %--
+        % 'covar',C       specify odometry covariance (2x2) (default 0)
+        % 'speedmax',S    Maximum speed (default 1m/s)
         % 'L',L           Wheel base (default 1m)
         % 'x0',x0         Initial state (default (0,0,0) )
-        % 'dt',T          Time interval
+        % 'dt',T          Time interval (default 0.1)
         % 'rdim',R        Robot size as fraction of plot window (default 0.2)
         % 'verbose'       Be verbose
+        %
+        % Notes::
+        % - The covariance is used by a "hidden" random number generator within the class. 
+        % - Subclasses the MATLAB handle class which means that pass by reference semantics
+        %   apply.
         %
         % Notes::
         % - Subclasses the MATLAB handle class which means that pass by reference semantics
@@ -149,7 +158,7 @@ classdef Bicycle < Vehicle
                 w = [0 0];
             end
 
-            dd = odo(1) + w(1); dth = odo(2);
+            dd = odo(1) + w(1); dth = odo(2) + w(2);
 
             % straightforward code:
             % thp = x(3) + dth;
@@ -161,20 +170,28 @@ classdef Bicycle < Vehicle
             % vectorized code:
 
             thp = x(:,3) + dth;
-            xnext = x + [(dd+w(1))*cos(thp)  (dd+w(1))*sin(thp) ones(size(x,1),1)*dth+w(2)];
+            %xnext = x + [(dd+w(1))*cos(thp)  (dd+w(1))*sin(thp) ones(size(x,1),1)*dth+w(2)];
+            xnext = x + [dd*cos(thp)  dd*sin(thp) ones(size(x,1),1)*dth];
         end
 
-        function dx = deriv(veh, t, x, u)
-            % to be called from a continuous time integrator such as ode45 or Simulink
+        function [dx,u] = deriv(veh, t, x, u)
+            %Bicycle.deriv  Time derivative of state
+            %
+            % DX = V.deriv(T, X, U) is the time derivative of state (3x1) at the state
+            % X (3x1) with input U (2x1).
+            %
+            % Notes::
+            % - The parameter T is ignored but  called from a continuous time integrator such as ode45 or
+            %   Simulink.
             
             % implement acceleration limit if required
             if ~isinf(veh.accelmax)
-
-                if (u(1) - vprev)/(t - tprev) > veh.accelmax
-                    u(1) = vprev + veh.accelmax * (t - tprev);
-                elseif (u(1) - vprev)/(t - tprev) < -veh.accelmax
-                    u(1) = vprev - veh.accelmax * (t - tprev);
+                if (u(1) - veh.vprev)/veh.dt > veh.accelmax
+                    u(1) = veh.vprev + veh.accelmax * veh.dt;
+                elseif (u(1) - veh.vprev)/veh.dt < -veh.accelmax
+                    u(1) = veh.vprev - veh.accelmax * veh.dt;
                 end
+                veh.vprev = u(1);
             end
             
             % implement speed and steer angle limits
@@ -235,7 +252,7 @@ classdef Bicycle < Vehicle
             %
             % See also Bicycle.F, Vehicle.Fx.
             dd = odo(1); dth = odo(2);
-            thp = x(3) + dth;
+            thp = x(3);
 
             J = [
                 cos(thp)    0 
@@ -255,10 +272,8 @@ classdef Bicycle < Vehicle
             ss = char@Vehicle(veh); 
 
             s = 'Bicycle object';
-            s = char(s, sprintf('  L=%g', veh.L));
+            s = char(s, sprintf('  L=%g, steer.max=%g, accel.max=%g', veh.L, veh.steermax, veh.accelmax));
             s = char(s, ss);
-
-
         end
     end % method
 
