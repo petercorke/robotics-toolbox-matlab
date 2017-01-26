@@ -169,7 +169,7 @@ classdef SE2 < SO2
                     
                     if isvec(a, 2)
                         % (t)
-                        obj.t = a(:);
+                        obj.data = [ 1 0 a(1); 0 1 a(2); 0 0 1];
                         
                     elseif isvec(a, 3)
                         % ([x y th])
@@ -206,16 +206,13 @@ classdef SE2 < SO2
                     a = args{1}; b = args{2};
                     if isscalar(a) && isscalar(b)
                         % (x,y)
-                        obj.data(1,3) = a;
-                        obj.data(2,3) = b;
+                        obj.data = [ 1 0 a; 0 1 b; 0 0 1];
                     elseif isvec(a,2) && isscalar(b)
                         % ([x y], th)
-                        obj.data(1:2,1:2) = rot2(b*scale);
-                        obj.data(1:2,3) = a;
+                        obj.data = [ rot2(b*scale) a(:); 0 0 1];
                     elseif SO2.isa(a) && isvec(b,2)
                         % (R, t)
-                        obj.data(1:2,1:2) = a;
-                        obj.data(1:2,3) = b;
+                        obj.data = [a b(:); 0 0 1];
                     else
                         error('RTB:SE3:badarg', 'unknown arguments');
                     end
@@ -225,9 +222,7 @@ classdef SE2 < SO2
                     a = args{1}; b = args{2}; c = args{3};
                     if isscalar(a) && isscalar(b) && isscalar(c)
                         % (x, y, th)
-                        obj.data(1,3) = a;
-                        obj.data(2,3) = b;
-                        obj.data(1:2,1:2) = rot2(c*scale);
+                        obj.data = [ rot2(c*scale) [a b]'; 0 0 1];
                     else
                         error('RTB:SE3:badarg', 'unknown arguments');
                     end
