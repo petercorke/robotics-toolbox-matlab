@@ -7,7 +7,7 @@
 % Methods::
 %
 % plan         Compute the roadmap
-% path         Compute a path to the goal
+% query        Find a path 
 % plot         Display the obstacle map
 % animate      Animate motion of vehicle over the path
 % display      Display the parameters in human readable form
@@ -134,7 +134,7 @@ classdef Lattice < Navigation
                     error('root must be 2- or 3-vector');
             end
             
-            if lp.occupied(lp.root)
+            if lp.isoccupied(lp.root)
                 error('root node cell is occupied')
             end
             
@@ -148,12 +148,11 @@ classdef Lattice < Navigation
         
         
         function pp = query(lp, start, goal)
-            %Lattice.path Find a path between two points
+            %Lattice.query Find a path between two poses
             %
-            % P.path(START, GOAL) finds and displays a path from START to GOAL
-            % which is overlaid on the occupancy grid.
+            % P.query(START, GOAL) finds a path (Nx3) from pose START (1x3) 
+            % to pose GOAL (1x3).  The pose is expressed as [X,Y,THETA]. 
             %
-            % X = P.path(START) returns the path (2xM) from START to GOAL.
             
             if nargin < 3
                 error('must specify start and goal');
@@ -188,42 +187,6 @@ classdef Lattice < Navigation
             end
         end
         
-        function p = path(lp, start, goal)
-            %Lattice.path Find a path between two points
-            %
-            % P.path(START, GOAL) finds and displays a path from START to GOAL
-            % which is overlaid on the occupancy grid.
-            %
-            % X = P.path(START) returns the path (2xM) from START to GOAL.
-            
-            if nargin < 3
-                error('must specify start and goal');
-            end
-            
-            % set the goal coordinate
-            lp.goal = goal;
-            lp.start = start;
-            
-            start(3) = round(start*2/pi);
-            goal(3) = round(goal*2/pi);
-
-            lp.vstart = lp.graph.closest(start);
-            lp.vgoal = lp.graph.closest(goal);
-
-                        % find path through the graph using A* search
-            [lp.vpath,cost] = lp.graph.Astar(lp.vstart, lp.vgoal);
-            
-            fprintf('A* path cost %g\n', cost);
-            
-            
-% %             invoke the superclass path function, which iterates on our
-% %             next method
-% %             if nargout == 0
-% %                 path@Navigation(lp, start);
-% %             else
-% %                 p = path@Navigation(lp, start);
-% %             end
-        end
         
         % Handler invoked by Navigation.path() to start the navigation process
         %
@@ -347,7 +310,7 @@ classdef Lattice < Navigation
                         v = lp.graph.closest(newDestinations(:,i), 0.5);
                         if isempty(v)
                             %node doesn't exist
-                            if ~lp.occupied(newDestinations(:,i))
+                            if ~lp.isoccupied(newDestinations(:,i))
                                 % it's not occupied
                                 % add a new node and an edge
                                 nv = lp.graph.add_node( newDestinations(:,i), node, lp.cost(i));

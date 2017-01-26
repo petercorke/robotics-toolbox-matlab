@@ -5,17 +5,17 @@
 % planning, that is, it can only sense the immediate presence of an obstacle.
 %
 % Methods::
-%   path        Compute a path from start to goal
-%   visualize    Display the obstacle map (deprecated)
-%   plot         Display the obstacle map
+%   query       Find a path from start to goal
+%   plot        Display the obstacle map
 %   display     Display state/parameters in human readable form
 %   char        Convert to string
 %
 % Example::
 %         load map1             % load the map
 %         bug = Bug2(map);      % create navigation object
-%         bug.goal = [50, 35];  % set the goal
-%         bug.path([20, 10]);   % animate path to (20,10)
+%         start = [20,10]; 
+%         goal = [50,35];
+%         bug.query(start, goal);   % animate path
 %
 % Reference::
 % -  Dynamic path planning for a mobile automaton with limited information on the environment,,
@@ -60,12 +60,11 @@ classdef Bug2 < Navigation
     methods
 
         function bug = Bug2(varargin)
-            %Bug2.Bug2 bug2 navigation object constructor
+            %Bug2.Bug2 Construct a Bug2 navigation object 
             %
-            % B = Bug2(MAP) is a bug2 navigation
-            % object, and MAP is an occupancy grid, a representation of a
-            % planar world as a matrix whose elements are 0 (free space) or 1
-            % (occupied).
+            % B = Bug2(MAP, OPTIONS) is a bug2 navigation object, and MAP is an occupancy grid,
+            % a representation of a planar world as a matrix whose elements are 0 (free
+            % space) or 1 (occupied).
             %
             % Options::
             % 'goal',G      Specify the goal point (1x2)
@@ -83,18 +82,35 @@ classdef Bug2 < Navigation
 
 
         function pp = query(bug, start, goal, varargin)
+            %Bug2.query  Find a path
+            %
+            % B.query(START, GOAL, OPTIONS) is the path (Nx2) from START (1x2) to GOAL
+            % (1x2).  Row are the coordinates of successive points along the path.  If
+            % either START or GOAL is [] the grid map is displayed and the user is
+            % prompted to select a point by clicking on the plot.
+            %
+            % Options::
+            %  'animate'   show a simulation of the robot moving along the path
+            %
+            % Notes::
+            % - START and GOAL are given as X,Y coordinates in the grid map, not as
+            %   MATLAB row and column coordinates.
+            % - START and GOAL are tested to ensure they lie in free space.
+            % - The Bug2 algorithm is completely reactive so there is no planning
+            %   method.
         
             opt.animate = false;
             
             opt = tb_optparse(opt, varargin);
        
             % make sure start and goal are set and valid
+            bug.start = []; bug.goal = [];
             bug.checkquery(start, goal);
             
             % compute the m-line
             %  create homogeneous representation of the line
             %  line*[x y 1]' = 0
-            bug.mline = homline(start(1), start(2), ...
+            bug.mline = homline(bug.start(1), bug.start(2), ...
                 bug.goal(1), bug.goal(2));
             bug.mline = bug.mline / norm(bug.mline(1:2));
             
@@ -104,9 +120,8 @@ classdef Bug2 < Navigation
                 bug.plot_mline();
             end
             
-            
             % iterate using the next() method until we reach the goal
-            robot = start(:);
+            robot = bug.start(:);
             bug.step = 1;
             path = [];
             while true
@@ -136,6 +151,7 @@ classdef Bug2 < Navigation
         end
         
         function plot_mline(bug, ls)
+            
                 % parameters of the M-line, direct from initial position to goal
                 % as a vector mline, such that [robot 1]*mline = 0
                 
@@ -189,7 +205,7 @@ classdef Bug2 < Navigation
                 
 
                 % detect if next step is an obstacle
-                if bug.occupied(robot + [dx; dy])
+                if bug.isoccupied(robot + [dx; dy])
                     bug.message('(%d,%d) obstacle!', n);
                     bug.H(bug.j,:) = robot; % define hit point
                     bug.step = 2;
@@ -233,6 +249,10 @@ classdef Bug2 < Navigation
                 bug.k = bug.k+1;
             end % step 2
         end % next
+        
+        function plan(bug)
+            error('RTB:Bug2:badcall', 'This class has no plan method');
+        end
 
     end % methods
 end % classdef

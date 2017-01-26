@@ -2,135 +2,167 @@ function tests = PlanTest
   tests = functiontests(localfunctions);
 end
 
-function astar_test(testCase)
-    load map1           % load map
-    goal = [50;30];
-    start = [20;10];
-    as = Astar(map);    % create Navigation object
-    as.plan(goal);      % setup costmap for specified goal
-    as.path(start);     % plan solution path star-goal, animate
-    P = as.path(start); % plan solution path star-goal, return path
-end
-
-function astarPO_test(testCase)
+function setupOnce(tc)
+    clc
     load map1          % load map
-    goal = [50;30];
-    start = [20;10];
-    as = Astar(map); % create Navigation object
-    as.plan(goal,2);   % setup costmap for specified goal
-    as.path(start);    % plan solution path star-goal, animate
-    P = as.path(start); % plan solution path star-goal, return path
+    tc.TestData.map = map;
+    tc.TestData.goal = [50 30];
+    tc.TestData.start = [20 10];
 end
 
-function astarMOO_test(testCase)
-    goal = [100;100];
-    start = [1;1];
-    as = Astar(0);   % create Navigation object with random occupancy grid
-    as.addCost(1,L);    % add 1st add'l cost layer L
-    as.plan(goal,3);    % setup costmap for specified goal
-    as.path(start);     % plan solution path start-goal, animate
-    P = as.path(start);    % plan solution path start-goal, return path
+function navigation_test(tc)
+    map = zeros(10,10);
+    map(2,3) = 1;
+    
+    % test isoccupied test
+    n = Bug2(map);
+    tc.verifyTrue( n.isoccupied([3,2]) );
+    tc.verifyFalse( n.isoccupied([3,3]) );
+
+    % test inflation option
+    n = Bug2(map, 'inflate', 1);
+    tc.verifyTrue( n.isoccupied([3,2]) );
+    tc.verifyTrue( n.isoccupied([3,3]) );
+    tc.verifyFalse( n.isoccupied([3,4]) );
+    
 end
 
-function bug2_test(testCase)
+function bug2_test(tc)
 
-    goal = [50,30];
-    start = [20, 10];
-    load map1
-
-    b = Bug2(map);
+    b = Bug2(tc.TestData.map);
     s = b.char();
-    b.goal = goal;
+    verifyTrue(tc, ischar(s) );
 
-    b.path(start);
-    p = b.path(start);
+    p = b.query(tc.TestData.start, tc.TestData.goal);
+    verifyTrue(tc, size(p,2) == 2);
+    
+    b.plot()
     b.plot(p);
 end
 
-function dstar_test(testCase)
-
-    % load the world
-    load map1
-    goal = [50,30];
-    start = [20, 10]';
+function dstar_test(tc)
 
     % create a planner
-    ds = Dstar(map, 'quiet');
+    ds = Dstar(tc.TestData.map, 'quiet');
     s = ds.char();
-
+    verifyTrue(tc, ischar(s) );
+    
     % plan path to goal
-    ds.plan(goal);
+    ds.plan(tc.TestData.goal);
+    ds.plan(tc.TestData.goal, 'animate');
 
     % execute it
-    ds.path(start);
-    p = ds.path(start);
+    p = ds.query(tc.TestData.start);
+    verifyTrue(tc, size(p,2) == 2);
 
+    ds.query(tc.TestData.start, 'animate');
+    
+    ds.plot();
+    ds.plot(p);
+    
     % add a swamp
     for r=78:85
         for c=12:45
-            ds.modify_cost([c,r], 2);
+            ds.modify_cost([c;r], 2);
         end
     end
-
+    
     % replan
     ds.plan();
 
     % show new path
-    ds.path(start)
+    ds.query(tc.TestData.start)
 
-    p = ds.path(start);
+    p = ds.query(tc.TestData.start);
     ds.plot(p);
+    
+    ds.modify_cost([12 45; 78 85], 2);
+    ds.modify_cost([12 13 14; 78 79 80], [2 3 4]);
 end
 
-function dxform_test(testCase)
-    goal = [50,30];
-    start = [20, 10];
-    load map1
+function dxform_test(tc)
 
-    dx = DXform(map);
+    dx = DXform(tc.TestData.map);
     s = dx.char();
+    verifyTrue(tc, ischar(s) );
 
-    dx.plan(goal);
+
+    dx.plan(tc.TestData.goal);
     dx.plot();
-    dx.plan(goal, 0.2);
+    dx.plan(tc.TestData.goal, 'animate');
 
 
-    dx.path(start);
-    p = dx.path(start);
+    p = dx.query(tc.TestData.start);
+    verifyTrue(tc, size(p,2) == 2);
+    
+    dx.query(tc.TestData.start, 'animate');
 
-    p = dx.path(start);
+    dx.plot();
     dx.plot(p);
 
     dx.plot3d();
     dx.plot3d(p);
 end
 
-function prm_test(testCase)
-    load map1
+function prm_test(tc)
+
     randinit
-    prm = PRM(map);
+    prm = PRM(tc.TestData.map);
     s = prm.char();
-    goal = [50,30];
-    start=[20,10];
+    verifyTrue(tc, ischar(s) );
+
 
     prm.plan();
     prm.plot();
 
-    prm.path(start, goal)
-    p = prm.path(start, goal);
+    prm.query(tc.TestData.start, tc.TestData.goal)
+    p = prm.query(tc.TestData.start, tc.TestData.goal);
     prm.plot(p);
 end
 
-function rrt_test(testCase)
+function lattice_test(tc)
+    
+    lp = Lattice();
+    
+    lp.plan('iterations', 8)
+    lp.plot()
+    
+    p = lp.query( [1 2 pi/2], [2 -2 0] );
+    verifyEqual(tc, size(p,1), 7);
+
+    lp.plot
+
+    lp.plan('cost', [1 10 10])
+    p = lp.query([1 2 pi/2], [2 -2 0]);
+    verifyEqual(tc, size(p,1), 9);
+    
+    load road
+    lp = Lattice(road, 'grid', 5, 'root', [50 50 0])
+    lp.plan();
+    lp.query([30 45 0], [50 20 0])
+end
+
+
+
+function rrt_test(tc)
 
     goal = [0,0]; 
     randinit
 
-    veh = Vehicle([], 'stlim', 1.2);
-    rrt = RRT([], veh, 'goal', goal, 'range', 5);
+    car = Bicycle('steermax', 1.2);
+    rrt = RRT(car, 'goal', goal, 'range', 5);
     s = rrt.char();
 
     rrt.plan();
 
-    p = rrt.path([0 0 0], [0 2 0]);
+    rrt.plot();
+    
+    p = rrt.query([0 0 0], [0 2 0]);
+    
+    % bigger example with obstacle
+    load road
+
+     rrt = RRT(car, road, 'npoints', 1000, 'root', [50 22 0], 'simtime', 4);
+     rrt.plan();
+     
 end

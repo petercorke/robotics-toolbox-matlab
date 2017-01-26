@@ -4,19 +4,16 @@
 % transform navigation algorithm which computes minimum distance paths.
 %
 % Methods::
-%
-% plan         Compute the cost map given a goal and map
-% path         Compute a path to the goal (inherited)
-% visualize    Display the obstacle map (deprecated)
-% plot         Display the distance function and obstacle map
-% plot3d       Display the distance function as a surface
-% display      Print the parameters in human readable form
-% char         Convert to string
+%  plan         Compute the cost map given a goal and map
+%  query        Find a path
+%  plot         Display the distance function and obstacle map
+%  plot3d       Display the distance function as a surface
+%  display      Print the parameters in human readable form
+%  char         Convert to string
 %
 % Properties::
-%
-% distancemap   The distance transform of the occupancy grid.
-% metric        The distance metric, can be 'euclidean' (default) or 'cityblock'
+%  distancemap   The distance transform of the occupancy grid.
+%  metric        The distance metric, can be 'euclidean' (default) or 'cityblock'
 %
 % Example::
 %
@@ -25,7 +22,7 @@
 %        start = [20, 10];   % start point
 %        dx = DXform(map);   % create navigation object
 %        dx.plan(goal)       % create plan for specified goal
-%        dx.path(start)      % animate path from this start location
+%        dx.query(start)      % animate path from this start location
 %
 % Notes::
 % - Obstacles are represented by NaN in the distancemap.
@@ -132,14 +129,12 @@ classdef DXform < Navigation
         function plan(dx, goal, varargin)
             %DXform.plan Plan path to goal
             %
-            % DX.plan() updates the internal distancemap where the value of each element is 
-            % the minimum distance from the corresponding point to the goal.  The goal is
-            % as specified to the constructor.
+            % DX.plan(GOAL, OPTIONS) plans a path to the goal, updates the internal
+            % distancemap where the value of each element is the minimum distance from
+            % the corresponding point to the goal.
             %
-            % DX.plan(GOAL) as above but uses the specified goal.
-            %
-            % DX.plan(GOAL, S) as above but displays the evolution of the
-            % distancemap, with one iteration displayed every S seconds.
+            % Options::
+            % 'animate'    Plot the distance transform as it evolves
             %
             % Notes::
             % - This may take many seconds.
@@ -180,50 +175,6 @@ classdef DXform < Navigation
 
             plot@Navigation(dx, varargin{:}, 'distance', dx.distancemap);
 
-        end
-        
-        function pp = query(nav, start, varargin)
-            
-            opt.animate = false;
-            
-            opt = tb_optparse(opt, varargin);
-            
-            % make sure start and goal are set and valid
-            nav.checkquery(start);
-            
-            
-            if opt.animate
-                nav.plot();
-            end
-            
-            
-            % iterate using the next() method until we reach the goal
-            robot = start(:);
-            path = [];
-            while true
-                if opt.animate
-                    plot(robot(1), robot(2), 'g.', 'MarkerSize', 12);
-                    drawnow
-                end
-                
-                % move to next point on path
-                robot = nav.next(robot);
-                
-                % are we there yet?
-                if isempty(robot)
-                    % yes, exit the loop
-                    break
-                else
-                    % no, append it to the path
-                    path = [path robot(:)];
-                end
-                
-            end
-            
-            % only return the path if required
-            if nargout > 0
-                pp = path';
-            end
         end
 
         function n = next(dx, robot)

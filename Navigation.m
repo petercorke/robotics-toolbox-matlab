@@ -3,13 +3,12 @@
 % An abstract superclass for implementing planar grid-based navigation classes.  
 %
 % Methods::
+%   plan        Find a path to goal
+%   query       Return/animate a path from start to goal
 %   plot        Display the occupancy grid
-%   visualize   Display the occupancy grid (deprecated)
-%   plan        Plan a path to goal
-%   path        Return/animate a path from start to goal
 %   display     Display the parameters in human readable form
 %   char        Convert to string
-%
+%   isoccupied  Test if cell is occupied
 %   rand        Uniformly distributed random number
 %   randn       Normally distributed random number
 %   randi       Uniformly distributed random integer
@@ -17,6 +16,7 @@
 % Properties (read only)::
 %   occgrid   Occupancy grid representing the navigation environment
 %   goal      Goal coordinate
+%   start     Start coordinate
 %   seed0     Random number state
 %
 % Methods that must be provided in subclass::
@@ -68,8 +68,8 @@ classdef Navigation < handle
     properties
         options
         
-        occgrid     % occupancy grid
-        occgridnav
+        occgrid     % occupancy grid as provided by user
+        occgridnav  % inflated occupancy grid
         goal        % goal coordinate
         start       % start coordinate
 
@@ -82,14 +82,14 @@ classdef Navigation < handle
         
         w2g        % transform from world coordinates to grid coordinates
     end
-
-
-    % next() should be protected and abstract, but this doesnt work
-    % properly
-%     methods (Abstract)
-%         query(obj, start, goal, varargin)
-%     end % method Abstract
-
+    
+    
+    % we make this class abtract
+    methods(Abstract)
+        plan
+        next
+    end
+    
     methods
 
         % TODO fix up set methods for goal
@@ -119,6 +119,7 @@ classdef Navigation < handle
         %   occupied (not driveable).
         % - Obstacle inflation is performed with a round structuring element (kcircle) 
         %   with radius given by the 'inflate' option.
+        % - Inflation requires either MVTB or IPT installed.
         % - The 'private' option creates a private random number stream for the methods 
         %   rand, randn and randi.  If not given the global stream is used.
         %
@@ -150,7 +151,15 @@ classdef Navigation < handle
             % optionally inflate the obstacles
 
             if opt.inflate > 0
-                nav.occgridnav = idilate(nav.occgrid, kcircle(opt.inflate));
+                if exist('idilate') == 2
+                    % use MVTB
+                    nav.occgridnav = idilate(nav.occgrid, kcircle(opt.inflate));
+                elseif exist('imdilate') == 2
+                    % use IPT
+                    nav.occgridnav = imdilate(nav.occgrid, strel('disk',opt.inflate));
+                else
+                    error('RTB:Navigatio:Navigation', 'Need to have MVTB or IPT installed to perform obstacle inflation');
+                end
             else
                 nav.occgridnav = nav.occgrid;
             end
@@ -183,212 +192,73 @@ classdef Navigation < handle
 
             nav.spincount = 0;
         end
-        
 
-        function setgoal(nav, goal)
-            if isempty(goal)
-                nav.plot();
-                disp('select goal location'); beep
-                goal = round(ginput(1));
-            end
-            % make upright
-            nav.goal = goal(:);
-            
-            % check if reachable
-            if nav.occupied(nav.goal)
-                error('Navigation:checkquery:badarg', 'goal location inside obtacle');
-            end
-        end
-        
-        
-        function checkquery(nav, start, goal)
-            
-            % stash what we know
-            nav.start = start(:);
-            
-            if nargin == 3
-                % this planner supports a query with a goal
-                nav.goal = goal(:);
-            end
-            
-            % if any of start or goal are [], prompt the user to select
-            if isempty(start)
-                nav.plot();
-                disp('select start location'); beep
-                start = round(ginput(1));
-            end
-            
-            if nargin == 3
-                if isempty(goal)
-                    nav.plot();
-                    disp('select goal location'); beep
-                    goal = round(ginput(1));
-                end
-            end
-            
-            % make upright
-            nav.start = start(:);
-            
-            % check if reachable
-            if nav.occupied(nav.start)
-                error('Navigation:checkquery:badarg', 'start location inside obtacle');
-            end
-            
-            if nargin == 3
-                % make upright
-                nav.goal = goal(:);
-                
-                % check if reachable
-                if nav.occupied(nav.goal)
-                    error('Navigation:checkquery:badarg', 'goal location inside obtacle');
-                end
-            end
-        end
-        
-        
-        function occ = occupied(nav, pos)
-            if isempty(nav.occgridnav)
-                % there are no limits, everywhere is unoccuplied
-                occ = false;
-            else
-                try
-                    occ = nav.occgridnav( pos(2), pos(1) ) > 0;
-                catch me
-                    % come here if subscript out of range, we have fallen off the edge of the map
-                    occ = true;
-                end
-            end
-        end
-        
-        function occ = occupied_new(nav, x, y)
-            if nargin == 2 && isvec(x, 2)
-                wc = x(:);
-            else
-                wc = [x; y];
-            end
-            gc = round( nav.w2g * x(:) );
-            try
-                occ = nav.occgrid(gc(2), gc(1));
-            catch
-                occ = true; % beyond the grid, all cells are implicitly occupied
-            end
-        end
-        
-        
-        % invoked whenever the goal is set
-%         function set.goal(nav, goal)
-% 
-% %             if nav.occupied(goal)
-% %                 error('Navigation: cant set goal inside obstacle');
-% %             end
-% %             
-% %             goal = goal(:);
-% %             if ~(all(size(goal) == size(nav.goal)) && all(goal == nav.goal))
-% %                 % goal has changed
-% %                 nav.goal = goal(:);
-% %                 nav.goal_change();
-% %             end
-%         end
-        
-        function goal_change(nav)
-            %Navigation.goal_change Notify change of goal
+                function pp = query(nav, start, varargin)
+            %Navigation.query Find a path from start to goal using plan
             %
-            % Invoked when the goal property of the object is changed.  Typically this
-            % is overriden in a subclass to take particular action such as invalidating
-            % a costmap.
-        end
-        
-
-
-        function pp = path(nav, start)
-            %Navigation.path Follow path from start to goal
-            %
-            % N.path(START) animates the robot moving from START (2x1) to the goal (which is a 
+            % N.query(START, OPTIONS) animates the robot moving from START (2x1) to the goal (which is a 
             % property of the object).
             %
-            % N.path() as above but first displays the occupancy grid, and prompts the user to 
-            % click a start location.
-            % the object).
-            %
-            % X = N.path(START) returns the path (2xM) from START to the goal (which is a property of 
+            % X = N.query(START, OPTIONS) returns the path (2xM) from START to the goal (which is a property of 
             % the object).
             %
             % The method performs the following steps:
-            %
-            %  - Get start position interactively if not given
             %  - Initialize navigation, invoke method N.navigate_init()
             %  - Visualize the environment, invoke method N.plot()
             %  - Iterate on the next() method of the subclass until the goal is
             %    achieved.
             %
+            % Options::
+            %
+            % Notes::
+            %  - If start or goal are given as [] then the user is prompted to click points on the map.
+
+            %
             % See also Navigation.plot, Navigation.goal.
 
             % if no start point given, display the map, and prompt the user to select
             % a start point
-            if nargin < 2
-                % display the world
-                nav.plot();
-
-                % prompt the user to click a goal point
-                fprintf('** click a starting point ');
-                [x,y] = ginput(1);
-                fprintf('\n');
-                start = round([x;y]);
-            end
-            start = start(:);
-
-            % if no output arguments given, then display the world
-            if nargout == 0
-                % render the world
+            
+            opt.animate = false;
+            
+            opt = tb_optparse(opt, varargin);
+            
+            % make sure start and goal are set and valid
+            nav.checkquery(start);
+            
+            if opt.animate
                 nav.plot();
                 hold on
             end
             
-            nav.navigate_init(start);
-
-            p = [];
-            % robot is a column vector
-%             if nav.backProp()==1
-%                 % subclass algorithm calls for back propagation
-%                 robot = nav.goal(:);
-%             else
-%                 robot = start;
-%             end
-robot = start;
-
             % iterate using the next() method until we reach the goal
+            robot = nav.start;
+            path = [];
             while true
-                if nargout == 0
+                if opt.animate
                     plot(robot(1), robot(2), 'g.', 'MarkerSize', 12);
-                    drawnow 
+                    drawnow
                 end
-
+                
                 % move to next point on path
                 robot = nav.next(robot);
-
+                
                 % are we there yet?
                 if isempty(robot)
                     % yes, exit the loop
                     break
                 else
                     % no, append it to the path
-                    p = [p; robot(:)'];
+                    path = [path robot(:)];
                 end
-
+                
             end
-
-            % only return the path if required
-            if nargout > 0
-                pp = p;
-            end
+            
+            % return the path 
+            pp = path';
         end
 
         function plot(nav, varargin)
-            nav.plot_bg(varargin{:});
-            nav.plot_fg(varargin{:});
-        end
-        
-        function plot_bg(nav, varargin)
         %Navigation.plot  Visualize navigation environment
         %
         % N.plot(OPTIONS) displays the occupancy grid in a new figure.
@@ -396,27 +266,55 @@ robot = start;
         % N.plot(P, OPTIONS) as above but overlays the points along the path (2xM) matrix.
         %
         % Options::
-        %  'colormap',@f   Specify a colormap as a function handle, eg. @hsv
-        %  'beta',V        Superimpose the start and goal positions if set. Goal is
-        %                  a pentagram, start is a circle.
         %  'distance',D    Display a distance field D behind the obstacle map.  D is
         %                  a matrix of the same size as the occupancy grid.
+        %  'colormap',@f   Specify a colormap for the distance field as a function handle, eg. @hsv
+        %  'beta',B        Brighten the distance field by factor B.
+        %  'inflated'      Show the inflated occupancy grid rather than original
         %
         % Notes::
         % - The distance field at a point encodes its distance from the goal, small
         %   distance is dark, a large distance is bright.  Obstacles are encoded as
         %   red.
-        % - beta value -1<V<0 to darken, 0<V<+1 to lighten.
+        % - Beta value -1<B<0 to darken, 0<B<+1 to lighten.
         %
-        % See also brighten.
+        % See also Navigation.plot_fg, Navigation.plot_bg.
+            nav.plot_bg(varargin{:});
+            nav.plot_fg(varargin{:});
+        end
+        
+        function plot_bg(nav, varargin)
+        %Navigation.plot  Visualization background
+        %
+        % N.plot(OPTIONS) displays the occupancy grid with occupied cells shown as
+        % red and an optional distance field.
+        %
+        % N.plot(P,OPTIONS) as above but overlays the points along the path (2xM) matrix. 
+        %
+        % Options::
+        %  'distance',D      Display a distance field D behind the obstacle map.  D is
+        %                    a matrix of the same size as the occupancy grid.
+        %  'colormap',@f     Specify a colormap for the distance field as a function handle, eg. @hsv
+        %  'beta',B          Brighten the distance field by factor B.
+        %  'inflated'        Show the inflated occupancy grid rather than original
+        %  'pathmarker',M    Options to draw a path point
+        %  'startmarker',M   Options to draw the start marker
+        %  'goalmarker',M    Options to draw the goal marker
+        %
+        % Notes::
+        % - The distance field at a point encodes its distance from the goal, small
+        %   distance is dark, a large distance is bright.  Obstacles are encoded as
+        %   red.
+        % - Beta value -1<B<0 to darken, 0<B<+1 to lighten.
+        %
+        % See also Navigation.plot, Navigation.plot_fg, brighten.
             
             opt.distance = [];
             opt.colormap = @bone;
             opt.beta = 0.2;
             opt.inflated = false;
 
-            
-            [opt,args] = tb_optparse(opt, varargin);
+            opt = tb_optparse(opt, varargin);
             
             if opt.inflated
                 occgrid = nav.occgridnav;
@@ -478,11 +376,28 @@ robot = start;
         end
         
         function plot_fg(nav, varargin)
+        %Navigation.plot_fg  Visualization foreground
+        %
+        % N.plot_fg(OPTIONS) displays the start and goal locations if specified.
+        % By default the goal is a pentagram and start is a circle.
+        %
+        % N.plot(P, OPTIONS) as above but overlays the points along the path (2xM) matrix.
+        % 
+        % Options::
+        %  'pathmarker',M    Options to draw a path point
+        %  'startmarker',M   Options to draw the start marker
+        %  'goalmarker',M    Options to draw the goal marker
+        %
+        % Notes::
+        % - In all cases M is a single string eg. 'r*' or a cell array of MATLAB LineSpec options.
+        % - Typically used after a call to plot_bg().
+        %
+        % See also Navigation.plot_bg.
             
             opt.pathmarker =  {};
             opt.startmarker = {};
             opt.goalmarker =  {};
-                        opt.goal = true;
+            opt.goal = true;
             
             pathmarker =  {'g.', 'MarkerSize', 12};
             startmarker = {'bo','MarkerFaceColor', 'k', 'MarkerEdgeColor', 'w', 'MarkerSize', 12};
@@ -528,19 +443,8 @@ robot = start;
             end
 
             hold off
-        end
-                
-
-        function navigate_init(nav, start)
-            %Navigation.navigate_init Notify start of path
-            %
-            % N.navigate_init(start) is called when the path() method is invoked.
-            % Typically overriden in a subclass to take particular action such as
-            % computing some path parameters. start is the initial position for this
-            % path, and nav.goal is the final position.
-        end
-
-
+        end  
+        
         function display(nav)
         %Navigation.display Display status of navigation object
         %
@@ -578,6 +482,113 @@ robot = start;
                 end
             end
         end
+        
+        
+        function setgoal(nav, goal)
+            
+            if isempty(goal)
+                nav.plot();
+                disp('select goal location'); beep
+                goal = round(ginput(1));
+            end
+            % make upright
+            nav.goal = goal(:);
+            
+            % check if reachable
+            if nav.isoccupied(nav.goal)
+                error('Navigation:checkquery:badarg', 'goal location inside obtacle');
+            end
+        end
+        
+        function checkquery(nav, start, goal)
+            
+            % if any of start or goal are [], prompt the user to select
+            if isempty(start)
+                nav.plot();
+                disp('Select start location'); beep
+                start = round(ginput(1));
+            end
+            
+            if nargin == 3
+                % this planner supports a query with a goal
+                if isempty(goal)
+                    nav.plot();
+                    disp('Select goal location'); beep
+                    goal = round(ginput(1));
+                end
+            end
+            
+            % make start and goal column vectors
+            nav.start = start(:);
+            if nargin == 3
+                % this planner supports a query with a goal
+                nav.goal = goal(:);
+            end
+            
+            % check if reachable
+            assert(~nav.isoccupied(nav.start), 'Navigation:checkquery:badarg', 'start location inside obstacle');
+            
+            if nargin == 3
+                % make upright
+                nav.goal = goal(:);
+                
+                % check if reachable
+                assert(~nav.isoccupied(nav.goal), 'Navigation:checkquery:badarg', 'goal location inside obstacle');
+            end
+        end
+        
+        function occ = isoccupied(nav, pos)
+            %Navigation.isoccupied Test if grid cell is occupied
+            %
+            % N.isoccupied(POS) is true if there is a valid grid map and the coordinate
+            % POS (1x2) is occupied.  P=[X,Y] rather than MATLAB row-column
+            % coordinates.
+            
+            if isempty(nav.occgridnav)
+                % there are no limits, everywhere is unoccuplied
+                occ = false;
+            else
+                try
+                    occ = nav.occgridnav( pos(2), pos(1) ) > 0;
+                catch me
+                    % come here if subscript out of range, we have fallen off the edge of the map
+                    occ = true;
+                end
+            end
+        end
+        
+        function occ = isoccupied_new(nav, x, y)
+            
+            if nargin == 2 && isvec(x, 2)
+                wc = x(:);
+            else
+                wc = [x; y];
+            end
+            gc = round( nav.w2g * x(:) );
+            try
+                occ = nav.occgrid(gc(2), gc(1));
+            catch
+                occ = true; % beyond the grid, all cells are implicitly occupied
+            end
+        end
+        
+        function goal_change(nav)
+            %Navigation.goal_change Notify change of goal
+            %
+            % Invoked when the goal property of the object is changed.  Typically this
+            % is overriden in a subclass to take particular action such as invalidating
+            % a costmap.
+        end
+        
+        function navigate_init(nav, start)
+            %Navigation.navigate_init Notify start of path
+            %
+            % N.navigate_init(start) is called when the path() method is invoked.
+            % Typically overriden in a subclass to take particular action such as
+            % computing some path parameters. start is the initial position for this
+            % path, and nav.goal is the final position.
+        end
+
 
         function r = rand(nav, varargin)
         %Navigation.rand Uniformly distributed random number
@@ -660,14 +671,45 @@ robot = start;
                 fprintf([class(nav) ' debug:: ' sprintf(varargin{:}) '\n']);
             end
         end
-
-        function spinner(nav)
-        %Navigation.spinner Update progress spinner
-        %
-        % N.spinner() displays a simple ASCII progress spinner, a rotating bar.
+        
+                function spinner(nav)
+            %Navigation.spinner Update progress spinner
+            %
+            % N.spinner() displays a simple ASCII progress spinner, a rotating bar.
             spinchars = '-\|/';
             nav.spincount = nav.spincount + 1;
             fprintf('\b%c', spinchars( mod(nav.spincount, length(spinchars))+1 ) );
+        end
+        
+    end
+    
+    methods (Static)
+        
+        function show_distance(d)
+            d(isinf(d)) = NaN;
+            clf
+            ax = gca;
+            colormap(gray(256));
+
+            ax.CLimMode = 'Manual';
+            ax.CLim = [0 max(d(:))];
+            image(d, 'CDataMapping', 'scaled');
+            ax.YDir = 'normal';
+            grid on; xlabel('X'); ylabel('Y');
+            drawnow
+        end
+
+        function h = progress_init(title)
+            h = waitbar(0, title, ...
+                'CreateCancelBtn', 'setappdata(gcbf, ''canceling'', 1)');
+        end
+        
+        function progress(h, x)
+            waitbar(x, h);
+        end
+        
+        function progress_delete(h)
+            delete(h);
         end
 
     end % method

@@ -6,22 +6,19 @@
 % finds paths between specific start and goal points.
 %
 % Methods::
-%
-% plan         Compute the roadmap
-% path         Compute a path to the goal
-% visualize    Display the obstacle map (deprecated)
-% plot         Display the obstacle map
-% display      Display the parameters in human readable form
-% char         Convert to string
+%  plan         Compute the roadmap
+%  query        Find a path
+%  plot         Display the obstacle map
+%  display      Display the parameters in human readable form
+%  char         Convert to string
 %
 % Example::
-%
 %        load map1              % load map
 %        goal = [50,30];        % goal point
 %        start = [20, 10];      % start point
 %        prm = PRM(map);        % create navigation object
 %        prm.plan()             % create roadmaps
-%        prm.path(start, goal)  % animate path from this start location
+%        prm.query(start, goal, 'animate')  % animate path from this start location
 %
 % References::
 %
@@ -63,7 +60,7 @@ classdef PRM < Navigation
         npoints0
         distthresh      % distance threshold, links between vertices
                         % must be less than this.
-distthresh0
+        distthresh0     % distance threshold set by constructor option
         graph           % graph Object representing random nodes
 
         vgoal           % index of vertex closest to goal
@@ -112,21 +109,26 @@ distthresh0
         function plan(prm, varargin)
         %PRM.plan Create a probabilistic roadmap
         %
-        % P.plan() creates the probabilistic roadmap by randomly
+        % P.plan(OPTIONS) creates the probabilistic roadmap by randomly
         % sampling the free space in the map and building a graph with
         % edges connecting close points.  The resulting graph is kept
         % within the object.
+        %
+        % Options::
+        %  'npoints',N      Number of sample points (default is set by constructor)
+        %  'distthresh',D   Distance threshold, edges only connect vertices closer 
+        %                   than D (default set by constructor)
 
         % build a graph over the free space
             prm.message('create the graph');
             
             opt.npoints = prm.npoints0;
-            opt.distthresh = prm.distthresh0;
+            opt.distthresh = prm.distthresh0;  % default is constructor value
 
             opt = tb_optparse(opt, varargin);
             
             prm.npoints = opt.npoints;
-            prm.distthresh = opt.distthresh;
+            prm.distthresh = opt.distthresh;  % actual value used is constructor value overridden here
 
             prm.graph.clear();  % empty the graph
             prm.vpath = [];
@@ -134,12 +136,11 @@ distthresh0
         end
         
         function pp = query(prm, start, goal)
-        %PRM.path Find a path between two points
+        %PRM.query Find a path between two points
         %
-        % P.path(START, GOAL) finds and displays a path from START to GOAL
+        % P.query(START, GOAL) finds and displays a path from START to GOAL
         % which is overlaid on the occupancy grid.
         %
-        % X = P.path(START) returns the path (2xM) from START to GOAL.
         
             if prm.graph.n == 0
                 error('RTB:PRM:noplan', 'query: no plan: run the planner');
@@ -321,7 +322,7 @@ distthresh0
                 while true
                     x = prm.randi(numcols(prm.occgrid));
                     y = prm.randi(numrows(prm.occgrid));
-                    if ~prm.occupied([x y])
+                    if ~prm.isoccupied([x y])
                         break; % free cell
                     end
                 end
@@ -354,7 +355,7 @@ distthresh0
             p = bresenham(p1, p2);
 
             for pp=p'
-                if prm.occupied(pp)
+                if prm.isoccupied(pp)
                     c = false;
                     return;
                 end
