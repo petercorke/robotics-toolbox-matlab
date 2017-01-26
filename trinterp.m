@@ -51,10 +51,8 @@ function T = trinterp(A, B, C)
         p1 = transl(T1);
         
         for i=1:length(r)
-            
             qr = q0.interp(q1, r(i));
             pr = p0*(1-r(i)) + r(i)*p1;
-            
             T(:,:,i) = rt2tr(qr.R, pr);
         end
     elseif nargin == 2
@@ -63,18 +61,17 @@ function T = trinterp(A, B, C)
         
         if length(r) == 1 && r > 1 && (r == floor(r))
             % integer value
-            r = [0:(r-1)] / (r-1);
+            r = linspace(0, 1, r);
         elseif any(r<0 | r>1)
             error('RTB:trinterp', 'values of S outside interval [0,1]');
         end
         
         q0 = UnitQuaternion(T0);
-        p0 = T0.t;
+        p0 = transl(T0);
         
         for i=1:length(r)
             qr = q0.interp(r);
             pr = r*p0;
-            
             T(:,:,i) = rt2tr(qr.R, pr);
         end
 
