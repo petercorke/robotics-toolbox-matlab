@@ -36,7 +36,7 @@ function T = trinterp(A, B, C)
     
     if nargin == 3
         %	TR = TRINTERP(T0, T1, r)
-        T0 = A; T1 = B; r = C;
+        T0 = A; T1 = B; r = C(:)';
         
         if length(r) == 1 && r > 1 && (r == floor(r))
             % integer value
@@ -57,7 +57,7 @@ function T = trinterp(A, B, C)
         end
     elseif nargin == 2
         %	TR = TRINTERP(T, r)
-        T0 = A; r = B;
+        T0 = A; r = B(:)';
         
         if length(r) == 1 && r > 1 && (r == floor(r))
             % integer value
@@ -70,8 +70,8 @@ function T = trinterp(A, B, C)
         p0 = transl(T0);
         
         for i=1:length(r)
-            qr = q0.interp(r);
-            pr = r*p0;
+            qr = q0.interp(r(i));
+            pr = r(i)*p0;
             T(:,:,i) = rt2tr(qr.R, pr);
         end
 
