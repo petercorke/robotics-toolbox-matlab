@@ -88,9 +88,14 @@ function varargout = rne(robot, varargin)
         args = [args opt.fext];
     end
     
-    if robot.fast && ~opt.slow && ~robot.issym() && (nargout < 2)
-        % use the MEX-file implementation
-        % the fast property is set at constructor time
+    if robot.fast && ~opt.slow && (nargout < 2) && ~robot.issym() && ~any(cellfun( @(x) isa(x, 'sym'), args))
+        % use the MEX-file implementation if:
+        % * the fast property is set at constructor time
+        % * slow override not set
+        % * base wrench not requested
+        % * robot has no symbolic parameters
+        % * joint state has no symbolic values
+        %
         % the mex-file handles DH and MDH variants
         
         % the MEX file doesn't handle base rotation, so we need to hack the gravity

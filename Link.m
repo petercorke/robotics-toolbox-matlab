@@ -452,7 +452,7 @@ classdef Link < matlab.mixin.Copyable
             tau = l.B * abs(l.G) * qd;
             
             % Coulomb friction
-            if ~issym(l)
+            if ~isa(qd, 'sym')
                 if qd > 0
                     tau = tau + l.Tc(1);
                 elseif qd < 0
