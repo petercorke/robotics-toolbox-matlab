@@ -503,40 +503,4 @@ function mstraj_test(tc)
      verifyEqual(tc, out,expected_out ,'absTol',1e-4);
 end
 
-function trinterp_test(tc)
-    %% between two transforms
-    T0 = transl(1,2,3);
-    T1 = transl(-1,-2,-3)*trotx(pi);
-    Tm = trotx(pi/2);
-    
-    T = trinterp(T0, T1, 0);
-    tc.verifyEqual(size(T), [4 4]);
-    tc.verifyEqual(T, T0, 'abstol', 1e-10);
-    
-    tc.verifyEqual(trinterp(T0, T1, 1), T1, 'abstol', 1e-10);
-    tc.verifyEqual(trinterp(T0, T1, 0.5), Tm, 'abstol', 1e-10);
-    
-    T = trinterp(T0, T1, [0.5 0 1]);
-    tc.verifyEqual(size(T), [4 4 3]);
-    tc.verifyEqual(T(:,:,1), Tm, 'abstol', 1e-10);
-    tc.verifyEqual(T(:,:,2), T0, 'abstol', 1e-10);
-    tc.verifyEqual(T(:,:,3), T1, 'abstol', 1e-10);
 
-    %% between identity and transform
-    T0 = eye(4,4);
-    T1 = transl(2,4,6)*trotx(pi);
-    Tm = transl(1,2,3)*trotx(pi/2);
-    
-    T = trinterp(T1, 0);
-    tc.verifyEqual(size(T), [4 4]);
-    tc.verifyEqual(T, T0, 'abstol', 1e-10);
-    
-    tc.verifyEqual(trinterp(T0, T1, 1), T1, 'abstol', 1e-10);
-    tc.verifyEqual(trinterp(T0, T1, 0.5), Tm, 'abstol', 1e-10);
-    
-    T = trinterp(T0, T1, [0.5 0 1]);
-    tc.verifyEqual(size(T), [4 4 3]);
-    tc.verifyEqual(T(:,:,1), Tm, 'abstol', 1e-10);
-    tc.verifyEqual(T(:,:,2), T0, 'abstol', 1e-10);
-    tc.verifyEqual(T(:,:,3), T1, 'abstol', 1e-10);
-end
