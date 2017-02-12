@@ -28,7 +28,11 @@
 % http://www.petercorke.com
 
 function Wt = wtrans(T, W)
+    
+    assert(ishomog(T), 'RTB:wtrans:badarg', 'T must be 4x4');
+    assert(isvec(W,6), 'RTB:wtrans:badarg', 'W must be a 6-vector');
 
+    W = W(:);
     f = W(1:3); m = W(4:6);
     k = cross(f, transl(T) ) + m;
 
