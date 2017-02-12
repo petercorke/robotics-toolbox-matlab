@@ -1,13 +1,20 @@
 %RTBDEMO 	Robot toolbox demonstrations
 %
 % rtbdemo displays a menu of toolbox demonstration scripts that illustrate:
-%   - homogeneous transformations
-%   - trajectories
-%   - forward kinematics
-%   - inverse kinematics
-%   - robot animation
-%   - inverse dynamics
-%   - forward dynamics
+%   - fundamental datatypes
+%     - rotation and homogeneous transformation matrices
+%     - quaternions
+%     - trajectories
+%   - serial link manipulator arms
+%     - forward and inverse kinematics
+%     - robot animation
+%     - forward and inverse dynamics
+%   - mobile robots
+%     - kinematic models and control
+%     - path planning (D*, PRM, Lattice, RRT)
+%     - localization (EKF, particle filter)
+%     - SLAM (EKF, pose graph)
+%     - quadrotor control
 %
 % rtbdemo(T) as above but waits for T seconds after every statement, no
 % need to push the enter key periodically.
@@ -15,7 +22,9 @@
 % Notes::
 % - By default the scripts require the user to periodically hit <Enter> in
 %   order to move through the explanation.
+% - Some demos require Simulink
 
+% TODO: triple angle, pose graph slam example, lattice planner
 
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
@@ -83,7 +92,6 @@ function rtbdemo(timeout)
         'Inverse dynamics', 'idyn';
         'Forward dynamics', 'fdyn';
         'Symbolic', 'symbolic';
-        'Code generation', 'codegen';
         'Driving to a pose', 'drivepose';
         'Quadrotor flying', 'quadrotor';
         'Braitenberg vehicle', 'braitnav';
@@ -92,6 +100,7 @@ function rtbdemo(timeout)
         'PRM navigation', 'prmnav';
         'SLAM demo', 'slam';
         'Particle filter localization', 'particlefilt';
+        'Pose graph SLAM', 'pgslam';
         };
     
     % display the GUI panel
