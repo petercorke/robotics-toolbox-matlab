@@ -20,24 +20,19 @@
 
 %%begin
 
-% Our bug style robot will operate within a grid world that contains free
-% space where it can drive and obstacles.  We load a map of the world
-load map1
-% which loads a variable called map
-about map
-% and the cells contain zero if it is free space (driveable) and one if it is an
-% obstacle.
+% We start by loading some data acquired on a mobile robot moving around
+% MIT's Killian Court.
 
-% Now we create an instance of a robot with the bug navigation algorithm
-bug = Bug2(map)
+pg = PoseGraph('killian-small.toro');
 
-% and display its grid world
-bug.plot()
-% where obstacles are marked in red.
+% now we plot the data and we see that there are some error due to
+% odometry, the long corridor appears as a triangle
+clf; pg.plot()
 
-% Now we define the goal and start coordinates
-goal = [50,30];
-start = [20, 10];
+% we optimize the pose graph
+pg.optimize();
 
-% then ask the robot to find the path, it will be animated with green dots
-bug.query(start, goal, 'animate');
+% and then plot the optimized graph in a new figure
+figure; pg2.plot
+
+% and we see that the corridor now has a more sensible shape

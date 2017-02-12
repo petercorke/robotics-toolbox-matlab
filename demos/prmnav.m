@@ -50,5 +50,8 @@ prm.plan();
 % point in the world
 prm.plot();
 
-% Now we can execute the planned path, it will be animated with green dots
-prm.path(start, goal)
+% Now we can find a path from start to goal using the roadmap 
+p = prm.query(start, goal);
+
+% and now display it
+prm.plot(p);
