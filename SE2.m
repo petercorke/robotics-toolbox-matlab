@@ -244,7 +244,7 @@ classdef SE2 < SO2
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function t = get.t(obj)
-            %SE2.t  Set translational component
+            %SE2.t  Get translational component
             %
             % P.t is a column vector (2x1) representing the translational component of
             % the rigid-body motion described by the SE2 object P.
@@ -258,7 +258,7 @@ classdef SE2 < SO2
         end
         
         function o = set.t(obj, t)
-            %SE2.t  Get translational component
+            %SE2.t  Set translational component
             %
             % P.t = TV sets the translational component of the rigid-body motion
             % described by the SE2 object P to TV (2x1).
