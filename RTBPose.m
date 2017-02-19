@@ -387,7 +387,11 @@ classdef (Abstract) RTBPose
             %
             % Notes::
             % - if the pose is symbolic the result will be a symbolic matrix.
-            d = obj.data;
+            
+            d = zeros( [size(obj(1).data) length(obj)] );
+            for i=1:length(obj)
+                d(:,:,i) = obj(i).data;
+            end
         end
         
         

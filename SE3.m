@@ -299,10 +299,7 @@ classdef SE3 < SO3
             % dimension corresponding to the index of P.
             %
             % See also SO2.T.
-            TT = zeros(4,4,length(obj));
-            for i=1:length(obj)
-                TT(1:4,1:4,i) = obj(i).data(1:4,1:4);
-            end
+            TT = double(obj);
         end
               
         
@@ -343,7 +340,7 @@ classdef SE3 < SO3
             % P.
             %
             % See also SE3.todelta, DELTA2TR, TR2DELTA.
-            T = obj .* delta2tr(v);
+            T = obj .* SE3(delta2tr(v));
         end
         
         function J = velxform(obj, varargin)
@@ -812,7 +809,7 @@ classdef SE3 < SO3
             T = SE3( rand(3,1) ) * SE3.rpy(rand(1,3));
         end
         
-        function obj = delta(obj1, obj2)
+        function obj = delta(d)
             %SE3.delta SE3 object from differential motion vector
             %
             % T = SE3.delta(D) is an SE3 pose object representing differential
@@ -822,7 +819,8 @@ classdef SE3 < SO3
             %
             % See also SE3.todelta, SE3.increment, TR2DELTA.
             
-            obj = SE3( delta2tr(varargin{:}));
+            assert(isvec(d,6), 'RTB:SE3:badarg', 'delta is a 6-vector');
+            obj = SE3( delta2tr(d));
         end
         
         % Static factory methods for constructors from exotic representations
