@@ -130,6 +130,7 @@ classdef Unicycle < Vehicle
             opt.accelmax = Inf;
 
             veh = tb_optparse(opt, veh.options, veh);
+            veh.vprev = 0;
         end
 
 

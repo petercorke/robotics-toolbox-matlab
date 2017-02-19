@@ -9,6 +9,7 @@
 %   Bicycle      constructor
 %   add_driver   attach a driver object to this vehicle
 %   control      generate the control inputs for the vehicle
+%   deriv        derivative of state given inputs
 %   init         initialize vehicle state
 %   f            predict next state based on odometry
 %   Fx           Jacobian of f wrt x
@@ -141,8 +142,8 @@ classdef Bicycle < Vehicle
             opt.accelmax = Inf;
 
             veh = tb_optparse(opt, veh.options, veh);
+            veh.vprev = 0;
         end
-
 
         function xnext = f(veh, x, odo, w)
             %Bicycle.f Predict next state based on odometry
