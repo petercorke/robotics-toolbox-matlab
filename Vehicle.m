@@ -144,8 +144,6 @@ classdef Vehicle < handle
             veh.options = args;  % unused options go back to the subclass
 
             veh.x_hist = [];
-            
-
         end
 
         function init(veh, x0)
@@ -155,14 +153,18 @@ classdef Vehicle < handle
             % object (if attached) and clears the history.
             %
             % V.init(X0) as above but the state is initialized to X0.
+            
+            % TODO: should this be called from run?
+            
             if nargin > 1
                 veh.x = x0(:);
             else
                 veh.x = veh.x0;
             end
             veh.x_hist = [];
+            
             if ~isempty(veh.driver)
-                veh.driver.init()
+                veh.driver.init();
             end
         end
 
@@ -284,13 +286,15 @@ classdef Vehicle < handle
             if nargin < 2
                 nsteps = 1000;
             end
-
+            if ~isempty(veh.driver)
+                veh.driver.init()
+            end
             %veh.clear();
             if ~isempty(veh.driver)
-                veh.driver.visualize();
+                veh.driver.plot();
             end
 
-            veh.visualize();
+            veh.plot();
             for i=1:nsteps
                 veh.step();
                 if nargout == 0
@@ -499,7 +503,7 @@ classdef Vehicle < handle
 %             if opt.fill
 %                 lineprops = [lineprops 'fill' opt.color ];
 %             end
-            lineprops = { 'fillcolor', 'b', 'alpha', 0.5 }
+            lineprops = { 'fillcolor', 'b', 'alpha', 0.5 };
             
             % compute the dimensions of the robot
             if ~isempty(opt.size)
