@@ -14,7 +14,8 @@
 %        trotx(1) * transl(a1,0,0) * troty(2) * transl(0,a3,0) * trotz(3)
 %
 % Notes::
-% - The string can contain spaces between elements or on either side of ARG.
+% - Variables list in the string must exist in the caller workspace.
+% - The string can contain spaces between elements, or on either side of ARG.
 % - Works for symbolic variables in the workspace and/or passed in via the 
 %   vector Q.
 % - For symbolic operations that involve use of the value pi, make sure you
@@ -45,6 +46,10 @@
 
 function T = trchain(s, q)
     
+    if nargin == 1
+        q = [];
+    end
+    
     if isa(q, 'symfun')
         q = formula(q);
     end
@@ -70,7 +75,7 @@ function T = trchain(s, q)
         else            % or the workspace
             
             try
-                arg = evalin('base', token.arg);
+                arg = evalin('caller', token.arg);
             catch
                 error('RTB:trchain:badarg', 'variable %s does not exist', token.arg);
             end

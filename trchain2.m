@@ -44,6 +44,10 @@
 
 function T = trchain2(s, q)
     
+    if nargin == 1
+        q = [];
+    end
+    
     %s = 'R(q1)Tx(a1)R(q2)Tx(a3)R(q3)Tx(a3)';
     
     tokens = regexp(s, '\s*(?<op>R.?|T.)\(\s*(?<arg>[A-Za-z][A-Za-z0-9]*)\s*\)\s*', 'names');
@@ -69,7 +73,7 @@ function T = trchain2(s, q)
         else
             % or the workspace
             try
-                arg = evalin('base', token.arg);
+                arg = evalin('caller', token.arg);
             catch
                 error('RTB:trchain2:badarg', 'variable %s does not exist', token.arg);
             end
@@ -77,7 +81,7 @@ function T = trchain2(s, q)
         
         % now evaluate the element and update the transform chain
         switch token.op
-            case 'R'
+            case {'R', 'Rz'}
                 T = T * trot2(arg);
             case 'Tx'
                 T = T * transl2(arg, 0);
