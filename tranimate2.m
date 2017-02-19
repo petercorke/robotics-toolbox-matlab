@@ -134,6 +134,8 @@ function tranimate2(P2, varargin)
         axlim = [mn; mx];
         axlim = axlim(:)';
         args = [args 'axis' axlim];
+    else
+        args = [args 'axis' opt.axis];
     end
     
     if opt.retain

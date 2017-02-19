@@ -105,6 +105,8 @@ function tranimate(P2, varargin)
         for x = args{1}
             T2 = cat(3, T2, P2(x));
         end
+    else
+        error('RTB:tranimate:badarg', 'argument must be 3x3 or 4x4 matrix');
     end
     
     % at this point
@@ -134,6 +136,8 @@ function tranimate(P2, varargin)
         axlim = [mn; mx];
         axlim = axlim(:)';
         args = [args 'axis' axlim];
+    else
+        args = [args 'axis' opt.axis];
     end
     
     if opt.retain
