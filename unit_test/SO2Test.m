@@ -10,6 +10,12 @@ function constructor_test(tc)
     
     verifyEqual(tc, SO2().double, eye(2,2));
     
+    %% from angle
+    
+    verifyEqual(tc, SO2(0).double, eye(2,2), 'AbsTol', 1e-10  );
+    verifyEqual(tc, SO2(pi/2).double, rot2(pi/2), 'AbsTol', 1e-10  );
+    verifyEqual(tc, SO2(90, 'deg').double, rot2(pi/2), 'AbsTol', 1e-10  );
+   
     
     %% from R
     
@@ -62,6 +68,8 @@ end
 function isa_test(tc)
     
     verifyTrue(tc, SO2.isa(rot2(0)) );
+    verifyTrue(tc, SO2.isa(rot2(0), 'valid') );
+
     verifyFalse(tc, SO2.isa(1) )
 end
 
@@ -140,8 +148,9 @@ end
 
 function conversions_test(tc)
     
-
-    
+    T = SO2(pi/2).SE2;
+    verifyClass(tc, T, 'SE2');
+    verifyEqual(tc, T.T, trot2(pi/2));
 
     
     %% Lie stuff
@@ -172,8 +181,9 @@ function miscellany_test(tc)
     
     z = SO2.check(rot2(0.3));
     verifyEqual(tc, double(z), rot2(0.3));
-
-
+    
+    T = r.SE2;
+    verifyClass(tc, SO2.check(T), 'SO2');
 end
 
 function display_test(tc)

@@ -15,6 +15,7 @@ function SerialLink_test(tc)
     % test makin a robot from DH matrix
     DH = [pi/2 0 0 1; 0 2 0 0];
     R2 = SerialLink(DH,'name','Robot2');
+
 end
     
 function SerialLinkMDH_test(tc)
@@ -31,7 +32,17 @@ function SerialLinkMDH_test(tc)
     J = p560m.jacobe(qz);
     tau = p560m.rne(qz, qz, qz);
 end
-        
+
+
+function dyn_test(tc)
+    
+    mdl_puma560
+    p560.dyn;
+    
+    mdl_puma560akb  
+    p560m.dyn;
+end
+
 %    *                          - compound two robots
 function compound_test(tc)
     L(1)=Link([1 1 1 1 1]);

@@ -15,15 +15,29 @@ function navigation_test(tc)
     map(2,3) = 1;
     
     % test isoccupied test
-    n = Bug2(map);
+    n = Bug2(map);  % we can't instantiate Navigation because it's abstract
     tc.verifyTrue( n.isoccupied([3,2]) );
     tc.verifyFalse( n.isoccupied([3,3]) );
+        tc.verifyTrue( n.isoccupied(3,2) );
+    tc.verifyFalse( n.isoccupied(3,3) );
 
     % test inflation option
     n = Bug2(map, 'inflate', 1);
     tc.verifyTrue( n.isoccupied([3,2]) );
     tc.verifyTrue( n.isoccupied([3,3]) );
     tc.verifyFalse( n.isoccupied([3,4]) );
+    
+    r = n.randn;
+    tc.verifySize(r, [1 1]);
+    tc.verifyInstanceOf(r, 'double');
+    r = n.randn(2,2);
+    tc.verifySize(r, [2 2]);
+    
+    r = n.randi(10);
+    tc.verifySize(r, [1 1]);
+    tc.verifyInstanceOf(r, 'double');
+    r = n.randi(10, 2,2);
+    tc.verifySize(r, [2 2]);
     
 end
 
@@ -71,7 +85,7 @@ function dstar_test(tc)
     ds.plan();
 
     % show new path
-    ds.query(tc.TestData.start)
+    ds.query(tc.TestData.start);
 
     p = ds.query(tc.TestData.start);
     ds.plot(p);
@@ -115,7 +129,7 @@ function prm_test(tc)
     prm.plan();
     prm.plot();
 
-    prm.query(tc.TestData.start, tc.TestData.goal)
+    prm.query(tc.TestData.start, tc.TestData.goal);
     p = prm.query(tc.TestData.start, tc.TestData.goal);
     prm.plot(p);
 end

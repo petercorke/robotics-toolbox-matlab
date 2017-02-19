@@ -1,5 +1,6 @@
 function tests = SE3Test
     tests = functiontests(localfunctions);
+    clc
 end
 
 
@@ -58,6 +59,22 @@ function constructor_test(tc)
 
 end
 
+function double_test(tc)
+    
+    a = SE3(1,2, 3);
+    d = double(a);
+    verifyInstanceOf(tc, d, 'double');
+    verifySize(tc, d, [4 4]);
+    verifyEqual(tc, d(1:3,4), [1 2 3]');
+    
+    aa = [a a a a a];
+    d = double(aa);
+    verifyInstanceOf(tc, d, 'double');
+    verifySize(tc, d, [4 4 5]);
+    verifyEqual(tc, d(1:3,4, 1), [1 2 3]');
+    verifyEqual(tc, d(1:3,4, 5), [1 2 3]');
+end
+
 function staticconstructors_test(tc)
     %% rotation primitives
     for theta = [-pi/2 0 pi/2 pi]
@@ -92,6 +109,10 @@ function staticconstructors_test(tc)
     
     verifyEqual(tc, SE3.eul( 10, 20, 30, 'deg' ).T, eul2tr( 10, 20, 30, 'deg' ), 'AbsTol', 1e-10  );
     verifyEqual(tc, SE3.eul([ 10, 20, 30], 'deg' ).T, eul2tr( 10, 20, 30, 'deg' ), 'AbsTol', 1e-10  );
+    
+    %% OA vectors
+    verifyEqual(tc, SE3.oa([0 1 0], [0 0 1]).T, eye(4,4), 'AbsTol', 1e-10  );
+    verifyEqual(tc, SE3.oa([1 0 0], [0 1 0]).T, [0 0 1 0; 1 0 0 0; 0 1 0 0; 0 0 0 1]', 'AbsTol', 1e-10  );
 
     %% (theta, v)
     th = 0.2; v = unit([1 2 3]);
@@ -104,13 +125,28 @@ function staticconstructors_test(tc)
     verifyEqual(tc, SE3.exp(zeros(4,4)).T, eye(4,4), 'AbsTol', 1e-10  );
     t= [1 2 3];
     verifyEqual(tc, SE3.exp([t 0 0 0]').T, transl(t), 'AbsTol', 1e-10  );
+end
 
-
+function delta_test(tc)
+    T = SE3(1,2,3) * SE3.Ry(pi/2);
+    
+    d = [4 5 6 1 2 3]*1e-3;
+    
+    % delta
+    Td = SE3.delta(d);
+    verifyEqual(tc, Td.t, d(1:3)', 'AbsTol', 1e-10);
+    verifyEqual(tc, Td.R, skew(d(4:6))+eye(3,3), 'AbsTol', 1e-10);
+    
+    % increment
+    T2 = T.increment(d)
+    verifyEqual(tc, double(T2), double(T.*Td), 'AbsTol', 1e-10 );
 end
 
 function isa_test(tc)
     
     verifyTrue(tc, SE3.isa(trotx(0)) );
+    verifyTrue(tc, SE3.isa(trotx(0), 'valid') );
+    
     verifyFalse(tc, SE3.isa(1) )
 end
 
@@ -169,6 +205,40 @@ function Rt_test(tc)
     verifyEqual(tc, TT1.transl, t1', 'AbsTol', 1e-10  );
     TT = [TT1 TT1 TT1];
     verifyEqual(tc, TT.transl, [t1 t1 t1]', 'AbsTol', 1e-10  );
+    
+    [a,b,c] = transl(TT1);
+    verifyEqual(tc, a, t1(1));
+    verifyEqual(tc, b, t1(2));
+    verifyEqual(tc, c, t1(3));    
+end
+
+function tv_test(tc)
+    a = SE3(1,2,3);
+    verifyEqual(tc, a.tv, [1 2 3]');
+    
+    aa = [a a a a];
+    verifyEqual(tc, aa.tv, [1 2 3]'*[1 1 1 1]);
+    
+end
+
+function ctraj_test(tc)
+    
+    TT = SE3([2 4 6])*SE3.Rx(pi);
+    I = SE3();
+    
+    tg = ctraj(I, TT, 3);
+    verifyInstanceOf(tc, tg, 'SE3');
+    verifySize(tc, tg, [1 3]);
+    verifyEqual(tc, double(tg(1)), double(I), 'AbsTol', 1e-10 );
+    verifyEqual(tc, double(tg(2)), double( SE3([2 4 6]/2)*SE3.Rx(pi/2) ), 'AbsTol', 1e-10 );
+    verifyEqual(tc, double(tg(3)), double(TT), 'AbsTol', 1e-10 );
+    
+    tg = ctraj(I, TT, [1 0.5 0]);
+    verifyInstanceOf(tc, tg, 'SE3');
+    verifySize(tc, tg, [1 3]);
+    verifyEqual(tc, double(tg(3)), double(I), 'AbsTol', 1e-10 );
+    verifyEqual(tc, double(tg(2)), double( SE3([2 4 6]/2)*SE3.Rx(pi/2) ), 'AbsTol', 1e-10 );
+    verifyEqual(tc, double(tg(1)), double(TT), 'AbsTol', 1e-10 );
 end
 
 
@@ -271,6 +341,12 @@ function conversions_test(tc)
 
     verifyEqual(tc, q, T.UnitQuaternion);
     
+    %% Twist
+    T = SE3.exp([1 2 3 0.2 0.3 0.4]);
+    t = T.Twist();
+    verifyInstanceOf(tc, t, 'Twist');
+    verifyEqual(tc, t.v, [1 2 3]', 'AbsTol', 1e-10);
+    verifyEqual(tc, t.w, [0.2 0.3 0.4], 'AbsTol', 1e-10);
     
     %%  SE3                     convert to SE3 class
 

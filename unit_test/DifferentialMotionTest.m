@@ -4,48 +4,81 @@ function tests = TransformationsTest
 end
 
 %%    skew                       - vector to skew symmetric matrix
-function skew_test(testCase)
-    % unit testing the function skew(testCase) with a vector matrix mat([.1, .2, .3])
-    verifyEqual(testCase, skew([1, 2, 3]'),...
+function skew_test(tc)
+    
+    %% 2D case
+        verifyEqual(tc, skew(2),...
+            [0 -2; 2 0],'absTol',1e-4);
+    
+    %% 3D case
+    
+    % test row and column vectors
+    verifyEqual(tc, skew([1, 2, 3]'),...
             [     0    -3     2
                  3     0    -1
                 -2     1     0],'absTol',1e-4);
-   % unit testing the function skew(testCase) with a vertical vector matrix mat([.1, .2, .3])
-    verifyEqual(testCase, skew([1, 2, 3]),...
+    verifyEqual(tc, skew([1, 2, 3]),...
             [     0    -3     2
                  3     0    -1
                 -2     1     0],'absTol',1e-4);
-     % unit testing the function skew(testCase) with zero values
-    verifyEqual(testCase, skew([0 0 0]),...
-            [0     0     0
-             0     0     0
-             0     0     0],'absTol',1e-4);
-     %Testing with a scalar number input 
-     verifyEqual(testCase, skew(1),...
-            [0    -1
-             1     0],'absTol',1e-4);
+
 end
 
          
 %%    vex                        - skew symmetric matrix to vector
-function vex_test(testCase)
-    % unit testing vex with 3x3 skew matrix
-    verifyEqual(testCase, vex([0, -3, 2; 3, 0, -1; -2, 1, 0]),...
+function vex_test(tc)
+    %% 2D case
+   verifyEqual(tc, vex([0 -2; 2 0]), 2, 'absTol',1e-4);
+   
+    %% 3D case
+    verifyEqual(tc, vex([0, -3, 2; 3, 0, -1; -2, 1, 0]),...
             [1; 2; 3],'absTol',1e-4);
     % unit testing vex with 3x3 skew matrix
-    verifyEqual(testCase, vex([0 0 0;0 0 0;0 0 0]),...
+    verifyEqual(tc, vex([0 0 0;0 0 0;0 0 0]),...
             [0; 0; 0],'absTol',1e-4);
-    % test SO(2) case
-    verifyEqual(testCase, vex([0, -3; 3, 0]),...
-            [3],'absTol',1e-4);
-    verifyError(testCase, @()vex(1),'RTB:vex:badarg');
-    verifyError(testCase, @()vex(zeros(4,4)),'RTB:vex:badarg');
+
+    verifyError(tc, @()vex(1),'RTB:vex:badarg');
+    verifyError(tc, @()vex(zeros(4,4)),'RTB:vex:badarg');
 
     % ---------------------------------------------------------------------
     %    wtrans                     - transform wrench between frames
     % does not exist!!! need to find this function
     %----------------------------------------------------------------------
 end
+
+%%    skewa                       - augmented vector to skew symmetric matrix
+function skewa_test(tc)
+    
+    %% 2D case
+        verifyEqual(tc, skewa([1 2 3]),...
+            [0 -3 1; 3 0 2; 0 0 0],'absTol',1e-4);
+    
+    %% 3D case
+    
+    % test row and column vectors
+    verifyEqual(tc, skewa([1, 2, 3, 4, 5, 6]'),...
+            [0 -6 5 1; 6 0 -4 2; -5 4 0 3; 0 0 0 0],'absTol',1e-4);
+    verifyEqual(tc, skewa([1, 2, 3, 4, 5, 6]),...
+            [0 -6 5 1; 6 0 -4 2; -5 4 0 3; 0 0 0 0],'absTol',1e-4);
+
+    verifyError(tc, @()skewa(1),'RTB:skewa:badarg');
+
+end
+
+         
+%%    vexa                        - augmented skew symmetric matrix to vector
+function vexa_test(tc)
+    %% 2D case
+   verifyEqual(tc, vexa([0 -3 1; 3 0 2; 0 0 0]), [1 2 3]', 'absTol',1e-4);
+   
+    %% 3D case
+    verifyEqual(tc, vexa([0 -6 5 1; 6 0 -4 2; -5 4 0 3; 0 0 0 0]),...
+            [1 2 3 4 5 6]','absTol',1e-4);
+    
+    verifyError(tc, @()vexa(1),'RTB:vexa:badarg');
+
+end
+
 
 %% Differential motion
 %    delta2tr                   - differential motion vector to HT
@@ -57,112 +90,126 @@ function delta2tr_test(testCase)
    -0.5000    0.4000    1.0000    0.3000
          0         0         0    1.0000],'absTol',1e-4);
     %test with zeros
-    verifyEqual(testCase, delta2tr([0 0 0 0 0 0]),...
-    [1     0     0     0
-     0     1     0     0
-     0     0     1     0
-     0     0     0     1],'absTol',1e-4);
+    verifyEqual(testCase, delta2tr([0 0 0 0 0 0]), eye(4,4),'absTol',1e-4);
     %test with scaler input 
     verifyError(testCase, @()delta2tr(1),'MATLAB:badsubscript');
 end
+
  
 %    eul2jac                    - Euler angles to Jacobian
-function eul2jac_test(testCase)
-    % unit testing eul2jac with variable (0.1, 0.2, 0.3)
-    verifyEqual(testCase, eul2jac(0.1, 0.2, 0.3),...
-    [    0   -0.0998    0.1977
-         0    0.9950    0.0198
-    1.0000         0    0.9801],'absTol',1e-4);
-    % unit testing eul2jac with variable ([.1, .2, .3; .4, .5, .6])
-    verifyEqual(testCase, eul2jac([.1, .2, .3; .4, .5, .6]),...
-        [     0   -0.0998    0.3875
-         0    0.9950    0.0389
-    1.0000         0    0.9211],'absTol',1e-4);
-    % unit testing eul2jac with variable (0.1, 0.2, 0.3)
-    verifyEqual(testCase, eul2jac(0, 0, 0),...
-        [0     0     0
-         0     1     0
-         1     0     1],'absTol',1e-4);
-    verifyError(testCase, @()eul2jac(1),'RTB:eul2jac:badarg');
+function eul2jac_test(tc)
+    % check it works for simple cases    
+    verifyEqual(tc, eul2jac(0, 0, 0), [0 0 0; 0 1 0; 1 0 1]);
+    verifyEqual(tc, eul2jac( [0, 0, 0]), [0 0 0; 0 1 0; 1 0 1]);
+
+    eul = [0.2 0.3 0.4];
+
+        
+    % check complex case
+    verifyEqual(tc, eul2jac( eul(1), eul(2), eul(3)), eul2jac(eul));
+
+    
+     %Testing with a scalar number input 
+    verifyError(tc, @()eul2jac(1),'RTB:eul2jac:badarg');
+     
+     % test Jacobian against numerical approximation 
+     dth = 1e-6;
+     
+
+         R0 = eul2r(eul);
+         R1 = eul2r(eul + dth*[1 0 0]);
+         R2 = eul2r(eul + dth*[0 1 0]);
+         R3 = eul2r(eul + dth*[0 0 1]);
+         
+         JJ = [ vex((R1-R0)*R0')  vex((R2-R0)*R0')  vex((R3-R0)*R0')] / dth;
+         verifyEqual(tc, JJ, eul2jac(eul), 'absTol',1e-4)
+
+    
 end
 
 %    rpy2jac                    - RPY angles to Jacobian
-function rpy2jac_test(testCase)
-    % unit testing rpy2jac with variable (.1,.2,.3)
-    verifyEqual(testCase, rpy2jac(.1, .2, .3),...
-        [1.0000         0    0.1987
-              0    0.9950   -0.0978
-              0    0.0998    0.9752],'absTol',1e-4);
-    % unit testing rpy2jac with variable ([.1, .2, .3])
-    verifyEqual(testCase, rpy2jac([.1, .2, .3]),...
-        [1.0000         0    0.1987
-              0    0.9950   -0.0978
-              0    0.0998    0.9752],'absTol',1e-4);
-    % unit testing rpy2jac with variable (0,0,0)
-    verifyEqual(testCase, rpy2jac(0, 0, 0),...
-        [1     0     0
-         0     1     0
-         0     0     1],'absTol',1e-4);
-     %Testing with a scalar number input 
-     verifyError(testCase, @()rpy2jac(1),'RTB:rpy2jac:badarg');
+function rpy2jac_test(tc)
+    % check it works for simple cases
+    verifyEqual(tc, rpy2jac(0, 0, 0), eye(3,3));
+    verifyEqual(tc, rpy2jac( [0, 0, 0]), eye(3,3));
+    
+    % check switches work
+    verifyEqual(tc, rpy2jac( [0, 0, 0], 'xyz'), [0 0 1; 0 1 0; 1 0 0]);
+    verifyEqual(tc, rpy2jac( [0, 0, 0], 'zyx'), eye(3,3));
+    verifyEqual(tc, rpy2jac( [0, 0, 0], 'yxz'), [0 1 0; 0 0 1; 1 0 0]);
+    
+    rpy = [0.2 0.3 0.4];
+    
+    % check default
+    verifyEqual(tc, rpy2jac(rpy), rpy2jac(rpy, 'zyx') );
+    
+    
+    
+    % check complex case
+    verifyEqual(tc, rpy2jac( rpy(1), rpy(2), rpy(3)), rpy2jac(rpy));
+    
+    
+    %Testing with a scalar number input
+    verifyError(tc, @()rpy2jac(1),'RTB:rpy2jac:badarg');
+    
+    % test Jacobian against numerical approximation for 3 different orders
+    dth = 1e-6;
+    
+    for oo = {'xyz', 'zyx', 'yxz'}
+        order = oo{1};
+        R0 = rpy2r(rpy, order);
+        R1 = rpy2r(rpy + dth*[1 0 0], order);
+        R2 = rpy2r(rpy + dth*[0 1 0], order);
+        R3 = rpy2r(rpy + dth*[0 0 1], order);
+        
+        JJ = [ vex((R1-R0)*R0')  vex((R2-R0)*R0')  vex((R3-R0)*R0')] / dth;
+        verifyEqual(tc, JJ, rpy2jac(rpy, order), 'absTol',1e-4)
+    end
+    
 end
     
 
 
 %    tr2delta                   - HT to differential motion vector
-function tr2delta_test(testCase)
+function tr2delta_test(tc)
     % unit testing tr2delta with a tr matrix
-    verifyEqual(testCase, tr2delta( transl(0.1, 0.2, 0.3) ),...
+    verifyEqual(tc, tr2delta( transl(0.1, 0.2, 0.3) ),...
         [0.1000, 0.2000, 0.3000, 0, 0, 0]','absTol',1e-4);
-    verifyEqual(testCase, tr2delta( transl(0.1, 0.2, 0.3), transl(0.2, 0.4, 0.6) ), ...
+    verifyEqual(tc, tr2delta( transl(0.1, 0.2, 0.3), transl(0.2, 0.4, 0.6) ), ...
         [0.1000, 0.2000, 0.3000, 0, 0, 0]','absTol',1e-4);
-    verifyEqual(testCase, tr2delta( trotx(0.001) ), ...
+    verifyEqual(tc, tr2delta( trotx(0.001) ), ...
         [0,0,0, 0.001,0,0]','absTol',1e-4);
-    verifyEqual(testCase, tr2delta( troty(0.001) ), ...
+    verifyEqual(tc, tr2delta( troty(0.001) ), ...
         [0,0,0, 0,0.001,0]','absTol',1e-4);
-    verifyEqual(testCase, tr2delta( trotz(0.001) ), ...
+    verifyEqual(tc, tr2delta( trotz(0.001) ), ...
         [0,0,0, 0,0,0.001]','absTol',1e-4);
-    verifyEqual(testCase, tr2delta( trotx(0.001), trotx(0.002) ), ...
+    verifyEqual(tc, tr2delta( trotx(0.001), trotx(0.002) ), ...
         [0,0,0, 0.001,0,0]','absTol',1e-4);
+    
     %Testing with a scalar number input
-    verifyError(testCase, @()tr2delta(1),'RTB:tr2delta:badarg');
-    verifyError(testCase, @()tr2delta( ones(3,3) ),'RTB:tr2delta:badarg');
+    verifyError(tc, @()tr2delta(1),'RTB:tr2delta:badarg');
+    verifyError(tc, @()tr2delta( ones(3,3) ),'RTB:tr2delta:badarg');
 
 end
     
 %    tr2jac                     - HT to Jacobian
-function tr2jac_test(testCase)
+function tr2jac_test(tc)
     % unit testing tr2jac with homogeneous transform
-    verifyEqual(testCase, tr2jac( transl(1,2,3) ),...
-        [
-        1     0     0     0     0     0
-        0     1     0     0     0     0
-        0     0     1     0     0     0
-        0     0     0     1     0     0
-        0     0     0     0     1     0
-        0     0     0     0     0     1],'absTol',1e-4);
+    T = transl(1,2,3);
+    [R,t] = tr2rt(T);
     
-    verifyEqual(testCase, tr2jac( trotx(pi/2) ),...
-        [
-        1     0     0     0     0     0
-        0     0     1     0     0     0
-        0    -1     0     0     0     0
-        0     0     0     1     0     0
-        0     0     0     0     0     1
-        0     0     0     0    -1     0],'absTol',1e-4);
-    verifyEqual(testCase, tr2jac( trotz(pi) ),...
-        [
-        -1     0     0     0     0     0
-        0    -1     0     0     0     0
-        0     0     1     0     0     0
-        0     0     0    -1     0     0
-        0     0     0     0    -1     0
-        0     0     0     0     0     1],'absTol',1e-4);
-    % unit testing tr2jac with homogeneous transform of zeros
-    verifyEqual(testCase, tr2jac([0 0 0 0;0 0 0 0;0 0 0 0;0 0 0 0]),...
-            zeros(6,6),'absTol',1e-4);
+    verifyEqual(tc, tr2jac(T), [R' zeros(3,3); zeros(3,3) R']);
+    verifyEqual(tc, tr2jac(T, 'samebody'), [R' (skew(t)*R)'; zeros(3,3) R']);
+    
+     T = transl(1,2,3) * trotx(pi/2) * trotz(pi/2);
+    [R,t] = tr2rt(T);
+    
+    verifyEqual(tc, tr2jac(T), [R' zeros(3,3); zeros(3,3) R']);
+    verifyEqual(tc, tr2jac(T, 'samebody'), [R' (skew(t)*R)'; zeros(3,3) R']);   
+    
+
     % test with scalar value
-    verifyError(testCase, @()tr2jac(1),'RTB:t2r:badarg');
+    verifyError(tc, @()tr2jac(1),'RTB:t2r:badarg');
 end
      
 

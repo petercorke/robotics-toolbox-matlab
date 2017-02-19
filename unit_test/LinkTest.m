@@ -63,6 +63,11 @@ function Link_test(tc)
 %  isprismatic   true if joint is prismatic
     verifyFalse(tc, L(2).isprismatic);
     verifyTrue(tc, L(1).isprismatic);
+    
+    syms a1 m1 c1 Iyy1 b1;
+    L = Revolute('d', 0, 'a', a1, 'alpha', 0, 'm', m1, 'r', [c1 0 0], 'I', [0 Iyy1 0], 'B', b1, 'G', 1, 'Jm', 0, 'standard');
+    L
+    L.dyn
 end
 
 function deepcopy_test(tc)

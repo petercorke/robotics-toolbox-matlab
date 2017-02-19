@@ -1,12 +1,14 @@
 function tests = LocnTest
   tests = functiontests(localfunctions);
+  clc
 end
 
-function Vehicle_test(testCase)
+function Vehicle_test(tc)
+    %%
     randinit
     V = diag([0.005, 0.5*pi/180].^2);
 
-    v = Vehicle(V);
+    v = Bicycle('covar', V);
     v.add_driver( RandomPath(10) );
 
     v.run(100);
@@ -17,12 +19,13 @@ function Vehicle_test(testCase)
     J = v.Fv(v.x, [.1 .2]);
 end
 
-function DeadReckoning_test(testCase)
+function DeadReckoning_test(tc)
+    %%
     randinit
     V = diag([0.005, 0.5*pi/180].^2);
     P0 = diag([0.005, 0.005, 0.001].^2);
 
-    v = Vehicle(V);
+    v = Bicycle('covar', V);
     v.add_driver( RandomPath(10) );
     s = char(v);
 
@@ -36,25 +39,26 @@ function DeadReckoning_test(testCase)
     grid on
     xyzlabel
 
-    ekf.plot_ellipse([], 'g')
+    ekf.plot_ellipse('g')
     ekf.plot_P()
 end
 
-function MapLocalization_test(testCase)
+function MapLocalization_test(tc)
+    %%
     randinit
     W = diag([0.1, 1*pi/180].^2);
     P0 = diag([0.005, 0.005, 0.001].^2);
     V = diag([0.005, 0.5*pi/180].^2);
 
-    map = Map(20);
-    map = Map(20, 'verbose');
-    map = Map(20, 10, 'verbose');
-    map = Map(20, 10);
+    map = LandmarkMap(20);
+    map = LandmarkMap(20, 'verbose');
+    map = LandmarkMap(20, 10, 'verbose');
+    map = LandmarkMap(20, 10);
     s = char(map);
 
-    veh = Vehicle(V);
+    veh = Bicycle('covar', V);
     veh.add_driver( RandomPath(10) );
-    sensor = RangeBearingSensor(veh, map, W);
+    sensor = RangeBearingSensor(veh, map, 'covar', W);
     sensor.interval = 5;
     ekf = EKF(veh, W, P0, sensor, W, map);
 
@@ -64,7 +68,7 @@ function MapLocalization_test(testCase)
     map.plot()
     veh.plot_xy('b');
     ekf.plot_xy('r');
-    ekf.plot_ellipse([], 'k')
+    ekf.plot_ellipse('k')
     grid on
     xyzlabel
 
@@ -72,23 +76,23 @@ function MapLocalization_test(testCase)
     ekf.plot_P()
 end
 
-function Mapping_test(testCase)
+function Mapping_test(tc)
+    %%
     randinit
     W = diag([0.1, 1*pi/180].^2);
     V = diag([0.005, 0.5*pi/180].^2);
 
-    map = Map(20, 10);
+    map = LandmarkMap(20, 10);
 
-    veh = Vehicle(V);
+    veh = Bicycle('covar', V);
     veh.add_driver( RandomPath(10) );
 
-    sensor = RangeBearingSensor(veh, map, W);
+    sensor = RangeBearingSensor(veh, map, 'covar', W);
     sensor.interval = 5;
 
     ekf = EKF(veh, [], [], sensor, W, []);
     ekf.run(1000);
     
-    verifyEqual(testCase, numcols(ekf.features), 20);
 
     clf
     map.plot()
@@ -96,33 +100,38 @@ function Mapping_test(testCase)
     ekf.plot_map('g');
     grid on
     xyzlabel
+    
+    %%
+    verifyEqual(tc, numcols(ekf.landmarks), 20);
+
 end
 
-function SLAM_test(testCase)
+function SLAM_test(tc)
+    %%
     randinit
     W = diag([0.1, 1*pi/180].^2);
     P0 = diag([0.005, 0.005, 0.001].^2);
     V = diag([0.005, 0.5*pi/180].^2);
 
-    map = Map(20, 10);
+    map = LandmarkMap(20, 10);
 
-    veh = Vehicle(V);
+    veh = Bicycle(V);
     veh.add_driver( RandomPath(10) );
 
-    sensor = RangeBearingSensor(veh, map, W);
+    sensor = RangeBearingSensor(veh, map, 'covar', W);
     sensor.interval = 1;
 
     ekf = EKF(veh, V, P0, sensor, W, []);
+    ekf
     ekf.verbose = false;
     ekf.run(1000);
 
-    verifyEqual(testCase, numcols(ekf.features), 20);
 
     clf
     map.plot()
     veh.plot_xy('b');
     ekf.plot_xy('r');
-    ekf.plot_ellipse([], 'k')
+    ekf.plot_ellipse('k')
     grid on
     xyzlabel
 
@@ -131,23 +140,28 @@ function SLAM_test(testCase)
 
     clf
     map.plot();
-    ekf.plot_map(5,'g');
+    ekf.plot_map('g');
+    
+    %%
+    verifyEqual(tc, numcols(ekf.landmarks), 20);
+
 end
 
-function ParticleFilter_test(testCase)
-
+function ParticleFilter_test(tc)
+    %%
     randinit
-    map = Map(20);
+    map = LandmarkMap(20);
 
     W = diag([0.1, 1*pi/180].^2);
-    v = Vehicle(W);
+    v = Bicycle('covar', W);
     v.add_driver( RandomPath(10) );
     V = diag([0.005, 0.5*pi/180].^2);
-    sensor = RangeBearingSensor(v, map, V);
+    sensor = RangeBearingSensor(v, map, 'covar', V);
 
     Q = diag([0.1, 0.1, 1*pi/180]).^2;
     L = diag([0.1 0.1]);
     pf = ParticleFilter(v, sensor, Q, L, 1000);
+    pf
     pf.run(200);
 
     plot(pf.std)
@@ -162,16 +176,11 @@ function ParticleFilter_test(testCase)
     pf.plot_xy();
 end
 
-function RRT_test(testCase)
-
-    randinit
-    veh = Vehicle([], 'stlim', 1.2);
-    rrt = RRT('vehicle', veh);
-    rrt.plan();
-    rrt.plot();
-    rrt.plot('noprogress');
-    rrt.plot('samples');
-
-    p = rrt.path([0 0 0], [0 2 0]);
-    rrt.path([0 0 0], [0 2 0]);
+function posegraph_test(tc)
+    pg = PoseGraph('pg1.g2o')
+    
+    clf
+    pg.plot()
+    
+    pg.optimize('animate')
 end

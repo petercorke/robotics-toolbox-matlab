@@ -102,12 +102,18 @@ function staticconstructors_test(tc)
     th = 0.2; v = unit([1 2 3]);
     verifyEqual(tc, SO3.exp( th*v ).R, angvec2r(th, v), 'AbsTol', 1e-10  );
     verifyEqual(tc, SO3.exp( th*skew(v) ).R, angvec2r(th, v), 'AbsTol', 1e-10  );
+    
+    %% OA vectors
+    verifyEqual(tc, SO3.oa([0 1 0], [0 0 1]).R, eye(3,3), 'AbsTol', 1e-10  );
+    verifyEqual(tc, SO3.oa([1 0 0], [0 1 0]).R, [0 0 1; 1 0 0; 0 1 0]', 'AbsTol', 1e-10  );
 
 end
 
 function isa_test(tc)
     
     verifyTrue(tc, SO3.isa(rotx(0)) );
+    verifyTrue(tc, SO3.isa(rotx(0)), 'valid' );
+    
     verifyFalse(tc, SO3.isa(1) )
 end
 
@@ -213,6 +219,9 @@ function divide_test(tc)
     
     % vector / scalar
     verifyEqual(tc, [rx ry rz] / ry, [rx/ry ry/ry rz/ry]);
+    
+    % scalar /vector
+    verifyEqual(tc, ry / [rx ry rz], [ry/rx ry/ry ry/rz]);
 end
 
 function divide_normalized_test(tc)
@@ -237,6 +246,9 @@ function divide_normalized_test(tc)
     
     % vector / scalar
     verifyEqual(tc, [rx ry rz] ./ ry, [rx./ry ry./ry rz./ry], 'AbsTol', 1e-10);
+    
+   % scalar /vector
+    verifyEqual(tc, ry ./ [rx ry rz], [ry./rx ry./ry ry./rz]);
 end
 
 
@@ -305,8 +317,17 @@ function miscellany_test(tc)
     
     z = SO3.check(rotx(0.3));
     verifyEqual(tc, double(z), rotx(0.3));
+    
+    r = SO3;
+    verifyEqual(tc, r.n, [1 0 0]');
+    verifyEqual(tc, r.o, [0 1 0]');
+    verifyEqual(tc, r.a, [0 0 1]');
 
-
+    % compatibility functions
+    verifyEqual(tc, tr2rpy( SO3.rpy( 0.1, 0.2, 0.3) ), [ 0.1, 0.2, 0.3], 'AbsTol', 1e-10  );
+    verifyEqual(tc, tr2eul( SO3.eul( 0.1, 0.2, 0.3  ), [ 0.1, 0.2, 0.3 ], 'AbsTol', 1e-10  );
+    verifyEqual(tc, tr2rpy( SO3.rpy( 10, 20, 30, 'deg'), 'deg'), [ 10, 20, 30], 'AbsTol', 1e-10  );
+    verifyEqual(tc, tr2eul( SO3.eul( 10, 20, 30, 'deg'), 'deg'), [ 0.1, 0.2, 0.3 ], 'AbsTol', 1e-10  );
 end
 
 function display_test(tc)

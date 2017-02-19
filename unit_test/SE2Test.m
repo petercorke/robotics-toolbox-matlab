@@ -1,4 +1,4 @@
-function tests = SO3Test
+function tests = SE2Test
     tests = functiontests(localfunctions);
 end
 
@@ -62,7 +62,7 @@ end
 function staticconstructors_test(tc)
     
     %% exponential
-    verifyEqual(tc, SO2.exp( skew(0.3) ).R, rot2(0.3), 'AbsTol', 1e-10  );
+    verifyEqual(tc, SE2.exp( skew(0.3) ).R, rot2(0.3), 'AbsTol', 1e-10  );
     
         
     %% exponential
@@ -176,6 +176,14 @@ function arith_test(tc)
     
 end
 
+function function_tests(tc)
+    
+    % log
+    T = SE2.exp([2 3 0.5]);
+    verifyEqual(tc, log(T), [0 -0.5 2; 0.5 0 3; 0 0 0], 'AbsTol', 1e-10  );
+    
+end
+
 function conversions_test(tc)
     
     
@@ -185,6 +193,16 @@ function conversions_test(tc)
     
     verifyClass(tc, TT.SE3, 'SE3');
     verifyEqual(tc, double(TT.SE3), transl(1, 2, 0) * trotz(0.3), 'AbsTol', 1e-10 );
+    
+    %% xyt
+    verifyEqual(tc, TT.xyt(), [1 2, 0.3]', 'AbsTol', 1e-10);
+    
+    %% Twist
+    T = SE2.exp([2 3 0.5]);
+    t = T.Twist();
+    verifyInstanceOf(tc, t, 'Twist');
+    verifyEqual(tc, t.v, [2 3]', 'AbsTol', 1e-10);
+    verifyEqual(tc, t.w, 0.5, 'AbsTol', 1e-10);
     
     %% Lie stuff
     th = 0.3; 
@@ -202,7 +220,6 @@ function adjoint_test(tc)
     % velxform
     verifyEqual(tc, TT.velxform, [R zeros(3,3); zeros(3,3) R]);
 
-    
 end
 
 function interp_test(tc)
@@ -212,7 +229,7 @@ function interp_test(tc)
     
     verifyEqual(tc, double(interp(I, TT, 0)),   double(I), 'AbsTol', 1e-10 );
     verifyEqual(tc, double(interp(I, TT, 1)),   double(TT), 'AbsTol', 1e-4 );
-    verifyEqual(tc, double(interp(I, TT, 0.5)), double(trinterp(T, 0.5)), 'AbsTol', 1e-10  );
+    verifyEqual(tc, double(interp(I, TT, 0.5)), double(trinterp(TT, 0.5)), 'AbsTol', 1e-10  );
     
 end
 

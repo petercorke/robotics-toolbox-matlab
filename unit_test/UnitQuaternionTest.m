@@ -48,6 +48,25 @@ function constructor_test(tc)
     verifyEqual(tc, UnitQuaternion( rotx(pi) ).double, [0 1 0 0], 'AbsTol', 1e-10  );
     verifyEqual(tc, UnitQuaternion( roty(pi) ).double, [0 0 1 0], 'AbsTol', 1e-10  );
     verifyEqual(tc, UnitQuaternion( rotz(pi) ).double, [0 0 0 1], 'AbsTol', 1e-10  );
+    
+    %% from SO3
+    
+    verifyEqual(tc, UnitQuaternion( SO3 ).double, [1 0 0 0], 'AbsTol', 1e-10  );
+
+    verifyEqual(tc, UnitQuaternion( SO3.Rx(pi/2) ).double, [1 1 0 0]/sqrt(2), 'AbsTol', 1e-10  );
+    verifyEqual(tc, UnitQuaternion( SO3.Ry(pi/2) ).double, [1 0 1 0]/sqrt(2), 'AbsTol', 1e-10  );
+    verifyEqual(tc, UnitQuaternion( SO3.Rz(pi/2) ).double, [1 0 0 1]/sqrt(2), 'AbsTol', 1e-10  );
+    
+    verifyEqual(tc, UnitQuaternion( SO3.Rx(-pi/2) ).double, [1 -1 0 0]/sqrt(2), 'AbsTol', 1e-10  );
+    verifyEqual(tc, UnitQuaternion( SO3.Ry(-pi/2) ).double, [1 0 -1 0]/sqrt(2), 'AbsTol', 1e-10  );
+    verifyEqual(tc, UnitQuaternion( SO3.Rz(-pi/2) ).double, [1 0 0 -1]/sqrt(2), 'AbsTol', 1e-10  );
+    
+    verifyEqual(tc, UnitQuaternion( SO3.Rx(pi) ).double, [0 1 0 0], 'AbsTol', 1e-10  );
+    verifyEqual(tc, UnitQuaternion( SO3.Ry(pi) ).double, [0 0 1 0], 'AbsTol', 1e-10  );
+    verifyEqual(tc, UnitQuaternion( SO3.Rz(pi) ).double, [0 0 0 1], 'AbsTol', 1e-10  );
+    
+    % vector of SO3
+    verifyEqual(tc, UnitQuaternion( [SO3.Rx(pi/2) SO3.Ry(pi/2) SO3.Rz(pi/2) ).double, [1 1 0 0; 1 0 1 0; 1 0 0 1]/sqrt(2), 'AbsTol', 1e-10  );
 
     %% from T
     verifyEqual(tc, UnitQuaternion( trotx(pi/2) ).double, [1 1 0 0]/sqrt(2), 'AbsTol', 1e-10  );
@@ -285,6 +304,9 @@ function divide_test(tc)
     
     % vector / scalar
     verifyEqual(tc, [rx ry rz] / ry, [rx/ry ry/ry rz/ry]);
+    
+    % scalar / vector
+    verifyEqual(tc, ry / [rx ry rz], [ry/rx ry/ry ry/rz]);
 end
 
 function divide_normalized_test(tc)
@@ -308,6 +330,9 @@ function divide_normalized_test(tc)
     
     % vector / scalar
     verifyEqual(tc, [rx ry rz] ./ ry, [rx./ry ry./ry rz./ry], 'AbsTol', 1e-10);
+    
+   % scalar / vector
+    verifyEqual(tc, ry ./ [rx ry rz], [ry./rx ry./ry ry./rz]);
 end
 
 function angle_test(tc)
@@ -411,6 +436,11 @@ function interp_test(tc)
     verifyEqual(tc, q.interp(rx, 1), rx );
     
     verifyTrue(tc, all( q.interp(rx, [0 1]) == [q rx]));
+    
+    % test shortest option
+    rbig = UnitQuaternion.Rx(3*pi/2);
+    verifyEqual(tc, u.interp(rbig, 0.5), UnitQuaternion.Rx(3*pi/4) );
+    verifyEqual(tc, u.interp(rbig, 0.5, 'shortest'), UnitQuaternion.Rx(-pi/4) );
 
 end
 
@@ -472,4 +502,6 @@ function display_test(tc)
         ry.plot();
         h = ry.plot();
         ry.animate();
+        ry.animate('rgb');
+        ry.animate( UnitQuaternion.Rx(pi/2), 'rgb' )
 end

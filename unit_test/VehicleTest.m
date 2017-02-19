@@ -56,7 +56,24 @@ function Bicycle_deriv_test(tc)
     tc.verifyEqual( xd, [0 0 0]', 'AbsTol', 1e-6);
     
     xd =v.deriv([], [0 0 0], [1 pi/4]);
-    tc.verifyEqual( xd, [1 0 1]', 'AbsTol', 1e-6);    
+    tc.verifyEqual( xd, [1 0 1]', 'AbsTol', 1e-6);
+    
+    v = Bicycle('steermax', pi/4);
+    xd =v.deriv([], [0 0 0], [1 100]);
+    tc.verifyEqual( xd, [1 0 1]', 'AbsTol', 1e-6);
+    
+    v = Bicycle('speedmax', 1, 'steermax', Inf);
+    xd =v.deriv([], [0 0 0], [100 pi/4]);
+    tc.verifyEqual( xd, [1 0 1]', 'AbsTol', 1e-6);
+    
+    v = Bicycle('accelmax', 1);
+    xd =v.deriv([], [0 0 0], [100 0]);
+    tc.verifyEqual( xd, [v.dt 0 0]', 'AbsTol', 1e-6);
+    for i=1:9
+            xd =v.deriv([], [0 0 0], [100 0]);
+    end
+    tc.verifyEqual( xd, [1 0 0]', 'AbsTol', 1e-6);
+
 end
 
 function Bicycle_update_test(tc)
@@ -161,7 +178,21 @@ function Unicycle_deriv_test(tc)
     tc.verifyEqual( xd, [0 0 1]', 'AbsTol', 1e-6);
     
     xd =v.deriv([], [0 0 0], [1 1]);
-    tc.verifyEqual( xd, [1 0 1]', 'AbsTol', 1e-6);    
+    tc.verifyEqual( xd, [1 0 1]', 'AbsTol', 1e-6);
+    
+    
+    v = Unicycle('speedmax', 1);
+    xd =v.deriv([], [0 0 0], [100 0]);
+    tc.verifyEqual( xd, [1 0 0]', 'AbsTol', 1e-6);
+    
+    v = Unicycle('accelmax', 1);
+    xd =v.deriv([], [0 0 0], [100 0]);
+    tc.verifyEqual( xd, [v.dt 0 0]', 'AbsTol', 1e-6);
+    for i=1:9
+            xd =v.deriv([], [0 0 0], [100 0]);
+    end
+    tc.verifyEqual( xd, [1 0 0]', 'AbsTol', 1e-6);
+    
 end
 
 function Unicycle_update_test(tc)

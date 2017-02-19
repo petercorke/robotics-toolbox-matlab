@@ -154,6 +154,9 @@ function divide_test(tc)
     % vector / scalar
     verifyEqual(tc, [q1 q2 q3] / q2, [q1/q2 q2/q2 q3/q2]); 
     
+    % scalar / vector
+    verifyEqual(tc, q2 / [q1 q2 q3], [q2/q1 q2/q2 q2/q3]); 
+    
     %% quat-scalar quotient
     verifyEqual(tc, double(q1/2), double(q1)/2);
     verifyEqual(tc, double([q1 q2]/2), double([q1 q2])/2);
@@ -238,6 +241,7 @@ function power_test(tc)
     q = Quaternion([1 2 3 4]);
     
     verifyEqual(tc, q^0, Quaternion([1 0 0 0]), 'AbsTol', 1e-10  );
+    verifyEqual(tc, q^1, q, 'AbsTol', 1e-10  );
     verifyEqual(tc, q^(-1), inv(q), 'AbsTol', 1e-10  );
     verifyEqual(tc, q^2, q*q, 'AbsTol', 1e-10  );
 

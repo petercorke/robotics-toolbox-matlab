@@ -9,12 +9,18 @@ function teardownOnce(tc)
 end
 
 function tpoly_test(tc)
-    s1 = 1;
+    s1 = 1;    T = trinterp2(T0, T1, [0.5 0 1]);
+    tc.verifyEqual(size(T), [3 3 3]);
+    tc.verifyEqual(T(:,:,1), Tm, 'abstol', 1e-10);
+    tc.verifyEqual(T(:,:,2), T0, 'abstol', 1e-10);
+    tc.verifyEqual(T(:,:,3), T1, 'abstol', 1e-10);
     s2 = 2;
     
     %% no boundary conditions
-    s = tpoly(s1, s2, 11);
     
+    tpoly(s1, s2, 11);
+    
+    s = tpoly(s1, s2, 11);
     tc.verifyTrue(all(diff(s) > 0));  % output is monotonic
     tc.verifyEqual(s(1), s1, 'absTol',1e-10);
     tc.verifyEqual(s(end), s2, 'absTol',1e-10);
@@ -46,8 +52,10 @@ function tpoly_test(tc)
     
     %% time vector version
     t = linspace(0, 1, 11);
-    s = tpoly(s1, s2, t);
     
+    tpoly(s1, s2, t);
+    
+    s = tpoly(s1, s2, t);
     tc.verifyTrue(all(diff(s) > 0));  % output is monotonic
     tc.verifyEqual(s(1), s1, 'absTol',1e-10);
     tc.verifyEqual(s(end), s2, 'absTol',1e-10);
@@ -97,6 +105,9 @@ function lspb_test(tc)
     s2 = 2;
     
     %% no boundary conditions
+    lspb(s1, s2, 11);
+    
+    
     s = lspb(s1, s2, 11);
     tc.verifyTrue(all(diff(s) > 0));  % output is monotonic
     tc.verifyEqual(s(1), s1, 'absTol',1e-10);
@@ -126,6 +137,8 @@ function lspb_test(tc)
 
     %% time vector version
     t = linspace(0, 1, 11);
+    lspb(s1, s2, t);
+    
     s = lspb(s1, s2, t);
     tc.verifyTrue(all(diff(s) > 0));  % output is monotonic
     tc.verifyEqual(s(1), s1, 'absTol',1e-10);
@@ -172,7 +185,6 @@ function ctraj_test(tc)
     
     T = ctraj(T0, T1, 3);
     tc.verifyEqual(size(T,3), 3);
-    
     tc.verifyEqual(T(:,:,1), T0, 'abstol', 1e-10);
     tc.verifyEqual(T(:,:,2), trotx(pi/2), 'abstol', 1e-10);
     tc.verifyEqual(T(:,:,3), T1, 'abstol', 1e-10);
@@ -501,6 +513,17 @@ function mstraj_test(tc)
                      2.7500    4.2500
                      2.0000    5.0000];
      verifyEqual(tc, out,expected_out ,'absTol',1e-4);
+
+     [out,t] = mstraj(via, [],[1 2 3 4],via(1,:),1,1);
+     verifyEqual(tc, size(t,1), size(out,1));
+     verifyEqual(tc, size(t,2), 1);
+     
+     [out,t,info] = mstraj(via, [],[1 2 3 4],via(1,:),1,1);
+     verifyEqual(tc, size(t,1), size(out,1));
+     verifyEqual(tc, size(t,2), 1);
+     
+     verifyEqual(tc, length(info), size(via,1)+1);
+     verifyTrue(tc, isa(info, 'struct');
 end
 
 
