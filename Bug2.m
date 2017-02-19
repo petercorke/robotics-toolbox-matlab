@@ -5,6 +5,7 @@
 % planning, that is, it can only sense the immediate presence of an obstacle.
 %
 % Methods::
+%   Bug2        Constructor
 %   query       Find a path from start to goal
 %   plot        Display the obstacle map
 %   display     Display state/parameters in human readable form

@@ -6,6 +6,7 @@
 % finds paths between specific start and goal points.
 %
 % Methods::
+%  PRM          Constructor
 %  plan         Compute the roadmap
 %  query        Find a path
 %  plot         Display the obstacle map
@@ -18,7 +19,7 @@
 %        start = [20, 10];      % start point
 %        prm = PRM(map);        % create navigation object
 %        prm.plan()             % create roadmaps
-%        prm.query(start, goal, 'animate')  % animate path from this start location
+%        prm.query(start, goal)  % animate path from this start location
 %
 % References::
 %
@@ -138,8 +139,7 @@ classdef PRM < Navigation
         function pp = query(prm, start, goal)
         %PRM.query Find a path between two points
         %
-        % P.query(START, GOAL) finds and displays a path from START to GOAL
-        % which is overlaid on the occupancy grid.
+        % P.query(START, GOAL) finds a path (Mx2) from START to GOAL.
         %
         
             if prm.graph.n == 0
@@ -264,11 +264,15 @@ classdef PRM < Navigation
         function plot(prm, varargin)
         %PRM.plot Visualize navigation environment
         %
-        % P.plot() displays the occupancy grid with an optional distance field.
+        % P.plot() displays the roadmap and the occupancy grid.
         %
         % Options::
         %  'goal'            Superimpose the goal position if set
         %  'nooverlay'       Don't overlay the PRM graph
+        %
+        % Notes::
+        % - If a query has been made then the path will be shown.
+        % - Goal and start locations are kept within the object.
             
             opt.overlay = true;
             opt.nodes = true;

@@ -4,6 +4,7 @@
 % transform navigation algorithm which computes minimum distance paths.
 %
 % Methods::
+%  DXform       Constructor
 %  plan         Compute the cost map given a goal and map
 %  query        Find a path
 %  plot         Display the distance function and obstacle map
@@ -11,8 +12,8 @@
 %  display      Print the parameters in human readable form
 %  char         Convert to string
 %
-% Properties::
-%  distancemap   The distance transform of the occupancy grid.
+% Properties (read only)::
+%  distancemap   Distance from each point to the goal.
 %  metric        The distance metric, can be 'euclidean' (default) or 'cityblock'
 %
 % Example::
@@ -22,7 +23,7 @@
 %        start = [20, 10];   % start point
 %        dx = DXform(map);   % create navigation object
 %        dx.plan(goal)       % create plan for specified goal
-%        dx.query(start)      % animate path from this start location
+%        dx.query(start)     % animate path from this start location
 %
 % Notes::
 % - Obstacles are represented by NaN in the distancemap.
@@ -91,8 +92,6 @@ classdef DXform < Navigation
             opt.metric = {'euclidean', 'cityblock'};
             [opt,args] = tb_optparse(opt, varargin);
             dx.metric = opt.metric;
-
-
         end
 
         function s = char(dx)
@@ -124,8 +123,7 @@ classdef DXform < Navigation
                 disp('Goal changed -> distancemap cleared');
             end
         end
-
-            
+  
         function plan(dx, goal, varargin)
             %DXform.plan Plan path to goal
             %
@@ -154,7 +152,6 @@ classdef DXform < Navigation
             dx.setgoal(goal);
 
             dx.distancemap = distancexform(dx.occgridnav, dx.goal, dx.metric, show);
-
         end
 
         function plot(dx, varargin)
@@ -166,7 +163,7 @@ classdef DXform < Navigation
             % and shown in red.
             %
             % DX.plot(P, OPTIONS) as above but also overlays a path given by the set
-            % of points P (2xM).
+            % of points P (Mx2).
             %
             % Notes::
             % - See Navigation.plot for options.
@@ -230,7 +227,7 @@ classdef DXform < Navigation
             % DX.plot3d(P) as above but also overlays a path given by the set
             % of points P (Mx2).
             %
-            % DX.plot3d(P, LS) as above but plot the line with the linestyle LS.
+            % DX.plot3d(P, LS) as above but plot the line with the MATLAB linestyle LS.
             %
             % See also Navigation.plot.
             surf(dx.distancemap);

@@ -5,12 +5,15 @@
 % that takes into account the motion constraints of the vehicle.
 %
 % Methods::
+%  RRT          Constructor
+%  plan         Compute the tree
+%  query        Compute a path 
+%  plot         Display the tree
+%  display      Display the parameters in human readable form
+%  char         Convert to string
 %
-% plan         Compute the tree
-% path         Compute a path 
-% plot         Display the tree
-% display      Display the parameters in human readable form
-% char         Convert to string
+% Properties (read only)::
+%  graph        A PGraph object describign the tree
 %
 % Example::
 %        goal = [0,0,0];
@@ -64,19 +67,17 @@ classdef RRT < Navigation
         npoints         % number of points to find
         graph           % graph Object representing random nodes
 
-        simtime        % path simulation time
+        simtime         % path simulation time
 
-        xrange
-        yrange
+        xrange          % range of x coordinates
+        yrange          % range of y coordinates
         
-        plant
-
-        speed
-        vehicle
+        speed           % speed of vehicle
+        vehicle         % Vehicle class object describes kinematics
         
-        revcost
+        revcost         % penalty for going backwards
         
-        root
+        root            % coordinate of the root of the tree (3x1)
     end
 
     methods
@@ -84,51 +85,45 @@ classdef RRT < Navigation
         function rrt = RRT(vehicle, varargin)
         %RRT.RRT Create an RRT navigation object
         %
-        % R = RRT.RRT(MAP, VEH, OPTIONS) is a rapidly exploring tree navigation
-        % object for a region with obstacles defined by the map object MAP.
+        % R = RRT.RRT(VEH, OPTIONS) is a rapidly exploring tree navigation
+        % object  for a vehicle kinematic model given by a Vehicle subclass object VEH.
         %
-        % R = RRT.RRT() as above but internally creates a Vehicle class object
-        % and does not support any MAP or OPTIONS.  For compatibility with
-        % RVC book.
+        % R = RRT.RRT(VEH, MAP, OPTIONS) as above but for a region with obstacles
+        % defined by the occupancy grid MAP.
         %
         % Options::
         % 'npoints',N    Number of nodes in the tree (default 500)
-        % 'time',T       Interval over which to simulate dynamic model toward 
+        % 'simtime',T    Interval over which to simulate kinematic model toward 
         %                random point (default 0.5s)
-        % 'range',R      Specify rectangular bounds
+        % 'goal',P       Goal position (1x2) or pose (1x3) in workspace
+        % 'speed',S      Speed of vehicle [m/s] (default 1)
+        % 'root',R       Configuration of tree root (3x1) (default [0,0,0])
+        % 'revcost',C    Cost penalty for going backwards (default 1)
+        % 'range',R      Specify rectangular bounds of robot's workspace:
         %                - R scalar; X: -R to +R, Y: -R to +R
         %                - R (1x2); X: -R(1) to +R(1), Y: -R(2) to +R(2)
         %                - R (1x4); X: R(1) to R(2), Y: R(3) to R(4)
-        % 'goal',P       Goal position (1x2) or pose (1x3) in workspace
-        % 'speed',S      Speed of vehicle [m/s] (default 1)
-        % 'steermax',S   Steering angle of vehicle in the range -S to +S [rad] (default 1.2)
+        %
+        % Other options are provided by the Navigation superclass.
         %
         % Notes::
-        % - Does not (yet) support obstacles, ie. MAP is ignored but must be given.
-        % - 'steermax' selects the range of steering angles that the vehicle will
-        %   be asked to track.  If not given the steering angle range of the vehicle
-        %   object will be used.
-        % - There is no check that the steering range or speed is within the limits
-        %   of the vehicle object.
+        % - 'range' option is ignored if an occupacy grid is provided.
         %
         % Reference::
         % - Robotics, Vision & Control
         %   Peter Corke, Springer 2011.  p102.
         %
-        % See also Vehicle.
+        % See also Vehicle, Bicycle, Unicycle.
 
             % invoke the superclass constructor, it handles some options
             rrt = rrt@Navigation(varargin{:});
 
-
             rrt.vehicle = vehicle;
-
 
             % handle the options not done by Navigation superclass
             opt.npoints = 500;
             opt.simtime = 0.5;
             opt.speed = vehicle.speedmax;
-            opt.x0 = [0 0];
             opt.revcost = 1;
             opt.root = [0 0 0];
             
@@ -215,7 +210,7 @@ classdef RRT < Navigation
             if ~isvec(rrt.root, 3)
                 error('root must be 3-vector');
             end
-            assert( ~rrt.isoccupied(rrt.root), 'root node cell is occupied')
+            assert( ~rrt.isoccupied(rrt.root(1:2)), 'root node cell is occupied')
 
             % add the goal point as the first node
             vroot = rrt.graph.add_node(rrt.root);
@@ -225,7 +220,7 @@ classdef RRT < Navigation
 
             % graphics setup
             if opt.progress
-                h = waitbar(0, 'RRT planning...');
+                h = Navigation.progress_init('RRT planning...');
             end
             if opt.samples
                 clf
@@ -312,13 +307,13 @@ classdef RRT < Navigation
                 
                 npoints = npoints + 1;
                 if opt.progress
-                    waitbar(npoints / rrt.npoints);
+                    Navigation.progress(h, npoints / rrt.npoints);
                 end
                 
             end
 
             if opt.progress
-                delete(h)
+                Navigation.progress_delete(h)
             end
             rrt.message('graph create done');
         end
@@ -329,9 +324,9 @@ classdef RRT < Navigation
         % X = R.path(START, GOAL) finds a path (Nx3) from pose START (1x3) 
         % to pose GOAL (1x3).  The pose is expressed as [X,Y,THETA]. 
         %
-        % R.path(START, GOAL) as above but plots the path in 3D.  The nodes
-        % are shown as circles and the line segments are blue for forward motion
-        % and red for backward motion.
+        % R.path(START, GOAL) as above but plots the path in 3D, where the vertical
+        % axis is vehicle heading angle.  The nodes are shown as circles and the
+        % line segments are blue for forward motion and red for backward motion.
         %
         % Notes::
         % - The path starts at the vertex closest to the START state, and ends
@@ -408,7 +403,9 @@ classdef RRT < Navigation
         function plot(rrt, varargin)
         %RRT.plot Visualize navigation environment
         %
-        % R.plot() displays the navigation tree in 3D.
+        % R.plot() displays the navigation tree in 3D, where the vertical axis is
+        % vehicle heading angle.  If an occupancy grid was provided this is also
+        % displayed.
 
 
             % display the occgrid background
@@ -422,8 +419,12 @@ hold on
             
             % display the occgrid background
             rrt.plot_fg(varargin{:});
+            axis([rrt.xrange rrt.yrange])
             xlabel('x'); ylabel('y'); zlabel('\theta');
             grid on; hold off
+            view(0,90);
+            axis equal
+            rotate3d
         end
 
         % required by abstract superclass
