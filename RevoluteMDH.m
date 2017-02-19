@@ -1,9 +1,9 @@
 %RevoluteMDH Robot manipulator Revolute link class for MDH convention
 %
 % A subclass of the Link class for a revolute joint defined using modified
-% Denavit-Hartenberg parameters: holds all information related to a robot
-% link such as kinematics parameters, rigid-body inertial parameters, motor
-% and transmission parameters.
+% Denavit-Hartenberg parameters: holds all information related to a
+% revolute robot link such as kinematics parameters, rigid-body inertial
+% parameters, motor and transmission parameters.
 %
 % Constructors::
 %  RevoluteMDH    construct a revolute joint+link using modified DH
@@ -127,9 +127,7 @@ classdef RevoluteMDH < Link
                 L.d = 0;
             end
             L.mdh = 1;
-            if ~isempty(L.theta)
-                error('theta cannot be specified for a revolute link');
-            end
+            assert(isempty(L.theta), 'theta cannot be specified for a revolute link');
         end
         
     end

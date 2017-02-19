@@ -1,9 +1,9 @@
 %Revolute Robot manipulator Revolute link class
 %
 % A subclass of the Link class for a revolute joint defined using standard
-% Denavit-Hartenberg parameters: holds all information related to a robot
-% link such as kinematics parameters, rigid-body inertial parameters, motor
-% and transmission parameters.
+% Denavit-Hartenberg parameters: holds all information related to a
+% revolute robot link such as kinematics parameters, rigid-body inertial
+% parameters, motor and transmission parameters.
 %
 % Constructors::
 %  Revolute       construct a revolute joint+link using standard DH
@@ -125,9 +125,7 @@ classdef Revolute < Link
             if isempty(L.d)
                 L.d = 0;
             end
-            if ~isempty(L.theta)
-                error('theta cannot be specified for a revolute link');
-            end
+            assert(isempty(L.theta), 'theta cannot be specified for a revolute link');
         end
         
     end

@@ -28,8 +28,7 @@
 
 function u = unit(v)
     n = norm(v, 'fro');
-    if ~isa(v, 'sym') && n < eps
-        error('RTB:unit:zero_norm', 'vector has zero norm');
-    end
+    assert( n > eps || isa(v, 'sym'), 'RTB:unit:zero_norm', 'vector has zero norm');
 
 	u = v / n;
+end

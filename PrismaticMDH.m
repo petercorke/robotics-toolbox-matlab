@@ -124,9 +124,7 @@ classdef PrismaticMDH < Link
             if isempty(L.theta)
                 L.theta = 0;
             end
-            if ~isempty(L.d)
-                error('d cannot be specified for a prismatic link');
-            end
+            assert(isempty(L.d),'d cannot be specified for a prismatic link');
             L.jointtype = 'P';
             L.mdh = 1;
         end

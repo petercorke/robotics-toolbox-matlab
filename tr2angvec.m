@@ -45,9 +45,8 @@
 
 function [theta_, n_] = tr2angvec(R, varargin)
 
-    if ~ishomog(R) && ~isrot(R)
-        error('RTB:tr2angvec:badarg', 'argument must be SO(3) or SE(3)');
-    end
+    assert(ishomog(R) || isrot(R), 'RTB:tr2angvec:badarg', 'argument must be SO(3) or SE(3)');
+
     opt.deg = false;
     opt = tb_optparse(opt, varargin);
     
@@ -93,9 +92,7 @@ function [theta_, n_] = tr2angvec(R, varargin)
         Ri = R(:,:,i);
         
         % check the determinant
-        if abs(det(Ri)-1) > 10*eps
-            error('RTB:tr2angvec:badarg', 'matrix is not orthonormal');
-        end
+        assert( abs(det(Ri)-1) < 10*eps, 'RTB:tr2angvec:badarg', 'matrix is not orthonormal');
         
         [th,v] = trlog(Ri);
         theta(i) = th;

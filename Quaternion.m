@@ -127,9 +127,7 @@ classdef Quaternion
             %Quaternion.set.s Set scalar component
             %
             % Q.s = S sets the scalar part of the Quaternion object to S.
-            if ~isa(s, 'sym') && ( ~isreal(s) || ~isscalar(s) )
-                error('RTB:Quaternion:badarg', 's must be real scalar');
-            end
+            assert(~isa(s, 'sym') && isreal(s) && isscalar(s), 'RTB:Quaternion:badarg', 's must be real scalar');
             
             qo = q;
             qo.s = s;
@@ -139,9 +137,7 @@ classdef Quaternion
             %Quaternion.set.v Set vector component
             %
             % Q.v = V sets the vector part of the Quaternion object to V (1x3).
-            if ~isvec(v,3)
-                error('RTB:Quaternion:badarg', 'v must be a real 3-vector');
-            end
+            assert(isvec(v,3), 'RTB:Quaternion:badarg', 'v must be a real 3-vector');
             
             qo = q;
             qo.v = v(:).';
@@ -410,7 +406,6 @@ classdef Quaternion
                         qq(i) = q1(i) * inv(q2(i));
                     end
                 elseif isscalar(q1)
-                    s1 = q1.s;  v1 = q1.v;
                     
                     for i=1:length(q2)
                       
@@ -460,14 +455,12 @@ classdef Quaternion
             % See also Quaternion.mtimes.
             
             % check that exponent is an integer
-            if (p - floor(p)) ~= 0
-                error('RTB:Quaternion:badarg', 'quaternion exponent must be integer');
-            end
+            assert(p - floor(p) == 0, 'RTB:Quaternion:badarg', 'quaternion exponent must be integer');
             
             if p == 0
                 qp = q.new([1 0 0 0]);
             else
-                qp = q();
+                qp = q;
                 
                 % multiply by itself so many times
                 for i = 2:abs(p)

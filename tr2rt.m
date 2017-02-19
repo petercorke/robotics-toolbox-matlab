@@ -38,9 +38,7 @@
 % http://www.petercorke.com
 
 function [R,t] = tr2rt(T)
-    if numcols(T) ~= numrows(T)
-        error('T must be square');
-    end
+    assert(numcols(T) == numrows(T), 'T must be square');
 
     n = numcols(T);
 

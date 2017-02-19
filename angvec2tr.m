@@ -31,9 +31,7 @@
 
 function T = angvec2tr(theta, k)
 
-    if nargin < 2 
-        error('RTB:angvec2tr:badarg', 'bad arguments');
-    end
-
+    assert( nargin >= 2, 'RTB:angvec2tr:badarg', 'two arguments required');
 
     T = r2t( angvec2r(theta, k) );
+end

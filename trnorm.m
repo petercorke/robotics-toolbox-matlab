@@ -42,9 +42,7 @@
 
 function TR = trnorm(T)
 
-    if ~ishomog(T) && ~isrot(T)
-        error('RTB:trnorm:badarg', 'expecting SO(3) or SE(3)');
-    end
+    assert(ishomog(T) || isrot(T), 'RTB:trnorm:badarg', 'expecting 3x3xN or 4x4xN hom xform');
     
     if ndims(T) == 3
         % recurse for transform sequence
@@ -65,7 +63,5 @@ function TR = trnorm(T)
         TR = rt2tr( R, T(1:3,4) );
     elseif isrot(T)
         TR = R;
-    else
-        error('RTB:trnorm:badarg', 'argument must be 3x3 or 4x4 hom xform');
     end
 
