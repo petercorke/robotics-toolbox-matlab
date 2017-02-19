@@ -1,6 +1,6 @@
 %Sensor Sensor superclass
 %
-% A superclass to represent robot navigation sensors.
+% An abstract superclass to represent robot navigation sensors.
 %
 % Methods::
 %   plot        plot a line from robot to map feature
@@ -17,7 +17,7 @@
 %   Peter Corke,
 %   Springer 2011
 %
-% See also RangeBearing, EKF, Vehicle, PointMap.
+% See also RangeBearingSensor, EKF, Vehicle, LandmarkMap.
 
 
 % Copyright (C) 1993-2015, by Peter I. Corke
@@ -39,7 +39,7 @@
 %
 % http://www.petercorke.com
 
-classdef Sensor < handle
+classdef (Abstract) Sensor < handle
     % TODO, pose option, wrt vehicle
 
     properties
@@ -62,14 +62,19 @@ classdef Sensor < handle
         function s = Sensor(robot, map, varargin)
         %Sensor.Sensor Sensor object constructor
         %
-        % S = Sensor(VEHICLE, MAP, OPTIONS) is a sensor mounted on a vehicle described by the Vehicle class object
-        % VEHICLE and observing landmarks in a map described by the PointMap class object MAP.
+        % S = Sensor(VEHICLE, MAP, OPTIONS) is a sensor mounted on a vehicle
+        % described by the Vehicle subclass object VEHICLE and observing landmarks
+        % in a map described by the LandmarkMap class object MAP.
         %
         % Options::
         % 'animate'    animate the action of the laser scanner
         % 'ls',LS      laser scan lines drawn with style ls (default 'r-')
         % 'skip', I    return a valid reading on every I'th call
         % 'fail',T     sensor simulates failure between timesteps T=[TMIN,TMAX]
+        %
+        % Notes::
+        % - Animation shows a ray from the vehicle position to the selected
+        %   landmark.
         %
         
             opt.skip = 1;
