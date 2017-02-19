@@ -42,6 +42,7 @@
 %   Exchange.
 % - When using the form TRPLOT(H, ...) to animate a frame it is best to set 
 %   the axis bounds.
+% - The 'arrow' option requires arrow3 from FileExchange.
 %
 % See also TRPLOT.
 
@@ -97,7 +98,11 @@ function hout = trplot2(T, varargin)
 
     [opt,args] = tb_optparse(opt, varargin);
 
-
+    if opt.arrow && ~exist('arrow3')
+        opt.arrow = false;
+        warning('RTB:trplot:badarg', 'arrow option requires arrow3 from FileExchange');
+    end
+    
     if isscalar(T) && ishandle(T)
         warning('RTB:trplot2:deprecated', 'Use ''handle'' option');
         % trplot(H, T)
@@ -145,7 +150,8 @@ function hout = trplot2(T, varargin)
             if ~isempty(opt.axis)
                 axis(opt.axis);
             end
-            axis equal
+            %axis equal
+            daspect([1 1 1])
             
             if opt.axes
                 xlabel( 'X');
