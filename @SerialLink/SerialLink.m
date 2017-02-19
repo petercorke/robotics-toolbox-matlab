@@ -793,12 +793,13 @@ classdef SerialLink < matlab.mixin.Copyable
                 if nargin == 3
                     % add linearized Coulomb friction at the operating point
                     if qd > 0
-                        B = B + link.Tc(1)/qd;
+                        B = B + link.Tc(1)/qd(j);
                     elseif qd < 0
-                        B = B + link.Tc(2)/qd;
+                        B = B + link.Tc(2)/qd(j);
                     end
-                    t(j) = tf(1, [J B]);
                 end
+                t(j) = tf(1, [J B]);
+
             end
         end
         
@@ -819,7 +820,7 @@ classdef SerialLink < matlab.mixin.Copyable
             % Notes::
             % - Zero boundary conditions for velocity and acceleration are assumed.
             % - Additional options are passed as trailing arguments to the
-            % inverse kinematic function.
+            %   inverse kinematic function, eg. configuration options like 'ru'.
             %
             % See also jtraj, SerialLink.ikine, SerialLink.ikine6s.
             if r.isspherical && (r.n == 6)
@@ -869,13 +870,13 @@ classdef SerialLink < matlab.mixin.Copyable
         end
         
         function qdeg = todegrees(robot, q)
-            k = robot.revolute;
+            k = robot.isrevolute;
             qdeg = q;
             qdeg(:,k) = qdeg(:,k) * pi/180;
         end
         
         function qrad = toradians(robot, q)
-            k = robot.revolute;
+            k = robot.isrevolute;
             qrad = q;
             qrad(:,k) = qrad(:,k) * 180/pi;
         end

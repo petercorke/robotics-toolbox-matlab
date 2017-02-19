@@ -304,7 +304,7 @@ classdef Link < matlab.mixin.Copyable
                     if ~isempty(opt.d)
                         % constant value of d means it must be revolute
                         l.d = value( opt.d, opt);
-                        l.jointtype = 'P';
+                        l.jointtype = 'R';
                     end
                     if ~isempty(opt.d) && ~isempty(opt.theta)
                         error('RTB:Link:badarg', 'specify only one of ''d'' or ''theta''');
@@ -547,9 +547,8 @@ classdef Link < matlab.mixin.Copyable
             if isempty(v)
                 return;
             end
-            if length(v) ~= 3
-                error('RTB:Link:badarg', 'COG must be a 3-vector');
-            end
+            assert(length(v) == 3, 'RTB:Link:badarg', 'COG must be a 3-vector');
+
             l.r = v(:).';
         end % set.r()
         
@@ -583,9 +582,7 @@ classdef Link < matlab.mixin.Copyable
             if length(v) == 1  ~isa(v,'sym')
                 l.Tc = [v -v]; 
             elseif length(v) == 2 && ~isa(v,'sym')
-                if v(1) < v(2)
-                    error('RTB:Link:badarg', 'Coulomb friction is [Tc+ Tc-]');
-                end
+                assert(v(1) >= v(2), 'RTB:Link:badarg', 'Coulomb friction is [Tc+ Tc-]');
                 l.Tc = v;     
             else
                 error('RTB:Link:badarg', 'Coulomb friction vector can have 1 (symmetric) or 2 (asymmetric) elements only')
@@ -627,9 +624,7 @@ classdef Link < matlab.mixin.Copyable
             %
             % Note::
             % - The limits are not currently used by any Toolbox functions.
-            if isempty(l.qlim)
-                error('RTB:Link:badarg', 'no limits assigned to link')
-            end
+            assert(~isempty(l.qlim), 'RTB:Link:badarg', 'no limits assigned to link')
             v = (q > l.qlim(2)) - (q < l.qlim(1));
         end % islimit()
         
