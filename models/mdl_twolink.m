@@ -41,10 +41,8 @@
 %
 % http://www.petercorke.com
 
-
 a1 = 1;
 a2 = 1;
-%   theta d a alpha
 
 twolink = SerialLink([
     Revolute('d', 0, 'a', a1, 'alpha', 0, 'm', 1, 'r', [-0.5 0 0], 'I', [0 0 0], 'B', 0, 'G', 0, 'Jm', 0, 'standard')
@@ -59,3 +57,4 @@ qn = [pi/6, -pi/6];
 % the default gravity vector, acting in the Z-direction.  We choose to
 % rotate the robot so that it moves in the XZ plane.
 twolink.base = trotx(pi/2);
+

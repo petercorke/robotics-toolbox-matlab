@@ -250,6 +250,10 @@ mexFunction(
         robot.gravity = (Vect *)grav;
     else
         robot.gravity = (Vect *)mxGetPr( mxGetProperty(mx_robot, (mwIndex)0, "gravity") );
+
+    /*
+     * rotate gravity if base transform is set
+     */
     robot.dhtype = mstruct_getint(mx_robot, 0, "mdh");
 
     /* build link structure */
