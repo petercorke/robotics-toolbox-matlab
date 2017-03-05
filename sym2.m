@@ -6,7 +6,8 @@
 % The only way to access this capability is direct to the MuPad engine, and since
 % we can't change the sym class we use a subclass and add a matgen method
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

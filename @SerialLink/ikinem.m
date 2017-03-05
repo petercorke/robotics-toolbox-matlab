@@ -49,7 +49,8 @@
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

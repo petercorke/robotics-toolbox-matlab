@@ -10,7 +10,8 @@
 %
 % See also rot2, transl2, ishomog2, trplot2, trotx, troty, trotz, SE2.
 
-% Copyright (C) 1993-2016, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

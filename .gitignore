@@ -4,6 +4,9 @@
 *.aux
 *.idx
 *.jar
+*.class
+simulink
+slprj
 *~
 distrib/tmp
 .DS_Store
