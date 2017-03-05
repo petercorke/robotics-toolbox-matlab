@@ -16,6 +16,7 @@ classdef OccGrid < handle
             opt.scale = 1;
             opt.offset = false;
             
+            %convert logical, uint8 to double
             opt = tb_optparse(opt, varargin);
             
             og.grid = map;

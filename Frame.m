@@ -439,7 +439,7 @@ classdef Frame < handle
             mn = [Inf Inf Inf];
             mx = -[Inf Inf Inf];
             for frame=findobj('Tag', 'Frame')'
-                T = frame.
+                %%T = frame.
                 
             end
         end
