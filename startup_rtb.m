@@ -38,14 +38,11 @@ addpath( fullfile(tbpath, 'demos') );
 addpath( fullfile(tbpath, 'examples') );
 addpath( fullfile(tbpath, 'mex') );
 addpath( fullfile(tbpath, 'models') );
+addpath( fullfile(tbpath, 'data') );
 javaaddpath( fullfile(tbpath, 'java', 'DHFactor.jar') );
 addpath( fullfile(tbpath, 'interfaces', 'VREP') );
 % add the contrib code to the path
-a = fullfile(rvcpath, 'contrib', 'arte');
-if exist(a, 'dir')
-    addpath( a );
-    disp([' - ARTE: A ROBOTICS TOOLBOX FOR EDUCATION (' a ')']);
-end
+
 p = fullfile(rvcpath, 'contrib', 'pHRIWARE');
 if exist(p, 'dir')
     addpath( p );
