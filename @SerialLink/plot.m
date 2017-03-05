@@ -48,6 +48,7 @@
 % '[no]jvec'        Enable display of joint axis vectors (default false)
 % '[no]joints'      Enable display of joints
 % 'jointcolor',C    Colorspec for joint cylinders (default [0.7 0 0])
+% 'pjointcolor',C   Colorspec for prismatic joint boxes (default [0.4 1 .03])
 % 'jointdiam',D     Diameter of joint cylinder in scale units (default 5)
 %-
 % 'linkcolor',C     Colorspec of links (default 'b')
@@ -292,6 +293,7 @@ function plot(robot, qq, varargin)
     
     % enable mouse-based 3D rotation
     rotate3d on
+    
     
     robot.animate(qq);
     
