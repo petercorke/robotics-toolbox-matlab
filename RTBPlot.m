@@ -1,8 +1,9 @@
+%RTBPlot Plot utilities for Robotics Toolbox
 classdef RTBPlot
     
     methods (Static)
         
-        function install_teach_panel(name, robot, q, opt)
+        function th = install_teach_panel(name, robot, q, opt)
             %
             % robot like object, has n fkine animate methods
             
@@ -35,12 +36,12 @@ classdef RTBPlot
             %   [l b w h]
             
             if opt.d_2d
-                set(ax, 'ZColor', 'none');
-                set(ax, 'Color', 'none');
-                set(ax, 'Position', [0.22 0.05 0.8 1])
+                ax.ZColor = 'none';
+                ax.Color = 'none';
+                ax.Position = [0.22 0.05 0.8 1];
                 
             else
-                set(ax, 'Position', [0.3 0 0.7 1])
+                ax.Position = [0.3 0 0.7 1];
             end
             
             teachhandles.curax = ax;
@@ -50,7 +51,7 @@ classdef RTBPlot
                 'Title', 'Teach', ...
                 'BackGroundColor', bgcol,...
                 'Position', [0 0 0.25 1]);
-            set(panel, 'Units', 'pixels'); % stop automatic resizing
+            panel.Units = 'pixels'; % stop automatic resizing
             teachhandles.panel = panel;
             set(teachhandles.fig, 'Units', 'pixels');
             
@@ -227,9 +228,12 @@ classdef RTBPlot
                 case 'eul'
                     labels = {[char(hex2dec('3c6')) ':'], [char(hex2dec('3b8')) ':'], [char(hex2dec('3c8')) ':']}; % phi theta psi
                     tips = {'Euler angle phi (about Z)', 'Euler angle theta (about Y)', 'Euler angle psi (about Z)'};
-                case'rpy'
+                case {'rpy', 'rpy/xyz'}
                     labels = {'R:', 'P:', 'Y:'};
                     tips = {'Roll angle (about Z)', 'Pitch angle (about Y)', 'Yaw angle (about X)'};
+                case 'rpy/zyx'
+                    labels = {'R:', 'P:', 'Y:'};
+                    tips = {'Roll angle (about X)', 'Pitch angle (about Y)', 'Yaw angle (about Z)'};
             end
             
             %---- set up the orientation display box
@@ -320,7 +324,7 @@ classdef RTBPlot
             
             % the record button
             teachhandles.record = [];
-            if ~isempty(opt.callback)
+            if ~isempty(opt.record)
                 uicontrol(panel, 'Style', 'pushbutton', ...
                     'Units', 'normalized', ...
                     'Position', [0.1 height*(0)+.01 0.30 height], ...
@@ -331,6 +335,10 @@ classdef RTBPlot
                     'ForegroundColor', 'white', ...
                     'String', 'REC');
             end
+            
+            
+            teachhandles.callback = opt.callback;
+            
             
             %---- now assign the callbacks
             for j=1:n
@@ -351,7 +359,11 @@ classdef RTBPlot
             end
             
             % refresh the display
-            RTBPlot.teach_callback([], name, [], teachhandles)
+            RTBPlot.teach_callback([], name, [], teachhandles);
+            
+            if nargout > 0
+                th = teachhandles;
+            end
         end
         
         function teach_callback(src, name, j, teachhandles)
@@ -418,8 +430,10 @@ classdef RTBPlot
                     orient = T6(:,3);    % approach vector
                 case 'eul'
                     orient = tr2eul(T6, 'setopt', teachhandles.opt);
-                case'rpy'
+                case {'rpy','rpy/xyz'}
                     orient = tr2rpy(T6, 'xyz', 'setopt', teachhandles.opt);
+                case'rpy/zyx'
+                    orient = tr2rpy(T6, 'zyx', 'setopt', teachhandles.opt);
             end
             
             % update the display in the teach window
@@ -446,7 +460,7 @@ classdef RTBPlot
         function record_callback(robot, handles)
             
             if ~isempty(handles.callback)
-                handles.callback(h.q);
+                handles.record(h.q);
             end
         end
         
@@ -563,7 +577,7 @@ classdef RTBPlot
         
         
         function opt = plot_options(robot, optin)
-            
+                        
             % timing/looping
             opt.delay = 0.1;
             opt.fps = [];

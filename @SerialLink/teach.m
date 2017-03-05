@@ -6,7 +6,7 @@
 % R.teach(OPTIONS) adds a slider panel to a current robot plot. If no
 % graphical robot exists one is created in a new window.
 %
-% % R.teach(Q, OPTIONS) as above but the robot joint angles are set to Q (1xN).
+% R.teach(Q, OPTIONS) as above but the robot joint angles are set to Q (1xN).
 %
 %
 % Options::
@@ -68,15 +68,14 @@ function teach(robot, varargin)
     
     %---- handle options
     opt.deg = true;
-    opt.orientation = {'rpy', 'eul', 'approach'};
+    opt.orientation = {'rpy', 'rpy/zyx', 'eul', 'approach'};
     opt.d_2d = false;
     opt.callback = [];
+    opt.record = [];
     [opt,args] = tb_optparse(opt, varargin);
     
-    
-    if isempty(args)
-        q = [];
-    else
+    q = [];
+    if ~isempty(args)
         if isnumeric(args{1})
             q = args{1};
             
