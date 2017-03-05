@@ -3,12 +3,14 @@ Citing the Toolbox:
 
 If you use the Toolbox and want to cite it in a paper please use:
 
-@book{Corke11a,
+@book{Corke17a,
     Author = {Peter I. Corke},
-    Date-Added = {2011-01-12 08:19:32 +1000},
-    Date-Modified = {2011-07-26 12:27:18 +0200},
-    Note = {ISBN 978-3-642-20143-1},
+    Note = {ISBN 978-3-319-54413-7},
+    Edition = {Second},
     Publisher = {Springer},
-    Title = {Robotics, Vision \& Control: Fundamental Algorithms in Matlab},
-    Year = {2011}}
+    Title = {Robotics, Vision \& Control: Fundamental Algorithms in {MATLAB}},
+    Year = {2017}}
+
+P.I. Corke, Robotics, Vision \& Control: Fundamental Algorithms in MATLAB. Second edition. Springer, 2017. ISBN 978-3-319-54413-7.
+
 
