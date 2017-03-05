@@ -7,7 +7,7 @@
 % Simulink 4.
 
 function [sys, x0, str, ts] = slaccel(t, x, u, flag, robot)
-	switch flag,
+	switch flag
 
 	case 0
 		% initialize the robot graphics
@@ -17,14 +17,11 @@ function [sys, x0, str, ts] = slaccel(t, x, u, flag, robot)
 		% come here to calculate derivitives
         
         % first check that the torque vector is sensible
-        if numel(u) ~= (3*robot.n)
-            error('RTB:slaccel:badarg', 'Input vector is length %d, should be %d', numel(u), 3*robot.n);
-        end
-        if ~isreal(u)
-            error('RTB:slaccel:badarg', 'Input vector is complex, should be real'); 
-        end
+        assert(numel(u) == (3*robot.n), 'RTB:slaccel:badarg', 'Input vector is length %d, should be %d', numel(u), 3*robot.n);
+        assert(isreal(u), 'RTB:slaccel:badarg', 'Input vector is complex, should be real'); 
         
 		sys = robot.accel(u(:)');
+        
 	case {1, 2, 4, 9}
 		sys = [];
 	end
