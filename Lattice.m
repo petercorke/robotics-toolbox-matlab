@@ -5,30 +5,38 @@
 % performs goal independent planning of kinematically feasible paths.
 %
 % Methods::
+%  Lattice      Constructor
+%  plan         Compute the roadmap
+%  query        Find a path 
+%  plot         Display the obstacle map
+%  display      Display the parameters in human readable form
+%  char         Convert to string
 %
-% plan         Compute the roadmap
-% query        Find a path 
-% plot         Display the obstacle map
-% animate      Animate motion of vehicle over the path
-% display      Display the parameters in human readable form
-% char         Convert to string
+% Properties (read only)::
+%  graph        A PGraph object describign the tree
 %
 % Example::
 %
-%        load map1              % load map
-%        goal = [50,30];        % goal point
-%        start = [20, 10];      % start point
-%        lp = Lattice(map);        % create navigation object
-%        lp.plan()             % create roadmaps
-%        lp.path(start, goal)  % animate path from this start location
+%        lp = Lattice();                    % create navigation object
+%        lp.plan('iterations', 8)           % create roadmaps
+%        lp.query( [1 2 pi/2], [2 -2 0] )   % find path
+%        lp.plot();                         % plot the path
 %
 % References::
 %
 % - Robotics, Vision & Control, Section 5.2.4,
 %   P. Corke, Springer 2016.
 %
+%
 % See also Navigation, DXform, Dstar, PGraph.
 
+
+% Notes::
+% - The lattice is stored as a 3D PGraph object with coordinates x,y,theta
+%   where theta is stored as a multiple of pi/2.  This was probably a bad
+%   design decision, it complicates the code a lot.
+% - Using the Lattice distance metric in PGraph gives different A* results,
+%   valid path, same cost, just different.  Blah.
 
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
@@ -57,6 +65,7 @@ classdef Lattice < Navigation
     properties
         iterations         % number of iterations
         cost      % segment cost
+
         % must be less than this.
         
         graph           % graph Object representing random nodes
@@ -82,11 +91,16 @@ classdef Lattice < Navigation
             % (occupied).
             %
             % Options::
-            %  'npoints',N      Number of sample points (default 100)
-            %  'distthresh',D   Distance threshold, edges only connect vertices closer
-            %                   than D (default 0.3 max(size(occgrid)))
+            % 'grid',G         Grid spacing in X and Y (default 1)
+            % 'root',R         Root coordinate of the lattice (2x1) (default [0,0])
+            % 'iterations',N   Number of sample points (default Inf)
+            % 'cost',C         Cost for straight, left, right (default [1,1,1])
+            % 'inflate',K      Inflate all obstacles by K cells.
             %
             % Other options are supported by the Navigation superclass.
+            %
+            % Notes::
+            % - Iterates until the area defined by the map is covered.
             %
             % See also Navigation.Navigation.
             
@@ -98,25 +112,33 @@ classdef Lattice < Navigation
             lp.graph = PGraph(3, 'distance', 'SE2');
             
             % parse out Lattice specific options and save in the navigation object
-            opt.iterations = Inf;
-            opt.cost = [1 1 1];
             opt.grid = 1;
             opt.root = [0 0 0]';
-            [lp,args] = tb_optparse(opt, varargin, lp);
-            
+            opt.iterations = Inf;
+            opt.cost = [1 1 1];
+            [lp,args] = tb_optparse(opt, varargin, lp); 
         end
         
         function plan(lp, varargin)
             %Lattice.plan Create a lattice plan
             %
-            % P.plan() creates the lattice by iteratively building a tree of possible paths.  The resulting graph is kept
-            % within the object.
+            % P.plan(OPTIONS) creates the lattice by iteratively building a tree of
+            % possible paths.  The resulting graph is kept within the object.
+            %
+            % Options::
+            % 'iterations',N   Number of sample points (default Inf)
+            % 'cost',C         Cost for straight, left, right (default [1,1,1])
+            %
+            % Default parameter values come from the constructor
             
-            % default parameters come from the constructor
             opt.iterations = lp.iterations;
             opt.cost = lp.cost;
 
             [opt,args] = tb_optparse(opt, varargin);
+            
+            if isempty(lp.occgridnav) && isinf(opt.iterations)
+                error('RTB:Lattice:badarg', 'If no occupancy grid given then iterations must be finite');
+            end
             
             lp.iterations = opt.iterations;
             lp.cost = opt.cost;
@@ -134,7 +156,7 @@ classdef Lattice < Navigation
                     error('root must be 2- or 3-vector');
             end
             
-            if lp.isoccupied(lp.root)
+            if lp.isoccupied(lp.root(1:2))
                 error('root node cell is occupied')
             end
             
@@ -162,6 +184,7 @@ classdef Lattice < Navigation
             lp.goal = goal;
             lp.start = start;
             
+            % convert angles to multiple of pi2
             start(3) = round(start(3)*2/pi);
             goal(3) = round(goal(3)*2/pi);
             
@@ -245,26 +268,25 @@ classdef Lattice < Navigation
             if ~isempty(lp.vpath)
                 % highlight the path
                 hold on
-                %lp.graph.highlight_path(lp.vpath, varargin{:});
-                lp.highlight();
+                lp.highlight(args{:});
                 hold off
             end
             
             grid on
         end
         
-        function path = animate(lp, varargin)
-            path = [];
-            for k=1:length(lp.vpath)-1
-                v1 = lp.vpath(k);
-                v2 = lp.vpath(k+1);
-
-                seg = drivearc(lp, [v1, v2], 10);
-                path = [path seg(:,1:end-1)];
-            end
-            path = [path seg(:,end)];
-
-        end
+%         function path = animate(lp, varargin)
+%             path = [];
+%             for k=1:length(lp.vpath)-1
+%                 v1 = lp.vpath(k);
+%                 v2 = lp.vpath(k+1);
+% 
+%                 seg = drivearc(lp, [v1, v2], 10);
+%                 path = [path seg(:,1:end-1)];
+%             end
+%             path = [path seg(:,end)];
+% 
+%         end
         
     end % method
     
@@ -310,7 +332,7 @@ classdef Lattice < Navigation
                         v = lp.graph.closest(newDestinations(:,i), 0.5);
                         if isempty(v)
                             %node doesn't exist
-                            if ~lp.isoccupied(newDestinations(:,i))
+                            if ~lp.isoccupied(newDestinations(1:2,i))
                                 % it's not occupied
                                 % add a new node and an edge
                                 nv = lp.graph.add_node( newDestinations(:,i), node, lp.cost(i));
@@ -330,6 +352,7 @@ classdef Lattice < Navigation
             end
         end
         
+        % Display the lattice, possible arcs, and start/goal markers if relevant
         function showlattice(lp, varargin)
             
             lineopt = {'Linewidth', 0.2, 'Color', [0.5 0.5 0.5]};
@@ -345,6 +368,7 @@ classdef Lattice < Navigation
             plot3(lp.root(1), lp.root(2), lp.root(3), 'ko', 'MarkerSize', 8);
             view(0,90);
             axis equal
+            rotate3d
             
             % draw the lattice
             for e=1:lp.graph.ne
@@ -353,23 +377,31 @@ classdef Lattice < Navigation
             end
         end
         
-        function highlight(lp)
+        function highlight(lp, p)
+            
+            if nargin > 1
+                assert(numcols(p)==3, 'path must have 3 columns');
+                for i=1:numrows(p)
+                    
+                    vpath(i) = lp.graph.closest(p(i,:) );
+                end
+            else
+                vpath = lp.vpath;
+            end
+            
             % highlight the path
-            for k=1:length(lp.vpath)-1
-                v1 = lp.vpath(k);
-                v2 = lp.vpath(k+1);
-% %                 e1 = lp.graph.edges_in(v1); e2 = lp.graph.edges_out(v2);
-% %                 i = intersect(e1, e2);
-% %                 if length(i) > 1
-% %                     error('should be only one entry');
-% %                 end
+            for k=1:length(vpath)-1
+                v1 = vpath(k);
+                v2 = vpath(k+1);
                 drawarc(lp, [v1, v2], {'Linewidth', 3, 'Color', 'r'});
             end
         end
         
+        % draw an arc
         function drawarc(lp, v, lineOpts)
             g = lp.graph;
             
+            % use lower resolution if lots of arcs
             if lp.iterations < 4
                 narc = 20;
             elseif lp.iterations < 10
@@ -411,45 +443,46 @@ classdef Lattice < Navigation
             end
         end
         
-        function path = drivearc(lp, v, narc)
-            g = lp.graph;
-            
-            
-            v1 = v(1); v2 = v(2);
-            p1 = g.coord(v1);
-            p2 = g.coord(v2);
-            
-            path = [];
-            
-            % frame {N} is start of the arc
-            theta = p1(3)*pi/2;  % {0} -> {N}
-            T_0N = SE2(p1(1:2), theta);
-            
-            dest = round( T_0N.inv * p2(1:2) );  % in {N}
-            
-            if dest(2) == 0
-                % no heading change, straight line segment
-                
-                for s=linspace(0, 1, narc)
-                    path = [path (1-s)*p1 + s*p2];
-                end
-            else
-                % curved segment
-                c = T_0N * [0 dest(2)]';
-                
-                th = ( linspace(-dest(2)/lp.grid, 0, narc) + p1(3) )*pi/2;
-                
-                x = lp.grid*cos(th) + c(1);
-                y = lp.grid*sin(th) + c(2);
-                
-                
-                th0 = p1(3);
-% %                 th0(th0==3) = -1;
-                thf = p2(3);
-% %                 thf(thf==3) = -1;
-                path = [path [x; y; linspace(th0, angdiff(thf,th0)+th0, narc)*pi/2] ];
-            end
-        end
+%         % this doesn't work quite properly...
+%         function path = drivearc(lp, v, narc)
+%             g = lp.graph;
+%             
+%             
+%             v1 = v(1); v2 = v(2);
+%             p1 = g.coord(v1);  p1(3) = p1(3)*pi/2;
+%             p2 = g.coord(v2);  p2(3) = p2(3)*pi/2;
+%             
+%             path = [];
+%             
+%             % frame {N} is start of the arc
+%             theta = p1(3);  % {0} -> {N}
+%             T_0N = SE2(p1(1:2), theta);
+%             
+%             dest = round( T_0N.inv * p2(1:2) );  % in {N}
+%             
+%             if dest(2) == 0
+%                 % no heading change, straight line segment
+%                 
+%                 for s=linspace(0, 1, narc)
+%                     path = [path (1-s)*p1 + s*p2];
+%                 end
+%             else
+%                 % curved segment
+%                 c = T_0N * [0 dest(2)]';
+%                 
+%                 th = ( linspace(-dest(2)/lp.grid, 0, narc) + p1(3) );
+%                 
+%                 x = lp.grid*cos(th) + c(1);
+%                 y = lp.grid*sin(th) + c(2);
+%                 
+%                 
+%                 th0 = p1(3);
+% % %                 th0(th0==3) = -1;
+%                 thf = p2(3);
+% % %                 thf(thf==3) = -1;
+%                 path = [path [x; y; linspace(th0, angdiff(thf,th0)+th0, narc)] ];
+%             end
+%         end
 
         
     end % private methods
