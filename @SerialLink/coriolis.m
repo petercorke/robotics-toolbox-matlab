@@ -50,28 +50,20 @@ function C = coriolis(robot, q, qd)
 
     if nargin == 2
         % coriolis( [q qd] )
-        if numcols(q) ~= 2*n
-            error('RTB:coriolis:badarg', 'arg must have %d columns', 2*n);
-        end
+        assert(numcols(q) == 2*n,'RTB:coriolis:badarg', 'arg must have %d columns', 2*n);
         qd = q(:,n+1:end);
         q = q(:,1:n);
     else
-        if numcols(q) ~= n
-            error('RTB:coriolis:badarg', 'Cq must have %d columns', n);
-        end
-        if numcols(qd) ~= n
-            error('RTB:coriolis:badarg', 'qd must have %d columns', n);
-        end
+        assert( numcols(q) == n, 'RTB:coriolis:badarg', 'Cq must have %d columns', n);
+        assert( numcols(qd) == n, 'RTB:coriolis:badarg', 'qd must have %d columns', n);
     end
 
-    % we need to create a clone robot with no friciton, since friction
+    % we need to create a clone robot with no friction, since friction
     % is also proportional to joint velocity
     robot2 = robot.nofriction('all');
 
     if numrows(q) > 1
-        if numrows(q) ~= numrows(qd)
-            error('RTB:coriolis:badarg', 'for trajectory q and qd must have same number of rows');
-        end
+        assert( numrows(q) == numrows(qd), 'RTB:coriolis:badarg', 'for trajectory q and qd must have same number of rows');
         C = [];
         for i=1:numrows(q)
             C = cat(3, C, robot2.coriolis(q(i,:), qd(i,:)));
@@ -85,7 +77,6 @@ function C = coriolis(robot, q, qd)
         C(N,N) = sym();
         Csq(N,N) = sym();
     else
-        
         C = zeros(N,N);
         Csq = zeros(N,N);
     end
@@ -115,7 +106,6 @@ function C = coriolis(robot, q, qd)
             tau = robot2.rne(q, QD, zeros(size(q)), 'gravity', [0 0 0]);
             C(:,k) = C(:,k) + (tau.' - Csq(:,k) - Csq(:,j)) * qd(j)/2;
             C(:,j) = C(:,j) + (tau.' - Csq(:,k) - Csq(:,j)) * qd(k)/2;
-
         end
     end
 
