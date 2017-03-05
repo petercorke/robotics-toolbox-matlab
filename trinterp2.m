@@ -57,7 +57,7 @@ function T = trinterp2(A, B, C)
         end
     elseif nargin == 2
         %	TR = TRINTERP(T, r)
-        T0 = SE2.check(A); r = B;
+        T1 = A; r = B;
         
         if length(r) == 1 && r > 1 && (r == floor(r))
             % integer value
@@ -66,12 +66,12 @@ function T = trinterp2(A, B, C)
             error('RTB:trinterp2:badarg', 'values of S outside interval [0,1]');
         end
         
-        th0 = atan2(T0(2,1), T0(1,1));
-        p0 = transl2(T0);
+        th1 = atan2(T1(2,1), T1(1,1));
+        p1 = transl2(T1);
         
         for i=1:length(r)
-            th = th0*(1-r(i)) + r(i)*th1;
-            pr = r*p0;
+            th = r(i)*th1;
+            pr = r*p1;
             
             T(:,:,i) = rt2tr(rot2(th), pr);
         end
