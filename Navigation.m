@@ -3,15 +3,20 @@
 % An abstract superclass for implementing planar grid-based navigation classes.  
 %
 % Methods::
-%   plan        Find a path to goal
-%   query       Return/animate a path from start to goal
-%   plot        Display the occupancy grid
-%   display     Display the parameters in human readable form
-%   char        Convert to string
-%   isoccupied  Test if cell is occupied
-%   rand        Uniformly distributed random number
-%   randn       Normally distributed random number
-%   randi       Uniformly distributed random integer
+%   Navigation        Superclass constructor
+%   plan              Find a path to goal
+%   query             Return/animate a path from start to goal
+%   plot              Display the occupancy grid
+%   display           Display the parameters in human readable form
+%   char              Convert to string
+%   isoccupied        Test if cell is occupied
+%   rand              Uniformly distributed random number
+%   randn             Normally distributed random number
+%   randi             Uniformly distributed random integer
+%--
+%   progress_init     Create a progress bar
+%   progress          Update progress bar
+%   progress_delete   Remove progress bar
 %
 % Properties (read only)::
 %   occgrid   Occupancy grid representing the navigation environment
@@ -35,7 +40,7 @@
 % - The initial random number state is captured as seed0 to allow rerunning an
 %   experiment with an interesting outcome.
 %
-% See also Dstar, Dxform, PRM, Lattice, RRT.
+% See also Bug2, Dstar, Dxform, PRM, Lattice, RRT.
 
 
 % Copyright (C) 1993-2014, by Peter I. Corke
@@ -105,14 +110,14 @@ classdef Navigation < handle
         % occupancy grid OCCGRID.  A number of options can be be passed.
         %
         % Options::
-        % 'goal',G      Specify the goal point (2x1)
-        % 'verbose'     Display debugging information
-        % 'inflate',K   Inflate all obstacles by K cells.
-        % 'private'     Use private random number stream.
-        % 'reset'       Reset random number stream.
-        % 'seed',S      Set the initial state of the random number stream.  S must
-        %               be a proper random number generator state such as saved in
-        %               the seed0 property of an earlier run.
+        % 'goal',G        Specify the goal point (2x1)
+        % 'inflate',K     Inflate all obstacles by K cells.
+        % 'private'       Use private random number stream.
+        % 'reset'         Reset random number stream.
+        % 'verbose'       Display debugging information
+        % 'seed',S        Set the initial state of the random number stream.  S must
+        %                 be a proper random number generator state such as saved in
+        %                 the seed0 property of an earlier run.
         %
         % Notes::
         % - In the occupancy grid a value of zero means free space and non-zero means
@@ -123,8 +128,12 @@ classdef Navigation < handle
         % - The 'private' option creates a private random number stream for the methods 
         %   rand, randn and randi.  If not given the global stream is used.
         %
+        % See also randstream.
+        
+        
         % TODO:
         %   - allow for an arbitrary transform from world coordinates to the grid
+        %   - it needs to affect plot scaling, start and goal
 
             if nargin >= 1 
                 % first argument is the map
@@ -145,6 +154,7 @@ classdef Navigation < handle
             opt.private = false;
             opt.reset = false;
             opt.seed = [];
+            opt.transform = SE2;
             
             [opt,lp.options] = tb_optparse(opt, varargin);
 
@@ -189,17 +199,19 @@ classdef Navigation < handle
 
             % save the current state in case it later turns out to give interesting results
             nav.seed0 = nav.randstream.State;
+            
+            nav.w2g = opt.transform;
 
             nav.spincount = 0;
         end
 
-                function pp = query(nav, start, varargin)
+        function pp = query(nav, start, varargin)
             %Navigation.query Find a path from start to goal using plan
             %
             % N.query(START, OPTIONS) animates the robot moving from START (2x1) to the goal (which is a 
-            % property of the object).
+            % property of the object) using a previously computed plan.
             %
-            % X = N.query(START, OPTIONS) returns the path (2xM) from START to the goal (which is a property of 
+            % X = N.query(START, OPTIONS) returns the path (Mx2) from START to the goal (which is a property of 
             % the object).
             %
             % The method performs the following steps:
@@ -209,21 +221,18 @@ classdef Navigation < handle
             %    achieved.
             %
             % Options::
+            % 'animate'    Show the computed path as a series of green dots.
             %
             % Notes::
-            %  - If start or goal are given as [] then the user is prompted to click points on the map.
-
+            %  - If START given as [] then the user is prompted to click a point on the map.
             %
-            % See also Navigation.plot, Navigation.goal.
-
-            % if no start point given, display the map, and prompt the user to select
-            % a start point
+            %
+            % See also Navigation.navigate_init, Navigation.plot, Navigation.goal.
             
             opt.animate = false;
-            
             opt = tb_optparse(opt, varargin);
             
-            % make sure start and goal are set and valid
+            % make sure start and goal are set and valid, optionally prompt
             nav.checkquery(start);
             
             if opt.animate
@@ -255,7 +264,9 @@ classdef Navigation < handle
             end
             
             % return the path 
-            pp = path';
+            if nargout > 0
+                pp = path';
+            end
         end
 
         function plot(nav, varargin)
@@ -286,10 +297,10 @@ classdef Navigation < handle
         function plot_bg(nav, varargin)
         %Navigation.plot  Visualization background
         %
-        % N.plot(OPTIONS) displays the occupancy grid with occupied cells shown as
+        % N.plot_bg(OPTIONS) displays the occupancy grid with occupied cells shown as
         % red and an optional distance field.
         %
-        % N.plot(P,OPTIONS) as above but overlays the points along the path (2xM) matrix. 
+        % N.plot_bg(P,OPTIONS) as above but overlays the points along the path (2xM) matrix. 
         %
         % Options::
         %  'distance',D      Display a distance field D behind the obstacle map.  D is
@@ -381,7 +392,7 @@ classdef Navigation < handle
         % N.plot_fg(OPTIONS) displays the start and goal locations if specified.
         % By default the goal is a pentagram and start is a circle.
         %
-        % N.plot(P, OPTIONS) as above but overlays the points along the path (2xM) matrix.
+        % N.plot_fg(P, OPTIONS) as above but overlays the points along the path (2xM) matrix.
         % 
         % Options::
         %  'pathmarker',M    Options to draw a path point
@@ -537,36 +548,32 @@ classdef Navigation < handle
             end
         end
         
-        function occ = isoccupied(nav, pos)
+        
+        function occ = isoccupied(nav, x, y)
             %Navigation.isoccupied Test if grid cell is occupied
             %
             % N.isoccupied(POS) is true if there is a valid grid map and the coordinate
             % POS (1x2) is occupied.  P=[X,Y] rather than MATLAB row-column
             % coordinates.
+            %
+            % N.isoccupied(X,Y) as above but the coordinates given separately.
             
             if isempty(nav.occgridnav)
-                % there are no limits, everywhere is unoccuplied
                 occ = false;
-            else
-                try
-                    occ = nav.occgridnav( pos(2), pos(1) ) > 0;
-                catch me
-                    % come here if subscript out of range, we have fallen off the edge of the map
-                    occ = true;
-                end
+                return
             end
-        end
-        
-        function occ = isoccupied_new(nav, x, y)
             
             if nargin == 2 && isvec(x, 2)
-                wc = x(:);
+                pos = x(:);
             else
-                wc = [x; y];
+                pos = [x; y];
             end
-            gc = round( nav.w2g * x(:) );
+            
+            % convert from world coordinates to grid coordinates
+            pos = round( nav.w2g * pos(:) );
+            
             try
-                occ = nav.occgrid(gc(2), gc(1));
+                occ = nav.occgridnav(pos(2), pos(1)) > 0;
             catch
                 occ = true; % beyond the grid, all cells are implicitly occupied
             end
@@ -583,10 +590,12 @@ classdef Navigation < handle
         function navigate_init(nav, start)
             %Navigation.navigate_init Notify start of path
             %
-            % N.navigate_init(start) is called when the path() method is invoked.
+            % N.navigate_init(START) is called when the query() method is invoked.
             % Typically overriden in a subclass to take particular action such as
-            % computing some path parameters. start is the initial position for this
-            % path, and nav.goal is the final position.
+            % computing some path parameters. START (2x1) is the initial position for this
+            % path, and nav.goal (2x1) is the final position.
+            %
+            % See also Navigate.query.
         end
 
 
@@ -620,7 +629,6 @@ classdef Navigation < handle
         %
         % R = N.randn(L,M) as above but returns a matrix (LxM) of random numbers.
         %
-        %
         % Notes::
         % - Accepts the same arguments as randn().
         % - Seed is provided to Navigation constructor.
@@ -641,9 +649,8 @@ classdef Navigation < handle
         %
         % I = N.randn(RM, L,M) as above but returns a matrix (LxM) of random integers.
         %
-        %
         % Notes::
-        % - Accepts the same arguments as randn().
+        % - Accepts the same arguments as randi().
         % - Seed is provided to Navigation constructor.
         % - Provides an independent sequence of random numbers that does not
         %   interfere with any other randomised algorithms that might be used.
