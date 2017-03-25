@@ -228,6 +228,7 @@ numrows     : number of rows in matrix
 peak        : find peak in 1D signal
 peak2       : find peak in 2D signal
 PGraph      : general purpose graph class
+pickregion   : pick a region in figure
 Plucker     : Plucker line class
 polydiff    : derivative of polynomial
 Polygon     : general purpose polygon class
