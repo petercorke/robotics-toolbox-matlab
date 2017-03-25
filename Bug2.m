@@ -82,7 +82,6 @@ classdef Bug2 < Navigation
             bug.step = 1;
         end
 
-
         function pp = query(bug, start, goal, varargin)
             %Bug2.query  Find a path
             %
@@ -93,6 +92,8 @@ classdef Bug2 < Navigation
             %
             % Options::
             %  'animate'   show a simulation of the robot moving along the path
+            %  'movie',M   create a movie
+            %  'current'   show the current position position as a black circle
             %
             % Notes::
             % - START and GOAL are given as X,Y coordinates in the grid map, not as
@@ -100,10 +101,24 @@ classdef Bug2 < Navigation
             % - START and GOAL are tested to ensure they lie in free space.
             % - The Bug2 algorithm is completely reactive so there is no planning
             %   method.
-        
+            % - If the bug does a lot of back tracking it's hard to see the current
+            %   position, use the 'current' option.
+            % - For the movie option if M contains an extension a movie file with that
+            %   extension is created.  Otherwise a folder will be created containing
+            %   individual frames.
+            %
+            % See also Animate.
+         
             opt.animate = false;
+            opt.movie = [];
+            opt.current = false;
             
             opt = tb_optparse(opt, varargin);
+            
+            if ~isempty(opt.movie)
+                anim = Animate(opt.movie);
+                opt.animate = true;
+            end
        
             % make sure start and goal are set and valid
             bug.start = []; bug.goal = [];
@@ -129,7 +144,16 @@ classdef Bug2 < Navigation
             while true
                 if opt.animate
                     plot(robot(1), robot(2), 'g.', 'MarkerSize', 12);
-                    drawnow 
+                    if opt.current
+                        h = plot(robot(1), robot(2), 'ko', 'MarkerSize', 8);
+                    end
+                    drawnow
+                    if ~isempty(opt.movie)
+                        anim.add();
+                    end
+                    if opt.current
+                        delete(h)
+                    end
                 end
 
                 % move to next point on path
@@ -143,7 +167,10 @@ classdef Bug2 < Navigation
                     % no, append it to the path
                     path = [path robot(:)];
                 end
-
+            end
+            
+            if ~isempty(opt.movie)
+                anim.close();
             end
 
             % only return the path if required
