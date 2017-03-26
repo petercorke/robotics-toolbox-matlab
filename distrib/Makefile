@@ -5,6 +5,7 @@ SRC = $(ROOT)/robot
 ROBOT = rvctools/robot
 COMMON = rvctools/common
 CONTRIB = rvctools/contrib
+LIB = ~/lib/matlab
 
 release:  build doco zipit
 
@@ -34,6 +35,8 @@ _build:
 	# copy any contrib files that will be included
 	#cp -r $(ROOT)/contrib/paretofront rvctools/contrib
 	cp -r $(ROOT)/contrib/pHRIWARE $(CONTRIB)
+	cp $(LIB)/arrow3.m $(CONTRIB)
+
 
 	# copy any GUIDE files
 	cp ../../*.fig $(ROBOT)
