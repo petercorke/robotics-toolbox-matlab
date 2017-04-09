@@ -77,6 +77,11 @@ function vellipse(robot, q, varargin)
     end
     
     N = (J*J');
+
+    if det(N) < 100*eps
+        warning('RTB:fellipse:badval', 'Jacobian is singular, ellipse cannot be drawn')
+        return
+    end
     
     t = transl(robot.fkine(q));
     
