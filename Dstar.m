@@ -136,6 +136,9 @@ classdef Dstar < Navigation
             if ~isempty(ds.goal)
                 ds.goal_change();
             end
+            
+            ds.reset();
+
         end
         
         function reset(ds)
@@ -173,6 +176,11 @@ classdef Dstar < Navigation
                 s = char(s, sprintf('  costmap: %dx%d, open list %d', size(ds.costmap), numcols(ds.openlist)));
             else
                 s = char(s, sprintf('  costmap: empty:'));
+            end
+            if ds.validplan
+                s = char(s, sprintf('  plan: valid'));
+            else
+                s = char(s, sprintf('  plan: stale'));
             end
         end
         
@@ -282,6 +290,7 @@ classdef Dstar < Navigation
                 Navigation.progress_delete(hprog);
             end
             ds.validplan = true;
+            fprintf('%d iterations\n', ds.niter)
         end
         
         
