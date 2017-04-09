@@ -564,8 +564,9 @@ classdef Navigation < handle
                 return
             end
             
-            if nargin == 2 && isvec(x, 2)
+            if nargin == 2 && length(x) >= 2
                 pos = x(:);
+                pos = pos(1:2);
             else
                 pos = [x; y];
             end
