@@ -343,7 +343,7 @@ classdef RTBPlot
             
             % the record button
             teachhandles.record = [];
-            if ~isempty(opt.record)
+            if isfield(opt, 'record') && ~isempty(opt.record)
                 uicontrol(panel, 'Style', 'pushbutton', ...
                     'Units', 'normalized', ...
                     'Position', [0.1 height*(0)+.01 0.30 height], ...
@@ -597,6 +597,8 @@ classdef RTBPlot
         
         function opt = plot_options(robot, optin)
                         
+            opt.deg = false;
+            
             % timing/looping
             opt.delay = 0.1;
             opt.fps = [];
