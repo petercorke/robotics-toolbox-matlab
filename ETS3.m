@@ -241,7 +241,7 @@ classdef ETS3
             % E1 * E2 is a sequence of two elementary transform.
             %
             % See also ETS3.plus.
-            assert( strcmp(superclasses(ets1), superclasses(ets2)), 'ETS3: both operands must have superclass ETS3, perhaps run ''clear imports'', and start over');
+            assert( strcmp(superclasses(ets1), superclasses(ets2)), 'ETS3: both operands must have superclass ETS3, perhaps run ''clear import'', and start over');
             
             out = [ets1 ets2];
         end
@@ -252,7 +252,7 @@ classdef ETS3
             % E1 + E2 is a sequence of two elementary transform.
             %
             % See also ETS3.mtimes.
-            assert( strcmp(superclasses(ets1), superclasses(ets2)), 'ETS3: both operands must have superclass ETS3, perhaps run ''clear imports'', and start over');
+            assert( strcmp(superclasses(ets1), superclasses(ets2)), 'ETS3: both operands must have superclass ETS3, perhaps run ''clear import'', and start over');
             
             out = [ets1 ets2];
         end
