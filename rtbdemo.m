@@ -118,11 +118,20 @@ function rtbdemo(timeout)
     
     % now set the callback for every button, can't seem to make this work using
     % GUIDE.
-    for hh=get(h, 'Children')'
-        if ~strcmp( get(hh, 'Style'), 'pushbutton')
-            continue;
+    for hh=h.Children'
+        switch hh.Type
+            case 'uicontrol'                
+                if strcmp( hh.Style, 'pushbutton')
+                    set(hh, 'Callback', @demo_pushbutton_callback);
+                end
+            case 'uipanel'
+                for hhh=hh.Children'
+                    if strcmp( hhh.Style, 'pushbutton')
+                        set(hhh, 'Callback', @demo_pushbutton_callback);
+                    end
+                    continue;
+                end
         end
-        set(hh, 'Callback', @demo_pushbutton_callback);
     end
     
     % TODO:
@@ -204,4 +213,4 @@ function demo_pushbutton_callback(hObject, eventdata, handles)
         % eventdata  reserved - to be defined in a future version of MATLAB
         % handles    structure with handles and user data (see GUIDATA)
         set(gcf, 'Userdata', get(hObject, 'String'));
-    end
+end
