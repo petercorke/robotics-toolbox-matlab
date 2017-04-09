@@ -578,6 +578,24 @@ classdef RTBPlot
             % create a colored tiled floor
             xt = xmin:opt.tilesize:xmax;
             yt = ymin:opt.tilesize:ymax;
+            
+            % check how many tiles are to be rendered and reduce it if too many
+            % too many tiles can lead to MATLAB crashing with lack of memory
+            n = max(length(xt), length(yt)); % number requested
+            if n > 20
+                n = n/20;  % reduce by this factor
+                p = 10^floor(log10(n));  % figure a scale factor 1,2,5 * 10^N
+                v = n/p;
+                s = [1 2 5 10];
+                k = find(v > s);
+                f = k(end)+1;
+                f = f*p;
+                warning('RTB:SerialLink:plot', 'floor tiles too small, making them %f x bigger - change the size or disable them', f);
+                opt.tilesize = opt.tilesize * f;
+                xt = xmin:opt.tilesize:xmax;
+                yt = ymin:opt.tilesize:ymax;
+            end
+            
             Z = opt.floorlevel*ones( numel(yt), numel(xt));
             C = zeros(size(Z));
             [r,c] = ind2sub(size(C), 1:numel(C));
