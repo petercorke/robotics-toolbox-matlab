@@ -101,7 +101,7 @@ function teach(robot, varargin)
             q = info.q;
         end
     else
-        robot.plot(q);
+        robot.plot(q, args{:});
     end
     
     RTBPlot.install_teach_panel(robot.name, robot, q, opt)
