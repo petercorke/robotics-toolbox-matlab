@@ -125,12 +125,14 @@ classdef DXform < Navigation
             end
         end
   
-        function plan(dx, goal, varargin)
+        function plan(dx, varargin)
             %DXform.plan Plan path to goal
             %
-            % DX.plan(GOAL, OPTIONS) plans a path to the goal, updates the internal
-            % distancemap where the value of each element is the minimum distance from
-            % the corresponding point to the goal.
+            % DX.plan(GOAL, OPTIONS) plans a path to the goal given to the constructor,
+            % updates the internal distancemap where the value of each element is the 
+            % minimum distance from the corresponding point to the goal.
+            %
+            % DX.plan(GOAL, OPTIONS) as above but goal is specified explicitly
             %
             % Options::
             % 'animate'    Plot the distance transform as it evolves
@@ -142,7 +144,7 @@ classdef DXform < Navigation
 
             opt.animate = false;
             
-            opt = tb_optparse(opt, varargin);
+            [opt,args] = tb_optparse(opt, varargin);
             
             if opt.animate
                 show = 0.05;
@@ -150,7 +152,11 @@ classdef DXform < Navigation
                 show = 0;
             end
             
-            dx.setgoal(goal);
+            if ~isempty(args) && isvec(args{1},2)
+                dx.setgoal(args{1});
+            end
+            
+            assert(~isempty(dx.goal), 'RTB:DXform:plan', 'no goal specified here or in constructor');
 
             dx.distancemap = distancexform(dx.occgridnav, dx.goal, dx.metric, show);
         end

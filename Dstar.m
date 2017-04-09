@@ -211,11 +211,11 @@ classdef Dstar < Navigation
         function plan(ds, varargin)
             %Dstar.plan Plan path to goal
             %
-            % DS.plan(GOAL,OPTIONS) create a D* plan to reach the goal from all free cells
-            % in the map.
+            % DS.plan(OPTIONS) create a D* plan to reach the goal from all free cells
+            % in the map.  Also updates a D* plan after changes to the costmap. The 
+            % goal is as previously specified.
             %
-            % DS.plan() updates a D* plan after changes to the costmap. The goal is
-            % as previously specified.
+            % DS.plan(GOAL,OPTIONS) as above but goal given explicitly.
             %
             % Options::
             % 'animate'    Plot the distance transform as it evolves
@@ -226,29 +226,36 @@ classdef Dstar < Navigation
             %   modified, then reinvoking this method will replan,
             %   incrementally updating the plan at lower cost than a full
             %   replan.
+            % - The reset method causes a fresh plan, rather than replan.
+            %
+            % See also Dstar.reset.
             
             opt.progress = true;
             opt.animate = false;
             [opt,args] = tb_optparse(opt, varargin);
             
-            if length(args) > 0
+                        % was a goal given here
+            if ~isempty(args) && isvec(args{1},2)
                 goal = args{1};
                 ds.setgoal(goal);
                 ds.reset();
-                % keep goal in index rather than row,col format
-                ds.G = sub2ind(size(ds.occgridnav), goal(2), goal(1));
-                ds.INSERT(ds.G, 0, 'goalset');
-                ds.h(ds.G) = 0;
-                title = 'D* planning';
-            else
-                title = 'D* replanning';
             end
+            
+            % check we have a goal
+            assert(~isempty(ds.goal), 'RTB:Dstar:plan', 'no goal specified here or in constructor');
+            
+            goal = ds.goal;
+            
+            % keep goal in index rather than row,col format
+            ds.G = sub2ind(size(ds.occgridnav), goal(2), goal(1));
+            ds.INSERT(ds.G, 0, 'goalset');
+            ds.h(ds.G) = 0;
             
             ds.niter = 0;
             if opt.progress
                 % for replanning we don't really know how many iterations, so scale it to
                 % the worst case, a full replan
-                hprog = Navigation.progress_init(title);
+                hprog = Navigation.progress_init('D* planning');
             end
             
             % number of free cells, upper bound on number of iterations, trapped free
