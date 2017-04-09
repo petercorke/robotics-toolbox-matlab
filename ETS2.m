@@ -89,7 +89,7 @@ classdef ETS2
             obj.qlim = opt.qlim;
             
             if nargin > 1
-                if isa(x, 'ETS3')
+                if isa(x, 'ETS2')
                     % clone it
                     obj.what = x.what;
                     obj.qvar = x.qvar;
@@ -488,7 +488,7 @@ classdef ETS2
                 end
             end
             
-            opt = RTBPlot.plot_options([], [varargin 'reach', 3, 'top'])
+            opt = RTBPlot.plot_options([], [varargin 'reach', 3, 'top']);
             h = draw_ets(ets, qq, opt);
             
             set(gca, 'Tag', 'RTB.plot');
@@ -525,9 +525,9 @@ classdef ETS2
             ets.animate(qq);
         end
         
-    end
+   end
     
-    methods (Access=private)
+   methods (Access=private)
         
         function animate(ets, qq)
             handles = findobj('Tag', 'ETS2');
@@ -572,7 +572,8 @@ classdef ETS2
                     drawnow
                 end
             end
-            
+        end
+        
             function h_ = draw_ets(ets, q, opt)
                 
                 clf
@@ -713,5 +714,5 @@ classdef ETS2
             
         end
         
-    end
+
 end
