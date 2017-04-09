@@ -82,11 +82,14 @@ function d = distancexform(occgrid, varargin)
         
         switch opt.metric
             case 'cityblock'
-                m = ones(3,3);
-                m(2,2) = 0;
+                m = [ inf  1  inf
+                        1  0    1
+                      inf  1  inf  ];
             case 'euclidean'
                 r2 = sqrt(2);
-                m = [r2 1 r2; 1 0 1; r2 1 r2];
+                m = [ r2  1 r2
+                       1  0  1
+                      r2  1 r2  ];
             otherwise
                 error('unknown distance metric');
         end
