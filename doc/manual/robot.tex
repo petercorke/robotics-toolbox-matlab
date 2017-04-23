@@ -160,6 +160,8 @@ RTB 10 is largely backward compatible with RTB 9.
 \item The method to compute the arm-robot Jacobian in the end-effector frame has been renamed from \texttt{jacobn} to \texttt{jacobe}.
 \item The path planners, subclasses of \texttt{Navigation}, the method to find a path has been renamed from \texttt{path} to  \texttt{query}.
 \item The Jacobian methods for the \texttt{RangeBearingSensor} class have been renamed to \texttt{Hx}, \texttt{Hp}, \texttt{Hw}, \texttt{Gx},\texttt{Gz}.
+\item The function \texttt{se2} has been replaced with the class \texttt{SE2}.  On some platforms (Mac) this is the same file.  Broadly similar in function, the former returns a $3\times 3$ matrix, the latter returns an object.
+\item The function \texttt{se3} has been replaced with the class \texttt{SE3}.  On some platforms (Mac) this is the same file.  Broadly similar in function, the former returns a $4\times 4$ matrix, the latter returns an object.
 \end{itemize}
 
 These changes are summarized in Table \ref{tab:changes}.
@@ -181,8 +183,6 @@ These changes are summarized in Table \ref{tab:changes}.
 \caption{Function and method name changes}\label{tab:changes}
 \end{table}
 
-
-
 \subsection{New features}
 \begin{itemize}
 \item \texttt{SerialLinkplot3d()} renders realistic looking 3D models of robots.   STL models from
@@ -191,20 +191,23 @@ These changes are summarized in Table \ref{tab:changes}.
 \item Distribution as an \texttt{.mltbx} format file.
 \item A comprehensive set of functions to handle rotations and transformations in 2D, these functions end with the suffix 2, eg. \texttt{transl2}, \texttt{rot2}, \texttt{trot2} etc.
 \item Matrix exponentials are handled by \texttt{trexp}, \texttt{trlog}, \texttt{trexp2} and \texttt{trlog2}.
-\item The class \texttt{Twist} represents a twist in 2D or 3D.  It is a 6-vector representation of the Lie algebra $se(3)$, or a
+\item The class \texttt{Twist} represents a twist in 3D or 2D.  Respectively, it is a 6-vector representation of the Lie algebra $se(3)$, or a
 3-vector representation of $se(2)$.
 \item The method \texttt{SerialLink.jointdynamics} returns a vector of \texttt{tf} objects representing the dynamics of the joint actuators.
-\item The class \texttt{Lattice} is a kinodynamic lattice path planner.
+\item The class \texttt{Lattice} is a kino-dynamic lattice path planner.
 \item The class \texttt{PoseGraph} solves graph relaxation problems and can be used for bundle adjustment and pose graph SLAM.
 \item The class \texttt{Plucker} represents a line using Plücker coordinates.
 \item The folder \texttt{RST} contains Live Scripts that demonstrate some capabilities of the MATLAB Robotics System Toolbox\textsuperscript{TM}.
 \item The folder \texttt{symbolic} contains Live Scripts that demonstrate use of the MATLAB Symbolic Math Toolbox\textsuperscript{TM}
 for deriving Jacobians used in EKF SLAM (vehicle and sensor), inverse kinematics for a 2-joint planar arm and solving for roll-pitch-yaw angles
 given a rotation matrix.
+\item All the robot models, prefixed by \texttt{mdl\_}, now reside in the folder \texttt{models}.
+\item A new folder \texttt{data} now holds various data files as used by examples in RVC2: STL models, occupancy grids, Hershey font, Toro and G2O
+files.
 \end{itemize}
 
 Since its inception RTB has used matrices\footnote{Early versions of RTB, before 1999, used vectors to represent quaternions but that changed to an object once objects were added to the language.} to represent rotations and transformations in 2D and 3D.  A trajectory, or sequence, was represented by a 3-dimensional matrix, eg. $4\times 4 \times N$.  In RTB10 a set of classes have been introduced to represent orientation and pose in 2D and 3D: \texttt{SO2}, \texttt{SE2}, \texttt{SO3}, \texttt{SE3} and \texttt{UnitQuaternion}.  These classes are fairly polymorphic, that is, they share many methods and operators\footnote{For example, you could substitute objects of class \texttt{SO3} and \texttt{UnitQuaternion} with minimal code change.}.  All have a number of static methods that serve as constructors from particular representations.  A trajectory is represented by a vector of these objects which makes code easier to read and
-understand.  Overloaded operators are used so the classes behave in a similar way to native matrices\footnote{The capability is extended so that we can elementwise multiple two vectors of transforms, multiply one transform over a vector of transforms or a set of points.}.
+understand.  Overloaded operators are used so the classes behave in a similar way to native matrices\footnote{The capability is extended so that we can element-wise multiple two vectors of transforms, multiply one transform over a vector of transforms or a set of points.}.
 The relationship between the classical Toolbox functions and the new classes are shown in Fig \ref{fig:newfunctions}.
 
 You can continue to use the classical functions.  The new classes have methods with the names of classical functions to provide similar functionality.  For instance
