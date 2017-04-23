@@ -202,5 +202,5 @@ install:
 	ssh geek chmod -R a+rX www/RTB/r9
 
 clean:
-	@-\rm -rf tmp
+	@-\rm -rf tmp *.zip *.mltbx
 
