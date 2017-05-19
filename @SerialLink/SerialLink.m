@@ -535,7 +535,7 @@ end
 
         function set.tool(r, v)
             if isempty(v)
-                r.base = eye(4,4);
+                r.tool = eye(4,4);
             elseif ~ishomog(v)
                 error('tool must be a homogeneous transform');
             else
