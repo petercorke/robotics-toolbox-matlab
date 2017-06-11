@@ -16,7 +16,8 @@
 
 % MODEL: generic, planar, 3DOF, standard_DH
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -45,5 +46,5 @@ p3 = SerialLink([
     Revolute('d', 0, 'a', a2, 'alpha', 0, 'standard')
     Revolute('d', 0, 'a', a3, 'alpha', 0, 'standard')
     ], ...
-    'name', 'three link');
+    'name', 'planar 3 link');
 qz = [0 0 0];

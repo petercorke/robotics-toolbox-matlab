@@ -15,7 +15,8 @@
 
 % MODEL: generic, planar, 1DOF, standard_DH
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -40,5 +41,5 @@ a1 = 1;
 p1 = SerialLink([
     Revolute('d', 0, 'a', a1, 'alpha', 0, 'standard')
     ], ...
-    'name', 'one link');
+    'name', 'planar 1 link');
 qz = [0];

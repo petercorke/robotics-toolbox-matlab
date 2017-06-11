@@ -48,7 +48,8 @@
 % Revision 1.4  2008/04/27 11:36:54  cor134
 % Add nominal (non singular) pose qn
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
