@@ -403,9 +403,7 @@ classdef Link < handle
                 
             tau = l.B * abs(l.G) * qd;
             
-            if issym(l)
-                tau = tau + l.Tc;
-            elseif qd > 0
+            if qd > 0
                 tau = tau + l.Tc(1);
             elseif qd < 0
                 tau = tau + l.Tc(2);
