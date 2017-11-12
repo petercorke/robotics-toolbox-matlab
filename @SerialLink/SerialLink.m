@@ -138,8 +138,10 @@
 
 % TODO:
 % fix payload as per GG discussion
+% if we subclass mixin.Copyable there are problem with
+                        %subclass constructures...
 
-classdef SerialLink < matlab.mixin.Copyable
+classdef SerialLink < handle %matlab.mixin.Copyable
 
     properties
         name
@@ -283,7 +285,8 @@ classdef SerialLink < matlab.mixin.Copyable
             
             opt.offset = [];
             opt.qlim = [];
-            opt.plotopt = [];
+            opt.plotopt = {};
+            opt.plotopt3d = {};
             opt.ikine = [];
             opt.fast = r.fast;
             opt.modified = false;
@@ -316,12 +319,13 @@ classdef SerialLink < matlab.mixin.Copyable
                     % passed a SerialLink object
                     if length(L) == 1
                         % clone the passed robot and the attached links
-                        r = copy(L);
+                        copy(r, L); 
+
                         r.links = copy(L.links);
                         default.name = [L.name ' copy'];
                     else
                         % compound the robots in the vector
-                        r = copy(L(1));
+                        copy(r, L(1));
                         
                         for k=2:length(L)
                             r.links = [r.links copy(L(k).links)];
@@ -355,8 +359,6 @@ classdef SerialLink < matlab.mixin.Copyable
             end
             
             % other properties
-            r.plotopt = {};
-            r.plotopt3d = {};
 
             if exist('frne') == 3
                 r.fast = true;
@@ -370,13 +372,15 @@ classdef SerialLink < matlab.mixin.Copyable
             assert(length(r.gravity) == 3, 'RTB:SerialLink:badarg', 'gravity must be a 3-vector');
 
             % set the robot object mdh status flag
-            mdh = [r.links.mdh];
-            if all(mdh == 0)
-                r.mdh = mdh(1);
-            elseif all (mdh == 1)
-                r.mdh = mdh(1);
-            else
-                error('RTB:SerialLink:badarg', 'robot has mixed D&H links conventions');
+            if ~isempty(r.links)
+                mdh = [r.links.mdh];
+                if all(mdh == 0)
+                    r.mdh = mdh(1);
+                elseif all (mdh == 1)
+                    r.mdh = mdh(1);
+                else
+                    error('RTB:SerialLink:badarg', 'robot has mixed D&H links conventions');
+                end
             end
         end
 
@@ -392,6 +396,17 @@ classdef SerialLink < matlab.mixin.Copyable
             end
         end
         %}
+        
+        function copy(out, in)
+            C = metaclass(in);
+            P = C.Properties;
+            
+            for k=1:length(P)
+                if ~P{k}.Dependent
+                    out.(P{k}.Name) = in.(P{k}.Name);
+                end
+            end
+        end
         
         function r2 = plus(R, L)
             %SerialLink.plus  Append a link objects to a robot
