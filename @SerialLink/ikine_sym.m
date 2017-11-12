@@ -266,8 +266,7 @@ function [L,R] = pieper(robot, n, which)
         nx oz az tz
         0  0  0  1 ];
     
-    T = inv(robot.base) * T * inv(robot.tool);
-    T = T.T;
+    T = inv(robot.base.T) * T * inv(robot.tool.T);
     
     q = robot.gencoords();
     
@@ -375,7 +374,7 @@ function v = mvar(fmt, varargin)
         % not a function
         v = sym( sprintf(fmt, varargin{:}), 'real' );
     else
-        v = sym( sprintf(fmt, varargin{:}) );
+        v = str2sym( sprintf(fmt, varargin{:}) );
         
     end
 end
