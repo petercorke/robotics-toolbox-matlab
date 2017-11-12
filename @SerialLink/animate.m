@@ -55,7 +55,7 @@ function animate(robot, qq)
                 if robot.mdh
                     % modified DH case
                     T = robot.base;
-                    vert = transl(T)';
+                    vert = T.t';
                     
                     for L=1:N
                         if robot.links(L).isprismatic()
@@ -69,15 +69,15 @@ function animate(robot, qq)
                             end
                         end
                         T = T * links(L).A(q(L));
-                        set(h.link(L), 'Matrix', T); 
-                        vert = [vert; transl(T)'];
+                        set(h.link(L), 'Matrix', T.T); 
+                        vert = [vert; T.t'];
                     end
                     % update the transform for link N+1 (the tool)
                     T = T * robot.tool;
                     if length(h.link) > N
-                        set(h.link(N+1), 'Matrix', T);
+                        set(h.link(N+1), 'Matrix', T.T);
                     end
-                    vert = [vert; transl(T)'];
+                    vert = [vert; T.t'];
                 else
                     % standard DH case
                     T = robot.base;
@@ -89,12 +89,14 @@ function animate(robot, qq)
                         if robot.links(L).isprismatic()
                             % scale the box representing the prismatic joint
                             % it is based at the origin and extends in z-direction
-                            if q(L) > 0
-                                set(h.pjoint(L), 'Matrix', diag([1 1 q(L) 1]));
-                            else
-                                % if length is zero the matrix is singular and MATLAB complains
-                                %error('Prismatic length must be > 0');
-                            end
+                            
+                            assert( q(L) >= 0, 'Prismatic joint length must be >= 0'); % link lengths must be positive
+                            
+                            % if scale factor is zero the matrix is singular and MATLAB complains
+                            %  so we make it no smaller than eps
+
+                            set(h.pjoint(L), 'Matrix', diag([1 1 max(eps, q(L)) 1]));
+
                         end
                         
                         % now set the transform for frame {L}, this controls the displayed pose of:
