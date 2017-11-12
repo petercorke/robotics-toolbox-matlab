@@ -567,6 +567,32 @@ classdef RTBPlot
             patch(x', y', z', color, 'EdgeColor', 'none', varargin{:});
         end
         
+        function create_floor(opt)
+            
+            if ~isempty(opt.floorimage)
+                RTBPlot.create_image_floor(opt)
+            else
+                RTBPlot.create_tiled_floor(opt)
+            end
+        end
+        
+        function create_image_floor(opt)
+            xmin = opt.workspace(1);
+            xmax = opt.workspace(2);
+            ymin = opt.workspace(3);
+            ymax = opt.workspace(4);
+
+            [X,Y] = meshgrid([xmin, xmax], [ymin ymax]);
+            Z = opt.floorlevel*ones(2,2);
+
+            C = repmat(opt.floorimage, 1, 1, 3);
+            surface(X, Y, Z, C, ...
+                'FaceColor','texturemap',...
+                'EdgeColor','none',...
+                'SpecularStrength', 0, ...
+                'CDataMapping','direct');
+        end
+        
         % draw a tiled floor in the current axes
         function create_tiled_floor(opt)
             
@@ -647,6 +673,8 @@ classdef RTBPlot
             opt.floorlevel = [];
             opt.tilesize = 0.2;
             
+            opt.floorimage = [];
+            
             % shadow on the floor
             opt.shadow = true;
             opt.shadowcolor = [0.5 0.5 0.5];
@@ -709,30 +737,57 @@ classdef RTBPlot
                 opt.projection = 'ortho';
             end
             
+            if ~isempty(opt.floorimage)
+                opt.tiles = false;
+            end
+            
             % figure the size of the figure
             
             
-            if isempty(opt.reach)
-                %
-                % simple heuristic to figure the maximum reach of the robot
-                %
+            if ~isempty(opt.reach)
+                reach = opt.reach;
+                
+            else
+                % reach is not specified use a simple heuristic to figure the maximum reach of the robot
                 
                 assert(~isempty(robot), 'RTB:RTBPlot:plot_options', 'robot must be defined to estimate reach');
                 L = robot.links;
-                if any(L.isprismatic)
-                    error('Prismatic joint(s) present: requires the ''workspace'' option');
-                end
+                
                 reach = 0;
-                for i=1:robot.n
-                    if L(i).isrevolute
-                        reach = reach + abs(L(i).a) + abs(L(i).d);
+                for j=1:robot.n
+                    if L(j).isrevolute
+                        % revolute, add the link length and offset
+                        reach = reach + abs(L(j).a) + abs(L(j).d);
                     else
-                        reach = reach + abs(L(i).a) + max(abs(L(i).qlim));
+                        % prismatic
+                        if ~isempty(L(j).qlim)
+                            % use the maximum joint value
+                            assert(all(L(j).qlim >= 0),  'RTB:RTBPlot:plot_options', 'prismatic joint %d qlim values cannot be negative', j)
+                            reach = reach + abs(L(j).a) + max(abs(L(j).qlim));
+                        else
+                            % prismatic joint has no maximum length provided
+                            if isempty(opt.workspace)
+                                % workspace was given so don't complain, but we still need to compute reach
+                                %  mark it as NaN and compute it later from workspace
+                                error('RTB:RTBPlot:plot_options', 'prismatic joint %d has no qlim parameter set, set it or specify ''workspace'' plot option', j);
+                            else
+                                reach = NaN;
+                            end
+                        end
                     end
                 end
-                reach = reach + sum(abs(robot.tool.t));
-            else
-                reach = opt.reach;
+                reach = reach + sum(abs(robot.tool.t));  % add the tool length
+            end
+            
+            if isnan(reach)
+                % reach couldn't be estimated because a prismatic qlim was missing,
+                %  estimate it from workspace
+                reach = max( colnorm( reshape(opt.workspace, [2 3]) ) ) / 2;
+            end
+                
+            if isempty(opt.workspace)
+                % now create a 3D volume based on this reach
+                opt.workspace = [-reach reach -reach reach -reach reach];
             end
             
             if opt.wrist
@@ -749,9 +804,8 @@ classdef RTBPlot
                 reach = opt.tilesize * ceil(reach/opt.tilesize);
             end
             
+            % figure out where the floor is
             if isempty(opt.workspace)
-                % now create a 3D volume based on this reach
-                opt.workspace = [-reach reach -reach reach -reach reach];
                 
                 % if a floorlevel has been given, ammend the 3D volume
                 if ~isempty(opt.floorlevel)
@@ -770,8 +824,11 @@ classdef RTBPlot
             % update the fundamental scale factor (given by the user as a multiplier) by a length derived from
             % the overall workspace dimension
             %  we need that a lot when creating the robot model
-            opt.scale = opt.scale * reach/40;
-            
+            if reach > 0
+                opt.scale = opt.scale * reach/40;
+            else
+                opt.scale = opt.scale / 40;
+            end
             
             if ~isempty(opt.fps)
                 opt.delay = 1/opt.fps;
