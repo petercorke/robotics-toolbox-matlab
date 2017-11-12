@@ -8,7 +8,7 @@
 %          E = Rz('q1') * Tx(a1) * Rz('q2') * Tx(a2)
 %
 % Operation methods::
-%   fkine
+%   fkine      forward kinematics
 %
 % Information methods::
 %   isjoint    test if transform is a joint
@@ -345,7 +345,8 @@ classdef ETS2
             %   - a revolute joint they are assumed to be [-pi, +pi]
             %   - a prismatic joint they are assumed unknown and an error occurs.
             %
-            % See also ETS2.plot.            
+            % See also ETS2.plot.
+            
             %-------------------------------
             % parameters for teach panel
             bgcol = [135 206 250]/255;  % background color
@@ -373,7 +374,7 @@ classdef ETS2
         
         
         function plot(ets, qq, varargin)
-            %ETS3.plot Graphical display and animation
+            %ETS2.plot Graphical display and animation
             %
             % ETS.plot(Q, options) displays a graphical animation of a robot based on
             % the transform sequence.  Constant translations are represented as pipe segments, rotational joints as cylinder, and
