@@ -54,7 +54,7 @@ function Jdot = jacob_dot(robot, q, qd)
     for i=1:n
         T = links(i).A(q(i));
         Q{i} = t2r(T);
-        a{i} = transl(T);
+        a{i} = transl(T)';
     end
 
     P{1} = Q{1};
