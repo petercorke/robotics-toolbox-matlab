@@ -69,7 +69,7 @@
 function [qstar, error, exitflag] = ikcon(robot, T, q0, options)
     
     % check if Optimization Toolbox exists, we need it
-    assert( exist('fmincon'), 'rtb:ikcon:nosupport', 'Optimization Toolbox required');
+    assert( exist('fmincon')>0, 'rtb:ikcon:nosupport', 'Optimization Toolbox required');
 
     if isa(T, 'SE3')
         T = T.T;

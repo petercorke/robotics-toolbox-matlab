@@ -52,7 +52,7 @@
 function [qstar, error, exitflag] = qmincon(robot, q)
     
     % check if Optimization Toolbox exists, we need it
-    assert( exist('fmincon'), 'rtb:qmincon:nosupport', 'Optimization Toolbox required');
+    assert( exist('fmincon')>0, 'rtb:qmincon:nosupport', 'Optimization Toolbox required');
     assert( robot.n > 6, 'rtb:qmincon:badarg', 'pHRIWARE:Robot is not redundant');
 
     M = size(q,1);
