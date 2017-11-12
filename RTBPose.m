@@ -386,10 +386,14 @@ classdef (Abstract) RTBPose
             % T = P.double() is a matrix representation of the pose P, either a
             % rotation matrix or a homogeneous transformation matrix.
             %
+            % If P is a vector (1xN) then T will be a 3-dimensional array (MxMxN).
+            %
             % Notes::
-            % - if the pose is symbolic the result will be a symbolic matrix.
+            % - If the pose is symbolic the result will be a symbolic matrix.
             
-            d = zeros( [size(obj(1).data) length(obj)] );
+            if ~isa(obj(1).data, 'sym')
+                d = zeros( [size(obj(1).data) length(obj)] );
+            end
             for i=1:length(obj)
                 d(:,:,i) = obj(i).data;
             end
