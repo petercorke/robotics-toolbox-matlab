@@ -58,11 +58,12 @@ function J = jacobe(robot, q, varargin)
     n = robot.n;
     L = robot.links;        % get the links
     
+   
+    J = zeros(6, robot.n);
     if isa(q, 'sym')
-        J(6, robot.n) = sym();
-    else
-        J = zeros(6, robot.n);
+        J = sym(J);
     end
+    
     U = robot.tool;
     for j=n:-1:1
         if robot.mdh == 0

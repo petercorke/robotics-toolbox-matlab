@@ -74,12 +74,12 @@ function C = coriolis(robot, q, qd)
 
     N = robot2.n;
     
+
+    C = zeros(N,N);
+    Csq = zeros(N,N);
     if isa(q, 'sym')
-        C(N,N) = sym();
-        Csq(N,N) = sym();
-    else
-        C = zeros(N,N);
-        Csq = zeros(N,N);
+        C = sym(C);
+        Csq = sym(Csq);
     end
 
 
