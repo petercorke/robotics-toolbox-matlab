@@ -432,7 +432,7 @@ classdef SE3 < SO3
             % See also TRINTERP, UnitQuaternion.
             
             try
-                Ti = SE3( trinterp(obj1.T, obj2, varargin{:}) );
+                Ti = SE3( trinterp(obj1.T, obj2.T, varargin{:}) );
             catch
                 error('RTB:SE3:interp:badarg', 'error in trinterp');
             end
