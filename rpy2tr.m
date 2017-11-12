@@ -15,15 +15,21 @@
 % ROLL,PITCH,YAW].
 %
 % Options::
-%  'deg'   Compute angles in degrees (radians default)
-%  'xyz'   Rotations about X, Y, Z axes (for a robot gripper)
-%  'yxz'   Rotations about Y, X, Z axes (for a camera)
+%  'deg'      Compute angles in degrees (radians default)
+%  'xyz'      Rotations about X, Y, Z axes (for a robot gripper)
+%  'zyx'      Rotations about Z, Y, X axes (for a mobile robot, default)
+%  'yxz'      Rotations about Y, X, Z axes (for a camera)
+%  'arm'      Rotations about X, Y, Z axes (for a robot arm)
+%  'vehicle'  Rotations about Z, Y, X axes (for a mobile robot)
+%  'camera'   Rotations about Y, X, Z axes (for a camera)
 %
 % Note::
 % - Toolbox rel 8-9 has the reverse angle sequence as default.
 % - ZYX order is appropriate for vehicles with direction of travel in the X
 %   direction.  XYZ order is appropriate if direction of travel is in the Z
 %   direction.
+% - 'arm', 'vehicle', 'camera' are synonyms for 'xyz', 'zyx' and 'yxz'
+%   respectively.
 %
 % See also TR2RPY, RPY2R, EUL2TR.
 

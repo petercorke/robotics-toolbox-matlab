@@ -13,18 +13,22 @@
 %
 % Options::
 %  'deg'   Compute angles in degrees (radians default)
-%  'xyz'   Return solution for sequential rotations about X, Y, Z axes
-%  'yxz'   Return solution for sequential rotations about Y, X, Z axes
+%  'xyz'      Return solution for sequential rotations about X, Y, Z axes
+%  'zyx'      Return solution for sequential rotations about Z, Y, X axes (default)
+%  'yxz'      Return solution for sequential rotations about Y, X, Z axes
+%  'arm'      Return solution for sequential rotations about X, Y, Z axes
+%  'vehicle'  Return solution for sequential rotations about Z, Y, X axes
+%  'camera'   Return solution for sequential rotations about Y, X, Z axes
 %
 % Notes::
 % - There is a singularity for the case where P=pi/2 in which case R is arbitrarily
 %   set to zero and Y is the sum (R+Y).
 % - Translation component is ignored.
-% - Toolbox rel 8-9 has the reverse default angle sequence as default
+% - Toolbox rel 8-9 has XYZ angle sequence as default.
+% - 'arm', 'vehicle', 'camera' are synonyms for 'xyz', 'zyx' and 'yxz'
+%   respectively.
 %
 % See also  rpy2tr, tr2eul.
-
-
 
 
 % Copyright (C) 1993-2017, by Peter I. Corke
