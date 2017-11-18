@@ -16,6 +16,7 @@
 %--
 %  double      convert to real rotation or homogeneous transformation matrix
 %  simplify    apply symbolic simplification to all elements
+%  vpa         apply vpa to all elements
 %
 % Operators::
 %  +           elementwise addition, result is a matrix
@@ -162,6 +163,29 @@ classdef (Abstract) RTBPose
                     % simplify every element of data
                     for i=1:numel(obj.data)
                         out(k).data(i) = simplify( obj(k).data(i) );
+                    end
+                end
+            end
+        end
+        
+        function out = vpa(obj, D)
+            %RTBPose.vpa Variable precision arithmetic
+            %
+            % P2 = P.vpa() numerically evaluates each element of
+            % internal matrix representation of the pose.
+            %
+            % P2 = P.vpa(D) as above but with D decimal digit accuracy.
+            %
+            % See also simplify.
+            out = obj;
+            if nargin == 1
+                D = digits;
+            end
+            if isa(obj(1).data, 'sym')
+                for k=1:length(obj)
+                    % simplify every element of data
+                    for i=1:numel(obj.data)
+                        out(k).data(i) = vpa( obj(k).data(i), D );
                     end
                 end
             end
