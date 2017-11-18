@@ -3,8 +3,7 @@
 % Allow the user to "drive" a graphical robot using a graphical slider
 % panel.
 %
-% R.teach(OPTIONS) adds a slider panel to a current robot plot. If no
-% graphical robot exists one is created in a new window.
+% R.teach(OPTIONS) adds a slider panel to a current robot plot.
 %
 % R.teach(Q, OPTIONS) as above but the robot joint angles are set to Q (1xN).
 %
@@ -24,7 +23,6 @@
 %        p560.teach('callback', @(r,q) r.vellipse(q));
 %
 % GUI::
-%
 % - The specified callback function is invoked every time the joint configuration changes.
 %   the joint coordinate vector.
 % - The Quit (red X) button removes the teach panel from the robot plot.
@@ -75,6 +73,7 @@ function teach(robot, varargin)
     opt.record = [];
     [opt,args] = tb_optparse(opt, varargin);
     
+    % get the joint coordinates if given
     q = [];
     if ~isempty(args)
         if isnumeric(args{1})
@@ -86,24 +85,29 @@ function teach(robot, varargin)
     
     %---- get the current robot state
     
-    if isempty(q)
-        % check to see if there are any graphical robots of this name
-        rhandles = findobj('Tag', robot.name);
-        
-        % find the graphical element of this name
-        assert(~isempty(rhandles), 'RTB:teach:badarg', 'No graphical robot of this name found');
-        
-        % get the info from its Userdata
+    % check to see if there are any graphical robots of this name
+    rhandles = findobj('Tag', robot.name);   % find the graphical element of this name
+    
+    if isempty(rhandles)
+        % no robot, plot one so long as joint coordinates were given
+        assert( ~isempty(q), 'RTB:teach:badarg', 'No joint coordinates provided');
+        robot.plot(q, args{:});
+    else
+        % graphical robot already exists
+        %   get the info from its Userdata
         info = get(rhandles(1), 'UserData');
         
         % the handle contains current joint angles (set by plot)
-        if ~isempty(info.q)
+        if isempty(q) && ~isempty(info.q)
+            % if no joint coordinates given get from the graphical model
             q = info.q;
+        else
+            % joint coordiantes were given, make them current
+            robot.plot(q, args{:});
         end
-    else
-        robot.plot(q, args{:});
     end
     
+    assert( ~isempty(q), 'RTB:teach:badarg', 'No joint coordinates provided');
     RTBPlot.install_teach_panel(robot.name, robot, q, opt)
     
 end
