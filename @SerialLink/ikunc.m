@@ -69,7 +69,7 @@
 function [qstar, error, exitflag] = ikunc(robot, T, q0, options)
 
     % check if Optimization Toolbox exists, we need it
-    assert( exist('fminunc')>0, rtb:ikunc:nosupport', 'Optimization Toolbox required');
+    assert( exist('fminunc')>0, 'rtb:ikunc:nosupport', 'Optimization Toolbox required');
     
     if isa(T, 'SE3')
         T = T.T;
@@ -99,7 +99,7 @@ function [qstar, error, exitflag] = ikunc(robot, T, q0, options)
     
     for t = 1:T_sz
         problem.objective = ...
-            @(x) sumsqr(((T.T \ robot.fkine(x).T) - eye(4)) * omega);
+            @(x) sumsqr(((T(:,:,t) \ robot.fkine(x).T) - eye(4)) * omega);
         
         [q_t, err_t, ef_t] = fminunc(problem);
         
