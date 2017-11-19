@@ -105,7 +105,7 @@ function [qstar, error, exitflag] = ikcon(robot, T, q0, options)
     
     for t = 1: T_sz
         problem.objective = ...
-            @(x) sumsqr(((T(:,:,t) \ robot.fkine(x)) - eye(4)) * omega);
+            @(x) sumsqr(((T(:,:,t) \ robot.fkine(x).T) - eye(4)) * omega);
         
         [q_t, err_t, ef_t] = fmincon(problem);
         
