@@ -149,7 +149,7 @@ function qt = ikine(robot, tr, varargin)
             end
             fprintf('Trying q = %s\n', num2str(q));
             
-            q = robot.ikine2(tr, q, args{:}, 'setopt', opt);
+            q = robot.ikine(tr, q, args{:}, 'setopt', opt);
             if ~isempty(q)
                 qt = q;
                 return;
