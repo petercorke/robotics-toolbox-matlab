@@ -526,10 +526,6 @@ classdef ETS2
             ets.animate(qq);
         end
         
-   end
-    
-   methods (Access=private)
-        
         function animate(ets, qq)
             handles = findobj('Tag', 'ETS2');
             h = handles.UserData;
@@ -574,6 +570,11 @@ classdef ETS2
                 end
             end
         end
+        
+        
+   end
+    
+   methods (Access=private)
         
             function h_ = draw_ets(ets, q, opt)
                 
@@ -713,7 +714,6 @@ classdef ETS2
                 set(group, 'UserData', h);
             end
             
-        end
+         end
         
-
 end
