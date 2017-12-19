@@ -372,10 +372,19 @@ classdef Vehicle < handle
             
             if ~isempty(varargin) && isnumeric(varargin{1})
                 % V.plot(X)
-                Vehicle.plotv(h, varargin{1}); % use passed value
+                pos = varargin{1}; % use passed value
             else
                 % V.plot()
-                Vehicle.plotv(h, veh.x);    % use current state
+                pos = veh.x;    % use current state
+            end
+            Vehicle.plotv(h, pos);
+            
+            h = findobj(gcf, 'Tag', 'Vehicle.trail');
+            if ~isempty(h)
+                if length(h.XData) == 1
+                    set(h, 'XData', veh.x0(1), 'YData', veh.x0(2));
+                end
+                set(h, 'XData', [h.XData pos(1)], 'YData', [h.YData pos(2)]);
             end
         end
 
@@ -501,6 +510,7 @@ classdef Vehicle < handle
             opt.size = [];
             opt.fillcolor = [];
             opt.fps = 10;
+            opt.trail = [];  % not exposed, used by plot() method
             
             [opt,args] = tb_optparse(opt, varargin);
 
@@ -549,6 +559,15 @@ classdef Vehicle < handle
             else
                 error('bad pose');
             end
+            
+            if ~isempty(opt.trail)
+                if iscell(opt.trail)
+                    line(0, 0, 'Tag', 'Vehicle.trail', opt.trail{:});
+                else
+                    line(0, 0, 'Tag', 'Vehicle.trail', opt.trail)
+                end
+            end
+                
 
             if nargout > 0
                 h_ = h;
