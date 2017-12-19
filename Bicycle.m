@@ -144,6 +144,7 @@ classdef Bicycle < Vehicle
 
             veh = tb_optparse(opt, veh.options, veh);
             veh.vprev = 0;
+            veh.x = veh.x0;
         end
 
         function xnext = f(veh, x, odo, w)

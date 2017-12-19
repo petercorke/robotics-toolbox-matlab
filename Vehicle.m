@@ -352,7 +352,11 @@ classdef Vehicle < handle
         % 'size',S     Draw vehicle with length S
         % 'color',C    Color of vehicle.
         % 'fill'       Filled
+        % 'trail',S    Trail with line style S, use line() name-value pairs
         %
+        % Example::
+        %          veh.plot('trail', {'Color', 'r', 'Marker', 'o', 'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'r', 'MarkerSize', 3})
+
         % Notes::
         % - The last two calls are useful if animating multiple robots in the same
         %   figure.

@@ -125,13 +125,12 @@ classdef Unicycle < Vehicle
             
             veh = veh@Vehicle(varargin{:});
             
-            veh.x = zeros(3,1);
-
             opt.W = 1;
             opt.accelmax = Inf;
 
             veh = tb_optparse(opt, veh.options, veh);
             veh.vprev = 0;
+            veh.x = veh.x0;
         end
 
 
