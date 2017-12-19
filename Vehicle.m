@@ -140,7 +140,8 @@ classdef Vehicle < handle
             veh.V = opt.covar;
             veh.rdim = opt.rdim;
             veh.dt = opt.dt;
-            veh.x0 = opt.x0;
+            veh.x0 = opt.x0(:);
+            assert(isvec(veh.x0, 3), 'Initial configuration must be a 3-vector');
             veh.speedmax = opt.speedmax;
             veh.options = args;  % unused options go back to the subclass
 
