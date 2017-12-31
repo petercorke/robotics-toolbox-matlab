@@ -128,7 +128,7 @@ function animate(robot, qq)
                 % update the tool tip trail
                 if isfield(h, 'trail')
                     T = robot.fkine(q);
-                    robot.trail = [robot.trail; transl(T)'];
+                    robot.trail = [robot.trail; transl(T)];
                     set(h.trail, 'Xdata', robot.trail(:,1), 'Ydata', robot.trail(:,2), 'Zdata', robot.trail(:,3));
                 end
                 
