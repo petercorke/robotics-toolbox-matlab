@@ -307,7 +307,12 @@ classdef (Abstract) RTBPose
                     out = out(1:end-1,:);
                 end
             else
-                error('RTB:RTBPose:badops', 'invalid operand types to * operator');
+                if isa(obj, 'SE2') && isa(a, 'polyshape')
+                    % special case, planar rigid body transform of a polyshape
+                    out = polyshape( (obj * a.Vertices')' );
+                else
+                    error('RTB:RTBPose:badops', 'invalid operand types to * operator');
+                end
             end
         end
         
