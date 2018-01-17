@@ -295,6 +295,7 @@ function plot(robot, qq, varargin)
     % enable mouse-based 3D rotation
     rotate3d on
     
+    robot.trail = []; % clear the previous trail
     
     robot.animate(qq);
     
