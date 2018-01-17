@@ -141,7 +141,7 @@
 % if we subclass mixin.Copyable there are problem with
                         %subclass constructures...
 
-classdef SerialLink < handle %matlab.mixin.Copyable
+classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
 
     properties
         name
@@ -231,6 +231,8 @@ classdef SerialLink < handle %matlab.mixin.Copyable
         %  'plotopt',P             set default options for .plot() to P
         %  'plotopt3d',P           set default options for .plot3d() to P
         %  'nofast'                don't use RNE MEX file
+        %  'configs',P             provide a cell array of predefined
+        %                          configurations, as name, value pairs
         %
         % Examples::
         %
@@ -290,8 +292,10 @@ classdef SerialLink < handle %matlab.mixin.Copyable
             opt.ikine = [];
             opt.fast = r.fast;
             opt.modified = false;
+            opt.configs = [];
 
             [opt,arg] = tb_optparse(opt, varargin);
+            
 
             if length(arg) == 1
                 % at least one argument, either a robot or link array
@@ -382,6 +386,17 @@ classdef SerialLink < handle %matlab.mixin.Copyable
                     error('RTB:SerialLink:badarg', 'robot has mixed D&H links conventions');
                 end
             end
+            
+            if ~isempty(opt.configs)
+                for i=1:2:length(opt.configs)
+                    name = opt.configs{i}; val = opt.configs{i+1};
+                    assert(ischar(name), 'configs: expecting a char array')
+                    assert(isnumeric(val) && length(val) == length(r.links), 'configs: expecting a n-vector');
+                    addprop(r, name);
+                    r.(name) = val;
+                end
+            end
+            
         end
 
         %{
