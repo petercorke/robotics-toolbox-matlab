@@ -25,6 +25,8 @@
 %  isprismatic   index of prismatic joints
 %  isrevolute    index of revolute joints
 %  isspherical   test if robot has spherical wrist
+%  isdh          test if robot has standard DH model
+%  ismdh         test if robot has modified DH model
 %
 % Conversion methods::
 %  char          convert to string
@@ -41,6 +43,8 @@
 %  ikcon         inverse kinematics using optimisation with joint limits
 %  ikine_sym     analytic inverse kinematics obtained symbolically
 %  trchain       forward kinematics as a chain of elementary transforms
+%  DH            convert modified DH model to standard
+%  MDH           convert standard DH model to modified
 %
 % Velocity kinematic methods::
 %  fellipse      display force ellipsoid
@@ -181,8 +185,11 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
     properties (SetAccess = private)
         n
         links
-        mdh
         T
+    end
+    
+    properties (Access = private)
+        mdh
     end
 
     properties (Dependent = true, SetAccess = private)
@@ -388,6 +395,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             end
             
             if ~isempty(opt.configs)
+                % add passed configurations as dynamic properties of the robot
                 for i=1:2:length(opt.configs)
                     name = opt.configs{i}; val = opt.configs{i+1};
                     assert(ischar(name), 'configs: expecting a char array')
@@ -708,6 +716,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         end
 
         function v = get.config(r)
+        %SerialLink.config Returnt the joint configuration string
             v = '';
             for i=1:r.n
                 v(i) = r.links(i).type;
@@ -915,6 +924,129 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         function J = jacobn(robot, varargin)
             warning('RTB:SerialLink:deprecated', 'Use jacobe instead of jacobn');
             J = robot.jacobe(varargin{:});
+        end
+        
+        function rmdh = MDH(r)
+        %SerialLink.MDH  Convert standard DH model to modified
+        %
+        % rmdh = R.MDH() is a SerialLink object that represents the same kinematics
+        % as R but expressed using modified DH parameters.
+        %
+        % Notes::
+        % - can only be applied to a model expressed with standard DH parameters.
+        %
+        % See also:  DH
+        
+            assert(isdh(r), 'RTB:SerialLink:badmodel', 'this method can only be applied to a model with standard DH parameters');
+            
+            % first joint
+            switch r.links(1).jointtype()
+                case 'R'
+                    link(1) = Link('modified', 'revolute', ...
+                        'd', r.links(1).d, ...
+                        'offset', r.links(1).offset, ...
+                        'qlim', r.links(1).qlim );
+                case 'P'
+                    link(1) = Link('modified', 'prismatic', ...
+                        'theta', r.links(1).theta, ...
+                        'offset', r.links(1).offset, ...
+                        'qlim', r.links(1).qlim );
+            end
+
+            % middle joints
+            for i=2:r.n
+                switch r.links(i).jointtype()
+                    case 'R'
+                        link(i) = Link('modified', 'revolute', ...
+                            'a', r.links(i-1).a, ...
+                            'alpha', r.links(i-1).alpha, ...
+                            'd', r.links(i).d, ...
+                            'offset', r.links(i).offset, ...
+                            'qlim', r.links(i).qlim );
+                    case 'P'
+                        link(i) = Link('modified', 'prismatic', ...
+                            'a', r.links(i-1).a, ...
+                            'alpha', r.links(i-1).alpha, ...
+                            'theta', r.links(i).theta, ...
+                            'offset', r.links(i).offset, ...
+                            'qlim', r.links(i).qlim );
+                end
+            end
+            
+            % last joint
+            tool = SE3(r.links(r.n).a, 0, 0) * SE3.Rx(r.links(r.n).alpha) * r.tool;
+            
+            rmdh = SerialLink(link, 'base', r.base, 'tool', tool);
+        end
+        
+        function rdh = DH(r)
+        %SerialLink.DH  Convert modified DH model to standard
+        %
+        % rmdh = R.DH() is a SerialLink object that represents the same kinematics
+        % as R but expressed using standard DH parameters.
+        %
+        % Notes::
+        % - can only be applied to a model expressed with modified DH parameters.
+        %
+        % See also:  MDH
+            
+            assert(ismdh(r), 'RTB:SerialLink:badmodel', 'this method can only be applied to a model with modified DH parameters');
+            
+            base = r.base * SE3(r.links(1).a, 0, 0) * SE3.Rx(r.links(1).alpha);
+
+            % middle joints
+            for i=1:r.n-1
+                switch r.links(i).jointtype()
+                    case 'R'
+                        link(i) = Link('modified', 'revolute', ...
+                            'a', r.links(i+1).a, ...
+                            'alpha', r.links(i+1).alpha, ...
+                            'd', r.links(i).d, ...
+                            'offset', r.links(i).offset, ...
+                            'qlim', r.links(i).qlim );
+                    case 'P'
+                        link(i) = Link('modified', 'prismatic', ...
+                            'a', r.links(i+1).a, ...
+                            'alpha', r.links(i+1).alpha, ...
+                            'theta', r.links(i).theta, ...
+                            'offset', r.links(i).offset, ...
+                            'qlim', r.links(i).qlim );
+                end
+            end
+            
+            % last joint
+            switch r.links(1).jointtype()
+                case 'R'
+                    link(r.n) = Link('modified', 'revolute', ...
+                        'd', r.links(r.n).d, ...
+                        'offset', r.links(r.n).offset, ...
+                        'qlim', r.links(r.n).qlim );
+                case 'P'
+                    link(r.n) = Link('modified', 'prismatic', ...
+                        'theta', r.links(r.n).theta, ...
+                        'offset', r.links(r.n).offset, ...
+                        'qlim', r.links(r.n).qlim );
+            end
+            
+            rdh = SerialLink(link, 'base', base, 'tool', r.tool);
+        end
+        
+        function v = ismdh(r)
+        %SerialLink.ismdh Test if SerialLink object has a modified DH model
+        %
+        % v = R.ismdh() is true if the SerialLink manipulator R has a modified DH model
+        %
+        % See also: isdh
+            v = r.mdh;
+        end
+        
+        function v = isdh(r)
+        %SerialLink.isdh Test if SerialLink object has a standard DH model
+        %
+        % v = R.isdh() is true if the SerialLink manipulator R has a standard DH model
+        %
+        % See also: ismdh
+            v = ~r.mdh;
         end
         
     end % methods
