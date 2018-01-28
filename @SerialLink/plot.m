@@ -237,9 +237,8 @@ function plot(robot, qq, varargin)
                 % create the robot and floor
                 newplot();
 
-                if opt.tiles
-                    RTBPlot.create_tiled_floor(opt);
-                end
+                RTBPlot.create_floor(opt);
+
                 handle = create_robot(robot, opt);
                 set(gca, 'Tag', 'RTB.plot');
             end
@@ -248,9 +247,7 @@ function plot(robot, qq, varargin)
         
     else
         % this axis never had a robot drawn in it before, let's use it
-        if opt.tiles
-            RTBPlot.create_tiled_floor(opt);
-        end
+        RTBPlot.create_floor(opt);
         handle = create_robot(robot, opt);
         set(gca, 'Tag', 'RTB.plot');
         set(gcf, 'Units', 'Normalized');
@@ -281,6 +278,7 @@ function plot(robot, qq, varargin)
         switch opt.view
             case 'top'
                 view(0, 90);
+                set(gca, 'OuterPosition', [-0.8 -0.8 2.5 2.5]);
             case 'x'
                 view(0, 0);
             case 'y'
