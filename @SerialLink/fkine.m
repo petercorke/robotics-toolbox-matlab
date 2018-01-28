@@ -65,9 +65,6 @@ end
 
 if nargout > 1
     allt(n) = SE3;
-    if isa(q,'sym')
-        allt = sym(allt);
-    end
 end
 
 L = robot.links;
