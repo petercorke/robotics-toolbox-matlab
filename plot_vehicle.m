@@ -69,6 +69,7 @@ function h_ = plot_vehicle(x, varargin)
     opt.fps = 10;
     opt.handle = [];
     opt.image = [];
+    opt.model = [];
     opt.retain = false;
     
     [opt,args] = tb_optparse(opt, varargin);
@@ -105,19 +106,21 @@ end
 
 function h = draw_robot(d, opt, args)
     
-    if ~isempty(opt.image)
-        % display an image
-        if iscell(opt.image)
-            img = opt.image{1};
-            rotation = 90+opt.image{2};
+    if ~isempty(opt.model)
+        % display an image of a vehicle, pass in a struct
+        if isstruct(opt.model)
+            img = opt.model.image;
+            rotation = opt.model.rotation;
+            centre = opt.model.centre;
+            scale = opt.model.length / max(numcols(img), numrows(img)) ;
         else
             img = opt.image;
-            rotation = 90;
+            centre = [numcols(img)/2 numrows(img)/2];
         end
         h = hgtransform('Tag', 'image');
-        h2 = hgtransform('Matrix', trotz(rotation, 'deg')*trscale(opt.scale)*transl(-numcols(img)/2, -numrows(img)/2,0), 'Parent', h );
+        h2 = hgtransform('Matrix', trotz(rotation, 'deg')*trscale(scale)*transl(-centre(1), -centre(2),0), 'Parent', h );
         image(img, 'AlphaData', any(img>0,3), 'Parent', h2);
-        axis equal
+        %axis equal
     else
         % display a simple polygon
         switch opt.shape
