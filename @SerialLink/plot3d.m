@@ -93,7 +93,6 @@ function plot3d(robot, q, varargin)
     
     assert( ~robot.mdh, 'RTB:plot3d:badmodel', '3D models are defined for standard, not modified, DH parameters');
     
-    clf
     opt = plot_options(robot, varargin);
     
     %-- load the shape if need be
