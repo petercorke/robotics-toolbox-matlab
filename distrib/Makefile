@@ -1,3 +1,4 @@
+# build RTB
 ROOT = ~/code/rvc
 BUILD = tmp
 MANUAL = $(BUILD)/manual/robot.pdf
@@ -44,6 +45,9 @@ _build:
 	# copy Java source code and jar file
 	(cd $(SRC)/java; make)
 	cp -r $(SRC)/java $(ROBOT)
+
+	# copy extra packages
+	cp -r $(SRC)/+ETS* $(ROBOT)
 
 	# copy model files
 	cp -r $(SRC)/models $(ROBOT)
