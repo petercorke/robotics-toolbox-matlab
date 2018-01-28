@@ -118,10 +118,11 @@ mdl_hyper2d     : high DOF planar
 mdl_hyper3d     : high DOF 3D
 mdl_irb140      : ABB IRB140
 mdl_irb140_mdh  : ABB IRB140 (MDH)
-mdl_jaco        : Kinova Jaco
-mdl_KR5         : Kuka KR5 robot
+mdl_jaco        : Kinova Jaco (DH)
+mdl_KR5         : Kuka KR5  (DH)
+mdl_LWR         : Kuka LWR (DH) 
 mdl_m16         : Fanuc M16
-mdl_mico        : Kinova Mico
+mdl_mico        : Kinova Mico (DH)
 mdl_MotomanHP6  : Motoman HP6 (DH, kine)
 mdl_nao         : Alderbaran Nao humanoid
 mdl_p8          : Puma 560 on an XY base
@@ -137,6 +138,9 @@ mdl_stanford_mdh : Stanford arm data (MDH, kine)
 mdl_twolink     : simple 2-link example (DH, kine)
 mdl_twolink_mdh : simple 2-link example (MDH, kine)
 mdl_twolink_sym : simple 2-link example (DH, kine, symbolic)
+mdl_ur3 : Universal Robotics UR3 (DH, kine, dyn)
+mdl_ur5 : Universal Robotics UR5 (DH, kine, dyn)
+mdl_ur10 : Universal Robotics UR10 (DH, kine, dyn)
 
 h2.Kinematics : Serial-link manipulator kinematic functions
 DHFactor        : transform sequence to DH description
