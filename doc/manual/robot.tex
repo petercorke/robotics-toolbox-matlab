@@ -11,6 +11,7 @@
 \usepackage{anyfontsize}
 \usepackage{longtable}
 \usepackage{t1enc}
+\usepackage{booktabs,longtable}
 \hypersetup{
   colorlinks=true,
   linkcolor=black
@@ -110,7 +111,7 @@ peter.i.corke$@$gmail.com\\
 \end{wrapfigure}
 This, the tenth major release of the Toolbox, representing over twenty five years of continuous
 development and a substantial level of maturity.
-This version corresponds to the \textbf{second edition} of the book ``\textit{Robotics, Vision \& Control, second edition}'' published in 2017.
+This version corresponds to the \textbf{second edition} of the book ``\textit{Robotics, Vision \& Control, second edition}'' published in June 2017 -- RVC2.
 
 This \Mlab\textsuperscript{\textregistered} Toolbox has a rich collection of functions that are useful for the study and simulation
 of robots:  arm-type robot manipulators and mobile robots.
@@ -147,6 +148,7 @@ For elaboration on the underlying principles, extensive illustrations and worked
 
 \newpage
 \chapter{Introduction}
+
 \section{Changes in RTB 10}
 RTB 10 is largely backward compatible with RTB 9.
 
@@ -202,8 +204,9 @@ These changes are summarized in Table \ref{tab:changes}.
 for deriving Jacobians used in EKF SLAM (vehicle and sensor), inverse kinematics for a 2-joint planar arm and solving for roll-pitch-yaw angles
 given a rotation matrix.
 \item All the robot models, prefixed by \texttt{mdl\_}, now reside in the folder \texttt{models}.
+\item New robot models include Universal Robotics UR3, UR5 and UR10; and Kuka light weight robot arm.
 \item A new folder \texttt{data} now holds various data files as used by examples in RVC2: STL models, occupancy grids, Hershey font, Toro and G2O
-files.
+data files.
 \end{itemize}
 
 Since its inception RTB has used matrices\footnote{Early versions of RTB, before 1999, used vectors to represent quaternions but that changed to an object once objects were added to the language.} to represent rotations and transformations in 2D and 3D.  A trajectory, or sequence, was represented by a 3-dimensional matrix, eg. $4\times 4 \times N$.  In RTB10 a set of classes have been introduced to represent orientation and pose in 2D and 3D: \texttt{SO2}, \texttt{SE2}, \texttt{SO3}, \texttt{SE3} and \texttt{UnitQuaternion}.  These classes are fairly polymorphic, that is, they share many methods and operators\footnote{For example, you could substitute objects of class \texttt{SO3} and \texttt{UnitQuaternion} with minimal code change.}.  All have a number of static methods that serve as constructors from particular representations.  A trajectory is represented by a vector of these objects which makes code easier to read and
@@ -214,14 +217,15 @@ You can continue to use the classical functions.  The new classes have methods w
 \begin{Code}
 >> T = transl(1,2,3);  % create a 4x4 matrix
 >> trprint(T)  % invoke the function trprint
->> T = SE3(1,2,3);  % create an object
+>> T = SE3(1,2,3);  % create an SE3 object
 >> trprint(T)  % invoke the method trprint
 >> T.T   % the equivalent 4x4 matrix
+>> double(T) % the equivalent 4x4 matrix
 \end{Code}
 
 \begin{Code}
->> T = SE3(1,2,3);  % create a pure translation object
->> T2 = T*T;
+>> T = SE3(1,2,3);  % create a pure translation SE3 object
+>> T2 = T*T;  % the result is an SE3 object
 >> T3 = trinterp(T, 5); % create a vector of five SE3 objects 
 >> T3(1)  % the first element of the vector
 >> T3*T  % each element of T3 multiplies T, giving a vector of five SE3 objects
@@ -240,11 +244,26 @@ between representations.  Reproduced from ``\textit{Robotics, Vision \& Control,
 \item Dependencies on the Machine Vision Toolbox for MATLAB (MVTB) have been removed.  The fast dilation function used for path planning is now searched for in MVTB and the MATLAB Image Processing Toolbox (IPT) and defaults to a provided M-function.
 \item A major pass over all code and method/function/class documentation.
 \item Reworking and refactoring all the manipulator graphics, work in progress.
-\item Some file system changes: all robot models in the folder \texttt{models} and various data files aggregated into the folder \texttt{data}.
+%\item Some file system changes: all robot models in the folder \texttt{models} and various data files aggregated into the folder \texttt{data}.
 %\item Two ``apps'' are included: \texttt{tripleangle} and \texttt{configspace}.
+\item An ``app" is included: \texttt{tripleangle} which allows graphical experimentation with Euler and roll-pitch-yaw angles.
 \item A tidyup of all Simulink models.  Red blocks now represent user settable parameters, and shaded boxes are used to group parts of the models.
 \item RangeBearingSensor animation
+\item All the java code that supports the \texttt{DHFactor} functionality now lives in the folder \texttt{java}.  The \texttt{Makefile} in there can be used
+to recompile the code.  There are java version issues and the shipped class files are built to java 1.7 which allows operation
 \end{itemize}
+
+\section{Changes in RTB 10.2}
+This release has a relatively small number of bug fixes compared to 10.1:
+\begin{itemize}
+\item Fixed bugs in \texttt{jacobe} and \texttt{coriolis} when using symbolic arguments.
+\item New robot models: UR3, UR5, UR10, LWR.
+\item Fixed bug for \texttt{interp} method of \texttt{SE3} object.
+\item Fixed bug with detecting Optimisation Toolbox for \texttt{ikcon} and \texttt{ikunc}.
+\item Fixed bug in \texttt{ikine\_sym}.
+\item Fixed various bugs related to plotting robots with prismatic joints.
+\end{itemize}
+
 
 \section{How to obtain the Toolbox}
 The Robotics Toolbox is freely available from the Toolbox home
@@ -308,13 +327,175 @@ just like Google Drive or Dropbox, a local filesystem on your computer is synchr
 files into the local MATLAB Drive cache and they will soon be synchronized, invoke \texttt{startup\_rvc} to setup the paths and you are ready to simulate robots on your mobile device or in a web browser.
 
 \subsection{Simulink\textsuperscript{\textregistered}}
-Simulink\textsuperscript{\textregistered} is the block diagram simulation environment for MATLAB.
+\begin{figure}
+\begin{tabular}{cc}
+\includegraphics[width=6cm]{figs/roblocks.png} & \includegraphics[width=6cm]{figs/roblocks2.png} \\
+(a) & (b) 
+\end{tabular}
+\caption{The Robotics Toolbox blockset.}\label{fig:blockset}
+\end{figure}
 
-\begin{center}
-\begin{tabular}{|l|l|}\hline
-\multicolumn{2}{|l|}{Common blocks} \\\hline
-\texttt{roblocks} & Block palette \\ \hline\hline
-\multicolumn{2}{|l|}{Robot manipulator arms} \\\hline
+
+Simulink\textsuperscript{\textregistered} is the block-diagram-based simulation environment for MATLAB.
+It provides a very convenient way to create and visualize complex dynamic
+systems, and is particularly applicable to robotics.
+RTB includes a library of blocks for use
+in constructing robot kinematic and dynamic models.
+The block library is opened by
+\begin{verbatim}
+>> roblocks
+\end{verbatim}
+and a window like that shown in Figure \ref{fig:blockset}(a) will be displayed.  Double click a particular category and it
+will expand into a palette of blocks, like Figure \ref{fig:blockset}(b), that can be dragged into your model.
+
+Users with no previous Simulink experience are advised
+to read the relevant Mathworks manuals and experiment with the examples 
+supplied.
+Experienced Simulink users should find the use of the Robotics blocks quite
+straightforward.  Generally there is a one-to-one correspondence between
+Simulink blocks and Toolbox functions.
+Several demonstrations have been included with the Toolbox in order to 
+illustrate common topics in robot control and demonstrate Toolbox Simulink 
+usage.
+These could be considered as starting points for your own work, just select
+the model closest to what you want and start changing it.
+Details of the blocks can be found using the File/ShowBrowser option on
+the block library window.
+
+
+% new
+
+\begin{longtable}{p{0.2\textwidth}p{0.75\textwidth}}
+
+Arm robots \\
+\texttt{Robot} & represents a robot,  with 
+generalized joint force input and joint coordinates, velocities and
+accelerations as outputs.
+The parameters are the robot object
+to be simulated and the initial joint angles.
+It is similar to the \texttt{fdyn()}
+function and represents the forward dynamics of the robot. \\
+
+\texttt{rne} &  computes the inverse dynamics using
+the recursive Newton-Euler algorithm (function \texttt{rne}).
+Inputs are joint coordinates, velocities and
+accelerations and the output is the generalized joint force.
+The robot object is a parameter.\\
+
+\texttt{cinertia} & computes the manipulator Cartesian inertia matrix. The parameters are the robot object
+to be simulated and the initial joint angles.\\
+
+\texttt{inertia} & computes the manipulator joint-space inertia matrix. The parameters are the robot object
+to be simulated and the initial joint angles.\\
+
+\texttt{inertia} & computes the gravity load. The parameters are the robot object
+to be simulated and the initial joint angles.\\
+
+\texttt{jacob0} & outputs a manipulator Jacobian matrix, with respect
+to the world frame,  based on the
+input joint coordinate vector.
+outputs the Jacobian matrix.  
+The robot object is a parameter.\\
+
+\texttt{jacobn} & outputs a manipulator Jacobian matrix, with respect
+to the end-effector frame,  based on the
+input joint coordinate vector.
+outputs the Jacobian matrix.  
+The robot object is a parameter.\\
+
+\texttt{ijacob} & inverts a Jacobian matrix.  Currently limited
+to square Jacobians only, ie. for 6-axis robots.\\
+
+\texttt{fkine} & outputs a homogeneous transformation for the 
+pose of the end-effector corresponding to the input joint coordinates.
+The robot object is a parameter.\\
+
+\texttt{plot} &  creates a graphical animation of the robot in a new window. The robot object is a parameter.\\
+
+\cmidrule{1-1}
+Mobile robots \\
+
+\texttt{Bicycle} & is the kinematic model of a mobile robot that uses the bicycle model. The inputs are speed and steer angle and the outputs are position and orientation. \\
+\texttt{Unicycle} & is the kinematic model of a mobile robot that uses the unicycle, or differential steering, model. The inputs are speed and turn raate and the outputs are position and orientation.\\ 
+
+\texttt{Quadrotor} & 
+is the dynamic model of a quadrotor. The inputs are rotor speeds and the output is translational and angular position and velocity. Parameter is a quadrotor structure.\\
+
+\texttt{N-rotor} & 
+is the dynamic model of a N-rotor flyer. The inputs are rotor speeds and the output is translational and angular position and velocity. Parameter is a quadrotor structure.\\
+
+\texttt{ControlMixer} & accepts thrust and torque commands and outputs rotor speeds for a quadrotor.\\
+
+\texttt{Quadrotor plot} & creates a graphical animation of the quadrotor in a new window.
+Parameter is a quadrotor structure.\\
+
+\cmidrule{1-1}
+Trajectory \\
+
+\texttt{jtraj} & outputs coordinates of a point following a quintic polynomial as a function of time, as well as its derivatives. Initial and final velocity are assumed to be zero. The parameters include the initial and final points as well as the overall motion time.\\
+
+\texttt{lspb} &outputs coordinates of a point following an LSPB trajectory as a function of time. The parameters include the initial and final points as well as the overall motion time.\\
+
+\texttt{circle} & outputs the xy-coordinates of a point around a circle. Parameters are the centre, radius and angular frequency.\\
+
+
+\cmidrule{1-1}
+Vision \\
+\texttt{camera} & input is a camera pose and the output is the coordinates of points projected on the image plane. Parameters are the camera object and the point positions.\\
+
+\texttt{camera2} &input is a camera pose and point coordinate frame pose, and the output is the coordinates of points projected on the image plane. Parameters are the camera object and the point positions relative to the point frame.\\
+
+\texttt{image Jacobian} &input is image points and output is the point feature Jacobian. Parameter is the camera object.\\
+
+\texttt{image Jacobian sphere} &input is image points in spherical coordinates and output is the point feature Jacobian. Parameter is a spherical camera object. computes camera pose from image points. Parameter is the camera object.\\
+
+\texttt{Pose estimation} & computes camera pose from image points. Parameter is the camera object.\\
+
+
+\cmidrule{1-1}
+Miscellaneous \\
+
+
+\texttt{Inverse} & outputs the inverse of the input matrix.\\
+
+\texttt{Pre multiply} & outputs the input homogeneous transform pre-multiplied by the constant parameter.\\
+
+\texttt{Post multiply} & outputs the input homogeneous transform post-multiplied by the constant parameter.\\
+
+\texttt{inv Jac} & inputs are a square Jacobian $\mathbf{J}$ and a spatial velocity  $\mathbf{\nu}$ and outputs are $\mathbf{J}^{-1}$  and the condition number of $\mathbf{J}$.\\
+
+\texttt{pinv Jac} & inputs are a Jacobian $\mathbf{J}$ and a spatial velocity  $\mathbf{\nu}$ and outputs are $\mathbf{J}^{+}$  and the condition number of $\mathbf{J}$.\\
+
+\texttt{tr2diff} & outputs the difference between two
+homogeneous transformations as a 6-vector comprising the translational and
+rotational difference.\\
+
+\texttt{xyz2T} & converts a translational vector
+to a homogeneous transformation matrix.\\
+
+\texttt{rpy2T} & converts a vector of roll-pitch-yaw angles to
+a homogeneous transformation matrix.\\
+
+\texttt{eul2T} & converts a vector of Euler angles to
+a homogeneous transformation matrix.\\
+
+\texttt{T2xyz} & converts a homogeneous transformation matrix
+to a translational vector.\\
+
+\texttt{T2rpy} & converts a homogeneous transformation matrix
+to a vector of roll-pitch-yaw angles.\\
+
+\texttt{T2eul} & converts a homogeneous transformation matrix
+to a vector of Euler angles.\\
+
+\texttt{angdiff} & computes the difference between two input angles modulo $2\pi$.
+\end{longtable}
+
+A number of models are also provided:
+
+\begin{tabular}{ll}
+\cmidrule{1-1}
+Robot manipulator arms \\
 \texttt{sl\_rrmc} & Resolved-rate motion control  \\
 \texttt{sl\_rrmc2} & Resolved-rate motion control (relative) \\
 \texttt{sl\_ztorque} & Robot collapsing under gravity \\
@@ -324,19 +505,28 @@ Simulink\textsuperscript{\textregistered} is the block diagram simulation enviro
 \texttt{sl\_opspace} & Operational space control \\
 \texttt{sl\_sea} &  Series-elastic actuator \\
 \texttt{vloop\_test} &  Puma 560 velocity loop \\ 
-\texttt{ploop\_test} & Puma 560 position loop \\ \hline\hline
-\multicolumn{2}{|l|}{Mobile ground robot} \\\hline
+\texttt{ploop\_test} & Puma 560 position loop \\ 
+\cmidrule{1-1}
+Mobile ground robot\\
 \texttt{sl\_braitenberg} &  Braitenberg vehicle moving to a source\\
 \texttt{sl\_lanechange} &  Lane changing control \\
 \texttt{sl\_drivepoint} &  Drive to a point\\
 \texttt{sl\_driveline} &  Drive to a line\\
 \texttt{sl\_drivepose} &  Drive to a pose\\
-\texttt{sl\_pursuit} &  Drive along a path \\ \hline\hline
-\multicolumn{2}{|l|}{Flying robot} \\\hline
+\texttt{sl\_pursuit} &  Drive along a path \\ 
+\cmidrule{1-1}
+Flying robot\\
 \texttt{sl\_quadrotor} &  Quadrotor control \\
-\texttt{sl\_quadrotor\_vs} &  Control visual servoing to a target\\ \hline
+\texttt{sl\_quadrotor\_vs} &  Control visual servoing to a target
 \end{tabular}
-\end{center}
+
+
+\subsection{Notes on implementation and versions}
+The Simulink blocks are implemented in Simulink itself with calls to MATLAB code, or as Level-1 S-functions (a proscribed coding format which MATLAB functions
+to  interface with the Simulink simulation engine).
+
+Simulink allows signals to have matrix values but not (yet) object values.  Transformations must be represented as matrices, as per the classic functions, not classes.
+Very old versions of Simulink (prior to version 4) could only handle scalar signals which limited its usefulness for robotics.
 
 \subsection{Documentation}
 This document {\tt robot.pdf} is a comprehensive manual that describes all functions in the Toolbox.
@@ -344,15 +534,15 @@ It is auto-generated from the comments in the \Mlab\ code and is fully hyperlink
 to external web sites, the table of content to functions, and the ``See also'' functions
 to each other.
 
-The same documentation is available online in
-alphabetical order at \url{http://www.petercorke.com/RTB/r10/html/index_alpha.html}
-or by category at \url{http://www.petercorke.com/RTB/r10/html/index.html}.
-Documentation is also available via the \Mlab\ help browser,  under supplemental software, as ``Robotics
-Toolbox".
+%The same documentation is available online in
+%alphabetical order at \url{http://www.petercorke.com/RTB/r10/html/index_alpha.html}
+%or by category at \url{http://www.petercorke.com/RTB/r10/html/index.html}.
+%Documentation is also available via the \Mlab\ help browser,  under supplemental software, as ``Robotics
+%Toolbox".
 
 
 \section{Compatible MATLAB versions}
-The Toolbox has been tested under R2016b and R2017aPRE.  Compatibility problems are increasingly likely the older your version of \Mlab\ is.
+The Toolbox has been tested under R2016b and R2017bPRE.  Compatibility problems are increasingly likely the older your version of \Mlab\ is.
 
 \section{Use in teaching}
 This is definitely encouraged!
