@@ -511,9 +511,9 @@ classdef Link < handle
                 return;
             end
             
-            if isa(v,'sym') && ~isempty(findsym(v))
+            if isa(v,'sym') && ~isempty(symvar(v))
                 l.Tc = sym('Tc');
-            elseif isa(v,'sym') && isempty(findsym(v))
+            elseif isa(v,'sym') && isempty(symvar(v))
                 v = double(v);
             end
             

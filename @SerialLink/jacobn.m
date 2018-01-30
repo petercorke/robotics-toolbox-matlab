@@ -53,7 +53,7 @@ function J = jacobn(robot, q, varargin)
     L = robot.links;        % get the links
     
     if isa(q, 'sym')
-        J(6, robot.n) = sym();
+        J = sym(zeros(6,robot.n));
     else
         J = zeros(6, robot.n);
     end

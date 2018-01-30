@@ -81,7 +81,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
     end
     
     if robot.issym || any([isa(Q,'sym'), isa(Qd,'sym'), isa(Qdd,'sym')])
-        tau(np, n) = sym();
+        tau = sym(zeros(np,n));
     else
         tau = zeros(np,n);
     end
