@@ -4,9 +4,9 @@ function tests = TransformationsTest
 end
 
 function setupOnce(testCase)
-    mdl_puma560_3
-    p560 = p560.nofriction('all');
-    testCase.TestData.rob = p560;
+    mdl_3link3d;
+    R3 = R3.nofriction('all');
+    testCase.TestData.rob = R3;
     % mdl_twolink
     % tStruct.rob = twolink;
     testCase.TestData.nTrials = 1000; % number of tests to perform in each subroutine
