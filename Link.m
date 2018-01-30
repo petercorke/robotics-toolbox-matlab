@@ -402,19 +402,19 @@ classdef Link < handle
             
                 
             tau = l.B * abs(l.G) * qd;
-            
-            if qd > 0
-                tau = tau + l.Tc(1);
-            elseif qd < 0
-                tau = tau + l.Tc(2);
-            end
-            tau = -abs(l.G) * tau;     % friction opposes motion
-            
+
             % Asymmetric friction in symbolic computations is currently not supported, output only the first
             % element.
             if l.issym
-                tau = tau(1);
+                tau = tau + l.Tc(1);
+            else
+                if qd > 0
+                    tau = tau + l.Tc(1);
+                elseif qd < 0
+                    tau = tau + l.Tc(2);
+                end
             end
+            tau = -abs(l.G) * tau;     % friction opposes motion
             
         end % friction()
         
