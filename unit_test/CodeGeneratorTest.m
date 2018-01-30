@@ -7,10 +7,7 @@ function setupOnce(testCase)
     mdl_3link3d;
     R3 = R3.nofriction('all');
     testCase.TestData.rob = R3;
-    % mdl_twolink
-    % tStruct.rob = twolink;
     testCase.TestData.nTrials = 1000; % number of tests to perform in each subroutine
-    % tStruct.nTrials = 1; % number of tests to perform in each subroutine
     
     testCase.TestData.cGen = CodeGenerator(testCase.TestData.rob,'default','logfile','cGenUnitTestLog.txt');
     testCase.TestData.cGen.verbose = 0;
