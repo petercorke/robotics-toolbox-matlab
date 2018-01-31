@@ -597,7 +597,6 @@ function genfdyn_test(testCase)
     
     % assertions so far?
     verifyEqual(testCase, resRTB, resM, 'absTol', 1e-6);
-    % verifyEqual(testCase, resRTB, resSym);
     
     testCase.TestData.cGen.genccodefdyn;
     testCase.TestData.cGen.genmexfdyn;

@@ -65,55 +65,30 @@ fid = fopen(fullfile(srcDir,funfilename),'w+');
 fprintf(fid,'%s\n\n',...
     ['#include "', hfilename,'"']);
 fprintf(fid,'%s\n\n',...
-    ['#include "stdlib.h"']);
+     '#include "stdlib.h"'); % include stdlib.h, otherwise malloc will return int and not void*
 
 % Start actual function implementation
 fprintf(fid,'%s\n',['void ',funname,'(const double* inMatrix, double* outMatrix, int dim){']);
 
 fprintf(fid,'%s\n',' '); % empty line
-% fprintf(fid,'\t%s\n',['mexPrintf("INIT TEST \n");']);
+
 % variable declarations
 fprintf(fid,'\t%s\n','int iRow, iCol, diagIndex;');
 fprintf(fid,'\t%s\n','double diagFactor, tmpFactor;');
+fprintf(fid,'\t%s\n','double* inMatrixCopy = (double*) malloc(dim*dim*sizeof(double));');
 
-fprintf(fid,'\t%s\n',['mexPrintf("MALLOC \n");']);
-fprintf(fid,'\t%s\n','double* inMatrixCopy = (double*) calloc(dim*dim, sizeof(double));');
-fprintf(fid,'\t%s\n','if(inMatrixCopy == 0) { ');
-fprintf(fid,'\t%s\n','   mexPrintf("MALLOC FAILED\n");');
-fprintf(fid,'\t%s\n','} else { ');
-fprintf(fid,'\t%s\n','   mexPrintf("MALLOC SUCCEEDED\n");');
-fprintf(fid,'\t%s\n','}');
-
-fprintf(fid,'\t%s\n',['mexPrintf("DECLARED\n");']);
 fprintf(fid,'%s\n',' '); % empty line
 
 % input initialization
-
-fprintf(fid,'\t%s\n',['mexPrintf("START COPY\n");']);
 fprintf(fid,'\t%s\n','/* make deep copy of input matrix */');
 fprintf(fid,'\t%s\n','for(iRow = 0; iRow < dim; iRow++ ){');
 fprintf(fid,'\t\t%s\n','for (iCol = 0; iCol < dim; iCol++){');
 
-fprintf(fid,'\t%s\n',['mexPrintf("Element row: %d  col: %d \n", iRow, iCol);']);
-fprintf(fid,'\t%s\n',['mexPrintf("Address --> dim*iCol: %d  + iRow: %d \n", dim*iCol, iRow);']);
-fprintf(fid,'\t%s\n',['mexPrintf("inMatrix %f \n", inMatrix[dim*iCol+iRow]);']);
-fprintf(fid,'\t%s\n',['mexPrintf("inMatrixCopy 0: %f \n", inMatrixCopy[0]);']);
-fprintf(fid,'\t%s\n',['mexPrintf("inMatrixCopy 1: %f \n", inMatrixCopy[1]);']);
-fprintf(fid,'\t%s\n',['mexPrintf("inMatrixCopy 2: %f \n", inMatrixCopy[2]);']);
-fprintf(fid,'\t%s\n',['mexPrintf("inMatrixCopy access: %f \n", inMatrixCopy[dim*iCol+iRow]);']);
-
-% fprintf(fid,'\t\t\t%s\n','inMatrixCopy[dim*iCol+iRow] = inMatrix[dim*iCol+iRow];');
 fprintf(fid,'\t\t\t%s\n','inMatrixCopy[dim*iCol+iRow] = inMatrix[dim*iCol+iRow];');
 
-fprintf(fid,'\t%s\n',['mexPrintf("inMatrixCopy after %f \n", inMatrixCopy[dim*iCol+iRow]);']);
-
-fprintf(fid,'\t%s\n',['mexPrintf("Copied!\n");']);
-
 fprintf(fid,'\t\t%s\n','}');
-
-fprintf(fid,'\t%s\n',['mexPrintf("Arrived A\n");']);
-
 fprintf(fid,'\t%s\n','}');
+
 fprintf(fid,'\t%s\n','/* Initialize output matrix as identity matrix. */');
 fprintf(fid,'\t%s\n','for (iRow = 0; iRow < dim; iRow++ ){');
 fprintf(fid,'\t\t%s\n','for (iCol = 0; iCol < dim; iCol++ ){');
@@ -126,7 +101,6 @@ fprintf(fid,'\t\t\t%s\n','}');
 fprintf(fid,'\t\t%s\n','}');
 fprintf(fid,'\t%s\n','}');
 
-fprintf(fid,'\t%s\n',['mexPrintf("Arrived B\n");']);
 fprintf(fid,'%s\n',' '); % empty line
 
 % actual elimination
@@ -135,7 +109,6 @@ fprintf(fid,'\t%s\n','{');
 fprintf(fid,'\t\t%s\n','/* determine diagonal factor */');
 fprintf(fid,'\t\t%s\n','diagFactor = inMatrixCopy[dim*diagIndex+diagIndex];');
 
-fprintf(fid,'\t%s\n',['mexPrintf("Arrived C\n");']);
 fprintf(fid,'%s\n',' '); % empty line
         
 fprintf(fid,'\t\t%s\n','/* divide column entries by diagonal factor */');
@@ -144,7 +117,6 @@ fprintf(fid,'\t\t\t%s\n','inMatrixCopy[dim*iCol+diagIndex] /= diagFactor;');
 fprintf(fid,'\t\t\t%s\n','outMatrix[dim*iCol+diagIndex] /= diagFactor;');
 fprintf(fid,'\t\t%s\n','}');
 
-fprintf(fid,'\t%s\n',['mexPrintf("Arrived D\n");']);
 fprintf(fid,'%s\n',' '); % empty line
         
 fprintf(fid,'\t\t%s\n','/* perform line-by-line elimination */');
@@ -161,12 +133,10 @@ fprintf(fid,'\t\t\t\t%s\n','}');
 fprintf(fid,'\t\t\t%s\n','}');
 fprintf(fid,'\t\t%s\n','} /* line-by-line elimination */');
 
-fprintf(fid,'\t%s\n',['mexPrintf("Arrived E\n");']);
 fprintf(fid,'%s\n',' '); % empty line
         
 fprintf(fid,'\t%s\n','}');
 fprintf(fid,'\t%s\n','free(inMatrixCopy);');
-fprintf(fid,'\t%s\n',['mexPrintf("Arrived F\n");']);
 fprintf(fid,'%s\n','}');
 
 
