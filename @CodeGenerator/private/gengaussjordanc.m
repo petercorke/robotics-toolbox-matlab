@@ -64,6 +64,8 @@ fid = fopen(fullfile(srcDir,funfilename),'w+');
 % Includes
 fprintf(fid,'%s\n\n',...
     ['#include "', hfilename,'"']);
+fprintf(fid,'%s\n\n',...
+    ['#include "stdlib.h"']);
 
 % Start actual function implementation
 fprintf(fid,'%s\n',['void ',funname,'(const double* inMatrix, double* outMatrix, int dim){']);
@@ -75,8 +77,12 @@ fprintf(fid,'\t%s\n','int iRow, iCol, diagIndex;');
 fprintf(fid,'\t%s\n','double diagFactor, tmpFactor;');
 
 fprintf(fid,'\t%s\n',['mexPrintf("MALLOC \n");']);
-fprintf(fid,'\t%s\n','double* inMatrixCopy = (double*) malloc(dim*dim*sizeof(double));');
-% fprintf(fid,'\t%s\n','if (inMatrixCopy == NULL) {mexPrintf("MALLOC FAILED \n");}');
+fprintf(fid,'\t%s\n','double* inMatrixCopy = (double*) calloc(dim*dim, sizeof(double));');
+fprintf(fid,'\t%s\n','if(inMatrixCopy == 0) { ');
+fprintf(fid,'\t%s\n','   mexPrintf("MALLOC FAILED\n");');
+fprintf(fid,'\t%s\n','} else { ');
+fprintf(fid,'\t%s\n','   mexPrintf("MALLOC SUCCEEDED\n");');
+fprintf(fid,'\t%s\n','}');
 
 fprintf(fid,'\t%s\n',['mexPrintf("DECLARED\n");']);
 fprintf(fid,'%s\n',' '); % empty line
@@ -91,7 +97,10 @@ fprintf(fid,'\t\t%s\n','for (iCol = 0; iCol < dim; iCol++){');
 fprintf(fid,'\t%s\n',['mexPrintf("Element row: %d  col: %d \n", iRow, iCol);']);
 fprintf(fid,'\t%s\n',['mexPrintf("Address --> dim*iCol: %d  + iRow: %d \n", dim*iCol, iRow);']);
 fprintf(fid,'\t%s\n',['mexPrintf("inMatrix %f \n", inMatrix[dim*iCol+iRow]);']);
-fprintf(fid,'\t%s\n',['mexPrintf("inMatrixCopy %f \n", inMatrixCopy[dim*iCol+iRow]);']);
+fprintf(fid,'\t%s\n',['mexPrintf("inMatrixCopy 0: %f \n", inMatrixCopy[0]);']);
+fprintf(fid,'\t%s\n',['mexPrintf("inMatrixCopy 1: %f \n", inMatrixCopy[1]);']);
+fprintf(fid,'\t%s\n',['mexPrintf("inMatrixCopy 2: %f \n", inMatrixCopy[2]);']);
+fprintf(fid,'\t%s\n',['mexPrintf("inMatrixCopy access: %f \n", inMatrixCopy[dim*iCol+iRow]);']);
 
 % fprintf(fid,'\t\t\t%s\n','inMatrixCopy[dim*iCol+iRow] = inMatrix[dim*iCol+iRow];');
 fprintf(fid,'\t\t\t%s\n','inMatrixCopy[dim*iCol+iRow] = inMatrix[dim*iCol+iRow];');
