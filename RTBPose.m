@@ -568,7 +568,11 @@ classdef (Abstract) RTBPose
             %
             % See also RTBPose.animate, tranimate.
             
-            obj.plot(varargin{:});
+            obj.animate(varargin{:});
+        end
+        
+        function tranimate2(obj, varargin)
+            obj.animate(varargin{:});
         end
         
         function v = isrot(obj)
@@ -677,19 +681,41 @@ classdef (Abstract) RTBPose
             %  Additional options are passed through to TRPLOT.
             %
             % See also tranimate.
-            switch class(obj)
-                case 'SO2'
-                    tranimate2(obj.R, varargin{:});
-                    
-                case 'SE2'
-                    tranimate2(obj.T, varargin{:});
-                    
-                case 'SO3'
-                    tranimate(obj.R, varargin{:});
-                    
-                case 'SE3'
-                    tranimate(obj.T, varargin{:});
+            
+            % invoke classic functions
+            if length(varargin) > 0 && isa(varargin{1}, 'RTBPose')
+                % tranimate(T1, T2, args)
+                switch class(obj)
+                    case 'SO2'
+                        tranimate2(obj.R, varargin{1}.R, varargin{2:end});
+                        
+                    case 'SE2'
+                        tranimate2(obj.T, varargin{1}.T, varargin{2:end});
+                        
+                    case 'SO3'
+                        tranimate(obj.R, varargin{1}.R, varargin{2:end});
+                        
+                    case 'SE3'
+                        tranimate(obj.T, varargin{1}.T, varargin{2:end});
+                end
+            else
+                % tranimate(T1, args)
+                switch class(obj)
+                    case 'SO2'
+                        tranimate2(obj.R, varargin{:});
+                        
+                    case 'SE2'
+                        tranimate2(obj.T, varargin{:});
+                        
+                    case 'SO3'
+                        tranimate(obj.R, varargin{:});
+                        
+                    case 'SE3'
+                        tranimate(obj.T, varargin{:});
+                end
             end
+            
+
         end
         
         function plot(obj, varargin)

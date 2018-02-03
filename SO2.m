@@ -300,6 +300,16 @@ classdef SO2 < RTBPose
             R = SO2( th1 + s*(th2-th1) );
         end
         
+        function R = trinterp(obj, varargin)
+            R = obj.interp(varargin{:});
+        end
+        
+        function R = trinterp2(obj, varargin)
+            R = obj.interp(varargin{:});
+        end
+        
+
+        
         function n = new(obj, varargin)
             %SE2.new  Construct a new object of the same type
             %

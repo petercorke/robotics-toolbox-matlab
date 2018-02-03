@@ -258,13 +258,25 @@ end
 
 function display_test(tc)
     
-    r = SE2( 1, 2, 0.3 );
+    T1 = SE3.rand;
+    T2 = SE3.rand
     
-    r.print
-    trprint(r)   % old style syntax
+    T1.print
+    trprint(T1)   % old style syntax
     
-    r.plot
+    T1.plot
     
-    %r.animate  no 2D animation method
+    T1.print
+    trprint(T1)   % old style syntax
+    
+    T1.plot
+    trplot(T1)   % old style syntax
+    
+    T1.animate
+    T1.animate(T2)
+    tranimate(T1)   % old style syntax
+    tranimate(T1, T2)   % old style syntax
+    tranimate2(T1)   % old style syntax
+    tranimate2(T1, T2)   % old style syntax
 end
 

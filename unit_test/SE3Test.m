@@ -380,14 +380,18 @@ end
 
 function display_test(tc)
     
-    R = rpy2r( randn(1,3) );  t = randn(3,1); T = rt2tr(R, t);
-    TT = SE3(T);
+    T1 = SE3.rand;
+    T2 = SE3.rand
     
-    TT.print
-    trprint(TT)   % old style syntax
+    T1.print
+    trprint(T1)   % old style syntax
     
-    TT.plot
+    T1.plot
+    trplot(T1)   % old style syntax
     
-    TT.animate
+    T1.animate
+    T1.animate(T2)
+    tranimate(T1)   % old style syntax
+    tranimate(T1, T2)   % old style syntax
 end
 

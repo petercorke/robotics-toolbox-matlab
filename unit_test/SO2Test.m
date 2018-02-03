@@ -188,12 +188,19 @@ end
 
 function display_test(tc)
     
-    r = SO2( 0.3 );
+    R = SO2( 0.3 );
     
-    r.print
-    trprint(r)   % old style syntax
+    R.print
+    trprint(R)   % old style syntax
     
-    r.plot
+    R.plot
+    trplot(R)   % old style syntax
     
-    %r.animate  no 2D animation method
+    R2 = SO2(0.6);
+    R.animate
+    R.animate(R2)
+    tranimate(R2)   % old style syntax
+    tranimate(R, R2)   % old style syntax
+    tranimate2(R2)   % old style syntax
+    tranimate2(R, R2)   % old style syntax
 end

@@ -75,7 +75,7 @@ function tranimate2(P2, varargin)
     end
 
 
-    % convert quaternion and rotation matrix to hom transform
+    % convert rotation matrix to hom transform
     if isrot2(P2)
         % tranimate2(R1, options)
         % tranimate2(R1, R2, options)
