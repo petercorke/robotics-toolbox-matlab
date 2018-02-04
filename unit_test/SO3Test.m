@@ -327,7 +327,7 @@ function miscellany_test(tc)
     verifyEqual(tc, tr2rpy( SO3.rpy( 0.1, 0.2, 0.3) ), [ 0.1, 0.2, 0.3], 'AbsTol', 1e-10  );
     verifyEqual(tc, tr2eul( SO3.eul( 0.1, 0.2, 0.3)  ), [ 0.1, 0.2, 0.3 ], 'AbsTol', 1e-10  );
     verifyEqual(tc, tr2rpy( SO3.rpy( 10, 20, 30, 'deg'), 'deg'), [ 10, 20, 30], 'AbsTol', 1e-10  );
-    verifyEqual(tc, tr2eul( SO3.eul( 10, 20, 30, 'deg'), 'deg'), [ 0.1, 0.2, 0.3 ], 'AbsTol', 1e-10  );
+    verifyEqual(tc, tr2eul( SO3.eul( 10, 20, 30, 'deg'), 'deg'), [ 10, 20, 30 ], 'AbsTol', 1e-10  );
 end
 
 function display_test(tc)

@@ -341,17 +341,17 @@ classdef (Abstract) RTBPose
                 % obj / obj
                 out = repmat(obj1, 1, max(length(obj),length(a)));
                 if length(obj) == length(a)
-                    % do vector*vector and scalar*scalar case
+                    % do vector/vector and scalar/scalar case
                     for i=1:length(obj)
                         out(i) = obj1.new( obj(i).data * inv(a(i).data));
                     end
                 elseif length(obj) == 1
-                    % scalar*vector case
-                    for i=1:length(obj)
-                        out(i) = obj1.new( inv(obj.data) * a(i).data);
+                    % scalar/vector case
+                    for i=1:length(a)
+                        out(i) = obj1.new( obj.data * inv(a(i).data) );
                     end
                 elseif length(a) == 1
-                    % vector*scalar case
+                    % vector/scalar case
                     for i=1:length(obj)
                         out(i) = obj1.new( obj(i).data * inv(a.data));
                     end
