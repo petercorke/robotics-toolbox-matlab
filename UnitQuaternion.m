@@ -236,7 +236,7 @@ classdef UnitQuaternion < Quaternion
             % References::
             % - Animating rotation with quaternion curves,
             %   K. Shoemake,
-            %   in Proceedings of ACM SIGGRAPH, (San Fran cisco), pp. 245-254, 1985.
+            %   in Proceedings of ACM SIGGRAPH, (San Francisco), pp. 245-254, 1985.
             %
             % See also ctraj.
             
