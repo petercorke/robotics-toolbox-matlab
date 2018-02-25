@@ -75,7 +75,16 @@ function teach(robot, varargin)
     
     % get the joint coordinates if given
     q = [];
-    if ~isempty(args)
+    if isempty(args)
+        % no joint angles passed, assume all zeros
+        q = zeros(1, robot.n);
+        
+        % set any prismatic joints to the minimum value
+        for j=find(robot.links.isprismatic)
+                q(j) = robot.links(j).qlim(1);
+        end
+    else
+        % joint angles passed
         if isnumeric(args{1})
             q = args{1};
             
