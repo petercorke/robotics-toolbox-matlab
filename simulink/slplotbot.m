@@ -7,7 +7,7 @@
 % each Simulink major integration step.
 
 function [sys,x0,str,ts] = splotbot(t,x,u,flag, robot, fps, holdplot)
-	switch flag,
+	switch flag
 
 	case 0
 		% initialize the robot graphics
