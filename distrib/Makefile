@@ -121,9 +121,10 @@ _pdf:
 	(cd manual; make)
 
 	cp manual/robot.pdf rvctools/robot
+	open -a pdfreduce rvctools/robot
 
 	# and let's take a look
-	open manual/robot.pdf 
+	open rvctools/robot/robot.pdf 
 
 
 CMD = '/INSERT_HERE/ {\
