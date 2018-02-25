@@ -33,7 +33,7 @@
 fp = fopen('RELEASE', 'r');
 release = fgetl(fp);
 fclose(fp);
-fprintf('- Robotics Toolbox for Matlab (release %s)\n', release)
+fprintf('- Robotics Toolbox for MATLAB (release %s)\n', release)
 tbpath = fileparts(which('Link'));
 addpath( fullfile(tbpath, 'demos') );
 addpath( fullfile(tbpath, 'examples') );
@@ -43,23 +43,29 @@ addpath( fullfile(tbpath, 'data') );
 javaaddpath( fullfile(tbpath, 'java', 'DHFactor.jar') );
 addpath( fullfile(tbpath, 'interfaces', 'VREP') );
 % add the contrib code to the path
+rvcpath = fileparts(tbpath);  % strip one folder off path
+p = fullfile(rvcpath, 'contrib');
+addpath(p)
 
+p = fullfile(tbpath, 'data', 'ARTE');
+disp([' - ARTE contributed code: 3D models for robot manipulators (' p ')']);
 p = fullfile(rvcpath, 'contrib', 'pHRIWARE');
 if exist(p, 'dir')
     addpath( p );
     disp([' - pHRIWARE (release ',pHRIWARE('ver'),'): ',pHRIWARE('c')]);
 end
 p = fullfile(rvcpath, 'contrib/paretofront');
-if exist(p)
-    addpath( p );
-    disp([' - paretofront contributed code (' p ')']);
-end
-[currentversion,status] = urlread('http://www.petercorke.com/RTB/currentversion.php', 'Timeout', 2.0);
-if status == 1
-    if ~strcmp(release, currentversion)
-        fprintf('** Release %s now available\n\n', ...
-            currentversion);
-    end
-end
+% if exist(p)
+%     addpath( p );
+%     disp([' - paretofront contributed code (' p ')']);
+% end
+
+% [currentversion,status] = urlread('http://www.petercorke.com/RTB/currentversion.php', 'Timeout', 2.0);
+% if status == 1
+%     if ~strcmp(release, currentversion)
+%         fprintf('** Release %s now available\n\n', ...
+%             currentversion);
+%     end
+% end
 clear status release currentversion tbpath
 disp('Run rtbdemo to explore the toolbox');
