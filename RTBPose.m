@@ -718,7 +718,7 @@ classdef (Abstract) RTBPose
 
         end
         
-        function plot(obj, varargin)
+        function varargout = plot(obj, varargin)
             %TRPLOT Draw a coordinate frame (compatibility)
             %
             % trplot(P, OPTIONS) draws a 3D coordinate frame represented by P which is
@@ -730,18 +730,20 @@ classdef (Abstract) RTBPose
             % type.
             %
             % See also trplot, trplot2.
+             
+             
             switch class(obj)
                 case 'SO2'
-                    trplot2(obj.R, varargin{:});
+                    [varargout{1:nargout}] = trplot2(obj.R, varargin{:});
                     
                 case 'SE2'
-                    trplot2(obj.T, varargin{:});
+                    [varargout{1:nargout}] = trplot2(obj.T, varargin{:});
                     
                 case 'SO3'
-                    trplot(obj.R, varargin{:});
+                    [varargout{1:nargout}] = trplot(obj.R, varargin{:});
                     
                 case 'SE3'
-                    trplot(obj.T, varargin{:});
+                    [varargout{1:nargout}] = trplot(obj.T, varargin{:});
             end
         end
         
