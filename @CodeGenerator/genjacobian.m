@@ -57,7 +57,7 @@ CGen.logmsg([datestr(now),'\tDeriving robot jacobians']);
 
 q = CGen.rob.gencoords;
 J0 = CGen.rob.jacob0(q);
-Jn = CGen.rob.jacobn(q);
+Jn = CGen.rob.jacobe(q);
 
 CGen.logmsg('\t%s\n',' done!');
 
@@ -66,7 +66,7 @@ if CGen.saveresult
     CGen.logmsg([datestr(now),'\tSaving symbolic robot jacobians']);
     
     CGen.savesym(J0,'jacob0','jacob0.mat');
-    CGen.savesym(Jn,'jacobn','jacobn.mat');
+    CGen.savesym(Jn,'jacobe','jacobe.mat');
     
     CGen.logmsg('\t%s\n',' done!');
 end

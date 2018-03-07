@@ -147,9 +147,9 @@ function genjacobian_test(testCase)
         resSym0(:,:,iTry) = subs(J0,symQ,q);
         resM0(:,:,iTry) = specRob.jacob0(q);
         
-        resRTBn(:,:,iTry) =  testCase.TestData.rob.jacobn(q);
+        resRTBn(:,:,iTry) =  testCase.TestData.rob.jacobe(q);
         resSymn(:,:,iTry) = subs(Jn,symQ,q);
-        resMn(:,:,iTry) = specRob.jacobn(q);
+        resMn(:,:,iTry) = specRob.jacobe(q);
     end
     profile off;
     pstat = profile('info');
@@ -177,7 +177,7 @@ function genjacobian_test(testCase)
     for iTry = 1:testCase.TestData.nTrials
         q = Q(iTry,:);
         resMEX0(:,:,iTry) = specRob.jacob0(q);
-        resMEXn(:,:,iTry) = specRob.jacobn(q);
+        resMEXn(:,:,iTry) = specRob.jacobe(q);
     end
     profile off;
     pstat = profile('info');
