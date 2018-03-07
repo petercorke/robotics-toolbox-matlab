@@ -58,7 +58,7 @@ Q = CGen.rob.gencoords;
 hStruct = createHeaderStructFkine(CGen.rob,symname); 
 
 % Generate and compile MEX function 
-CGen.mexfunction(tmpStruct.(symname), 'funfilename',funfilename,'funname',[CGen.getrobfname,'_',symname],'vars',{Q},'output','T','header',hStruct)
+CGen.mexfunction(tmpStruct.(symname).T, 'funfilename',funfilename,'funname',[CGen.getrobfname,'_',symname],'vars',{Q},'output','T','header',hStruct)
 
 CGen.logmsg('\t%s\n',' done!');
 
@@ -79,7 +79,7 @@ for iJoints=1:CGen.rob.n
     hStruct = createHeaderStruct(CGen.rob,iJoints,symname); % create header
     
     % Generate and compile MEX function 
-    CGen.mexfunction(tmpStruct.(symname),'funfilename',funfilename,'funname',[CGen.getrobfname,'_',symname],'vars',{Q},'output','T','header',hStruct);
+    CGen.mexfunction(tmpStruct.(symname).T,'funfilename',funfilename,'funname',[CGen.getrobfname,'_',symname],'vars',{Q},'output','T','header',hStruct);
     
 end
 CGen.logmsg('\t%s\n',' done!');

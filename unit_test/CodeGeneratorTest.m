@@ -74,8 +74,8 @@ function genfkine_test(testCase)
     for iTry = 1:testCase.TestData.nTrials
         q = Q(iTry,:);
         
-        resRTB(:,:,iTry) =  testCase.TestData.rob.fkine(q);
-        resSym(:,:,iTry) = subs(T,symQ,q);
+        resRTB(:,:,iTry) =  testCase.TestData.rob.fkine(q).T;
+        resSym(:,:,iTry) = subs(T.T,symQ,q);
         resM(:,:,iTry) = specRob.fkine(q);
     end
     profile off;
