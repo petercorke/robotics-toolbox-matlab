@@ -1,20 +1,8 @@
-# build RTB
-ROOT = ~/code/rvc
-BUILD = tmp
-MANUAL = $(BUILD)/manual/robot.pdf
-SRC = $(ROOT)/robot
-ROBOT = rvctools/robot
-COMMON = rvctools/common
-CONTRIB = rvctools/contrib
-LIB = ~/lib/matlab
+ROOT = ~/rvc
 
 release:  build doco zipit
 
-doco:	pdf markup
-
-build:  tmp allfuncs.txt
-
-tmp:
+build: 
 	# clean up
 	mkdir tmp
 
@@ -36,39 +24,21 @@ _build:
 	# copy any contrib files that will be included
 	#cp -r $(ROOT)/contrib/paretofront rvctools/contrib
 	cp -r $(ROOT)/contrib/pHRIWARE $(CONTRIB)
-	cp $(LIB)/arrow3.m $(CONTRIB)
-
 
 	# copy any GUIDE files
 	cp ../../*.fig $(ROBOT)
 
 	# copy Java source code and jar file
-	(cd $(SRC)/java; make)
-	cp -r $(SRC)/java $(ROBOT)
-
-	# copy extra packages
-	cp -r $(SRC)/+ETS* $(ROBOT)
-
-	# copy model files
-	cp -r $(SRC)/models $(ROBOT)
-
-	# copy examples and data files
-	cp -r $(SRC)/examples $(ROBOT)
-	cp -r $(SRC)/data $(ROBOT)
-	cp -r $(SRC)/demos $(ROBOT)
-	cp -r $(SRC)/mex $(ROBOT)
-
-	# copy RST examples
-	cp -r $(SRC)/RST $(ROBOT)
-
-	# copy symbolic examples
-	cp -r $(SRC)/symbolic $(ROBOT)
+	cp -r $(SRC)/*.java $(ROBOT)
+	(cd $(SRC); make)
+	cp $(SRC)/*.jar $(ROBOT)
 
 	# copy simulink models
-	cp -r $(SRC)/simulink/*.slx rvctools/simulink
-	cp -r $(SRC)/simulink/*.m rvctools/simulink
-
-	#cp -r $(SRC)/Octave $(ROBOT)  causes the package builder to fail
+	cp -r $(SRC)/simulink/*.{mdl,m,slx} rvctools/simulink
+	cp -r $(SRC)/examples $(ROBOT)
+	cp -r $(SRC)/demos $(ROBOT)
+	cp -r $(SRC)/mex $(ROBOT)
+	cp -r $(SRC)/Octave $(ROBOT)
 
 	# copy interfaces
 	cp -r ../../interfaces $(ROBOT)
@@ -96,7 +66,6 @@ $(MANUAL):
 	$(MAKE) -C tmp -f ../Makefile $(MFLAGS) _pdf
 
 _pdf:
-	-echo "---------build the manual"
 	-\rm -rf tmpdoc
 	-mkdir tmpdoc 
 	-cp -r rvctools/robot/* tmpdoc
@@ -106,10 +75,9 @@ _pdf:
 	# add a couple of things from interfaces
 	-cp rvctools/robot/interfaces/VREP/*.m tmpdoc
 	-cp rvctools/robot/interfaces/Arbotix.m tmpdoc
-	-cp rvctools/robot/models/*.m tmpdoc
 
 	# copy over the manual skeleton, we will work here
-	cp -r $(ROOT)/robot/doc/manual .
+	cp -r ~/rvc/robot/doc/manual .
 	
 	# generate LaTeX code for all functions in there
 	(cd tmpdoc; help3.py -v -l --include @* *.m; mv all.tex ../manual)
@@ -121,10 +89,9 @@ _pdf:
 	(cd manual; make)
 
 	cp manual/robot.pdf rvctools/robot
-	open -a pdfreduce rvctools/robot
 
 	# and let's take a look
-	open rvctools/robot/robot.pdf 
+	open manual/robot.pdf 
 
 
 CMD = '/INSERT_HERE/ {\
@@ -141,7 +108,7 @@ _markup:
 	# build the XML/info stuff for matlab help browser system
 	# build it in info, info/html
 	-mkdir -p info/html
-	cp -r $(SRC)/doc/info/robot_product_page.html info
+	cp -r $(SRC)/info/robot_product_page.html info
 	(cd tmpdoc; help3.py --rtb -m @* *.m; mv *.html ../info/html)
 
 	# copy over the autogen files
@@ -150,14 +117,14 @@ _markup:
 	cp contents_toc.html info
 
 	# create the helptoc.xml file
-	cp $(SRC)/doc/info/helptoc.xml info
-	#sed '/<!--INSERT_HERE-->/r helpfuncbycat.xml' < $(SRC)/info/helptoc.xml > info/helptoc.xml
+	cp $(SRC)/info.xml $(ROBOT)
+	cp $(SRC)/info/helptoc.xml .
+	sed '/<!--INSERT_HERE-->/r helpfuncbycat.xml' < $(SRC)/info/helptoc.xml > info/helptoc.xml
 
 	# copy invariant files from the distro
-	cp $(SRC)/doc/info/*.html info
-	cp $(SRC)/doc/info/*.css info
-	#cp -r $(SRC)/info/icons info
-	#cp manual/figs/rtb-montage.png info
+	cp $(SRC)/info/*.html info
+	cp -r $(SRC)/info/icons info
+	cp manual/figs/rtb-montage.png info
 
 	
 	# build the web/HTML doco
@@ -170,11 +137,12 @@ _markup:
 	cp Contents.m rvctools/robot
 
 	# install it all
-	cp -r info rvctools
-	cp $(SRC)/doc/info.xml rvctools
+	cp -r info rvctools/robot
 
 
 zipit:
+	# remove all traces of svn files
+	-find rvctools -name .svn -exec rm -rf {} \;
 	# build the distrib archives
 	(cd tmp; zip -rq ../robot-`cat ../../RELEASE`.zip ./rvctools)
 	#tar zcf robot.tgz ./rvctools
@@ -207,5 +175,5 @@ install:
 	ssh geek chmod -R a+rX www/RTB/r9
 
 clean:
-	@-\rm -rf tmp *.zip *.mltbx
+	@-\rm -rf tmp
 

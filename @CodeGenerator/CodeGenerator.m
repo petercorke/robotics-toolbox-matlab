@@ -21,10 +21,13 @@
 %        cg = CodeGenerator(twolink);
 %        cg.geneverything();
 %
-%        % a new class has been automatically generated in the robot directory.
-%        addpath robot
+%        % delete old SerialLink object named twolink (created by mdl_twolink)
+%        clear twolink
 %
-%        tl = @robot();
+%        % we now have a new class, which has been automatically generated in the robot directory named twolink.
+%        addpath twolink
+%
+%        tl = twolink;
 %        % this class is a subclass of SerialLink, and thus polymorphic with
 %        % SerialLink but its methods have been overloaded with robot-specific code,
 %        % for example
@@ -34,7 +37,7 @@
 %
 %        % The Simulink block library containing robot-specific blocks can be
 %        % opened by
-%        open robot/robotslib.slx
+%        open twolink/twolinkslib.slx
 %        % and the blocks dragged into your own models.
 %
 % Methods::
