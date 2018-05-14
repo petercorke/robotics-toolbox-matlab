@@ -68,9 +68,9 @@ add_block('simulink/Math Operations/Matrix Concatenate'...
     , [CoriolisBlock,'/coriolis']...
     , 'NumInputs',num2str(nJoints)...
     , 'ConcatenateDimension','1');
-add_block('Simulink/Sinks/Out1',[CoriolisBlock,'/out'],'PortDimensions',['[',num2str(nJoints),', ',num2str(nJoints),']']);
-add_block('Simulink/Sources/In1',[CoriolisBlock,'/q'],'PortDimensions',['[',num2str(nJoints),', 1]']);
-add_block('Simulink/Sources/In1',[CoriolisBlock,'/qd'],'PortDimensions',['[',num2str(nJoints),', 1]']);
+add_block('simulink/Sinks/Out1',[CoriolisBlock,'/out'],'PortDimensions',['[',num2str(nJoints),', ',num2str(nJoints),']']);
+add_block('simulink/Sources/In1',[CoriolisBlock,'/q'],'PortDimensions',['[',num2str(nJoints),', 1]']);
+add_block('simulink/Sources/In1',[CoriolisBlock,'/qd'],'PortDimensions',['[',num2str(nJoints),', 1]']);
 add_line(CoriolisBlock,'coriolis/1','out/1');
 CGen.logmsg('\t%s\n',' done!');
 
