@@ -68,8 +68,8 @@ add_block('simulink/Math Operations/Matrix Concatenate'...
     , [InertiaBlock,'/inertia']...
     , 'NumInputs',num2str(nJoints)...
     , 'ConcatenateDimension','1');
-add_block('simulink/Sinks/Out1',[InertiaBlock,'/out'],'PortDimensions',['[',num2str(nJoints),', ',num2str(nJoints),']']);
-add_block('simulink/Sources/In1',[InertiaBlock,'/q'],'PortDimensions',['[',num2str(nJoints),', 1]']);
+add_block('simulink/Sinks/Out1',[InertiaBlock,'/out']);
+add_block('simulink/Sources/In1',[InertiaBlock,'/q']);
 add_line(InertiaBlock,'inertia/1','out/1');
 CGen.logmsg('\t%s\n',' done!');
 
@@ -93,7 +93,7 @@ for kJoints = 1:nJoints
     end
     
     CGen.logmsg('%s',' block creation');
-    symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q.'});
+    symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q});
     
     
     % connect output

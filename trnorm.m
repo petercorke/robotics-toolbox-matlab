@@ -18,11 +18,11 @@
 % - Used to prevent finite word length arithmetic causing transforms to 
 %   become `unnormalized'.
 %
-% See also OA2TR.
+% See also OA2TR, SO3.trnorm, SE3.trnorm.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -43,6 +43,8 @@
 
 function TR = trnorm(T)
 
+    assert(ishomog(T) || isrot(T), 'RTB:trnorm:badarg', 'expecting 3x3xN or 4x4xN hom xform');
+    
     if ndims(T) == 3
         % recurse for transform sequence
         nd = size(T, 3);
@@ -62,7 +64,5 @@ function TR = trnorm(T)
         TR = rt2tr( R, T(1:3,4) );
     elseif isrot(T)
         TR = R;
-    else
-        error('RTB:trnorm:badarg', 'argument must be 3x3 or 4x4 hom xform');
     end
 
