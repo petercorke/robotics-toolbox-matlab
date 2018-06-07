@@ -318,7 +318,7 @@ classdef UnitQuaternion < Quaternion
             % See also Quaternion.angvec.
             
             c = zeros(1, max(length(q1), length(q2)));
-                                q1d = q1.double; q2d = q2.double;
+            q1d = q1.double; q2d = q2.double;
 
             if length(q1) == length(q2)
                     th = 2*atan2( colnorm((q1d-q2d)'), colnorm((q1d+q2d)') );
@@ -336,6 +336,8 @@ classdef UnitQuaternion < Quaternion
             % clip it, just in case it's unnormalized
             c(c<-1) = -1;  c(c>1) = 1;
             
+            % Huynh method 3, LaValle p157
+            % acos( abs(dot(q1d,q2d)) )
             %th = 2*acos(c);
             %% use 2 atan2(|q1-q2|, |q1+q2|)
         end
@@ -525,7 +527,7 @@ classdef UnitQuaternion < Quaternion
                         error('RTB:UnitQuaternion:badarg', 'quaternion-double product: vectors lengths incorrect');
                     end
                 else
-                    aerror('RTB:UnitQuaternion:badarg', 'quaternion-double product: must be a 3-vector');
+                    error('RTB:UnitQuaternion:badarg', 'quaternion-double product: must be a 3-vector');
                 end
             else
                 error('RTB:UnitQuaternion:badarg', 'quaternion product: incorrect right hand operand');
@@ -865,7 +867,22 @@ classdef UnitQuaternion < Quaternion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods(Static) 
         
-
+        function uq = rand()
+            %UnitQuaternion.rand Construct a random unit quaternion
+            %
+            % Q = UnitQuaternion.rand() is a UnitQuaternion representing a random rotation.
+            %
+            % Notes::
+            % - Planning Algorithms, Steve LaValle, p164
+            
+            u = rand(1,3);  % get 3 random numbers in [0,1]
+            uq = UnitQuaternion( [
+                sqrt(1-u(1))*sin(2*pi*u(2))
+                sqrt(1-u(1))*cos(2*pi*u(2))
+                sqrt(u(1))*sin(2*pi*u(3))
+                sqrt(u(1))*cos(2*pi*u(3)) ]');
+        end
+        
         function uq = new(varargin)
             %UnitQuaternion.new Construct a new unit quaternion
             %
@@ -956,8 +973,9 @@ classdef UnitQuaternion < Quaternion
             % 
             % Options::
             % 'deg'   Compute angles in degrees (radians default)
-            % 'xyz'   Return solution for sequential rotations about X, Y, Z axes.
-            % 'yxz'   Return solution for sequential rotations about Y, X, Z axes.
+            % 'zyx'   Return solution for sequential rotations about Z, Y, X axes (default)
+            % 'xyz'   Return solution for sequential rotations about X, Y, Z axes
+            % 'yxz'   Return solution for sequential rotations about Y, X, Z axes
 
             %
             % Notes::
