@@ -31,11 +31,21 @@
 %  'fps',F         animate at F frames per second (default 10)
 %  'image',I       use an image to represent the robot pose
 %  'retain'        when X (Nx3) then retain the robots, leaving a trail
+%  'model',M       animate an image of the vehicle.  M is a structure with
+%                  elements: image, alpha, rotation (deg), centre (pix), length (m).
+%  'axis',h        handle of axis or UIAxis to draw into (default is current axis)
 %
 % Notes::
 % - The vehicle is drawn relative to the size of the axes, so set them
 %   first using axis().
 % - For backward compatibility, 'fill', is a synonym for 'fillcolor'
+% - For the 'model' option, you provide a monochrome or color image of the
+%   vehicle.  Optionally you can provide an alpha mask (0=transparent).
+%   Specify the reference point on the vehicle as the (x,y) pixel
+%   coordinate within the image.  Specify the rotation, in degrees, so that
+%   the car's front points to the right.  Finally specify a length of the
+%   car, the image is scaled to be that length in the plot.
+% - Set 'fps' to Inf to have zero pause
 %
 % See also Vehicle.plot, plot_poly.
 
@@ -71,6 +81,7 @@ function h_ = plot_vehicle(x, varargin)
     opt.image = [];
     opt.model = [];
     opt.retain = false;
+    opt.axis = [];
     
     [opt,args] = tb_optparse(opt, varargin);
         
@@ -78,12 +89,18 @@ function h_ = plot_vehicle(x, varargin)
         % animation mode
         opt.handle.Matrix = SE2(x).SE3.T;
         
-        pause(1/opt.fps)
+        if ~isinf(opt.fps)
+            pause(1/opt.fps)
+        end
         return
     end
 
     % compute some default dimensions based on axis scaling
-    a = axis;
+    if isempty(opt.axis)
+        opt.axis = gca;
+    end
+    ax = opt.axis;
+    a = [ax.XLim ax.YLim];
     d = (a(2)+a(4) - a(1)-a(3)) * opt.scale;
     
     % trajectory mode
@@ -96,7 +113,9 @@ function h_ = plot_vehicle(x, varargin)
         % animate the robot
         h.Matrix = SE2(x(i,:)).SE3.T;  % convert (x,y,th) to SE(3)
         
-        pause(1/opt.fps)
+        if ~isinf(opt.fps)
+            pause(1/opt.fps)
+        end
     end
         if nargout > 0
             h_ = h;
@@ -119,7 +138,14 @@ function h = draw_robot(d, opt, args)
         end
         h = hgtransform('Tag', 'image');
         h2 = hgtransform('Matrix', trotz(rotation, 'deg')*trscale(scale)*transl(-centre(1), -centre(2),0), 'Parent', h );
-        image(img, 'AlphaData', any(img>0,3), 'Parent', h2);
+        if isfield(opt.model, 'alpha')
+            % use alpha data if provided
+            alpha = opt.model.alpha;
+        else
+            % otherwise black pixels (0,0,0) are set to transparent
+            alpha =  any(img>0,3);
+        end
+        image(img, 'AlphaData', alpha, 'Parent', h2);
         %axis equal
     else
         % display a simple polygon
@@ -154,6 +180,6 @@ function h = draw_robot(d, opt, args)
                     0.6*L2  -W
                     -L1      -W ]';
         end
-        h = plot_poly(corners, 'animate', args{:});
+        h = plot_poly(corners, 'animate', 'axis', opt.axis, args{:});
     end
 end
