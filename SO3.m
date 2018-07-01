@@ -728,9 +728,9 @@ classdef SO3 < RTBPose
             % SO3.rand() is an SO3 object with a uniform random RPY/ZYX orientation.
             % Random numbers are in the interval 0 to 1.
             %
-            % See also RAND.
+            % See also RAND, UnitQuaternion.rand.
 
-            T = SO3.rpy(rand(1,3));
+            T = UnitQuaternion.rand().R;
         end
     end
 end
