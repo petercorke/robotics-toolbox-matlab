@@ -249,11 +249,13 @@ classdef UnitQuaternion < Quaternion
                 q2 = double(args{1});
                 r = args{2};
             else
-                q1 = [1  0 0 0];
-                q2 = double(Q1);
+                q1 = [1  0 0 0]; % unit quaternion
+                q2 = double(Q1); % given quaternion
                 r = args{1};
             end
             
+            % now, interpolate between q1 and q2
+
             cosTheta = q1*q2';
             
             if opt.shortest
@@ -263,9 +265,9 @@ classdef UnitQuaternion < Quaternion
                     cosTheta = - cosTheta;
                 end;
             end
+                      
+            theta = acos(cosTheta);
             
-            theta = acos(cosTheta);            
-
             if length(r) == 1 && r > 1 && (r == floor(r))
                 % integer value
                 r = [0:(r-1)] / (r-1);
@@ -828,6 +830,31 @@ classdef UnitQuaternion < Quaternion
                 qv = -q.v;
             else
                 qv = q.v;
+            end
+        end
+        
+        function e = eq(q1, q2)
+            % overloaded version for UnitQuaternions to support double mapping
+            
+            if (numel(q1) == 1) && (numel(q2) == 1)
+                e = (sum(abs(q1.double - q2.double)) < 100*eps) || (sum(abs(q1.double + q2.double)) < 100*eps);
+            elseif (numel(q1) >  1) && (numel(q2) == 1)
+                e = zeros(1, numel(q1), 'logical');
+                for i=1:numel(q1)
+                    e(i) = q1(i) == q2;
+                end
+            elseif (numel(q1) == 1) && (numel(q2) > 1)
+                e = zeros(1, numel(q2), 'logical');
+                for i=1:numel(q2)
+                    e(i) = q2(i) == q1;
+                end
+            elseif numel(q1) == numel(q2)
+                e = zeros(1, numel(q1), 'logical');
+                for i=1:numel(q1)
+                    e(i) = q1(i) == q2(i);
+                end
+            else
+                error('RTB:UnitQuaternion:eq: badargs');
             end
         end
 
