@@ -596,6 +596,9 @@ classdef RTBPlot
         % draw a tiled floor in the current axes
         function create_tiled_floor(opt)
             
+            if ~opt.tiles
+                return
+            end
             xmin = opt.workspace(1);
             xmax = opt.workspace(2);
             ymin = opt.workspace(3);
