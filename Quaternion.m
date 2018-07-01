@@ -564,7 +564,7 @@ classdef Quaternion
             %
             % See also Quaternion.ne.
             if (numel(q1) == 1) && (numel(q2) == 1)
-                e = sum(abs(q1.double - q2.double)) < eps;
+                e = sum(abs(q1.double - q2.double)) < 100*eps;
             elseif (numel(q1) >  1) && (numel(q2) == 1)
                 e = zeros(1, numel(q1));
                 for i=1:numel(q1)
