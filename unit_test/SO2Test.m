@@ -8,32 +8,32 @@ end
 
 function constructor_test(tc)
     
-    verifyEqual(tc, SO2().double, eye(2,2));
+    tc.verifyEqual(SO2().double, eye(2,2));
     
     %% from angle
     
-    verifyEqual(tc, SO2(0).double, eye(2,2), 'AbsTol', 1e-10  );
-    verifyEqual(tc, SO2(pi/2).double, rot2(pi/2), 'AbsTol', 1e-10  );
-    verifyEqual(tc, SO2(90, 'deg').double, rot2(pi/2), 'AbsTol', 1e-10  );
+    tc.verifyEqual(SO2(0).double, eye(2,2), 'AbsTol', 1e-10  );
+    tc.verifyEqual(SO2(pi/2).double, rot2(pi/2), 'AbsTol', 1e-10  );
+    tc.verifyEqual(SO2(90, 'deg').double, rot2(pi/2), 'AbsTol', 1e-10  );
    
     
     %% from R
     
-    verifyEqual(tc, SO2( eye(2,2) ).double, eye(2,2), 'AbsTol', 1e-10  );
+    tc.verifyEqual(SO2( eye(2,2) ).double, eye(2,2), 'AbsTol', 1e-10  );
 
-    verifyEqual(tc, SO2( rot2(pi/2) ).double, rot2(pi/2), 'AbsTol', 1e-10  );
-    verifyEqual(tc, SO2( rot2(pi) ).double, rot2(pi), 'AbsTol', 1e-10  );
+    tc.verifyEqual(SO2( rot2(pi/2) ).double, rot2(pi/2), 'AbsTol', 1e-10  );
+    tc.verifyEqual(SO2( rot2(pi) ).double, rot2(pi), 'AbsTol', 1e-10  );
    
 
     %% from T
-    verifyEqual(tc, SO2( trot2(pi/2) ).double, rot2(pi/2), 'AbsTol', 1e-10  );
-    verifyEqual(tc, SO2( trot2(pi) ).double, rot2(pi), 'AbsTol', 1e-10  );
+    tc.verifyEqual(SO2( trot2(pi/2) ).double, rot2(pi/2), 'AbsTol', 1e-10  );
+    tc.verifyEqual(SO2( trot2(pi) ).double, rot2(pi), 'AbsTol', 1e-10  );
 
     
     %% R,T
-    verifyEqual(tc, SO2( eye(2,2) ).R, eye(2,2), 'AbsTol', 1e-10  );
+    tc.verifyEqual(SO2( eye(2,2) ).R, eye(2,2), 'AbsTol', 1e-10  );
    
-    verifyEqual(tc, SO2( rot2(pi/2) ).R, rot2(pi/2), 'AbsTol', 1e-10  );
+    tc.verifyEqual(SO2( rot2(pi/2) ).R, rot2(pi/2), 'AbsTol', 1e-10  );
     
     
     %% vectorised forms of R
@@ -42,11 +42,11 @@ function constructor_test(tc)
         R = cat(3, R, rot2(theta));
 
     end
-    verifyEqual(tc, SO2(R).R, R, 'AbsTol', 1e-10);
+    tc.verifyEqual(SO2(R).R, R, 'AbsTol', 1e-10);
     
     %% copy constructor
     r = SO2(rot2(0.3));
-    verifyEqual(tc, SO2(r), r, 'AbsTol', 1e-10);
+    tc.verifyEqual(SO2(r), r, 'AbsTol', 1e-10);
     
 
 end
@@ -61,7 +61,7 @@ end
 function staticconstructors_test(tc)
     
     %% exponential
-    verifyEqual(tc, SO2.exp( skew(0.3) ).R, rot2(0.3), 'AbsTol', 1e-10  );
+    tc.verifyEqual(SO2.exp( skew(0.3) ).R, rot2(0.3), 'AbsTol', 1e-10  );
 
 end
 
@@ -98,31 +98,31 @@ function multiply_test(tc)
     %% SO2-SO2 product
     % scalar x scalar
     
-    verifyEqual(tc, r0*u, r0);
-    verifyEqual(tc, u*r0, r0); 
+    tc.verifyEqual(r0*u, r0);
+    tc.verifyEqual(u*r0, r0); 
     
     % vector x vector
-    verifyEqual(tc, [r0 r1 r2] * [r2 r0 r1], [r0*r2 r1*r0 r2*r1]);
+    tc.verifyEqual([r0 r1 r2] * [r2 r0 r1], [r0*r2 r1*r0 r2*r1]);
     
     % scalar x vector
-    verifyEqual(tc, r1 * [r0 r1 r2], [r1*r0 r1*r1 r1*r2]);
+    tc.verifyEqual(r1 * [r0 r1 r2], [r1*r0 r1*r1 r1*r2]);
     
     % vector x scalar
-    verifyEqual(tc, [r0 r1 r2] * r2, [r0*r2 r1*r2 r2*r2]);
+    tc.verifyEqual([r0 r1 r2] * r2, [r0*r2 r1*r2 r2*r2]);
     
     %% SO2-vector product
     % scalar x scalar
     
-    verifyEqual(tc, r1*vx, vy, 'AbsTol', 1e-10);
+    tc.verifyEqual(r1*vx, vy, 'AbsTol', 1e-10);
     
     % vector x vector
-    verifyEqual(tc, [r0 r1 r0] * [vy vx vx], [vy vy vx], 'AbsTol', 1e-10);
+    tc.verifyEqual([r0 r1 r0] * [vy vx vx], [vy vy vx], 'AbsTol', 1e-10);
     
     % scalar x vector
-    verifyEqual(tc, r1 * [vx vy -vx], [vy -vx -vy], 'AbsTol', 1e-10);
+    tc.verifyEqual(r1 * [vx vy -vx], [vy -vx -vy], 'AbsTol', 1e-10);
     
     % vector x scalar
-    verifyEqual(tc, [r0 r1 r2] * vy, [vy -vx -vy], 'AbsTol', 1e-10);
+    tc.verifyEqual([r0 r1 r2] * vy, [vy -vx -vy], 'AbsTol', 1e-10);
 end
 
 
@@ -136,36 +136,36 @@ function divide_test(tc)
     % scalar / scalar
     % implicity tests inv
 
-    verifyEqual(tc, r1/u, r1);
-    verifyEqual(tc, r1/r1, u);
+    tc.verifyEqual(r1/u, r1);
+    tc.verifyEqual(r1/r1, u);
 
     % vector / vector
-    verifyEqual(tc, [r0 r1 r2] / [r2 r1 r0], [r0/r2 r1/r1 r2/r0]);
+    tc.verifyEqual([r0 r1 r2] / [r2 r1 r0], [r0/r2 r1/r1 r2/r0]);
     
     % vector / scalar
-    verifyEqual(tc, [r0 r1 r2] / r1, [r0/r1 r1/r1 r2/r1]);
+    tc.verifyEqual([r0 r1 r2] / r1, [r0/r1 r1/r1 r2/r1]);
 end
 
 function conversions_test(tc)
     
     T = SO2(pi/2).SE2;
     verifyClass(tc, T, 'SE2');
-    verifyEqual(tc, T.T, trot2(pi/2));
+    tc.verifyEqual(T.T, trot2(pi/2));
 
     
     %% Lie stuff
     th = 0.3; 
     RR = SO2(th);
-    verifyEqual(tc, RR.log, skew(th), 'AbsTol', 1e-10 );
+    tc.verifyEqual(RR.log, skew(th), 'AbsTol', 1e-10 );
 
 end
 
 function miscellany_test(tc)
     
     r = SO2( 0.3 );
-    verifyEqual(tc, det(r), 1, 'AbsTol', 1e-10  );
+    tc.verifyEqual(det(r), 1, 'AbsTol', 1e-10  );
     
-    verifyEqual(tc, dim(r), 2);
+    tc.verifyEqual(dim(r), 2);
     
     verifyEqual( tc, eig(r), eig(r.double) );
     
@@ -177,10 +177,10 @@ function miscellany_test(tc)
     verifyClass(tc, SO2.check(r), 'SO2');
     verifyClass(tc, SO2.check( rot2(0.3) ), 'SO2');
     z = SO2.check(r);
-    verifyEqual(tc, double(z), double(r));
+    tc.verifyEqual(double(z), double(r));
     
     z = SO2.check(rot2(0.3));
-    verifyEqual(tc, double(z), rot2(0.3));
+    tc.verifyEqual(double(z), rot2(0.3));
     
     T = r.SE2;
     verifyClass(tc, SO2.check(T), 'SO2');
