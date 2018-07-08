@@ -244,12 +244,11 @@ classdef (Abstract) RTBPose
             % such that W(:,i) = P(i)*V(:,i).
             %
             % See also RTBPose.mrdivide.
+
             
-            obj1 = obj(1);
-            n = obj1.dim;
-            
-            if strcmp(class(obj1), class(a))
+            if strcmp(class(obj), class(a))
                 % obj * obj
+                obj1 = obj(1);
                 out = repmat(obj1, 1, max(length(obj),length(a)));
                 if length(obj) == length(a)
                     % do objvector*objvector and objscalar*objscalar case
@@ -270,9 +269,11 @@ classdef (Abstract) RTBPose
                     error('RTB:RTBPose:badops', 'invalid operand lengths to * operator');
                 end
                 
-            elseif isfloat(a)
+            elseif isa(obj, 'RTBPose') && isfloat(a)
                 % obj * vectors (nxN), result is nxN
-                
+                obj1 = obj(1);
+                n = numrows(obj1.data);
+
                 if obj1.isSE
                     % is SE(n) convert to homogeneous form
                     assert(numrows(a) == n-1, 'RTB:RTBPose:badops', 'LHS should be matrix with %d rows', n-1);
@@ -306,13 +307,13 @@ classdef (Abstract) RTBPose
                     % is SE(n) convert to homogeneous form
                     out = out(1:end-1,:);
                 end
-            else
-                if isa(obj, 'SE2') && isa(a, 'polyshape')
+            elseif isa(obj, 'SE2') && isa(a, 'polyshape')
                     % special case, planar rigid body transform of a polyshape
                     out = polyshape( (obj * a.Vertices')' );
-                else
-                    error('RTB:RTBPose:badops', 'invalid operand types to * operator');
-                end
+            elseif isa(obj, 'SE3') && isa(a, 'Plucker')
+                out = obj.inv.Ad * a;   % invokes mtimes Plucker.mtimes
+            else
+                error('RTB:RTBPose:badops', 'invalid operand types to * operator');
             end
         end
         
@@ -615,6 +616,10 @@ classdef (Abstract) RTBPose
             end
             
             obj.render(inputname(1));  % the hard work done in render
+        end
+        
+        function disp(obj)
+            disp( char(obj) );
         end
         
         function s2 = char(obj)
