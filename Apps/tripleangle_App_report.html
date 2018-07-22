@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tripleangle Migration Report</title>
+    <style type="text/css">
+        html body {
+            height: 100%;
+            padding: 0; margin: 0;
+            color: #474747;
+            font: 13px/1.384 Arial, Helvetica, sans-serif;
+        }
+        /*Report Title Header*/
+        h1 {
+            font-family: Futura, Arial, Helvetica, sans-serif;
+            font-size: 28px;
+            font-weight: 400;
+            color: #fff;
+            margin: 0;
+            padding: 15px;
+        }
+        /*Report Section Headers*/
+        h2 {
+            padding-bottom: 2px;
+            margin: 20px 0 17px 0;
+            border-bottom: 1px solid #cbcbcb;
+            color: #c45400;
+            font: normal normal 22px/1.136 Arial,Helvetica,sans-serif;
+        }
+        /*Report Subsection Headers*/
+        h3 {
+            margin: 20px 0 10px 0;
+            font: normal bold 17px/1.35 Arial, Helvetica, sans-serif;
+        }
+        /*Update Code Workflow Diagram Headers*/
+        h4 {
+            margin: 10px 0;
+            font: normal normal 18px Arial,Helvetica,sans-serif;
+            color: #474747;
+        }
+        /*Workaround heading*/
+        h5 {
+            margin: 5px 0;
+            color: #c45400;
+            font: normal bold 15px/1.333 Arial,Helvetica,sans-serif;
+        }
+        ol,ul {
+            margin: 10px 0 10px 0;
+        }
+        ul > li, ol > li {
+            margin-bottom: 5px;
+        }
+        ul {
+            padding-left: 0;
+        }
+        ol {
+            padding-left: 20px;
+        }
+        ul > li {
+            list-style: none;
+            /*Check-mark image*/
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAK2SURBVHjaVJNPaFRXFMZ/b96MmUZGURMyHaoTa0QrRReD4KIlwriRRhPpoi1ddeNG4krFRbAbceOf0qJuSoWWWlooIiKlCSkp1ARksEmpi8GSQjKJUSYk/p1J5r17vi7ee609cFf3+33n3HvO8SgdJYn+oZFODw4DBxB7hYoSMzJVZBo12a2fzr9X55XwEoOBoZGyYNCDfgEyIQkMzIRkBKupYXN89svVg8OJgU+hxMDQSBk45+GVJSJQQk5IYGbIhIfrcSF78ttrC3P336wC+ANXlzqBs0A5EgtkSMJMMRxXFN11mSm/pr05sTSXX0qBDkvqj0Qx6MBC/QuVt77Pp/uvkV9bxJzhZ5r7cx2LHwGZtMQBGUhRmSaB/Zd9rb+OD98+zub1Paxbs5FjNw9GJm2NXuDLtMz2RuUC8VsVG2T9di4fGqaQ6+ZubZTvJ69goWEy/PTKTmBDykxFc0LOOLHvMu+8cQjnjDRtXDsyTiHXTaU2xpmfP6EyO4Y5Q6EgFXQBubRMM+a0zcx4t9hHb3c/j5/Ncbr3Cpva80w9HOfU7Q8IwhbmonaagQv8x0A25ZxVzAxz4tupS0jG5323eT1XZHL+DoM3+mgFLZwzEp2c0WpmqsBKypxGLb785vcLfH3vAgCT878xeKMvAp1FM5Ecg5Wn6+8Bz1Pm3K1W0xu2UFhofDf5BX8t/snFsZPxDMSZzaLOSKw2suOPHuyaAJb9v+c+bmze/aBuTnuE6wrCgJt/fMVyox6NcNwRCTARtjLV5fkt1+vTb1WAmk+hxOzUjumOrTMLkuVTXtCdgMmHJTux2nxt/Ml88Xptat+vwCzw0qdQAmCh2lPNZBsTJluU8ySsDazdhf6j1sts5cVS548P75d+qE/vrMTw8v+28ZXIAB3ABiAHZIEV4HkMLQJBIv5nAPq180UQOlmCAAAAAElFTkSuQmCC') no-repeat;
+            padding-left: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table,th,tr,td {
+            border: 1px solid #ccc;
+            text-align: left;
+            vertical-align: top;
+            padding: 8px 15px;
+        }
+        td.partialDetails {
+            padding: 0;
+        }
+        td > .partialDetailsMsg {
+            padding: 8px 15px;
+        }
+        td > .partialWorkaround {
+            padding: 8px 15px;
+            background-color: #d9edf7;
+            border-top: 1px solid #ccc;
+        }
+        tr:nth-child(odd) {
+            background-color: #fafafa;
+        }
+        tr.errorRowOdd {
+            background-color: #fafafa;
+        }
+        tr.errorRowEven {
+            background-color: white;
+        }
+        a { color: #187dbb; text-decoration: none; }
+        a:visited { color: #004b87; text-decoration: none; }
+        a:hover { color: #004b87; text-decoration: underline;}
+        code {
+            font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+        }
+        .codeString {
+            color: #A020F0;
+        }
+        .workaroundCode {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 8px 15px;
+            margin: 15px 20px;
+        }
+        .codeAlert {
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTnU1rJkAAABdUlEQVQ4T4WSO0vDYBSGWy9t461Gq1ikKBREcLAIgpPO4uDkIAji6uIkKIgOuvsTxKWTP8DNxclFJyeho5Nk6BRRXt83yaGJfsQDT3K+c/8uBQB9pETKZIAskRZZJfLJNkdqZDz5D5IpUlSBGTJBZslwgcL/Ij6egbv5mPeHb/OTchKjpk0pPlkh6uiRUXQ7X2iz2S3dQnq380nfFqmQqhXRp06GSCMxhnjc7yUbsgG7pEo4FjzFK0H71GhF0mKnXpKJreUD9ojORXm+opSogxkhZ5nuJraOp9gkmlgFalZA1DPdXQVEPMUJ0a15itKVqNrpn72bpG0vF7JckSapKEoFlhEGQSZQmKRtupEw0ARjpF9ROpCFqHI6UJj8tsdTHJOoQIkVzzP3/h96XMAl2eGKL/H12h2Yx9uNihxS4+u733AHmbh8ygEmqWEdbT4uV5CJy6ccYI0aGng6cgfloRxgm1r0iPxoTzJqtDx0A/H+DwBM/wAn1fEGI/OkiwAAAABJRU5ErkJggg==') 0 bottom no-repeat;
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 1px;
+        }
+        .reportTitle {
+            min-height: 52px;
+            background: #2f7eb2;
+        }
+        .reportBody {
+            padding: 0 15px 0 15px;
+        }
+        .flexRow {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .codeUpdateDiagram {
+            width: 856px;
+            margin: auto;
+        }
+        .codeUpdateStep {
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            padding: 8px 15px;
+            width: 210px;
+            height: 110px;
+        }
+        .arrowRowConnection {
+            position:relative;
+            height: 130px;
+        }
+        .arrowRowConnection:after {
+            content:"";
+            background: #ccc;
+            position: absolute;
+            bottom: -84px;
+            left: 0;
+            height: 151px;
+            width: 3px;
+        }
+        .arrowBody{
+            height: 1px;
+            width: 25px;
+            border-top: 3px solid #ccc;
+        }
+        .arrowRight {
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 10px solid #ccc;
+        }
+        .arrowLeft {
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 10px solid #ccc;
+        }
+        .arrowGrow {
+            flex-grow: 1;
+        }
+        .resources > p {
+            margin: 5px 0;
+        }
+        .errorMsg {
+            color: #a94442;
+        }
+        .hidden {
+            display: none;
+        }
+        .visible {
+            display: block;
+        }
+        .showMore {
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="reportTitle">
+        <h1>tripleangle Migration Report</h1>
+    </div>
+    <div class="reportBody">
+        <section>
+            <h2>Completed by Migration Tool</h2>
+            <ul>
+                <li>Generated tripleangle_App.mlapp from tripleangle.fig and tripleangle.m</li>
+                <li>Converted components and configured their properties</li>
+                <li>Copied GUIDE callback and utility function code</li>
+                <li>Analyzed tripleangle.m for unsupported MATLAB API usage</li>
+            </ul>
+            <h2>Your Next Steps</h2>
+            <ol>
+                <li>Decide whether to continue migrating the tripleangle app depending on whether it has important features that are not supported in App Designer.</li>
+                <li>Update the app code to use new APIs.</li>
+            </ol>
+        </section>
+        <section>
+            <h2>Step 1: Decide Whether to Continue Migrating the tripleangle App</h2>
+            <p>The tripleangle app has functionality that is not supported in App Designer. If that functionality is an important aspect of your app, then it might not be practical to continue migrating it. Review this list, and confirm that none of the items are critical to the functioning of your app before continuing to the next step.</p>
+            <table class="noSupportTable">
+    <tr>
+        <th>Functionality</th>
+        <th>Details</th>
+        <th>GUIDE Tag</th>
+    </tr>
+    <tr><td>PickableParts</td><td>This property is not supported in App Designer.</td><td><div class="">axes1</div></td></tr>
+</table>
+        </section>
+        <section>
+            <h2>Step 2: Update the App Code to Use New APIs</h2>
+            <p>App Designer uses object-oriented code and new component APIs. Use the following process to update the code to be compatible with App Designer. For more details, see <a href="matlab:helpview('matlab', 'diffappdguide');">App Designer Versus GUIDE</a>.</p>
+            <div class="codeUpdateDiagram">
+                <div class="flexRow">
+                    <div class="arrowRowConnection"></div>
+                    <div class="arrowBody arrowGrow"></div>
+                    <div class="arrowRight"></div>
+                    <div class="codeUpdateStep">
+                        <h4>1. Choose Callback</h4>
+                        <p>Choose a callback to update, starting with the <code>OpeningFcn</code> callback.</p>
+                    </div>
+                    <div class="arrowBody"></div>
+                    <div class="arrowRight"></div>
+                    <div>
+                        <div class="codeUpdateStep">
+                            <h4>2. Resolve Code Alerts</h4>
+                            <p>Resolve any code alerts (<span class="codeAlert"></span>) that appear in the editor.</p>
+                        </div>
+                    </div>
+                    <div class="arrowBody"></div>
+                    <div class="arrowRight"></div>
+                    <div>
+                        <div class="codeUpdateStep">
+                            <h4>3. Apply Workarounds</h4>
+                            <p>Apply workarounds for <a href="#partiallySupportedHeader">partially supported functionality</a>.</p>
+                        </div>
+                    </div>
+                    <div class="arrowBody arrowGrow"></div>
+                    <div class="arrowRowConnection"></div>
+                </div>
+                <div class="flexRow">
+                    <div class="arrowBody arrowGrow"></div>
+                    <div>
+                        <div class="codeUpdateStep">
+                            <h4>5. Resolve Errors</h4>
+                            <p>Resolve any run time errors. For assistance, see <a href="#errorMessagesHeader">Common Error Messages and Suggested Actions</a>.</p>
+                        </div>
+                    </div>
+                    <div class="arrowLeft"></div>
+                    <div class="arrowBody"></div>
+                    <div>
+                        <div class="codeUpdateStep">
+                            <h4>4. Run App</h4>
+                            <p>Run the app and exercise the callback you are updating.</p>
+                        </div>
+                    </div>
+                    <div class="arrowLeft"></div>
+                    <div class="arrowBody arrowGrow"></div>
+                </div>
+            </div>
+            <h3 id="partiallySupportedHeader">Partially Supported Functionality in tripleangle and Workarounds</h3>
+            <table class="partialSupportTable">
+    <tr>
+        <th>Functionality</th>
+        <th>Details and Workarounds</th>
+        <th>GUIDE Tag</th>
+    </tr>
+    <tr><td>radiobutton</td><td class="partialDetails"><div class="partialDetailsMsg">Invalid parent for radio button. Set the parent to a button group.</div><div class=partialWorkaround><h5>Workaround:</h5><div>Recreate the radio button in a button group in App Designer. Alternatively, consider replacing the radio button with a state button or a check box.</div></div></td><td><div class="">gimbals</div></td></tr>
+<tr><td>Callback</td><td class="partialDetails"><div class="partialDetailsMsg">Callbacks for radio and toggle buttons must be added to the parent button group.</div><div class=partialWorkaround><h5>Workaround:</h5><div>Use the <code>SelectionChangedFcn</code> callback of the parent button group.</div></div></td><td><div class="">gimbals</div></td></tr>
+</table>
+            <h3 id="errorMessagesHeader">Common Error Messages and Suggested Actions</h3>
+            <table>
+                <tr class="errorRowOdd">
+                    <th>Error Message</th>
+                    <th>Example Line of Erroring Code</th>
+                    <th>Suggested Action</th>
+                    <th>Explanation</th>
+                </tr>
+                <tr class="errorRowEven">
+                    <td class="errorMsg"><code>Unrecognized property '&lt;property name&gt;' for class '&lt;app name&gt;'.</code></td>
+                    <td><code>app.numCylinders = 6;</code></td>
+                    <td>Create an app property and access it using <code>app.&lt;property name&gt;</code> throughout your app's code.</td>
+                    <td>Properties must be added before you can use them.</td>
+                </tr>
+                <tr class="errorRowOdd">
+                    <td class="errorMsg" rowspan="3"><code>Undefined function or variable 'hObject'.</code></td>
+                    <td><code>app.output = hObject;</code></td>
+                    <td>Delete this code.</td>
+                    <td>This code is not needed because App Designer uses the <code>app</code> object as the output.</td>
+                </tr>
+                <tr class="errorRowOdd">
+                    <td><code>guidata(hObject, handles);</code></td>
+                    <td>Delete this call to <code>guidata</code>.</td>
+                    <td>The <code>guidata</code> function is not needed in App Designer.</td>
+                </tr>
+                <tr class="errorRowOdd">
+                    <td><code>miles = get(hObject, <span class="codeString">'Value'</span>);</code></td>
+                    <td>Replace <code>hObject</code> with <code>app.&lt;component&gt;</code>, where <code>&lt;component&gt;</code> is the object that triggers the callback.<br><br><code>velocity = app.VelocityEditField.Value;</code></td>
+                    <td><code>hObject</code> is used in GUIDE to access the object that triggered the callback. App Designer uses <code>app.&lt;component&gt;</code> instead.</td>
+                </tr>
+                <tr class="errorRowEven">
+                    <td class="errorMsg"><code>Undefined function or variable 'handles'.</code></td>
+                    <td><code>calculateMPG(handles);</code></td>
+                    <td>Replace handles with <code>app</code>.<br><br><code>calculateMPG(app);</code></td>
+                    <td>GUIDE uses <code>handles</code> to share components and data. App Designer uses the <code>app</code> object instead.</td>
+                </tr>
+                <tr class="errorRowOdd">
+                    <td class="errorMsg"><code>Error using matlab.ui.control.&lt;component type&gt;<br><br>There is no &lt;property name&gt; property on the &lt;component type&gt; class.</code></td>
+                    <td><code>set(app.Button, <span class="codeString">'String'</span>, <span class="codeString">'Go'</span>);</code></td>
+                    <td>Update the code to use the appropriate property for this component.<br><br><code>app.Button.Text = </span>'Go'</span>;<code></td>
+                    <td>To see a list of component properties, right-click a component on the canvas and select <b>Help on Selection</b> in the context menu.</td>
+                </tr>
+            </table>
+        </section>
+        <section class="resources">
+            <h2>Additional Resources</h2>
+            <p><a href="matlab:helpview('matlab', 'diffappdguide');">App Designer Versus GUIDE</a></p>
+            <p><a href="matlab:helpview('matlab', 'appcomplist');">Designing Apps in App Designer </a></p>
+            <p><a href="matlab:helpview('matlab', 'appdgrfx');">Graphics Support in App Designer</a></p>
+            <p><a href="matlab:helpview('matlab', 'progapps');">Programming Apps in App Designer</a></p>
+        </section>
+    </div>
+    <script type="text/javascript">
+        // Toggles showing the "Show More (10)" hyperlink with the "Show less" hyperlink
+        function toggleShowMore(selectedHyperlink) {
+            // Find the parent td for the selected hyperlink ("Show more" or "Show less")
+            var td = selectedHyperlink.parentElement.parentElement;
+
+            // Toggle the "hidden" class on all of the elements but the first 3. The first 3 we want to always be
+            // visible.
+            var tags = td.children;
+            for (var i=3; i<tags.length; i++) {
+                tags[i].classList.toggle("hidden");
+            }
+        }
+    </script>
+</body>
+</html>
