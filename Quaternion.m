@@ -128,7 +128,7 @@ classdef Quaternion
             %Quaternion.set.s Set scalar component
             %
             % Q.s = S sets the scalar part of the Quaternion object to S.
-            assert(~isa(s, 'sym') && isreal(s) && isscalar(s), 'RTB:Quaternion:badarg', 's must be real scalar');
+            assert(isa(s, 'sym') || ( isreal(s) && isscalar(s) ), 'RTB:Quaternion:badarg', 's must be real scalar');
             
             qo = q;
             qo.s = s;
