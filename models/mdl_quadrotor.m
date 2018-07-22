@@ -75,10 +75,10 @@ quadrotor.muv = 1.5e-5;               %   muv     Viscosity of air              
 
 % Airframe
 quadrotor.M = 4;                      %   M       Mass                                1x1
-Ixx = 0.082;
-Iyy = 0.082;
-Izz = 0.149;%0.160;
-quadrotor.J = diag([Ixx Iyy Izz]);    %   I       Flyer rotational inertia matrix     3x3
+% Ixx = 0.082;
+% Iyy = 0.082;
+% Izz = 0.149;%0.160;
+quadrotor.J = diag([0.082 0.082 0.149]);    %   I       Flyer rotational inertia matrix     3x3
 
 quadrotor.h = -0.007;                 %   h       Height of rotors above CoG          1x1
 quadrotor.d = 0.315;                  %   d       Length of flyer arms                1x1
