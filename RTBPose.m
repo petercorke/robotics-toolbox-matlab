@@ -211,6 +211,45 @@ classdef (Abstract) RTBPose
             e = ~eq(obj1, obj2);
         end
         
+
+        function e = mpower(obj1, n)
+            %RTBPose.mpower Exponential of pose
+            %
+            % P^N is the exponential of P where N is an integer.  It is equivalent of compounding
+            % the rigid-body motion of P with itself N-1 times.
+            %
+            % Notes::
+            % - N can be 0 in which case the result is the identity matrix.
+            % - N can be negative which is equivalent to the inverse of P^abs(N).
+            %
+            % See also RTBPose.power, RTBPose.mtimes, RTBPose.times.
+            assert(isscalar(n) && isreal(n) && floor(n) == n, 'RTB:Pose', 'exponent must be a real integer');
+            e = SE3( double(obj1)^n);
+        end
+        
+        function e = power(obj1, n)
+            %RTBPose.power Exponential of pose
+            %
+            % P.^N is the exponential of P where N is an integer, followed by normalization.  It is equivalent of compounding
+            % the rigid-body motion of P with itself N-1 times.
+            %
+            % Notes::
+            % - N can be 0 in which case the result is the identity matrix.
+            % - N can be negative which is equivalent to the inverse of P.^abs(N).
+            %
+            % See also RTBPose.mpower, RTBPose.mtimes, RTBPose.times.
+            assert(isscalar(n) && isreal(n) && floor(n) == n, 'RTB:Pose', 'exponent must be a real integer');
+            e = SE3( trnorm(double(obj1)^n) );
+        end
+        
+        function e = transpose(obj1, obj2)
+            error('RTB:Pose', 'transpose operator not supported by RTBPose subclass object')
+        end
+        function e = ctranspose(obj1, obj2)
+            error('RTB:Pose', 'transpose operator not supported by RTBPose subclass object')
+        end
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  COMPOSITION
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
