@@ -1,5 +1,6 @@
 function tests = UnitQuaternionTest
   tests = functiontests(localfunctions);
+  clc
 end
 
 %TODO
@@ -184,6 +185,73 @@ function staticconstructors_test(tc)
     tc.verifyEqual(UnitQuaternion.omega(th*v ).R, angvec2r(th, v), 'AbsTol', 1e-10  );
     tc.verifyEqual(UnitQuaternion.omega(-th*v ).R, angvec2r(-th, v), 'AbsTol', 1e-10  );
     
+end
+
+function canonic_test(tc)
+    R = rotx(0);
+    tc.verifyEqual( UnitQuaternion(R).double, [1 0 0 0], 'AbsTol', 1e-12);
+    
+    R = rotx(pi/2);
+    tc.verifyEqual( UnitQuaternion(R).double, [cos(pi/4) sin(pi/4)*[1 0 0]], 'AbsTol', 1e-12);
+    R = roty(pi/2);
+    tc.verifyEqual( UnitQuaternion(R).double, [cos(pi/4) sin(pi/4)*[0 1 0]], 'AbsTol', 1e-12);
+    R = rotz(pi/2);
+    tc.verifyEqual( UnitQuaternion(R).double, [cos(pi/4) sin(pi/4)*[0 0 1]], 'AbsTol', 1e-12);
+    
+    R = rotx(-pi/2);
+    tc.verifyEqual( UnitQuaternion(R).double, [cos(pi/4) sin(pi/4)*[-1 0 0]], 'AbsTol', 1e-12);
+    R = roty(-pi/2);
+    tc.verifyEqual( UnitQuaternion(R).double, [cos(pi/4) sin(pi/4)*[0 -1 0]], 'AbsTol', 1e-12);
+    R = rotz(-pi/2);
+    tc.verifyEqual( UnitQuaternion(R).double, [cos(pi/4) sin(pi/4)*[0 0 -1]], 'AbsTol', 1e-12);
+    
+    R = rotx(pi);
+    tc.verifyEqual( UnitQuaternion(R).double, [cos(pi/2) sin(pi/2)*[1 0 0]], 'AbsTol', 1e-12);
+    R = roty(pi);
+    tc.verifyEqual( UnitQuaternion(R).double, [cos(pi/2) sin(pi/2)*[0 1 0]], 'AbsTol', 1e-12);
+    R = rotz(pi);
+    tc.verifyEqual( UnitQuaternion(R).double, [cos(pi/2) sin(pi/2)*[0 0 1]], 'AbsTol', 1e-12);
+    
+    R = rotx(-pi);
+    tc.verifyEqual( UnitQuaternion(R).double, [cos(pi/2) sin(pi/2)*[1 0 0]], 'AbsTol', 1e-12);
+    R = roty(-pi);
+    tc.verifyEqual( UnitQuaternion(R).double, [cos(pi/2) sin(pi/2)*[0 1 0]], 'AbsTol', 1e-12);
+    R = rotz(-pi);
+    tc.verifyEqual( UnitQuaternion(R).double, [cos(pi/2) sin(pi/2)*[0 0 1]], 'AbsTol', 1e-12);
+end
+
+function convert_test(tc)
+    % test conversion from rotn matrix to u.quaternion and back
+    R = rotx(0);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
+    
+    R = rotx(pi/2);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
+    R = roty(pi/2);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
+    R = rotz(pi/2);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
+    
+    R = rotx(-pi/2);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
+    R = roty(-pi/2);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
+    R = rotz(-pi/2);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
+    
+    R = rotx(pi);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
+    R = roty(pi);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
+    R = rotz(pi);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
+    
+    R = rotx(-pi);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
+    R = roty(-pi);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
+    R = rotz(-pi);
+    tc.verifyEqual( UnitQuaternion(R).R, R, 'AbsTol', 1e-12);
 end
 
 function resulttype_test(tc)
@@ -475,7 +543,9 @@ function logical_test(tc)
     verifyTrue(tc, rx == rx);
     verifyFalse(tc, rx ~= rx);
     verifyFalse(tc, rx == ry);
-    end
+end
+
+
 
 function dot_test(tc)
     q = UnitQuaternion();
@@ -516,9 +586,7 @@ function vec3_test(tc)
     tc.verifyEqual(q12, q12_);
 end
 
-
-    
-    
+ 
 function display_test(tc)
         ry = UnitQuaternion.Ry(pi/2);
 
