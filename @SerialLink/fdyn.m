@@ -70,6 +70,8 @@ function [t, q, qd] = fdyn(robot, t1, torqfun, q0, qd0, varargin)
         error('fdyn now requires Matlab version >= 7');
     end
 
+    assert(isa(torqfun, 'function_handle'), 'RTB:fdyn:badarg', 'must pass a function handle');
+    
     n = robot.n;
     if nargin == 2
         torqfun = 0;
