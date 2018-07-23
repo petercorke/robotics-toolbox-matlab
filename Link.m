@@ -943,7 +943,7 @@ classdef Link < matlab.mixin.Copyable
             res = any( cellfun(@(x) isa(l.(x), 'sym'), properties(l)) );
         end
         
-        function sl = sym(l)
+        function l = sym(l)
             %Link.sym Convert link parameters to symbolic type
             %
             % LS = L.sym is a Link object in which all the parameters are symbolic
@@ -951,26 +951,26 @@ classdef Link < matlab.mixin.Copyable
             %
             % See also Link.issym.
             
-            sl = Link(l);   % clone the link
+%             sl = Link(l);   % clone the link
             
-            if ~isempty(sl.theta)
-                sl.theta = sym(sl.theta);
+            if ~isempty(l.theta)
+                l.theta = sym(l.theta);
             end
-            if ~isempty(sl.d)
-                sl.d = sym(sl.d);
+            if ~isempty(l.d)
+                l.d = sym(l.d);
             end
-            sl.alpha = sym(sl.alpha);
-            sl.a = sym(sl.a);
-            sl.offset = sym(sl.offset);
+            l.alpha = sym(l.alpha);
+            l.a = sym(l.a);
+            l.offset = sym(l.offset);
             
-            sl.I = sym(sl.I);
-            sl.r = sym(sl.r);
-            sl.m = sym(sl.m);
+            l.I = sym(l.I);
+            l.r = sym(l.r);
+            l.m = sym(l.m);
             
-            sl.Jm = sym(sl.Jm);
-            sl.G = sym(sl.G);
-            sl.B = sym(sl.B);
-            sl.Tc = sym(sl.Tc);
+            l.Jm = sym(l.Jm);
+            l.G = sym(l.G);
+            l.B = sym(l.B);
+            l.Tc = sym(l.Tc);
         end
         
 

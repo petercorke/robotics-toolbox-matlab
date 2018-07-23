@@ -72,7 +72,7 @@ if CGen.saveresult
     for iJoint = 1:CGen.rob.n
         CGen.logmsg(' %s ',num2str(iJoint));
         tName = ['T0_',num2str(iJoint)];
-        eval([tName,' = allT(:,:,',num2str(iJoint),');']);
+        eval([tName,' = allT(',num2str(iJoint),');']);
         CGen.savesym(eval(tName),tName,[tName,'.mat']);
     end
     

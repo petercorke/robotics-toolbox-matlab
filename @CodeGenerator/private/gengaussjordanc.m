@@ -64,6 +64,8 @@ fid = fopen(fullfile(srcDir,funfilename),'w+');
 % Includes
 fprintf(fid,'%s\n\n',...
     ['#include "', hfilename,'"']);
+fprintf(fid,'%s\n\n',...
+     '#include "stdlib.h"'); % include stdlib.h, otherwise malloc will return int and not void*
 
 % Start actual function implementation
 fprintf(fid,'%s\n',['void ',funname,'(const double* inMatrix, double* outMatrix, int dim){']);
@@ -81,10 +83,12 @@ fprintf(fid,'%s\n',' '); % empty line
 fprintf(fid,'\t%s\n','/* make deep copy of input matrix */');
 fprintf(fid,'\t%s\n','for(iRow = 0; iRow < dim; iRow++ ){');
 fprintf(fid,'\t\t%s\n','for (iCol = 0; iCol < dim; iCol++){');
-fprintf(fid,'\t\t\t%s\n','inMatrixCopy[dim*iCol+iRow] = inMatrix[dim*iCol+iRow];');
-fprintf(fid,'\t\t%s\n','}');
 
+fprintf(fid,'\t\t\t%s\n','inMatrixCopy[dim*iCol+iRow] = inMatrix[dim*iCol+iRow];');
+
+fprintf(fid,'\t\t%s\n','}');
 fprintf(fid,'\t%s\n','}');
+
 fprintf(fid,'\t%s\n','/* Initialize output matrix as identity matrix. */');
 fprintf(fid,'\t%s\n','for (iRow = 0; iRow < dim; iRow++ ){');
 fprintf(fid,'\t\t%s\n','for (iCol = 0; iCol < dim; iCol++ ){');
@@ -134,6 +138,7 @@ fprintf(fid,'%s\n',' '); % empty line
 fprintf(fid,'\t%s\n','}');
 fprintf(fid,'\t%s\n','free(inMatrixCopy);');
 fprintf(fid,'%s\n','}');
+
 
 fclose(fid);
 

@@ -180,7 +180,7 @@ classdef CodeGenerator
                 error('CodeGenerator:wrongConstructorInput','The input variable %s must be a SerialLink object.',inputname(1));
             end
             
-            if ~issym(rob)
+            if ~rob.issym
                 CGen.rob = rob.sym;
             else
                 CGen.rob = rob;

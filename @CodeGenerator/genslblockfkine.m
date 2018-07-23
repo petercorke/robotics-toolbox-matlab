@@ -67,7 +67,7 @@ if ~isempty(find_system(CGen.slib,'SearchDepth',1,'Name',symname))              
     save_system;
 end
 
-symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q});
+symexpr2slblock(blockaddress,tmpStruct.(symname).T,'vars',{q});
 
 CGen.logmsg('\t%s\n',' done!');
 
@@ -92,7 +92,7 @@ for iJoints=1:CGen.rob.n
         save_system;
     end
     
-    symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q});
+    symexpr2slblock(blockaddress,tmpStruct.(symname).T,'vars',{q});
     
 end
 CGen.logmsg('\t%s\n',' done!');

@@ -70,9 +70,9 @@ symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q});
 
 CGen.logmsg('\t%s\n',' done!');
 
-%% Jacobn
+%% Jacobe
 CGen.logmsg([datestr(now),'\tGenerating jacobian Embedded Matlab Function Block with respect to the end-effector frame']);
-symname = 'jacobn';
+symname = 'jacobe';
 fname = fullfile(CGen.sympath,[symname,'.mat']);
 
 if exist(fname,'file')

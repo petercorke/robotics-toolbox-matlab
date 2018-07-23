@@ -72,10 +72,10 @@ add_block([CGen.slib,'/inertia'],[InvDynBlock,'/inertia']);
 add_block([CGen.slib,'/coriolis'],[InvDynBlock,'/coriolis']);
 add_block([CGen.slib,'/gravload'],[InvDynBlock,'/gravload']);
 add_block([CGen.slib,'/friction'],[InvDynBlock,'/friction'])
-add_block('Simulink/Sources/In1',[InvDynBlock,'/q']);
-add_block('Simulink/Sources/In1',[InvDynBlock,'/qd']);
-add_block('Simulink/Sources/In1',[InvDynBlock,'/qdd']);
-add_block('Simulink/Sinks/Out1',[InvDynBlock,'/tau']);
+add_block('simulink/Sources/In1',[InvDynBlock,'/q']);
+add_block('simulink/Sources/In1',[InvDynBlock,'/qd']);
+add_block('simulink/Sources/In1',[InvDynBlock,'/qdd']);
+add_block('simulink/Sinks/Out1',[InvDynBlock,'/tau']);
 add_block('built-in/Product',[InvDynBlock,'/inertiaTorque'],'multiplication','Matrix(*)');
 add_block('built-in/Product',[InvDynBlock,'/coriolisTorque'],'multiplication','Matrix(*)');
 add_block('built-in/Sum',[InvDynBlock,'/Sum'],'inputs','++++');
