@@ -138,6 +138,9 @@ fprintf(fid,'\t%s\n','mexPrintf("Inv Inertia 3: %f %f %f\n", invinertia[2][0],in
 
 fprintf(fid,'\t%s\n','mexPrintf("\n\n");');
 
+fprintf(fid,'\t%s\n','mexPrintf("tmpTau: %f %f %f\n", tmpTau[0][0], tmpTau[0][1], tmpTau[0][2]);');
+
+fprintf(fid,'\t%s\n','mexPrintf("\n\n");');
 
 
 fprintf(fid,'\t%s\n','fp = fopen("zahlen.txt", "a");');
@@ -146,9 +149,7 @@ fprintf(fid,'\t%s\n','if(fp == NULL) {');
 fprintf(fid,'\t%s\n','	printf("Datei konnte nicht geoeffnet werden.\n");');
 fprintf(fid,'\t%s\n','}else {');
 fprintf(fid,'\t%s\n','	// schreibe Zahlen');
-% fprintf(fid,'\t%s\n','	for(i=0; i<10; i++) {');
-% fprintf(fid,'\t%s\n','		fprintf(fp, "%d\n", i);');
-% fprintf(fid,'\t%s\n','	}');
+
 fprintf(fid,'\t%s\n','fprintf(fp, "\n ------------------------------------------- \n");');
 
 fprintf(fid,'\t%s\n','fprintf(fp, "Inertia 1: %f %f %f\n", inertia[0][0],inertia[0][1],inertia[0][2]);');
@@ -160,6 +161,10 @@ fprintf(fid,'\t%s\n','fprintf(fp,"\n\n");');
 fprintf(fid,'\t%s\n','fprintf(fp, "Inv Inertia 1: %f %f %f\n", invinertia[0][0],invinertia[0][1],invinertia[0][2]);');
 fprintf(fid,'\t%s\n','fprintf(fp, "Inv Inertia 2: %f %f %f\n", invinertia[1][0],invinertia[1][1],invinertia[1][2]);');
 fprintf(fid,'\t%s\n','fprintf(fp, "Inv Inertia 3: %f %f %f\n", invinertia[2][0],invinertia[2][1],invinertia[2][2]);');
+
+fprintf(fid,'\t%s\n','fprintf(fp, "tmpTau: %f %f %f\n", tmpTau[0][0], tmpTau[0][1], tmpTau[0][2]);');
+
+fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
 
 fprintf(fid,'\t%s\n','	fclose(fp);');
 fprintf(fid,'\t%s\n','}');

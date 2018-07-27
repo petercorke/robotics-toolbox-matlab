@@ -607,6 +607,9 @@ function genfdyn_test(testCase)
     profile on;
     % test generated mex code
     
+    delete('zahlen.txt')
+    delete('zahlenmatlab.txt')
+    
     fid = fopen('zahlenmatlab.txt','w');
 
     for iTry = 1:testCase.TestData.nTrials
@@ -630,6 +633,10 @@ function genfdyn_test(testCase)
         fprintf(fid,'Inv Inertia 1: %f %f %f\n', invinertia(1,1),invinertia(1,2),invinertia(1,3));
         fprintf(fid,'Inv Inertia 2: %f %f %f\n', invinertia(2,1),invinertia(2,2),invinertia(2,3));
         fprintf(fid,'Inv Inertia 3: %f %f %f\n', invinertia(3,1),invinertia(3,2),invinertia(3,3));
+        
+        fprintf(fid,'tmpTau: %f %f %f\n', resMEX(1), resMEX(2), resMEX(3));
+
+        fprintf(fid,'\n\n');
 
     end
     fclose(fid);
