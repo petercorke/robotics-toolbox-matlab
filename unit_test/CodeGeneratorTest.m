@@ -489,8 +489,8 @@ function geninvdyn_test(testCase)
     [symQ, symQD, symQDD] = testCase.TestData.rob.gencoords;
     
     Q = rand(testCase.TestData.nTrials,specRob.n);
-    QD = rand(testCase.TestData.nTrials,specRob.n);
-    QDD = rand(testCase.TestData.nTrials,specRob.n);
+    QD = 0*rand(testCase.TestData.nTrials,specRob.n);
+    QDD = 0*rand(testCase.TestData.nTrials,specRob.n);
     resRTB = rand(specRob.n,1,testCase.TestData.nTrials);
     resSym = rand(specRob.n,1,testCase.TestData.nTrials);
     resM = rand(specRob.n,1,testCase.TestData.nTrials);
@@ -568,10 +568,10 @@ function genfdyn_test(testCase)
     Q = rand(testCase.TestData.nTrials,specRob.n);
     QD = rand(testCase.TestData.nTrials,specRob.n);
     TAU = rand(testCase.TestData.nTrials,specRob.n);
-    resRTB = rand(specRob.n,1,testCase.TestData.nTrials);
-    resSym = rand(specRob.n,1,testCase.TestData.nTrials);
-    resM = rand(specRob.n,1,testCase.TestData.nTrials);
-    resMEX = rand(specRob.n,1,testCase.TestData.nTrials);
+    resRTB = zeros(specRob.n,1,testCase.TestData.nTrials);
+    resSym = zeros(specRob.n,1,testCase.TestData.nTrials);
+    resM = zeros(specRob.n,1,testCase.TestData.nTrials);
+    resMEX = zeros(specRob.n,1,testCase.TestData.nTrials);
     
     profile on
     % test symbolics and generated m-code
@@ -606,13 +606,34 @@ function genfdyn_test(testCase)
     
     profile on;
     % test generated mex code
+    
+    fid = fopen('zahlenmatlab.txt','w');
+
     for iTry = 1:testCase.TestData.nTrials
         q = Q(iTry,:);
         qd = QD(iTry,:);
         tau = TAU(iTry,:);
         
         resMEX(:,:,iTry) = specRob.accel(q,qd,tau);
+
+        inertia = specRob.inertia(q);
+        invinertia = inv(inertia);
+        
+        fprintf(fid,'\n ------------------------------------------- \n');
+        
+        fprintf(fid,'Inertia 1: %f %f %f\n', inertia(1,1),inertia(1,2),inertia(1,3));
+        fprintf(fid,'Inertia 2: %f %f %f\n', inertia(2,1),inertia(2,2),inertia(2,3));
+        fprintf(fid,'Inertia 3: %f %f %f\n', inertia(3,1),inertia(3,2),inertia(3,3));
+        
+        fprintf(fid,'\n\n');
+        
+        fprintf(fid,'Inv Inertia 1: %f %f %f\n', invinertia(1,1),invinertia(1,2),invinertia(1,3));
+        fprintf(fid,'Inv Inertia 2: %f %f %f\n', invinertia(2,1),invinertia(2,2),invinertia(2,3));
+        fprintf(fid,'Inv Inertia 3: %f %f %f\n', invinertia(3,1),invinertia(3,2),invinertia(3,3));
+
     end
+    fclose(fid);
+    
     profile off;
     pstat = profile('info');
     statMEX = getprofilefunctionstats(pstat,[testCase.TestData.cGen.getrobfname,filesep,'accel.',mexext],'mex-function');

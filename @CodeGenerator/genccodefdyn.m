@@ -82,7 +82,9 @@ fid = fopen(fullfile(srcDir,funfilename),'w+');
 % Includes
 fprintf(fid,'%s\n\n',...
     ['#include "', hfilename,'"']);
-
+% fprintf(fid,'%s\n%s\n\n',...
+%     '#include "mex.h"',...
+%     ['#include "',hfilename,'"']);
 % Function
 fprintf(fid,'%s{\n\n',funstr);
 
@@ -96,6 +98,11 @@ fprintf(fid,'\t%s\n',['double coriolis[',num2str(nJoints),'][',num2str(nJoints),
 fprintf(fid,'\t%s\n',['double gravload[',num2str(nJoints),'][1];']);
 fprintf(fid,'\t%s\n',['double friction[',num2str(nJoints),'][1];']);
 fprintf(fid,'\t%s\n',['double tmpTau[1][',num2str(nJoints),'];']);
+
+fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
+fprintf(fid,'\t%s\n','FILE *fp;');
+fprintf(fid,'\t%s\n','int i;');
+fprintf(fid,'\t%s\n','/* <<<<< !!! DEBUGGING !!! */');
 
 fprintf(fid,'%s\n',' '); % empty line
 
@@ -117,6 +124,48 @@ fprintf(fid,'\t%s\n','}');
 fprintf(fid,'\t%s\n','/* compute acceleration */');
 fprintf(fid,'\t%s\n',['matvecprod(QDD, invinertia, tmpTau,',num2str(nJoints),',',num2str(nJoints),');']);
 
+fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
+
+fprintf(fid,'\t%s\n','mexPrintf("Inertia 1: %f %f %f\n", inertia[0][0],inertia[0][1],inertia[0][2]);');
+fprintf(fid,'\t%s\n','mexPrintf("Inertia 2: %f %f %f\n", inertia[1][0],inertia[1][1],inertia[1][2]);');
+fprintf(fid,'\t%s\n','mexPrintf("Inertia 3: %f %f %f\n", inertia[2][0],inertia[2][1],inertia[2][2]);');
+
+fprintf(fid,'\t%s\n','mexPrintf("\n\n");');
+
+fprintf(fid,'\t%s\n','mexPrintf("Inv Inertia 1: %f %f %f\n", invinertia[0][0],invinertia[0][1],invinertia[0][2]);');
+fprintf(fid,'\t%s\n','mexPrintf("Inv Inertia 2: %f %f %f\n", invinertia[1][0],invinertia[1][1],invinertia[1][2]);');
+fprintf(fid,'\t%s\n','mexPrintf("Inv Inertia 3: %f %f %f\n", invinertia[2][0],invinertia[2][1],invinertia[2][2]);');
+
+fprintf(fid,'\t%s\n','mexPrintf("\n\n");');
+
+
+
+fprintf(fid,'\t%s\n','fp = fopen("zahlen.txt", "a");');
+
+fprintf(fid,'\t%s\n','if(fp == NULL) {');
+fprintf(fid,'\t%s\n','	printf("Datei konnte nicht geoeffnet werden.\n");');
+fprintf(fid,'\t%s\n','}else {');
+fprintf(fid,'\t%s\n','	// schreibe Zahlen');
+% fprintf(fid,'\t%s\n','	for(i=0; i<10; i++) {');
+% fprintf(fid,'\t%s\n','		fprintf(fp, "%d\n", i);');
+% fprintf(fid,'\t%s\n','	}');
+fprintf(fid,'\t%s\n','fprintf(fp, "\n ------------------------------------------- \n");');
+
+fprintf(fid,'\t%s\n','fprintf(fp, "Inertia 1: %f %f %f\n", inertia[0][0],inertia[0][1],inertia[0][2]);');
+fprintf(fid,'\t%s\n','fprintf(fp, "Inertia 2: %f %f %f\n", inertia[1][0],inertia[1][1],inertia[1][2]);');
+fprintf(fid,'\t%s\n','fprintf(fp, "Inertia 3: %f %f %f\n", inertia[2][0],inertia[2][1],inertia[2][2]);');
+
+fprintf(fid,'\t%s\n','fprintf(fp,"\n\n");');
+
+fprintf(fid,'\t%s\n','fprintf(fp, "Inv Inertia 1: %f %f %f\n", invinertia[0][0],invinertia[0][1],invinertia[0][2]);');
+fprintf(fid,'\t%s\n','fprintf(fp, "Inv Inertia 2: %f %f %f\n", invinertia[1][0],invinertia[1][1],invinertia[1][2]);');
+fprintf(fid,'\t%s\n','fprintf(fp, "Inv Inertia 3: %f %f %f\n", invinertia[2][0],invinertia[2][1],invinertia[2][2]);');
+
+fprintf(fid,'\t%s\n','	fclose(fp);');
+fprintf(fid,'\t%s\n','}');
+
+fprintf(fid,'\t%s\n','/* <<<<< !!! DEBUGGING !!! */');
+
 fprintf(fid,'%s\n','}');
 
 fclose(fid);
@@ -134,11 +183,15 @@ fprintf(fid,'%s\n%s\n\n',...
     ['#define ', upper([funname,'_h'])]);
 
 % Includes
-fprintf(fid,'%s\n%s\n%s\n%s\n%s\n%s\n\n',...
+fprintf(fid,'%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n\n',...
     '#include "matvecprod.h"',...
     '#include "gaussjordan.h"',...
     ['#include "',CGen.getrobfname,'_inertia.h"'],...
     ['#include "',CGen.getrobfname,'_coriolis.h"'],...
+    ['#include "',CGen.getrobfname,'_gravload.h"'],...
+    '#include "stdio.h"',...
+    '#include "stdlib.h"',...
+    '#include "mex.h"',...
     ['#include "',CGen.getrobfname,'_gravload.h"'],...
     ['#include "',CGen.getrobfname,'_friction.h"']);
 
