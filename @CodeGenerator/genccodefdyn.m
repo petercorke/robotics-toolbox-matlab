@@ -94,13 +94,14 @@ fprintf(fid,'%s{\n\n',funstr);
 % Allocate memory
 fprintf(fid,'\t%s\n','/* declare variables */');
 fprintf(fid,'\t%s\n','int iCol;');
-fprintf(fid,'\t%s\n',['double inertia[',num2str(nJoints),'][',num2str(nJoints),'];']);
-fprintf(fid,'\t%s\n',['double invinertia[',num2str(nJoints),'][',num2str(nJoints),'];']);
-fprintf(fid,'\t%s\n',['double coriolis[',num2str(nJoints),'][',num2str(nJoints),'];']);
-fprintf(fid,'\t%s\n',['double gravload[',num2str(nJoints),'][1];']);
-fprintf(fid,'\t%s\n',['double friction[',num2str(nJoints),'][1];']);
+fprintf(fid,'\t%s\n',['double inertia[',num2str(nJoints),'][',num2str(nJoints),'] = { 0 };']);
+fprintf(fid,'\t%s\n',['double invinertia[',num2str(nJoints),'][',num2str(nJoints),'] = { 0 };']);
+fprintf(fid,'\t%s\n',['double coriolis[',num2str(nJoints),'][',num2str(nJoints),'] = { 0 };']);
+fprintf(fid,'\t%s\n',['double gravload[',num2str(nJoints),'][1] = { 0 };']);
+fprintf(fid,'\t%s\n',['double friction[',num2str(nJoints),'][1] = { 0 };']);
 % fprintf(fid,'\t%s\n',['double tmpTau[1][',num2str(nJoints),'];']);
-fprintf(fid,'\t%s\n',['double tmpTau[',num2str(nJoints),'];']);
+fprintf(fid,'\t%s\n',['double tmpTau[',num2str(nJoints),'] = { 0 };']);
+fprintf(fid,'\t%s\n',['double taucoriolis[',num2str(nJoints),'] = { 0 };']);
 
 if doDebug
     fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
@@ -127,13 +128,13 @@ fprintf(fid,'\t%s\n',[CGen.getrobfname,'_','friction(friction, input2);']);
 fprintf(fid,'%s\n',' '); % empty line
 
 fprintf(fid,'\t%s\n','/* fill temporary vector */');
-fprintf(fid,'\t%s\n',['matvecprod(tmpTau, coriolis, input2,',num2str(nJoints),',',num2str(nJoints),');']);
+fprintf(fid,'\t%s\n',['matvecprod(taucoriolis, coriolis, input2,',num2str(nJoints),',',num2str(nJoints),');']);
 
 if doDebug
     fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
     
     
-    fprintf(fid,'\t%s\n','fprintf(fp, "coriolis: %f %f %f\n", tmpTau[0], tmpTau[1], tmpTau[2]);');
+    fprintf(fid,'\t%s\n','fprintf(fp, "coriolis: %f %f %f\n", taucoriolis[0], taucoriolis[1], taucoriolis[2]);');
     
     fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
     
@@ -141,7 +142,7 @@ if doDebug
     fprintf(fid,'\t%s\n','/* <<<<< !!! DEBUGGING !!! */');
 end
 fprintf(fid,'\t%s\n',['for (iCol = 0; iCol < ',num2str(nJoints),'; iCol++){']);
-fprintf(fid,'\t\t%s\n','tmpTau[iCol] = input3[iCol] -  tmpTau[iCol] - gravload[iCol][0] + friction[iCol][0];');
+fprintf(fid,'\t\t%s\n','tmpTau[iCol] = input3[iCol] -  taucoriolis[iCol] - gravload[iCol][0] + friction[iCol][0];');
 fprintf(fid,'\t%s\n','}');
 
 fprintf(fid,'\t%s\n','/* compute acceleration */');

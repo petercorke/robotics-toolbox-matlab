@@ -84,13 +84,16 @@ doDebug = 1;
             invinertia = inv(inertia);
             
             coriolis = testRob.coriolis(q, qd)*qd.';
-%             tmpTau = tau  - testRob.coriolis(q, qd)*qd.' -  testRob.gravload(q) +  testRob.friction(qd);
-            tmpTau = coriolis;
-            gload =  testRob.gravload(q);
-            fric =  testRob.friction(qd);
-            for i = 1:numel(q)
-                tmpTau(i) = tau(i)  - tmpTau(i) -  gload(i) + fric(i);
-            end
+           % VARIANT A
+            tmpTau = tau  - testRob.coriolis(q, qd)*qd.' -  testRob.gravload(q) +  testRob.friction(qd);
+
+%             % VARIANT B
+%             gload =  testRob.gravload(q);
+%             fric =  testRob.friction(qd);
+% %             tmpTau = coriolis;  
+%             for i = 1:numel(q)
+%                 tmpTau(i) = tau(i)  - coriolis(i) -  gload(i) + fric(i);
+%             end
             fprintf(fid,'coriolis: %f %f %f\n', coriolis(1), coriolis(2), coriolis(3));
             
             fprintf(fid,'\n\n');

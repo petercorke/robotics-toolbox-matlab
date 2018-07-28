@@ -39,7 +39,7 @@ function setupOnce(testCase)
     testRob = SerialLink(L, 'name', 'UnitTestRobot');
     testCase.TestData.rob = testRob.nofriction('all');
 
-    testCase.TestData.nTrials = 10; % number of tests to perform in each subroutine
+    testCase.TestData.nTrials = 100; % number of tests to perform in each subroutine
     
     testCase.TestData.cGen = CodeGenerator(testCase.TestData.rob,'default','logfile','cGenUnitTestLog.txt');
     testCase.TestData.cGen.verbose = 0;
