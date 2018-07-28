@@ -556,6 +556,9 @@ end
     
     
 function genfdyn_test(testCase)
+    testCase.TestData.cGen.genslblock = 0; % <<<<< DEBUG
+    doDebug = 0;
+    
     % - test forward dynamics against numeric version
     IqddSym = testCase.TestData.cGen.genfdyn.';
     
@@ -573,11 +576,14 @@ function genfdyn_test(testCase)
     resM = zeros(specRob.n,1,testCase.TestData.nTrials);
     resMEX = zeros(specRob.n,1,testCase.TestData.nTrials);
     
+    if doDebug
     
-    delete('numbers_ccode.txt')
-    delete('numbers_matlab.txt')
-    
-    fid = fopen('numbers_matlab.txt','w');
+        delete('numbers_ccode.txt')
+        delete('numbers_matlab.txt')
+        
+        
+        fid = fopen('numbers_matlab.txt','w');
+    end
 
 
     profile on
@@ -591,46 +597,50 @@ function genfdyn_test(testCase)
         resSym(:,:,iTry) = subs(subs(subs(IqddSym,symQ,q),symQD,qd),symTau,tau);
         resM(:,:,iTry) = specRob.accel(q, qd, tau);
         
-        inertia = testCase.TestData.rob.inertia(q);
-        invinertia = inv(inertia);
-        
-        coriolis = testCase.TestData.rob.coriolis(q, qd)*qd.';
-        tmpTau = tau  - testCase.TestData.rob.coriolis(q, qd)*qd.' -  testCase.TestData.rob.gravload(q) +  testCase.TestData.rob.friction(qd);
-        
-        fprintf(fid,'coriolis: %f %f %f\n', coriolis(1), coriolis(2), coriolis(3));
-        
-        fprintf(fid,'\n\n');
-        
-        fprintf(fid,'q: %f %f %f\n', q(1),q(2),q(3));
-        fprintf(fid,'qd: %f %f %f\n', qd(1),qd(2),qd(3));
-        fprintf(fid,'tau: %f %f %f\n', tau(1),tau(2),tau(3));
-        
-        fprintf(fid,'Inertia 1: %f %f %f\n', inertia(1,1),inertia(1,2),inertia(1,3));
-        fprintf(fid,'Inertia 2: %f %f %f\n', inertia(2,1),inertia(2,2),inertia(2,3));
-        fprintf(fid,'Inertia 3: %f %f %f\n', inertia(3,1),inertia(3,2),inertia(3,3));
-        
-        fprintf(fid,'\n\n');
-        
-        fprintf(fid,'Inv Inertia 1: %f %f %f\n', invinertia(1,1),invinertia(1,2),invinertia(1,3));
-        fprintf(fid,'Inv Inertia 2: %f %f %f\n', invinertia(2,1),invinertia(2,2),invinertia(2,3));
-        fprintf(fid,'Inv Inertia 3: %f %f %f\n', invinertia(3,1),invinertia(3,2),invinertia(3,3));
-        
-        fprintf(fid,'\n\n');
-        
-        fprintf(fid,'QDD: %f %f %f\n', resRTB(1,1,iTry), resRTB(2,1,iTry), resRTB(3,1,iTry));
-
-        fprintf(fid,'\n\n');
-        
-        fprintf(fid, 'tmpTau: %f %f %f\n', tmpTau(1), tmpTau(2), tmpTau(3));
-
-        fprintf(fid,'\n\n');
-        
-        fprintf(fid,'\n ------------------------------------------- \n');
+        if doDebug
+            inertia = testCase.TestData.rob.inertia(q);
+            invinertia = inv(inertia);
+            
+            coriolis = testCase.TestData.rob.coriolis(q, qd)*qd.';
+            tmpTau = tau  - testCase.TestData.rob.coriolis(q, qd)*qd.' -  testCase.TestData.rob.gravload(q) +  testCase.TestData.rob.friction(qd);
+            
+            fprintf(fid,'coriolis: %f %f %f\n', coriolis(1), coriolis(2), coriolis(3));
+            
+            fprintf(fid,'\n\n');
+            
+            fprintf(fid,'q: %f %f %f\n', q(1),q(2),q(3));
+            fprintf(fid,'qd: %f %f %f\n', qd(1),qd(2),qd(3));
+            fprintf(fid,'tau: %f %f %f\n', tau(1),tau(2),tau(3));
+            
+            fprintf(fid,'Inertia 1: %f %f %f\n', inertia(1,1),inertia(1,2),inertia(1,3));
+            fprintf(fid,'Inertia 2: %f %f %f\n', inertia(2,1),inertia(2,2),inertia(2,3));
+            fprintf(fid,'Inertia 3: %f %f %f\n', inertia(3,1),inertia(3,2),inertia(3,3));
+            
+            fprintf(fid,'\n\n');
+            
+            fprintf(fid,'Inv Inertia 1: %f %f %f\n', invinertia(1,1),invinertia(1,2),invinertia(1,3));
+            fprintf(fid,'Inv Inertia 2: %f %f %f\n', invinertia(2,1),invinertia(2,2),invinertia(2,3));
+            fprintf(fid,'Inv Inertia 3: %f %f %f\n', invinertia(3,1),invinertia(3,2),invinertia(3,3));
+            
+            fprintf(fid,'\n\n');
+            
+            fprintf(fid,'QDD: %f %f %f\n', resRTB(1,1,iTry), resRTB(2,1,iTry), resRTB(3,1,iTry));
+            
+            fprintf(fid,'\n\n');
+            
+            fprintf(fid, 'tmpTau: %f %f %f\n', tmpTau(1), tmpTau(2), tmpTau(3));
+            
+            fprintf(fid,'\n\n');
+            
+            fprintf(fid,'\n ------------------------------------------- \n');
+        end
         
     end
     profile off;
     
-    fclose(fid)
+    if doDebug
+        fclose(fid);
+    end
     
     pstat = profile('info');
     statRTB = getprofilefunctionstats(pstat,['SerialLink',filesep,'accel']);

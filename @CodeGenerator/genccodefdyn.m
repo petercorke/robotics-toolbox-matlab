@@ -39,6 +39,8 @@
 
 function [ ] = genccodefdyn( CGen )
 
+doDebug = 0; %%% <<<<< DEBUG
+
 checkexistanceofcfunctions(CGen);
 [Q, QD] = CGen.rob.gencoords;
 tau = CGen.rob.genforces;
@@ -97,20 +99,22 @@ fprintf(fid,'\t%s\n',['double invinertia[',num2str(nJoints),'][',num2str(nJoints
 fprintf(fid,'\t%s\n',['double coriolis[',num2str(nJoints),'][',num2str(nJoints),'];']);
 fprintf(fid,'\t%s\n',['double gravload[',num2str(nJoints),'][1];']);
 fprintf(fid,'\t%s\n',['double friction[',num2str(nJoints),'][1];']);
-fprintf(fid,'\t%s\n',['double tmpTau[1][',num2str(nJoints),'];']);
+% fprintf(fid,'\t%s\n',['double tmpTau[1][',num2str(nJoints),'];']);
+fprintf(fid,'\t%s\n',['double tmpTau[',num2str(nJoints),'];']);
 
-fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
-fprintf(fid,'\t%s\n','FILE *fp;');
-fprintf(fid,'\t%s\n','int i;');
-
-fprintf(fid,'\t%s\n','fp = fopen("numbers_ccode.txt", "a");');
-
-fprintf(fid,'\t%s\n','if(fp == NULL) {');
-fprintf(fid,'\t%s\n','	printf("Datei konnte nicht geoeffnet werden.\n");');
-fprintf(fid,'\t%s\n','}else {');
-
-fprintf(fid,'\t%s\n','/* <<<<< !!! DEBUGGING !!! */');
-
+if doDebug
+    fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
+    fprintf(fid,'\t%s\n','FILE *fp;');
+    fprintf(fid,'\t%s\n','int i;');
+    
+    fprintf(fid,'\t%s\n','fp = fopen("numbers_ccode.txt", "a");');
+    
+    fprintf(fid,'\t%s\n','if(fp == NULL) {');
+    fprintf(fid,'\t%s\n','	printf("Datei konnte nicht geoeffnet werden.\n");');
+    fprintf(fid,'\t%s\n','}else {');
+    
+    fprintf(fid,'\t%s\n','/* <<<<< !!! DEBUGGING !!! */');
+end
 fprintf(fid,'%s\n',' '); % empty line
 
 fprintf(fid,'\t%s\n','/* call the computational routines */');
@@ -125,55 +129,60 @@ fprintf(fid,'%s\n',' '); % empty line
 fprintf(fid,'\t%s\n','/* fill temporary vector */');
 fprintf(fid,'\t%s\n',['matvecprod(tmpTau, coriolis, input2,',num2str(nJoints),',',num2str(nJoints),');']);
 
-fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
-
-fprintf(fid,'\t%s\n','fprintf(fp, "coriolis: %f %f %f\n", tmpTau[0][0], tmpTau[0][1], tmpTau[0][2]);');
-
-fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
-
-fprintf(fid,'\t%s\n','/* <<<<< !!! DEBUGGING !!! */');
-
+if doDebug
+    fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
+    
+    
+    fprintf(fid,'\t%s\n','fprintf(fp, "coriolis: %f %f %f\n", tmpTau[0], tmpTau[1], tmpTau[2]);');
+    
+    fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
+    
+    
+    fprintf(fid,'\t%s\n','/* <<<<< !!! DEBUGGING !!! */');
+end
 fprintf(fid,'\t%s\n',['for (iCol = 0; iCol < ',num2str(nJoints),'; iCol++){']);
-fprintf(fid,'\t\t%s\n','tmpTau[0][iCol] = input3[iCol] -  tmpTau[0][iCol] - gravload[iCol][0] + friction[iCol][0];');
+fprintf(fid,'\t\t%s\n','tmpTau[iCol] = input3[iCol] -  tmpTau[iCol] - gravload[iCol][0] + friction[iCol][0];');
 fprintf(fid,'\t%s\n','}');
 
 fprintf(fid,'\t%s\n','/* compute acceleration */');
 fprintf(fid,'\t%s\n',['matvecprod(QDD, invinertia, tmpTau,',num2str(nJoints),',',num2str(nJoints),');']);
 
-fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
- 
-
-fprintf(fid,'\t%s\n','fprintf(fp,"q: %f %f %f\n", input1[0],input1[1],input1[2]);');
-fprintf(fid,'\t%s\n','fprintf(fp,"qd: %f %f %f\n", input2[0],input2[1],input2[2]);');
-fprintf(fid,'\t%s\n','fprintf(fp,"tau: %f %f %f\n", input3[0],input3[1],input3[2]);');
-
-fprintf(fid,'\t%s\n','fprintf(fp, "Inertia 1: %f %f %f\n", inertia[0][0],inertia[0][1],inertia[0][2]);');
-fprintf(fid,'\t%s\n','fprintf(fp, "Inertia 2: %f %f %f\n", inertia[1][0],inertia[1][1],inertia[1][2]);');
-fprintf(fid,'\t%s\n','fprintf(fp, "Inertia 3: %f %f %f\n", inertia[2][0],inertia[2][1],inertia[2][2]);');
-
-fprintf(fid,'\t%s\n','fprintf(fp,"\n\n");');
-
-fprintf(fid,'\t%s\n','fprintf(fp, "Inv Inertia 1: %f %f %f\n", invinertia[0][0],invinertia[0][1],invinertia[0][2]);');
-fprintf(fid,'\t%s\n','fprintf(fp, "Inv Inertia 2: %f %f %f\n", invinertia[1][0],invinertia[1][1],invinertia[1][2]);');
-fprintf(fid,'\t%s\n','fprintf(fp, "Inv Inertia 3: %f %f %f\n", invinertia[2][0],invinertia[2][1],invinertia[2][2]);');
-
-fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
-
-fprintf(fid,'\t%s\n','fprintf(fp, "QDD: %f %f %f\n", QDD[0][0], QDD[0][1], QDD[0][2]);');
-
-fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
-
-fprintf(fid,'\t%s\n','fprintf(fp, "tmpTau: %f %f %f\n", tmpTau[0][0], tmpTau[0][1], tmpTau[0][2]);');
-% fprintf(fid,'\t%s\n','fprintf(fp, "tmpTau: %f %f %f\n", tmpTau[0], tmpTau[1], tmpTau[2]);');
-
-fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
-
-fprintf(fid,'\t%s\n','fprintf(fp, "\n ------------------------------------------- \n");');
-
-fprintf(fid,'\t%s\n','	fclose(fp);');
-fprintf(fid,'\t%s\n','}');
-
-fprintf(fid,'\t%s\n','/* <<<<< !!! DEBUGGING !!! */');
+if doDebug
+    fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
+    
+    
+    fprintf(fid,'\t%s\n','fprintf(fp,"q: %f %f %f\n", input1[0],input1[1],input1[2]);');
+    fprintf(fid,'\t%s\n','fprintf(fp,"qd: %f %f %f\n", input2[0],input2[1],input2[2]);');
+    fprintf(fid,'\t%s\n','fprintf(fp,"tau: %f %f %f\n", input3[0],input3[1],input3[2]);');
+    
+    fprintf(fid,'\t%s\n','fprintf(fp, "Inertia 1: %f %f %f\n", inertia[0][0],inertia[0][1],inertia[0][2]);');
+    fprintf(fid,'\t%s\n','fprintf(fp, "Inertia 2: %f %f %f\n", inertia[1][0],inertia[1][1],inertia[1][2]);');
+    fprintf(fid,'\t%s\n','fprintf(fp, "Inertia 3: %f %f %f\n", inertia[2][0],inertia[2][1],inertia[2][2]);');
+    
+    fprintf(fid,'\t%s\n','fprintf(fp,"\n\n");');
+    
+    fprintf(fid,'\t%s\n','fprintf(fp, "Inv Inertia 1: %f %f %f\n", invinertia[0][0],invinertia[0][1],invinertia[0][2]);');
+    fprintf(fid,'\t%s\n','fprintf(fp, "Inv Inertia 2: %f %f %f\n", invinertia[1][0],invinertia[1][1],invinertia[1][2]);');
+    fprintf(fid,'\t%s\n','fprintf(fp, "Inv Inertia 3: %f %f %f\n", invinertia[2][0],invinertia[2][1],invinertia[2][2]);');
+    
+    fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
+    
+    fprintf(fid,'\t%s\n','fprintf(fp, "QDD: %f %f %f\n", QDD[0][0], QDD[0][1], QDD[0][2]);');
+    
+    fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
+    
+    fprintf(fid,'\t%s\n','fprintf(fp, "tmpTau: %f %f %f\n", tmpTau[0], tmpTau[1], tmpTau[2]);');
+    % fprintf(fid,'\t%s\n','fprintf(fp, "tmpTau: %f %f %f\n", tmpTau[0], tmpTau[1], tmpTau[2]);');
+    
+    fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
+    
+    fprintf(fid,'\t%s\n','fprintf(fp, "\n ------------------------------------------- \n");');
+    
+    fprintf(fid,'\t%s\n','	fclose(fp);');
+    fprintf(fid,'\t%s\n','}');
+    
+    fprintf(fid,'\t%s\n','/* <<<<< !!! DEBUGGING !!! */');
+end
 
 fprintf(fid,'%s\n','}');
 
