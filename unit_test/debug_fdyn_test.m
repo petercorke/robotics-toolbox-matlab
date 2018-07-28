@@ -1,5 +1,6 @@
 clc;
 fclose all;
+doDebug = 1;
 
 % Create a test robot based on the first three links of the Puma 560.
     deg = pi/180;
@@ -60,12 +61,12 @@ fclose all;
     resM = zeros(specRob.n,1,nTrials);
     resMEX = zeros(specRob.n,1,nTrials);
     
-    
+    if doDebug
     delete('numbers_ccode.txt')
     delete('numbers_matlab.txt')
     
     fid = fopen('numbers_matlab.txt','w');
-
+    end
 
     profile on
     % test symbolics and generated m-code
@@ -77,48 +78,55 @@ fclose all;
         resRTB(:,:,iTry) =  testRob.accel(q,qd,tau);
         resSym(:,:,iTry) = subs(subs(subs(IqddSym,symQ,q),symQD,qd),symTau,tau);
         resM(:,:,iTry) = specRob.accel(q, qd, tau);
-        
-        inertia = testRob.inertia(q);
-        invinertia = inv(inertia);
-        
-        coriolis = testRob.coriolis(q, qd)*qd.';
-        tmpTau = tau  - testRob.coriolis(q, qd)*qd.' -  testRob.gravload(q) +  testRob.friction(qd);
-        
-        fprintf(fid,'coriolis: %f %f %f\n', coriolis(1), coriolis(2), coriolis(3));
-        
-        fprintf(fid,'\n\n');
-        
-        fprintf(fid,'q: %f %f %f\n', q(1),q(2),q(3));
-        fprintf(fid,'qd: %f %f %f\n', qd(1),qd(2),qd(3));
-        fprintf(fid,'tau: %f %f %f\n', tau(1),tau(2),tau(3));
-        
-        fprintf(fid,'Inertia 1: %f %f %f\n', inertia(1,1),inertia(1,2),inertia(1,3));
-        fprintf(fid,'Inertia 2: %f %f %f\n', inertia(2,1),inertia(2,2),inertia(2,3));
-        fprintf(fid,'Inertia 3: %f %f %f\n', inertia(3,1),inertia(3,2),inertia(3,3));
-        
-        fprintf(fid,'\n\n');
-        
-        fprintf(fid,'Inv Inertia 1: %f %f %f\n', invinertia(1,1),invinertia(1,2),invinertia(1,3));
-        fprintf(fid,'Inv Inertia 2: %f %f %f\n', invinertia(2,1),invinertia(2,2),invinertia(2,3));
-        fprintf(fid,'Inv Inertia 3: %f %f %f\n', invinertia(3,1),invinertia(3,2),invinertia(3,3));
-        
-        fprintf(fid,'\n\n');
-        
-        fprintf(fid,'QDD: %f %f %f\n', resRTB(1,1,iTry), resRTB(2,1,iTry), resRTB(3,1,iTry));
-
-        fprintf(fid,'\n\n');
-        
-        fprintf(fid, 'tmpTau: %f %f %f\n', tmpTau(1), tmpTau(2), tmpTau(3));
-
-        fprintf(fid,'\n\n');
-        
-        fprintf(fid,'\n ------------------------------------------- \n');
-        
+     
+        if doDebug
+            inertia = testRob.inertia(q);
+            invinertia = inv(inertia);
+            
+            coriolis = testRob.coriolis(q, qd)*qd.';
+%             tmpTau = tau  - testRob.coriolis(q, qd)*qd.' -  testRob.gravload(q) +  testRob.friction(qd);
+            tmpTau = coriolis;
+            gload =  testRob.gravload(q);
+            fric =  testRob.friction(qd);
+            for i = 1:numel(q)
+                tmpTau(i) = tau(i)  - tmpTau(i) -  gload(i) + fric(i);
+            end
+            fprintf(fid,'coriolis: %f %f %f\n', coriolis(1), coriolis(2), coriolis(3));
+            
+            fprintf(fid,'\n\n');
+            
+            fprintf(fid,'q: %f %f %f\n', q(1),q(2),q(3));
+            fprintf(fid,'qd: %f %f %f\n', qd(1),qd(2),qd(3));
+            fprintf(fid,'tau: %f %f %f\n', tau(1),tau(2),tau(3));
+            
+            fprintf(fid,'Inertia 1: %f %f %f\n', inertia(1,1),inertia(1,2),inertia(1,3));
+            fprintf(fid,'Inertia 2: %f %f %f\n', inertia(2,1),inertia(2,2),inertia(2,3));
+            fprintf(fid,'Inertia 3: %f %f %f\n', inertia(3,1),inertia(3,2),inertia(3,3));
+            
+            fprintf(fid,'\n\n');
+            
+            fprintf(fid,'Inv Inertia 1: %f %f %f\n', invinertia(1,1),invinertia(1,2),invinertia(1,3));
+            fprintf(fid,'Inv Inertia 2: %f %f %f\n', invinertia(2,1),invinertia(2,2),invinertia(2,3));
+            fprintf(fid,'Inv Inertia 3: %f %f %f\n', invinertia(3,1),invinertia(3,2),invinertia(3,3));
+            
+            fprintf(fid,'\n\n');
+            
+            fprintf(fid,'QDD: %f %f %f\n', resRTB(1,1,iTry), resRTB(2,1,iTry), resRTB(3,1,iTry));
+            
+            fprintf(fid,'\n\n');
+            
+            fprintf(fid, 'tmpTau: %f %f %f\n', tmpTau(1), tmpTau(2), tmpTau(3));
+            
+            fprintf(fid,'\n\n');
+            
+            fprintf(fid,'\n ------------------------------------------- \n');
+        end
     end
     profile off;
     
-    fclose(fid);
-    
+    if doDebug
+        fclose(fid);
+    end
     pstat = profile('info');
     statRTB = getprofilefunctionstats(pstat,['SerialLink',filesep,'accel']);
     statSym = getprofilefunctionstats(pstat,['sym',filesep,'subs']);
