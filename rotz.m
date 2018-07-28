@@ -36,8 +36,21 @@ function R = rotz(t, deg)
     
     ct = cos(t);
     st = sin(t);
+    
+    % make almost zero elements exactly zero
+    if ~isa(t, 'sym')
+        if abs(st) < eps
+            st = 0;
+        end
+        if abs(ct) < eps
+            ct = 0;
+        end
+    end
+    
+    % create the rotation matrix
     R = [
         ct  -st  0
         st   ct  0
         0    0   1
         ];
+end

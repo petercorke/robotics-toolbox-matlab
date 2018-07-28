@@ -120,7 +120,6 @@ function plot3d(robot, q, varargin)
         robot.faces = cell(1, robot.n+1);
         fprintf('Loading STL models from ARTE Robotics Toolbox for Education  by Arturo Gil (http://arvc.umh.es/arte)');
         for i=1:nshapes
-            %[F,P] = rndread( fullfile(pth, sprintf('link%d.stl', i-1)) );
             [P,F] = stlRead( fullfile(pth, sprintf('link%d.stl', i-1)) );
             robot.points{i} = P;
             robot.faces{i} = F;

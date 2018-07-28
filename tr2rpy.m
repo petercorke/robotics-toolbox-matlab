@@ -3,7 +3,8 @@
 % RPY = TR2RPY(T, options) are the roll-pitch-yaw angles (1x3)
 % corresponding to the rotation part of a homogeneous transform T. The 3
 % angles RPY=[R,P,Y] correspond to sequential rotations about the Z, Y and
-% X axes respectively.
+% X axes respectively. Roll and yaw angles in [-pi,pi) while pitch angle
+% in [-pi/2,pi/2].
 %
 % RPY = TR2RPY(R, options) as above but the input is an orthonormal
 % rotation matrix R (3x3).
@@ -86,7 +87,7 @@ function [rpy,order] = tr2rpy(R, varargin)
                 rpy(1) = -atan2(R(1,2), R(1,1));
                 rpy(3) = -atan2(R(2,3), R(3,3));
                 
-                rpy(2) = atan2(R(1,3)*cos(rpy(1)), R(1,1));
+                rpy(2) = atan(R(1,3)*cos(rpy(1))/R(1,1));
             end
             
         case {'zyx', 'vehicle'}
@@ -106,7 +107,7 @@ function [rpy,order] = tr2rpy(R, varargin)
                 rpy(1) = atan2(R(3,2), R(3,3));  % R
                 rpy(3) = atan2(R(2,1), R(1,1));  % Y
                 
-                rpy(2) = atan2(-R(3,1)*cos(rpy(1)), R(3,3));
+                rpy(2) = -atan(R(3,1)*cos(rpy(1))/R(3,3));
             end
             
         case {'yxz', 'camera'}
@@ -114,7 +115,6 @@ function [rpy,order] = tr2rpy(R, varargin)
             if abs(abs(R(2,3)) - 1) < eps  % when |R23| == 1
                 % singularity
                 
-
                 rpy(1) = 0;
                 if R(2,3) < 0
                     rpy(3) = -atan2(R(3,1), R(1,1));   % R-Y
@@ -127,7 +127,7 @@ function [rpy,order] = tr2rpy(R, varargin)
                 rpy(1) = atan2(R(2,1), R(2,2));
                 rpy(3) = atan2(R(1,3), R(3,3));
                 
-                rpy(2) = atan2(-cos(rpy(1))*R(2,3), R(2,2));
+                rpy(2) = -atan(cos(rpy(1))*R(2,3)/R(2,2));
             end
             
     end

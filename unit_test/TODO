@@ -1,0 +1,7 @@
+pose classes: test with symbolic constructors, multidimensional matrices, conversions, .R, .t
+
+graft all the RPY formats into tests
+
+test skew, vex
+
+Plucker

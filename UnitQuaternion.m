@@ -179,7 +179,7 @@ classdef UnitQuaternion < Quaternion
                     [qs,qv] = UnitQuaternion.tr2q(s(:,:,i));
                     uq(i) = UnitQuaternion(qs,qv);
                 end
-            elseif nargin ==2 && isscalar(s) && isvec(v,3)
+            elseif nargin == 2 && isscalar(s) && isvec(v,3)
                 % ensure its a unit quaternion
                 n = norm([s; v(:)]);
                 uq.s = s/n;
@@ -249,11 +249,13 @@ classdef UnitQuaternion < Quaternion
                 q2 = double(args{1});
                 r = args{2};
             else
-                q1 = [1  0 0 0];
-                q2 = double(Q1);
+                q1 = [1  0 0 0]; % unit quaternion
+                q2 = double(Q1); % given quaternion
                 r = args{1};
             end
             
+            % now, interpolate between q1 and q2
+
             cosTheta = q1*q2';
             
             if opt.shortest
@@ -263,9 +265,9 @@ classdef UnitQuaternion < Quaternion
                     cosTheta = - cosTheta;
                 end;
             end
+                      
+            theta = acos(cosTheta);
             
-            theta = acos(cosTheta);            
-
             if length(r) == 1 && r > 1 && (r == floor(r))
                 % integer value
                 r = [0:(r-1)] / (r-1);
@@ -318,7 +320,7 @@ classdef UnitQuaternion < Quaternion
             % See also Quaternion.angvec.
             
             c = zeros(1, max(length(q1), length(q2)));
-                                q1d = q1.double; q2d = q2.double;
+            q1d = q1.double; q2d = q2.double;
 
             if length(q1) == length(q2)
                     th = 2*atan2( colnorm((q1d-q2d)'), colnorm((q1d+q2d)') );
@@ -336,6 +338,8 @@ classdef UnitQuaternion < Quaternion
             % clip it, just in case it's unnormalized
             c(c<-1) = -1;  c(c>1) = 1;
             
+            % Huynh method 3, LaValle p157
+            % acos( abs(dot(q1d,q2d)) )
             %th = 2*acos(c);
             %% use 2 atan2(|q1-q2|, |q1+q2|)
         end
@@ -525,7 +529,7 @@ classdef UnitQuaternion < Quaternion
                         error('RTB:UnitQuaternion:badarg', 'quaternion-double product: vectors lengths incorrect');
                     end
                 else
-                    aerror('RTB:UnitQuaternion:badarg', 'quaternion-double product: must be a 3-vector');
+                    error('RTB:UnitQuaternion:badarg', 'quaternion-double product: must be a 3-vector');
                 end
             else
                 error('RTB:UnitQuaternion:badarg', 'quaternion product: incorrect right hand operand');
@@ -697,8 +701,17 @@ classdef UnitQuaternion < Quaternion
                 end
                 return
             end
-            s = [num2str(q.s), ' < ' ...
-                num2str(q.v(1)) ', ' num2str(q.v(2)) ', '   num2str(q.v(3)) ' >'];
+            
+            function s = render(x)
+                if isnumeric(x)
+                    s = num2str(x);
+                elseif isa(x, 'sym')
+                    s = char(x);
+                end
+            end
+                
+            s = [render(q.s), ' < ' ...
+                render(q.v(1)) ', ' render(q.v(2)) ', '   render(q.v(3)) ' >'];
         end  
         
         function r = R(q)
@@ -709,12 +722,18 @@ classdef UnitQuaternion < Quaternion
             %
             % See also UnitQuaternion.T, UnitQuaternion.SO3.
             
-            r = zeros(3,3,numel(q));
+            if ~issym(q(1))
+                r = zeros(3,3,numel(q));
+            end
             for i=1:numel(q)
                 r(:,:,i) = q(i).torot();
             end
         end
         
+        function v = issym(q)
+            v = isa(q.s, 'sym') || isa(q.v, 'sym');
+        end
+            
         function t = T(q)
             %UnitQuaternion.T Convert to homogeneous transformation matrix
             %
@@ -726,7 +745,9 @@ classdef UnitQuaternion < Quaternion
             %
             % See also UnitQuaternion.R, UnitQuaternion.SE3.
             
-            t = zeros(4,4,numel(q));
+            if ~issym(q(1))
+                t = zeros(4,4,numel(q));
+            end
             for i=1:numel(q)
                 t(1:3,1:3,i) = q(i).torot();
                 t(4,4,i) = 1;
@@ -828,6 +849,31 @@ classdef UnitQuaternion < Quaternion
                 qv = q.v;
             end
         end
+        
+        function e = eq(q1, q2)
+            % overloaded version for UnitQuaternions to support double mapping
+            
+            if (numel(q1) == 1) && (numel(q2) == 1)
+                e = (sum(abs(q1.double - q2.double)) < 100*eps) || (sum(abs(q1.double + q2.double)) < 100*eps);
+            elseif (numel(q1) >  1) && (numel(q2) == 1)
+                e = zeros(1, numel(q1), 'logical');
+                for i=1:numel(q1)
+                    e(i) = q1(i) == q2;
+                end
+            elseif (numel(q1) == 1) && (numel(q2) > 1)
+                e = zeros(1, numel(q2), 'logical');
+                for i=1:numel(q2)
+                    e(i) = q2(i) == q1;
+                end
+            elseif numel(q1) == numel(q2)
+                e = zeros(1, numel(q1), 'logical');
+                for i=1:numel(q1)
+                    e(i) = q1(i) == q2(i);
+                end
+            else
+                error('RTB:UnitQuaternion:eq: badargs');
+            end
+        end
 
     end % methods
     
@@ -865,7 +911,22 @@ classdef UnitQuaternion < Quaternion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods(Static) 
         
-
+        function uq = rand()
+            %UnitQuaternion.rand Construct a random unit quaternion
+            %
+            % Q = UnitQuaternion.rand() is a UnitQuaternion representing a random rotation.
+            %
+            % Notes::
+            % - Planning Algorithms, Steve LaValle, p164
+            
+            u = rand(1,3);  % get 3 random numbers in [0,1]
+            uq = UnitQuaternion( [
+                sqrt(1-u(1))*sin(2*pi*u(2))
+                sqrt(1-u(1))*cos(2*pi*u(2))
+                sqrt(u(1))*sin(2*pi*u(3))
+                sqrt(u(1))*cos(2*pi*u(3)) ]');
+        end
+        
         function uq = new(varargin)
             %UnitQuaternion.new Construct a new unit quaternion
             %
@@ -956,8 +1017,9 @@ classdef UnitQuaternion < Quaternion
             % 
             % Options::
             % 'deg'   Compute angles in degrees (radians default)
-            % 'xyz'   Return solution for sequential rotations about X, Y, Z axes.
-            % 'yxz'   Return solution for sequential rotations about Y, X, Z axes.
+            % 'zyx'   Return solution for sequential rotations about Z, Y, X axes (default)
+            % 'xyz'   Return solution for sequential rotations about X, Y, Z axes
+            % 'yxz'   Return solution for sequential rotations about Y, X, Z axes
 
             %
             % Notes::
@@ -1016,7 +1078,8 @@ classdef UnitQuaternion < Quaternion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% OTHER STATIC METHODS, ALTERNATIVE CONSTRUCTORS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function [s,v] = tr2q(R)
+
+    function [s,v] = tr2q(R)
             %TR2Q   Convert homogeneous transform to a UnitQuaternion
             %
             %   Q = tr2q(T)
@@ -1024,6 +1087,19 @@ classdef UnitQuaternion < Quaternion
             %   Return a UnitQuaternion corresponding to the rotational part of the
             %   homogeneous transform T.
             %
+            % Reference::
+            % - Funda, Taylor, IEEE Trans. Robotics and Automation, 6(3), June 1990, pp. 
+            
+            % modified version of sign() function as per the paper
+            %  sign(x) = 1 if x>=0
+            function s = sign(x) 
+                if x >= 0
+                    s = 1;
+                else
+                    s = -1;
+                end
+            end
+            
             if ishomog(R)
                 R = t2r(R);
             end
@@ -1032,40 +1108,49 @@ classdef UnitQuaternion < Quaternion
             ky = R(1,3) - R(3,1);   % Ax - Nz
             kz = R(2,1) - R(1,2);   % Ny - Ox
             
-            if (R(1,1) >= R(2,2)) && (R(1,1) >= R(3,3))
-                kx1 = R(1,1) - R(2,2) - R(3,3) + 1; % Nx - Oy - Az + 1
-                ky1 = R(2,1) + R(1,2);          % Ny + Ox
-                kz1 = R(3,1) + R(1,3);          % Nz + Ax
-                add = (kx >= 0);
-            elseif (R(2,2) >= R(3,3))
-                kx1 = R(2,1) + R(1,2);          % Ny + Ox
-                ky1 = R(2,2) - R(1,1) - R(3,3) + 1; % Oy - Nx - Az + 1
-                kz1 = R(3,2) + R(2,3);          % Oz + Ay
-                add = (ky >= 0);
+            if isa(R, 'sym') 
+                s = simplify(s);
+                v = simplify( [kx ky kz] / (4*s) );
             else
-                kx1 = R(3,1) + R(1,3);          % Nz + Ax
-                ky1 = R(3,2) + R(2,3);          % Oz + Ay
-                kz1 = R(3,3) - R(1,1) - R(2,2) + 1; % Az - Nx - Oy + 1
-                add = (kz >= 0);
-            end
-            
-            if add
-                kx = kx + kx1;
-                ky = ky + ky1;
-                kz = kz + kz1;
-            else
-                kx = kx - kx1;
-                ky = ky - ky1;
-                kz = kz - kz1;
-            end
-            nm = norm([kx ky kz]);
-            if nm == 0
-                s = 1;
-                v = [0 0 0];
-            else
-                v = [kx ky kz] * sqrt(1 - s^2) / nm;
+                % for the numerical case, deal with rotations by very small angles
+                
+                % equation (7)
+                [~,k] = max(diag(R));
+                switch k
+                    case 1  % Nx dominates
+                        kx1 = R(1,1) - R(2,2) - R(3,3) + 1; % Nx - Oy - Az + 1
+                        ky1 = R(2,1) + R(1,2);          % Ny + Ox
+                        kz1 = R(3,1) + R(1,3);          % Nz + Ax
+                        sgn = sign(kx);
+                    case 2  % Oy dominates
+                        kx1 = R(2,1) + R(1,2);          % Ny + Ox
+                        ky1 = R(2,2) - R(1,1) - R(3,3) + 1; % Oy - Nx - Az + 1
+                        kz1 = R(3,2) + R(2,3);          % Oz + Ay
+                        sgn = sign(ky);
+                    case 3 % Az dominates
+                        kx1 = R(3,1) + R(1,3);          % Nz + Ax
+                        ky1 = R(3,2) + R(2,3);          % Oz + Ay
+                        kz1 = R(3,3) - R(1,1) - R(2,2) + 1; % Az - Nx - Oy + 1
+                        add = (kz >= 0);
+                        sgn = sign(kz);
+                end
+                
+                % equation (8)
+                kx = kx + sgn*kx1;
+                ky = ky + sgn*ky1;
+                kz = kz + sgn*kz1;
+
+                nm = norm([kx ky kz]);
+                if nm == 0
+                    % handle special case of null quaternion
+                    s = 1;
+                    v = [0 0 0];
+                else
+                    v = [kx ky kz] * sqrt(1 - s^2) / nm;  % equation (10)
+                end
             end
         end
+
         
         function R = q2r(q)
             %TOROT   Convert UnitQuaternion to homogeneous transform

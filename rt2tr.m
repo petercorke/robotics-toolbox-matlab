@@ -36,25 +36,25 @@
 
 function T = rt2tr(R, t)
     t = t(:);
-    if numcols(R) ~= numrows(R)
+    if size(R,1) ~= size(R,2)
         error('R must be square');
     end
-    if numrows(R) ~= numrows(t)
+    if size(R,1) ~= size(t,1)
         error('R and t must have the same number of rows');
     end
 
-    if size(R,3) ~= numcols(t)
+    if size(R,3) ~= size(t,2)
         error('For sequence size(R,3) must equal size(t,2)');
     end
 
     if size(R,3) > 1
-        Z = zeros(numcols(R),1);
+        Z = zeros(size(R,2),1);
         B = [Z' 1];
         T = zeros(4,4,size(R,3));
         for i=1:size(R,3)
             T(:,:,i) = [R(:,:,i) t(:,i); B];
         end
     else
-        T = [R t; zeros(1,numcols(R)) 1];
+        T = [R t; zeros(1,size(R,2)) 1];
     end
 

@@ -170,6 +170,50 @@ classdef Vehicle < handle
             end
         end
 
+        function yy = path(veh, t, u, y0)
+            %Vehicle.path Compute path for constant inputs
+            %
+            % XF = V.path(TF, U) is the final state of the vehicle (3x1) from the initial
+            % state (0,0,0) with the control inputs U (vehicle specific).  TF is  a scalar to 
+            % specify the total integration time.
+            %
+            % XP = V.path(TV, U) is the trajectory of the vehicle (Nx3) from the initial
+            % state (0,0,0) with the control inputs U (vehicle specific).  T is a vector (N) of 
+            % times for which elements of the trajectory will be computed.
+            %
+            % XP = V.path(T, U, X0) as above but specify the initial state.
+            %
+            % Notes::
+            % - Integration is performed using ODE45.
+            % - The ODE being integrated is given by the deriv method of the vehicle object.
+            %
+            % See also ODE45.
+
+                if length(t) == 1
+                    tt = [0 t];
+                else
+                    tt = t;
+                end
+
+                if nargin < 4
+                    y0 = [0 0 0];
+                end
+                out = ode45( @(t,y) veh.deriv(t, y, u), tt, y0);
+
+                y = out.y';
+                if nargout == 0
+                    plot(y(:,1), y(:,2));
+                    grid on
+                    xlabel('X'); ylabel('Y')
+                else
+                    yy = y;
+                    if length(t) == 1
+                        % if scalar time given, just return final state
+                        yy = yy(end,:);
+                    end
+                end
+        end
+
         function add_driver(veh, driver)
             %Vehicle.add_driver Add a driver for the vehicle
             %

@@ -78,14 +78,30 @@ function [t1,t2,t3] = transl(x, y, z)
                 0   0   0   1];
         else
             % transl(P) -> T, trajectory case
-            n = numrows(x);
+            n = size(x,1);
             t1 = repmat(eye(4,4), [1 1 n]);
             t1(1:3,4,:) = x';
         end    
     elseif nargin == 3
         % transl(x,y,z) -> T
         t = [x; y; z];
-        t1 =    rt2tr( eye(3), t);
+        t1 =    [ eye(3) t; 0 0 0 1];
     else
         error('RTB:transl:badargs', 'should be 1 or 3 arguments');
     end
+end
+
+% one less function to upload for Cody/LTI assessments
+function h = ishomog(tr, rtest)
+    d = size(tr);
+    if ndims(tr) >= 2
+        h =  all(d(1:2) == [4 4]);
+
+        if h && nargin > 1
+            h = abs(det(tr(1:3,1:3)) - 1) < eps;
+        end
+
+    else
+        h = false;
+    end
+end

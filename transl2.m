@@ -62,12 +62,28 @@ function T = transl2(x, y)
                 0   0   1];
         else
             % transl(P) -> T, trajectory case
-            n = numrows(x);
+            n = size(x,1);
             T = repmat(eye(3,3), [1 1 n]);
             T(1:2,3,:) = x';
         end    
     elseif nargin == 2
         % transl(x,y) -> T
         t = [x; y];
-        T =    rt2tr( eye(2), t);        
+        T =    [ eye(2) t; 0 0 1];        
     end
+end
+
+% one less function to upload for Cody/LTI assessments
+
+function h = ishomog2(tr, rtest)
+    d = size(tr);
+    if ndims(tr) >= 2
+        h =  all(d(1:2) == [3 3]);
+
+        if h && nargin > 1
+            h = abs(det(tr(1:2,1:2)) - 1) < eps;
+        end
+    else
+        h = false;
+    end
+end
