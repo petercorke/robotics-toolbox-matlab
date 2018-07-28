@@ -574,10 +574,10 @@ function genfdyn_test(testCase)
     resMEX = zeros(specRob.n,1,testCase.TestData.nTrials);
     
     
-    delete('zahlen.txt')
-    delete('zahlenmatlab.txt')
+    delete('numbers_ccode.txt')
+    delete('numbers_matlab.txt')
     
-    fid = fopen('zahlenmatlab.txt','w');
+    fid = fopen('numbers_matlab.txt','w');
 
 
     profile on
@@ -594,9 +594,12 @@ function genfdyn_test(testCase)
         inertia = testCase.TestData.rob.inertia(q);
         invinertia = inv(inertia);
         
-        tmpTau = tau  - testCase.TestData.rob.coriolis(q, qd) -  testCase.TestData.rob.gravload(q) +  testCase.TestData.rob.friction(qd);
+        coriolis = testCase.TestData.rob.coriolis(q, qd)*qd.';
+        tmpTau = tau  - testCase.TestData.rob.coriolis(q, qd)*qd.' -  testCase.TestData.rob.gravload(q) +  testCase.TestData.rob.friction(qd);
         
-        fprintf(fid,'\n ------------------------------------------- \n');
+        fprintf(fid,'coriolis: %f %f %f\n', coriolis(1), coriolis(2), coriolis(3));
+        
+        fprintf(fid,'\n\n');
         
         fprintf(fid,'q: %f %f %f\n', q(1),q(2),q(3));
         fprintf(fid,'qd: %f %f %f\n', qd(1),qd(2),qd(3));
@@ -621,6 +624,8 @@ function genfdyn_test(testCase)
         fprintf(fid, 'tmpTau: %f %f %f\n', tmpTau(1), tmpTau(2), tmpTau(3));
 
         fprintf(fid,'\n\n');
+        
+        fprintf(fid,'\n ------------------------------------------- \n');
         
     end
     profile off;

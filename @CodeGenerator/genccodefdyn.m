@@ -102,6 +102,13 @@ fprintf(fid,'\t%s\n',['double tmpTau[1][',num2str(nJoints),'];']);
 fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
 fprintf(fid,'\t%s\n','FILE *fp;');
 fprintf(fid,'\t%s\n','int i;');
+
+fprintf(fid,'\t%s\n','fp = fopen("numbers_ccode.txt", "a");');
+
+fprintf(fid,'\t%s\n','if(fp == NULL) {');
+fprintf(fid,'\t%s\n','	printf("Datei konnte nicht geoeffnet werden.\n");');
+fprintf(fid,'\t%s\n','}else {');
+
 fprintf(fid,'\t%s\n','/* <<<<< !!! DEBUGGING !!! */');
 
 fprintf(fid,'%s\n',' '); % empty line
@@ -117,6 +124,15 @@ fprintf(fid,'%s\n',' '); % empty line
 
 fprintf(fid,'\t%s\n','/* fill temporary vector */');
 fprintf(fid,'\t%s\n',['matvecprod(tmpTau, coriolis, input2,',num2str(nJoints),',',num2str(nJoints),');']);
+
+fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
+
+fprintf(fid,'\t%s\n','fprintf(fp, "coriolis: %f %f %f\n", tmpTau[0][0], tmpTau[0][1], tmpTau[0][2]);');
+
+fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
+
+fprintf(fid,'\t%s\n','/* <<<<< !!! DEBUGGING !!! */');
+
 fprintf(fid,'\t%s\n',['for (iCol = 0; iCol < ',num2str(nJoints),'; iCol++){']);
 fprintf(fid,'\t\t%s\n','tmpTau[0][iCol] = input3[iCol] -  tmpTau[0][iCol] - gravload[iCol][0] + friction[iCol][0];');
 fprintf(fid,'\t%s\n','}');
@@ -126,14 +142,6 @@ fprintf(fid,'\t%s\n',['matvecprod(QDD, invinertia, tmpTau,',num2str(nJoints),','
 
 fprintf(fid,'\t%s\n','/* !!! DEBUGGING !!! >>>>> */');
  
-fprintf(fid,'\t%s\n','fp = fopen("zahlen.txt", "a");');
-
-fprintf(fid,'\t%s\n','if(fp == NULL) {');
-fprintf(fid,'\t%s\n','	printf("Datei konnte nicht geoeffnet werden.\n");');
-fprintf(fid,'\t%s\n','}else {');
-fprintf(fid,'\t%s\n','	// schreibe Zahlen');
-
-fprintf(fid,'\t%s\n','fprintf(fp, "\n ------------------------------------------- \n");');
 
 fprintf(fid,'\t%s\n','fprintf(fp,"q: %f %f %f\n", input1[0],input1[1],input1[2]);');
 fprintf(fid,'\t%s\n','fprintf(fp,"qd: %f %f %f\n", input2[0],input2[1],input2[2]);');
@@ -155,10 +163,12 @@ fprintf(fid,'\t%s\n','fprintf(fp, "QDD: %f %f %f\n", QDD[0][0], QDD[0][1], QDD[0
 
 fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
 
-% fprintf(fid,'\t%s\n','fprintf(fp, "tmpTau: %f %f %f\n", tmpTau[0][0], tmpTau[0][1], tmpTau[0][2]);');
-fprintf(fid,'\t%s\n','fprintf(fp, "tmpTau: %f %f %f\n", tmpTau[0], tmpTau[1], tmpTau[2]);');
+fprintf(fid,'\t%s\n','fprintf(fp, "tmpTau: %f %f %f\n", tmpTau[0][0], tmpTau[0][1], tmpTau[0][2]);');
+% fprintf(fid,'\t%s\n','fprintf(fp, "tmpTau: %f %f %f\n", tmpTau[0], tmpTau[1], tmpTau[2]);');
 
 fprintf(fid,'\t%s\n','fprintf(fp, "\n\n");');
+
+fprintf(fid,'\t%s\n','fprintf(fp, "\n ------------------------------------------- \n");');
 
 fprintf(fid,'\t%s\n','	fclose(fp);');
 fprintf(fid,'\t%s\n','}');
