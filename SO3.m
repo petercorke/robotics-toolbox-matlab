@@ -730,7 +730,7 @@ classdef SO3 < RTBPose
             %
             % See also RAND, UnitQuaternion.rand.
 
-            T = UnitQuaternion.rand().R;
+            T = UnitQuaternion.rand().SO3;
         end
     end
 end
