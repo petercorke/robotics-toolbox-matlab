@@ -59,6 +59,14 @@ function constructor_test(tc)
     
 end
 
+function concat_test(tc)
+    x = SE2();
+    xx = [x x x x];
+    
+    tc.verifyClass(xx, 'SE2');
+    tc.verifySize(xx, [1 4]);
+end
+
 function staticconstructors_test(tc)
     
     %% exponential

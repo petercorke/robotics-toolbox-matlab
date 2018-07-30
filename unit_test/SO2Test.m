@@ -51,6 +51,14 @@ function constructor_test(tc)
 
 end
 
+function concat_test(tc)
+    x = SO2();
+    xx = [x x x x];
+    
+    tc.verifyClass(xx, 'SO2');
+    tc.verifySize(xx, [1 4]);
+end
+
 function primitive_convert_test(tc)
     % char
     
