@@ -7,7 +7,7 @@
 % the user-supplied control
 % function FTFUN:
 %
-%        TAU = FTFUN(T, Q, QD)
+%        TAU = FTFUN(ROBOT, T, Q, QD)
 %
 % where Q (1xN) and QD (1xN) are the manipulator joint coordinate and
 % velocity state respectively, and T is the current time.
@@ -18,7 +18,7 @@
 % [T,Q,QD] = R.fdyn(T1, FTFUN, Q0, QD0, ARG1, ARG2, ...) allows optional 
 % arguments to be passed through to the user-supplied control function:
 %
-%        TAU = FTFUN(T, Q, QD, ARG1, ARG2, ...)
+%        TAU = FTFUN(ROBOT, T, Q, QD, ARG1, ARG2, ...)
 %
 % For example, if the robot was controlled by a PD controller we can define
 % a function to compute the control
@@ -103,7 +103,7 @@ end
 % ROBOT is the object being integrated, and TORQUEFUN is the string name of
 % the function to compute joint torques and called as
 %
-%       TAU = TORQUEFUN(T, X)
+%       TAU = TORQUEFUN(ROBOT, T, X, VARARGIN)
 %
 % if not given zero joint torques are assumed.
 %
