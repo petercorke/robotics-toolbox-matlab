@@ -560,6 +560,10 @@ classdef RTBPlot
                     z = extent(:) * ones(1,n+1);
             end
             
+            x = x + offset(1);
+            y = y + offset(2);
+            z = z + offset(3);
+            
             % walls of the shape
             surf(x,y,z, 'FaceColor', color, 'EdgeColor', 'none', varargin{:})
             
