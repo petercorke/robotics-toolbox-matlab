@@ -10,173 +10,202 @@ function setupOnce(tc)
     tc.TestData.start = [20 10];
 end
 
-function navigation_test(tc)
-    map = zeros(10,10);
-    map(2,3) = 1;
-    
-    % test isoccupied test
-    n = Bug2(map);  % we can't instantiate Navigation because it's abstract
-    tc.verifyTrue( n.isoccupied([3,2]) );
-    tc.verifyFalse( n.isoccupied([3,3]) );
-        tc.verifyTrue( n.isoccupied(3,2) );
-    tc.verifyFalse( n.isoccupied(3,3) );
-
-    % test inflation option
-    n = Bug2(map, 'inflate', 1);
-    tc.verifyTrue( n.isoccupied([3,2]) );
-    tc.verifyTrue( n.isoccupied([3,3]) );
-    tc.verifyFalse( n.isoccupied([3,4]) );
-    
-    r = n.randn;
-    tc.verifySize(r, [1 1]);
-    tc.verifyInstanceOf(r, 'double');
-    r = n.randn(2,2);
-    tc.verifySize(r, [2 2]);
-    
-    r = n.randi(10);
-    tc.verifySize(r, [1 1]);
-    tc.verifyInstanceOf(r, 'double');
-    r = n.randi(10, 2,2);
-    tc.verifySize(r, [2 2]);
-    
+function teardownOnce(tc)
+    close all
 end
 
 function bug2_test(tc)
 
-    b = Bug2(tc.TestData.map);
-    s = b.char();
+    nav = Bug2(tc.TestData.map);
+    tc.verifyInstanceOf(nav, 'Bug2');
+    s = nav.char();
     verifyTrue(tc, ischar(s) );
-
-    p = b.query(tc.TestData.start, tc.TestData.goal);
-    verifyTrue(tc, size(p,2) == 2);
     
-    b.plot()
-    b.plot(p);
+    nav.plot();
+
+    p = nav.query(tc.TestData.start, tc.TestData.goal);
+    
+    tc.verifyTrue(size(p,2) == 2, 'plan must have 2 columns');
+    tc.verifyEqual(p(1,:), tc.TestData.start, 'start point must be on path');
+    tc.verifyEqual(p(end,:), tc.TestData.goal, 'goal point must be on path');
+    tc.verifyFalse( any( nav.isoccupied(p') ), 'path must have no occupied cells');
+    
+    nav.plot()
+    nav.plot(p);
+end
+
+
+function dxform_test(tc)
+
+    nav = DXform(tc.TestData.map);
+    tc.verifyInstanceOf(nav, 'DXform');
+
+    s = nav.char();
+    verifyTrue(tc, ischar(s) );
+    
+    nav.plot();
+    nav.plan(tc.TestData.goal);
+    nav.plot();
+    nav.plan(tc.TestData.goal, 'animate');
+    
+    p = nav.query(tc.TestData.start);
+    
+    tc.verifyTrue(size(p,2) == 2, 'plan must have 2 columns');
+    tc.verifyEqual(p(1,:), tc.TestData.start, 'start point must be on path');
+    tc.verifyEqual(p(end,:), tc.TestData.goal, 'goal point must be on path');
+    tc.verifyFalse( any( nav.isoccupied(p') ), 'path must have no occupied cells');
+    
+    nav.query(tc.TestData.start, 'animate');
+    
+    nav.plot();
+    nav.plot(p);
+    
+    nav.plot3d();
+    nav.plot3d(p);
 end
 
 function dstar_test(tc)
 
     % create a planner
-    ds = Dstar(tc.TestData.map, 'quiet');
-    s = ds.char();
+    nav = Dstar(tc.TestData.map, 'quiet');
+    tc.verifyInstanceOf(nav, 'Dstar');
+    
+    s = nav.char();
     verifyTrue(tc, ischar(s) );
     
+    nav.plot();
+    
     % plan path to goal
-    ds.plan(tc.TestData.goal);
-    ds.plan(tc.TestData.goal, 'animate');
+    nav.plan(tc.TestData.goal);
+    nav.plan(tc.TestData.goal, 'animate');
 
     % execute it
-    p = ds.query(tc.TestData.start);
-    verifyTrue(tc, size(p,2) == 2);
+    p = nav.query(tc.TestData.start);
 
-    ds.query(tc.TestData.start, 'animate');
+        tc.verifyTrue(size(p,2) == 2, 'plan must have 2 columns');
+    tc.verifyEqual(p(1,:), tc.TestData.start, 'start point must be on path');
+    tc.verifyEqual(p(end,:), tc.TestData.goal, 'goal point must be on path');
+    tc.verifyFalse( any( nav.isoccupied(p') ), 'path must have no occupied cells');
+
+    nav.query(tc.TestData.start, 'animate');
     
-    ds.plot();
-    ds.plot(p);
+    nav.plot();
+    nav.plot(p);
     
     % add a swamp
     for r=78:85
         for c=12:45
-            ds.modify_cost([c;r], 2);
+            nav.modify_cost([c;r], 2);
         end
     end
     
     % replan
-    ds.plan();
+    nav.plan();
 
     % show new path
-    ds.query(tc.TestData.start);
+    nav.query(tc.TestData.start);
 
-    p = ds.query(tc.TestData.start);
-    ds.plot(p);
+    p = nav.query(tc.TestData.start);
+    tc.verifyTrue(size(p,2) == 2, 'plan must have 2 columns');
+    tc.verifyEqual(p(1,:), tc.TestData.start, 'start point must be on path');
+    tc.verifyEqual(p(end,:), tc.TestData.goal, 'goal point must be on path');
+    tc.verifyFalse( any( nav.isoccupied(p') ), 'path must have no occupied cells');
     
-    ds.modify_cost([12 45; 78 85], 2);
-    ds.modify_cost([12 13 14; 78 79 80], [2 3 4]);
-end
-
-function dxform_test(tc)
-
-    dx = DXform(tc.TestData.map);
-    s = dx.char();
-    verifyTrue(tc, ischar(s) );
-
-
-    dx.plan(tc.TestData.goal);
-    dx.plot();
-    dx.plan(tc.TestData.goal, 'animate');
-
-
-    p = dx.query(tc.TestData.start);
-    verifyTrue(tc, size(p,2) == 2);
+    nav.plot(p);
     
-    dx.query(tc.TestData.start, 'animate');
-
-    dx.plot();
-    dx.plot(p);
-
-    dx.plot3d();
-    dx.plot3d(p);
+    nav.modify_cost([12 45; 78 85], 2);
+    nav.modify_cost([12 13 14; 78 79 80], [2 3 4]);
 end
 
 function prm_test(tc)
 
     randinit
-    prm = PRM(tc.TestData.map);
-    s = prm.char();
+    nav = PRM(tc.TestData.map);
+        tc.verifyInstanceOf(nav, 'PRM');
+
+    s = nav.char();
     verifyTrue(tc, ischar(s) );
 
+    nav.plot();
 
-    prm.plan();
-    prm.plot();
-
-    prm.query(tc.TestData.start, tc.TestData.goal);
-    p = prm.query(tc.TestData.start, tc.TestData.goal);
-    prm.plot(p);
+    nav.plan();
+    nav.plot();
+    
+    p = nav.query(tc.TestData.start, tc.TestData.goal);
+    
+    tc.verifyTrue(size(p,2) == 2, 'plan must have 2 columns');
+    tc.verifyEqual(p(1,:), tc.TestData.start, 'start point must be on path');
+    tc.verifyEqual(p(end,:), tc.TestData.goal, 'goal point must be on path');
+    tc.verifyFalse( any( nav.isoccupied(p') ), 'path must have no occupied cells');
+    
+    nav.query(tc.TestData.start, tc.TestData.goal);
+    nav.plot(p);
 end
 
 function lattice_test(tc)
     
-    lp = Lattice();
+    nav = Lattice();
+    tc.verifyInstanceOf(nav, 'Lattice');
     
-    lp.plan('iterations', 8)
-    lp.plot()
     
-    p = lp.query( [1 2 pi/2], [2 -2 0] );
+    nav.plan('iterations', 8);
+    nav.plot()
+    
+    start = [1 2 pi/2]; goal = [2 -2 0];
+    p = nav.query( start, goal );
     verifyEqual(tc, size(p,1), 7);
+    tc.verifyTrue(size(p,2) == 3, 'plan must have 3 columns');
+    tc.verifyEqual(p(1,:), start, 'AbsTol', 1e-10, 'start point must be on path');
+    tc.verifyEqual(p(end,:), goal, 'AbsTol', 1e-10, 'goal point must be on path');
+    
+    nav.plot
 
-    lp.plot
-
-    lp.plan('cost', [1 10 10])
-    p = lp.query([1 2 pi/2], [2 -2 0]);
+    nav.plan('cost', [1 10 10])
+    p = nav.query( start, goal );
     verifyEqual(tc, size(p,1), 9);
+    tc.verifyTrue(size(p,2) == 3, 'plan must have 3 columns');
+    tc.verifyEqual(p(1,:), start, 'AbsTol', 1e-10, 'start point must be on path');
+    tc.verifyEqual(p(end,:), goal, 'AbsTol', 1e-10, 'goal point must be on path');
     
     load road
-    lp = Lattice(road, 'grid', 5, 'root', [50 50 0])
-    lp.plan();
-    lp.query([30 45 0], [50 20 0])
+    nav = Lattice(road, 'grid', 5, 'root', [50 50 0])
+    nav.plan();
+    start = [30 45 0]; goal = [50 20 0];
+    p = nav.query(start, goal);
+    tc.verifyTrue(size(p,2) == 3, 'plan must have 3 columns');
+    tc.verifyEqual(p(1,:), start, 'AbsTol', 1e-10, 'start point must be on path');
+    tc.verifyEqual(p(end,:), goal, 'AbsTol', 1e-10, 'goal point must be on path');
+    tc.verifyFalse( any( nav.isoccupied(p(:,1:2)') ), 'path must have no occupied cells');
+
 end
 
-
-
 function rrt_test(tc)
-
-    goal = [0,0]; 
     randinit
 
-    car = Bicycle('steermax', 1.2);
-    rrt = RRT(car, 'goal', goal, 'range', 5);
-    s = rrt.char();
+    car = Bicycle('steermax', 0.5);
+    %nav = RRT(car, 'goal', goal, 'range', 5);
+    nav = RRT(car, 'npoints', 400);
+    tc.verifyInstanceOf(nav, 'RRT');
 
-    rrt.plan();
+    s = nav.char();
 
-    rrt.plot();
+    nav.plan();
+    nav.plot();
     
-    p = rrt.query([0 0 0], [0 2 0]);
+    start = [0 0 0]; goal = [0 2 0];
+    p = nav.query(start, goal);
+    
+    tc.verifyTrue(size(p,2) == 3, 'plan must have 3 columns');
+    tc.verifyFalse( any( nav.isoccupied(p(:,1:2)') ), 'path must have no occupied cells');
     
     % bigger example with obstacle
     load road
-
-     rrt = RRT(car, road, 'npoints', 1000, 'root', [50 22 0], 'simtime', 4);
-     rrt.plan();
-     
+    
+    randinit
+    nav = RRT(car, road, 'npoints', 1000, 'root', [50 22 0], 'simtime', 4);
+    nav.plan();
+    p = nav.query([40 45 0], [50 22 0]);
+    tc.verifyTrue(size(p,2) == 3, 'plan must have 3 columns');
+    tc.verifyFalse( any( nav.isoccupied(p(:,1:2)') ), 'path must have no occupied cells');
+    
 end
