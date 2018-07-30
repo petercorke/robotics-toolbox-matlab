@@ -136,9 +136,9 @@ classdef Navigation < handle
         %   - allow for an arbitrary transform from world coordinates to the grid
         %   - it needs to affect plot scaling, start and goal
 
-            if nargin >= 1 
+            if nargin >= 1 && ( isnumeric(varargin{1}) || islogical(varargin{1}))
                 % first argument is the map
-                map = varargin{1};
+                map = double( varargin{1} );
                 varargin = varargin(2:end);
                 if isnumeric(map) && ~isscalar(map)
                     nav.occgrid = map;
@@ -243,7 +243,7 @@ classdef Navigation < handle
             
             % iterate using the next() method until we reach the goal
             robot = nav.start;
-            path = [];
+            path = nav.start(:);
             while true
                 if opt.animate
                     plot(robot(1), robot(2), 'g.', 'MarkerSize', 12);
@@ -255,13 +255,12 @@ classdef Navigation < handle
                 
                 % are we there yet?
                 if isempty(robot)
+                    path = [path nav.goal(:)];
                     % yes, exit the loop
                     break
                 else
-                    % no, append it to the path
-                    path = [path robot(:)];
+                    path = [path robot(:)]; % append it to the path
                 end
-                
             end
             
             % return the path 
@@ -335,7 +334,7 @@ classdef Navigation < handle
             end
             
             clf
-            if isempty(opt.distance)
+            if isempty(opt.distance) || all(all(~isfinite(opt.distance)))
                 % create color map for free space + obstacle:
                 %   free space, color index = 1, white, 
                 %   obstacle, color index = 2, red
@@ -354,7 +353,7 @@ classdef Navigation < handle
                 d = opt.distance(isfinite(opt.distance));
                 d = d + 2;   % minimum distance is cmap=2 or black
                 maxdist = max(d(:));
-                
+
                 % create the color map
                 %  1 = red (obstacle)
                 %  2 = black (zero distance)
@@ -538,14 +537,14 @@ classdef Navigation < handle
             end
             
             % check if reachable
-            assert(~nav.isoccupied(nav.start), 'Navigation:checkquery:badarg', 'start location inside obstacle');
+            assert(~nav.isoccupied(nav.start(1:2)), 'Navigation:checkquery:badarg', 'start location inside obstacle');
             
             if nargin == 3
                 % make upright
                 nav.goal = goal(:);
                 
                 % check if reachable
-                assert(~nav.isoccupied(nav.goal), 'Navigation:checkquery:badarg', 'goal location inside obstacle');
+                assert(~nav.isoccupied(nav.goal(1:2)), 'Navigation:checkquery:badarg', 'goal location inside obstacle');
             end
         end
         
@@ -553,32 +552,43 @@ classdef Navigation < handle
         function occ = isoccupied(nav, x, y)
             %Navigation.isoccupied Test if grid cell is occupied
             %
-            % N.isoccupied(POS) is true if there is a valid grid map and the coordinate
-            % POS (1x2) is occupied.  P=[X,Y] rather than MATLAB row-column
-            % coordinates.
+            % N.isoccupied(POS) is true if there is a valid grid map and the
+            % coordinates given by the columns of POS (2xN) are occupied.
             %
             % N.isoccupied(X,Y) as above but the coordinates given separately.
+            %
+            % Notes:
+            % -  X and Y are Cartesian rather than MATLAB row-column coordinates.
             
             if isempty(nav.occgridnav)
                 occ = false;
                 return
             end
             
-            if nargin == 2 && length(x) >= 2
-                pos = x(:);
-                pos = pos(1:2);
+            if nargin == 2
+                % isoccupied(p)
+                if numel(x) == 2
+                    x = x(:);
+                end
+                assert(size(x,1) == 2, 'RTB:Navigation:isoccupied', 'P must have 2 rows');
+                pos = x;
             else
-                pos = [x; y];
+                % isoccupied(x,y)
+                assert(numel(x) == numel(y), 'RTB:Navigation:isoccupied', 'X and Y must be same length');
+                pos = [x(:)'; y(:)'];
             end
             
             % convert from world coordinates to grid coordinates
-            pos = round( nav.w2g * pos(:) );
+            pos = round( nav.w2g * pos );
             
-            try
-                occ = nav.occgridnav(pos(2), pos(1)) > 0;
-            catch
-                occ = true; % beyond the grid, all cells are implicitly occupied
-            end
+            % find all those that lie in the map
+            k = pos(1,:) > 0 & pos(1,:) <= size(nav.occgrid,2) & pos(2,:) > 0 & pos(2,:) <= size(nav.occgrid,1);
+            
+            % get the indices into the map
+            i = sub2ind(size(nav.occgrid), pos(2,k), pos(1,k));
+            
+            occ = ones(1, size(pos,2), 'logical'); % by default all occupied (true)
+            occ(k) = nav.occgridnav(i) > 0;
         end
         
         function goal_change(nav)
