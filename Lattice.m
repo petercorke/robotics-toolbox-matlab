@@ -337,6 +337,7 @@ classdef Lattice < Navigation
                                 % it's not occupied
                                 % add a new node and an edge
                                 nv = lp.graph.add_node( newDestinations(:,i), node, lp.cost(i));
+                                lp.graph.add_edge(node, nv, lp.cost(i));
                                 additions = additions + 1;
                             end
                         else
