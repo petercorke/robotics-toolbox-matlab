@@ -120,21 +120,25 @@ classdef PRM < Navigation
         %  'npoints',N      Number of sample points (default is set by constructor)
         %  'distthresh',D   Distance threshold, edges only connect vertices closer 
         %                   than D (default set by constructor)
+        %  'movie',M        make a movie of the PRM planning
 
         % build a graph over the free space
             prm.message('create the graph');
             
             opt.npoints = prm.npoints0;
             opt.distthresh = prm.distthresh0;  % default is constructor value
+            opt.animate = false;
+            opt.movie = [];
 
             opt = tb_optparse(opt, varargin);
             
             prm.npoints = opt.npoints;
             prm.distthresh = opt.distthresh;  % actual value used is constructor value overridden here
+            
 
             prm.graph.clear();  % empty the graph
             prm.vpath = [];
-            create_roadmap(prm);  % build the graph
+            create_roadmap(prm, opt);  % build the graph
         end
         
         function pp = query(prm, start, goal)
@@ -312,7 +316,7 @@ classdef PRM < Navigation
 %             end
             
             hold off
-            
+            set(gcf, 'Color', [1 1 1])
         end
 
     end % method
@@ -320,8 +324,10 @@ classdef PRM < Navigation
     methods (Access='protected')
     % private methods
         % create the roadmap
-        function create_roadmap(prm)
+        function create_roadmap(prm, opt)
 
+            a = Animate(opt.movie, 'fps', 5);
+            
             for j=1:prm.npoints
                 % pick a point not in obstacle
                 while true
@@ -332,7 +338,7 @@ classdef PRM < Navigation
                     end
                 end
                 new = [x; y];
-
+                
                 % add it to the graph
                 vnew = prm.graph.add_node(new);
 
@@ -351,6 +357,15 @@ classdef PRM < Navigation
                     
                     % add an edge from the found node to new
                     prm.graph.add_edge(v(i), vnew);
+                end
+                
+                if opt.animate || ~isempty(opt.movie)
+                    prm.plot()
+                    if ~isempty(opt.movie) 
+                        a.add();
+                    else
+                        pause(1)
+                    end
                 end
             end
         end
