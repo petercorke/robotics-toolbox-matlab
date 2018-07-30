@@ -6,6 +6,7 @@ function PGraph2_test(testCase)
     randinit
     g = PGraph(2);
 
+    % add first component, nodes 1-5
     g.add_node( rand(2,1));
     g.add_node( rand(2,1));
     g.add_node( rand(2,1));
@@ -56,11 +57,13 @@ function PGraph2_test(testCase)
     d = g.edata(1);
     verifyEqual(testCase, d, [4 5 6 7]);
     
-    % add second component
+    % add second component, nodes 6-8
 
     g.add_node( rand(2,1));
     g.add_node( rand(2,1), 6, 1);
     g.add_node( rand(2,1), 7);
+    g.add_edge(6,7);
+    g.add_edge(6,8);
 
     verifyEqual(testCase, g.nc, 2);
 
