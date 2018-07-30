@@ -202,8 +202,11 @@ classdef (Abstract) RTBPose
                 return;
             end
             
-            t = [obj1.data] == [obj2.data];
-            e = all(t(:));
+            assert(length(obj1) == length(obj2), 'RTB:RTBPose:eq', 'arrays must be same size');
+            e = zeros(size(obj1), 'logical');
+            for i=1:length(obj1)
+                e(i) = all(all(abs([obj1(i).data] - [obj2(i).data]) < 10*eps));
+            end
             
         end
         
@@ -308,8 +311,11 @@ classdef (Abstract) RTBPose
                     error('RTB:RTBPose:badops', 'invalid operand lengths to * operator');
                 end
                 
-            elseif isa(obj, 'RTBPose') && isfloat(a)
+            elseif isa(obj, 'RTBPose') && isnumeric(a)
                 % obj * vectors (nxN), result is nxN
+                assert(isreal(a), 'RTB:RTBPose:*', 'matrix must be real');
+                q2 = double(a); % force to double
+                
                 obj1 = obj(1);
                 n = numrows(obj1.data);
 
