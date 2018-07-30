@@ -425,7 +425,7 @@ function fdyn_test(tc)
 
     p560 = p560.nofriction();
     
-    [TI,Q,QD] = p560.fdyn(T, 0, qn, qdo);
+    [TI,Q,QD] = p560.fdyn(T, @(r,t,q,qd) zeros(1,6), qn, qdo);
 end
 
 function nofriction_test(tc)
