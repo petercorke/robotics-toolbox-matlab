@@ -140,7 +140,7 @@ classdef Bug2 < Navigation
             % iterate using the next() method until we reach the goal
             robot = bug.start(:);
             bug.step = 1;
-            path = [];
+            path = bug.start(:);
             while true
                 if opt.animate
                     plot(robot(1), robot(2), 'g.', 'MarkerSize', 12);
