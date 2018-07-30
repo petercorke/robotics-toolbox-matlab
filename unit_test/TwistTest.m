@@ -50,11 +50,11 @@ function operator2d_test(tc)
     verifyEqual(tc, tw.S, [3*pi/4 pi/4 pi/2]', 'absTol', 1e-6);
 
     % test expm and T
-    verifyEqual(tc, tw.T, trexp2(tw.S), 'absTol', 1e-6);
-    verifyEqual(tc, tw.exp, trexp2(tw.S), 'absTol', 1e-6);
+    verifyEqual(tc, tw.T.double, trexp2(tw.S), 'absTol', 1e-6);
+    verifyEqual(tc, tw.exp.double, trexp2(tw.S), 'absTol', 1e-6);
 
     tw = Twist('R', [1 2]);
-    verifyEqual(tc, tw.T(pi/2), [0 -1 3; 1 0 1; 0 0 1], 'absTol', 1e-6);
+    verifyEqual(tc, tw.T(pi/2).double, [0 -1 3; 1 0 1; 0 0 1], 'absTol', 1e-6);
 end
 
 function operator3d_test(tc)
@@ -76,7 +76,7 @@ function operator3d_test(tc)
     both = tw * tw2;
     
     Tboth = tw.T * tw2.T;
-    verifyEqual(tc, both.T, Tboth, 'absTol', 1e-6);
+    verifyEqual(tc, double(both.T), double(Tboth), 'absTol', 1e-6);
     
     
     % check rotational twist
@@ -105,15 +105,15 @@ function operator3d_test(tc)
     verifyEqual(tc, tw.S, [-pi/2 2 pi  0 pi/2 0]', 'absTol', 1e-6);
 
     % test expm and T
-    verifyEqual(tc, tw.T, trexp(tw.S), 'absTol', 1e-6);
-    verifyEqual(tc, tw.exp, trexp(tw.S), 'absTol', 1e-6);
+    verifyEqual(tc, tw.T, SE3.exp(tw.S));
+    verifyEqual(tc, tw.exp, SE3.exp(tw.S));
     
     tw = Twist('R', [1 0 0], [0 0 0]);
-    verifyEqual(tc, tw.T(pi/2), trotx(pi/2), 'absTol', 1e-6);
+    verifyEqual(tc, tw.T(pi/2), SE3.Rx(pi/2), 'absTol', 1e-6);
     tw = Twist('R', [0 1 0], [0 0 0]);
-    verifyEqual(tc, tw.T(pi/2), troty(pi/2), 'absTol', 1e-6);
+    verifyEqual(tc, tw.T(pi/2), SE3.Ry(pi/2), 'absTol', 1e-6);
     tw = Twist('R', [0 0 1], [0 0 0]);
-    verifyEqual(tc, tw.T(pi/2), trotz(pi/2), 'absTol', 1e-6);
+    verifyEqual(tc, tw.T(pi/2), SE3.Rz(pi/2), 'absTol', 1e-6);
 end
 
 
