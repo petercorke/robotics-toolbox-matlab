@@ -82,9 +82,9 @@ function contains_test(tc)
     L = Plucker(P, Q);
     
     % validate contains
-    tc.verifyTrue( L.contains([2 3 7]) );
-    tc.verifyTrue( L.contains([2 1 0]) );
-    tc.verifyFalse( L.contains([2 1 2]) );
+    tc.verifyTrue( L.contains([2 3 7]') );
+    tc.verifyTrue( L.contains([2 1 0]') );
+    tc.verifyFalse( L.contains([2 1 4]') );
 end
 
 
