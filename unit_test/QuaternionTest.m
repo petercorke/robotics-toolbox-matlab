@@ -38,6 +38,15 @@ function constructor_test(tc)
 
 end
 
+
+function concat_test(tc)
+    u = Quaternion();
+    uu = [u u u u];
+    
+    tc.verifyClass(uu, 'Quaternion');
+    tc.verifySize(uu, [1 4]);
+end
+
 function primitive_convert_test(tc)
     % char
     u = Quaternion();

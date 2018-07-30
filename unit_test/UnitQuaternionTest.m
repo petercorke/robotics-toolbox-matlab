@@ -99,15 +99,24 @@ function constructor_test(tc)
 
 end
 
+
+function concat_test(tc)
+    u = UnitQuaternion();
+    uu = [u u u u];
+    
+    tc.verifyClass(uu, 'UnitQuaternion');
+    tc.verifySize(uu, [1 4]);
+end
+
 function primitive_convert_test(tc)
     % char
     
     u = UnitQuaternion();
     
     s = char( u );
+    tc.verifyClass(s, 'char');
     s = char( [u u u] );
-    u
-    [u u]
+
     
     %% s,v
     tc.verifyEqual(UnitQuaternion([1 0 0 0]).s, 1);
