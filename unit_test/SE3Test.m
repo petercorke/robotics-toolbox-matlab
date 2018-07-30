@@ -59,6 +59,14 @@ function constructor_test(tc)
 
 end
 
+function concat_test(tc)
+    x = SE3();
+    xx = [x x x x];
+    
+    tc.verifyClass(xx, 'SE3');
+    tc.verifySize(xx, [1 4]);
+end
+
 function double_test(tc)
     
     a = SE3(1,2, 3);
@@ -346,7 +354,7 @@ function conversions_test(tc)
     t = T.Twist();
     verifyInstanceOf(tc, t, 'Twist');
     tc.verifyEqual(t.v, [1 2 3]', 'AbsTol', 1e-10);
-    tc.verifyEqual(t.w, [0.2 0.3 0.4], 'AbsTol', 1e-10);
+    tc.verifyEqual(t.w, [0.2 0.3 0.4]', 'AbsTol', 1e-10);
     
     %%  SE3                     convert to SE3 class
 

@@ -5,6 +5,9 @@ end
 
 % we will assume that the primitives rotx,trotx, etc. all work
 
+% TODO
+%   each constructor, test type, size, value
+%   are constructors vectorized
 
 function constructor_test(tc)
     
@@ -12,15 +15,20 @@ function constructor_test(tc)
     
     
     %% from R
-    
-    tc.verifyEqual(SO3( eye(3,3) ).double, eye(3,3), 'AbsTol', 1e-10  );
+    R = SO3( eye(3,3) );
+    tc.verifyClass(R, 'SO3');
+    tc.verifySize(R, [1 1]);
+    tc.verifyEqual(R.double, eye(3,3), 'AbsTol', 1e-10  );
 
     tc.verifyEqual(SO3( rotx(pi/2) ).double, rotx(pi/2), 'AbsTol', 1e-10  );
     tc.verifyEqual(SO3( roty(-pi/2) ).double, roty(-pi/2), 'AbsTol', 1e-10  );
     tc.verifyEqual(SO3( rotz(pi) ).double, rotz(pi), 'AbsTol', 1e-10  );
 
     %% from T
-    tc.verifyEqual(SO3( trotx(pi/2) ).double, rotx(pi/2), 'AbsTol', 1e-10  );
+    R = SO3( trotx(pi/2) );
+    tc.verifyClass(R, 'SO3');
+    tc.verifySize(R, [1 1]);
+    tc.verifyEqual(R.double, rotx(pi/2), 'AbsTol', 1e-10  );
     tc.verifyEqual(SO3( troty(-pi/2) ).double, roty(-pi/2), 'AbsTol', 1e-10  );
     tc.verifyEqual(SO3( trotz(pi) ).double, rotz(pi), 'AbsTol', 1e-10  );
     
@@ -39,12 +47,20 @@ function constructor_test(tc)
 
     end
     tc.verifyEqual(SO3(R).R, R, 'AbsTol', 1e-10);
-    
+
     %% copy constructor
     r = SO3(rotx(0.3));
     tc.verifyEqual(SO3(r), r, 'AbsTol', 1e-10);
     
 
+end
+
+function concat_test(tc)
+    x = SO3();
+    xx = [x x x x];
+    
+    tc.verifyClass(xx, 'SO3');
+    tc.verifySize(xx, [1 4]);
 end
 
 function primitive_convert_test(tc)
