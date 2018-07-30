@@ -554,6 +554,7 @@ class Element {
 			negative = "-";
 			sRest = sRest.substring(1);
 		}
+
 		
 		switch (sRest.charAt(0)) {
 		case 'q':
@@ -564,7 +565,7 @@ class Element {
 			break;
 		default:
 			try {
-				constant = Integer.parseInt(sRest);
+				constant = -Integer.parseInt(sRest);
 			}
 			catch(NumberFormatException e) {
 				System.err.println(e.getMessage());
