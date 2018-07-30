@@ -174,12 +174,12 @@ end
 
 %    plot_point                 - plot points
 function plot_point_test(tc)
-    plot_point([1; 2; 3]);
+    plot_point([1; 2]);
 end
 
 %    plot_poly                  - plot polygon
 function plot_poly_test(tc)
-    p = [1 2 1 2;1 1 2 2];     
+    p = [1 2 2 1; 1 1 2 2];     
     plot_poly(p,'g');
 end
 
