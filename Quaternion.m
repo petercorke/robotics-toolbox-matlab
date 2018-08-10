@@ -313,10 +313,12 @@ classdef Quaternion
                 
                 if isa(q1, 'UnitQuaternion') && isa(q2, 'UnitQuaternion')
                     new = @UnitQuaternion.new;
+                    newclass = 'UnitQuaternion';
                 else
                     new = @Quaternion.new;
+                    newclass = 'Quaternion';
                 end
-                if length(q1) == length(q2)
+                if all(size(q1) == size(q2))
                     for i=1:length(q1)
                         % decompose into scalar and vector components
                         s1 = q1(i).s;  v1 = q1(i).v;
@@ -337,7 +339,7 @@ classdef Quaternion
                     end
                 elseif isscalar(q2)
                     s2 = q2.s;  v2 = q2.v;
-                    
+
                     for i=1:length(q1)
                         % decompose into scalar and vector components
                         s1 = q1(i).s;  v1 = q1(i).v;
@@ -346,7 +348,7 @@ classdef Quaternion
                         qp(i) = new([s1*s2-v1*v2.' s1*v2+s2*v1+cross(v1,v2)]);
                     end
                 else
-                    error('RTB:quaternion:badarg', '* operand length mismatch');
+                    error('RTB:quaternion:badarg', '* operand length/size mismatch');
                 end
                 
             elseif isa(q1, 'Quaternion') && isa(q2, 'double')
@@ -643,8 +645,17 @@ classdef Quaternion
                 end
                 return
             end
-            s = [num2str(q.s), ' << ' ...
-                num2str(q.v(1)) ', ' num2str(q.v(2)) ', '   num2str(q.v(3)) ' >>'];
+            
+            function s = render(x)
+                if isnumeric(x)
+                    s = num2str(x);
+                elseif isa(x, 'sym')
+                    s = char(x);
+                end
+            end
+                
+            s = [render(q.s), ' << ' ...
+                render(q.v(1)) ', ' render(q.v(2)) ', '   render(q.v(3)) ' >>'];
         end
                 
         function v = double(q)
