@@ -90,30 +90,28 @@ fprintf(fid,'%s{\n\n',funstr);
 % Allocate memory
 fprintf(fid,'\t%s\n','/* declare variables */');
 fprintf(fid,'\t%s\n','int iCol;');
-fprintf(fid,'\t%s\n',['double inertia[',num2str(nJoints),'][',num2str(nJoints),'] = { 0 };']);
-fprintf(fid,'\t%s\n',['double invinertia[',num2str(nJoints),'][',num2str(nJoints),'] = { 0 };']);
-fprintf(fid,'\t%s\n',['double coriolis[',num2str(nJoints),'][',num2str(nJoints),'] = { 0 };']);
-fprintf(fid,'\t%s\n',['double gravload[',num2str(nJoints),'][1] = { 0 };']);
-fprintf(fid,'\t%s\n',['double friction[',num2str(nJoints),'][1] = { 0 };']);
-fprintf(fid,'\t%s\n',['double tmpTau[',num2str(nJoints),'] = { 0 };']);
-fprintf(fid,'\t%s\n',['double taucoriolis[',num2str(nJoints),'] = { 0 };']);
+fprintf(fid,'\t%s\n',['double inertia[',num2str(nJoints),'][',num2str(nJoints),'] = {0};']);
+fprintf(fid,'\t%s\n',['double invinertia[',num2str(nJoints),'][',num2str(nJoints),'] = {0};']);
+fprintf(fid,'\t%s\n',['double coriolis[',num2str(nJoints),'][',num2str(nJoints),'] = {0};']);
+fprintf(fid,'\t%s\n',['double gravload[',num2str(nJoints),'][1] = {0};']);
+fprintf(fid,'\t%s\n',['double friction[',num2str(nJoints),'][1] = {0};']);
+fprintf(fid,'\t%s\n',['double tmpTau[1][',num2str(nJoints),'] = {0};']);
 
 fprintf(fid,'%s\n',' '); % empty line
 
 fprintf(fid,'\t%s\n','/* call the computational routines */');
 fprintf(fid,'\t%s\n',[CGen.getrobfname,'_','inertia(inertia, input1);']);
-fprintf(fid,'\t%s\n',['gaussjordan(inertia, invinertia, ',num2str(nJoints),');']);
 fprintf(fid,'\t%s\n',[CGen.getrobfname,'_','coriolis(coriolis, input1, input2);']);
 fprintf(fid,'\t%s\n',[CGen.getrobfname,'_','gravload(gravload, input1);']);
 fprintf(fid,'\t%s\n',[CGen.getrobfname,'_','friction(friction, input2);']);
 
 fprintf(fid,'%s\n',' '); % empty line
+fprintf(fid,'\t%s\n',['gaussjordan(inertia, invinertia, ',num2str(nJoints),');']);
 
 fprintf(fid,'\t%s\n','/* fill temporary vector */');
-fprintf(fid,'\t%s\n',['matvecprod(taucoriolis, coriolis, input2,',num2str(nJoints),',',num2str(nJoints),');']);
-
+fprintf(fid,'\t%s\n',['matvecprod(tmpTau, coriolis, input2,',num2str(nJoints),',',num2str(nJoints),');']);
 fprintf(fid,'\t%s\n',['for (iCol = 0; iCol < ',num2str(nJoints),'; iCol++){']);
-fprintf(fid,'\t\t%s\n','tmpTau[iCol] = input3[iCol] -  taucoriolis[iCol] - gravload[iCol][0] + friction[iCol][0];');
+fprintf(fid,'\t\t%s\n','tmpTau[0][iCol] = input3[iCol] -  tmpTau[0][iCol] - gravload[iCol][0] + friction[iCol][0];');
 fprintf(fid,'\t%s\n','}');
 
 fprintf(fid,'\t%s\n','/* compute acceleration */');
@@ -122,7 +120,6 @@ fprintf(fid,'\t%s\n',['matvecprod(QDD, invinertia, tmpTau,',num2str(nJoints),','
 fprintf(fid,'%s\n','}');
 
 fclose(fid);
-
 
 %% Generate C header file
 fid = fopen(fullfile(hdrDir,hfilename),'w+');
