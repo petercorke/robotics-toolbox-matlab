@@ -825,7 +825,7 @@ classdef SE3 < SO3
             % 1.
             %
             % See also RAND.
-            T = SE3( rand(3,1) ) * SE3.rpy(rand(1,3));
+            T = SE3( rand(3,1) ) * SE3(SO3.rand);
         end
         
         function obj = delta(d)
