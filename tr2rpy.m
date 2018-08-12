@@ -4,7 +4,7 @@
 % corresponding to the rotation part of a homogeneous transform T. The 3
 % angles RPY=[R,P,Y] correspond to sequential rotations about the Z, Y and
 % X axes respectively. Roll and yaw angles in [-pi,pi) while pitch angle
-% in [-pi/2,pi/2].
+% in [-pi/2,pi/2).
 %
 % RPY = TR2RPY(R, options) as above but the input is an orthonormal
 % rotation matrix R (3x3).
