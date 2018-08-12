@@ -187,7 +187,9 @@ classdef UnitQuaternion < Quaternion
             elseif isvec(s,4)
                 % passed in a 4-vector of components
                 % normalize it
-                s = unit(s);
+                if ~isa(s, 'sym')
+                    s = unit(s);
+                end
                 uq.s = s(1);
                 uq.v = s(2:4);
             else
@@ -209,7 +211,7 @@ classdef UnitQuaternion < Quaternion
             % - Is vectorized, can operate on a vector of UnitQuaternion objects.
             
             for i=1:length(q)
-                qi(i) = UnitQuaternion(q(i).s, -q(i).v);
+                qi(i) = UnitQuaternion( [q(i).s -q(i).v] );
             end
         end
         
@@ -458,7 +460,7 @@ classdef UnitQuaternion < Quaternion
         function qp = mtimes(q1, q2)
             %UnitQuaternion.mtimes Multiply unit quaternions
             %
-            % Q1*Q2   is a UnitQuaternion object formed by Hamilton product 
+            % Q1*Q2   is a UnitQuaternion object formed by Hamilton product
             % of Q1 and Q2 where Q1 and Q2 are both UnitQuaternion objects.
             %
             % Q*V     is a vector (3x1) formed by rotating the vector V (3x1)by the UnitQuaternion Q.
@@ -479,7 +481,7 @@ classdef UnitQuaternion < Quaternion
             %   of Q by the vector V.
             %
             % See also Quaternion.mrdivide, Quaternion.mpower, Quaternion.plus, Quaternion.minus.
-            
+
             if isa(q2, 'UnitQuaternion')
                 %QQMUL  Multiply UnitQuaternion by UnitQuaternion
                 %
@@ -488,16 +490,16 @@ classdef UnitQuaternion < Quaternion
                 %   Return a product of UnitQuaternions.
                 %
                 %   See also: TR2Q
-                
+
                 % get the superclass to do this for us
                 qp = mtimes@Quaternion(q1, q2);
-                
+
             elseif isa(q2, 'Quaternion')
                 % get the superclass to do this for us
                 qp = mtimes@Quaternion(q1, q2);
-                
-            elseif isa(q1, 'Quaternion') && isa(q2, 'double')
-                
+
+            elseif isa(q1, 'Quaternion') && (isnumeric(q2) | isa(q2, 'sym'))
+
                 %QVMUL  Multiply vector by UnitQuaternion
                 %
                 %   VT = qvmul(Q, V)
@@ -505,36 +507,45 @@ classdef UnitQuaternion < Quaternion
                 %   Rotate the vector V by the UnitQuaternion Q.
                 %
                 %   See also: QQMUL, QINV
-                
-                %% 2?qv ×(?qv ×v+qwv)+v 
+
+                %% 2?qv ×(?qv ×v+qwv)+v
                 %% 2*q.v x ( q.v x v + s v) + v
-                qp = zeros(3, max(length(q1), numcols(q2)));
-                if numrows(q2) == 3
-                    if length(q1) == numcols(q2)
-                        for i=1:length(q1)
-                            q = q1(i) * Quaternion.pure(q2(:,i)) * inv(q1(i));
-                            qp(:,i) = q.v(:);
-                        end
-                    elseif length(q1) == 1
-                        for i=1:numcols(q2)
-                            q = q1 * Quaternion.pure(q2(:,i)) * inv(q1);
-                            qp(:,i) = q.v(:);
-                        end
-                    elseif numcols(q2) == 1
-                        for i=1:length(q1)
-                            q = q1(i) * Quaternion.pure(q2(:)) * inv(q1(i));
-                            qp(:,i) = q.v(:);
-                        end
-                    else
-                        error('RTB:UnitQuaternion:badarg', 'quaternion-double product: vectors lengths incorrect');
+                assert(isreal(q2), 'RTB:UnitQuaternion:*', 'quat-double: matrix must be real');
+                assert(size(q2,1) == 3, 'RTB:UnitQuaternion:*', 'quat-double: matrix must have 3 rows');
+                if isnumeric(q2)
+                    q2 = double(q2); % force to double
+                end
+
+                %                 if q1(1).issym || isa(q2, 'sym')
+                %                     qp = zeros(3, max(length(q1), numcols(q2)), 'sym');
+                %                 else
+                %                     qp = zeros(3, max(length(q1), numcols(q2)));
+                %                 end
+
+                if length(q1) == numcols(q2)
+                    for i=1:length(q1)
+                        q = q1(i) * Quaternion.pure(q2(:,i)) * inv(q1(i));
+                        qp(:,i) = q.v(:);
+                    end
+                elseif length(q1) == 1
+                    for i=1:numcols(q2)
+                        q = q1 * Quaternion.pure(q2(:,i)) * inv(q1);
+                        qp(:,i) = q.v(:);
+                    end
+                elseif numcols(q2) == 1
+                    for i=1:length(q1)
+                        q = q1(i) * Quaternion.pure(q2(:)) * inv(q1(i));
+                        qp(:,i) = q.v(:);
                     end
                 else
-                    error('RTB:UnitQuaternion:badarg', 'quaternion-double product: must be a 3-vector');
+                    error('RTB:UnitQuaternion:badarg', 'quaternion-double product: vectors lengths incorrect');
                 end
+
             else
                 error('RTB:UnitQuaternion:badarg', 'quaternion product: incorrect right hand operand');
             end
         end
+        
         
         function qp = times(q1, q2)
             %UnitQuaternion.times Multiply a quaternion object and unitize
@@ -586,7 +597,7 @@ classdef UnitQuaternion < Quaternion
                 
                 qq = q1 * inv(q2);
             else
-                error('RTB:UnitQuaternion:badarg', 'quaternion divide /: incorrect RH operands');
+                nerror('RTB:UnitQuaternion:badarg', 'quaternion divide /: incorrect RH operands');
             end
         end
 
@@ -696,7 +707,7 @@ classdef UnitQuaternion < Quaternion
             
             if length(q) > 1
                 s = '';
-                for qq = q;
+                for qq = q(:)'
                     s = char(s, char(qq));
                 end
                 return
