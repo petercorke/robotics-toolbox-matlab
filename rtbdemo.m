@@ -59,10 +59,6 @@ function rtbdemo(timeout)
     % create the options to pass through to runscript
     opts = {'begin', 'path', demopath};
     
-    % if a timeout interval is given, add this to the options
-    if nargin > 0
-        opts = {opts, 'delay', timeout};
-    end
     
     % display a help message in the consolde
     msg = {
@@ -87,6 +83,8 @@ function rtbdemo(timeout)
         'V-REP simulator', 'vrepdemo';
         'Create a model', 'robot';
         'Animation', 'graphics';
+        'Rendered animation', 'puma_path';
+        '3-point turn', 'car_anim_rs';
         'Forward kinematics', 'fkine';
         'Inverse kinematics', 'ikine';
         'Jacobians', 'jacob';
@@ -115,9 +113,11 @@ function rtbdemo(timeout)
         'gui_Callback',   []);
     h = gui_mainfcn(gui_State);
 
-    
     % now set the callback for every button, can't seem to make this work using
     % GUIDE.
+    
+    cb = findobj(h, 'Tag', 'checkbox1');
+    
     for hh=h.Children'
         switch hh.Type
             case 'uicontrol'                
@@ -161,10 +161,25 @@ function rtbdemo(timeout)
         for i=1:size(demos, 1)
             if strcmp(selection, demos{i,1})
                 % then run the appropriate script
-                script = demos{i,2}
+                script = demos{i,2};
                 set(h, 'Visible', 'off');
+                
+                if cb.Value > 0
+                    % pause after each command
+                    opts1 = opts;
+                else
+                    % no pause
+                    
+                    delay = 0;
+                    % if delay given on command use that
+                    if nargin > 0
+                        delay = timeout;
+                    end
+                    opts1 = [opts, 'delay', delay];
+                end
+    
                 try
-                runscript(script, opts{:})
+                    runscript(script, opts1{:})
                 catch me
                     disp('error in executing demo script');
                     me.getReport()
