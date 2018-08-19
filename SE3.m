@@ -706,7 +706,8 @@ classdef SE3 < SO3
             %SE3.Rx Rotation about X axis
             %
             % P = SE3.Rx(THETA) is an SE3 object representing a rotation of THETA
-            % radians about the x-axis.
+            % radians about the x-axis.  If the THETA is a vector (1xN) then P will be
+            % a vector (1xN) of corresponding SE3 objects.
             %
             % P = SE3.Rx(THETA, 'deg') as above but THETA is in degrees.
             %
@@ -717,7 +718,8 @@ classdef SE3 < SO3
             %SE3.Ry Rotation about Y axis
             %
             % P = SE3.Ry(THETA) is an SE3 object representing a rotation of THETA
-            % radians about the y-axis.
+            % radians about the y-axis.  If the THETA is a vector (1xN) then P will be
+            % a vector (1xN) of corresponding SE3 objects.
             %
             % P = SE3.Ry(THETA, 'deg') as above but THETA is in degrees.
             %
@@ -728,7 +730,8 @@ classdef SE3 < SO3
             %SE3.Rz Rotation about Z axis
             %
             % P = SE3.Rz(THETA) is an SE3 object representing a rotation of THETA
-            % radians about the z-axis.
+            % radians about the z-axis.  If the THETA is a vector (1xN) then P will be
+            % a vector (1xN) of corresponding SE3 objects.
             %
             % P = SE3.Rz(THETA, 'deg') as above but THETA is in degrees.
             %

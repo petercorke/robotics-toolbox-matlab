@@ -490,14 +490,18 @@ classdef SO3 < RTBPose
         
 
         function s = SE3(obj)
-            %SO3.SE3 Convert to SEe object
+            %SO3.SE3 Convert to SE3 object
             %
             % Q = P.SE3() is an SE3 object with a rotational component given by the
-            % SO3 object P, and with a zero translational component.
+            % SO3 object P, and with a zero translational component.  If P is a vector
+            % of SO3 objects then Q will a same length vector of SE3 objects.
             %
             % See also SE3.
-            s = SE3();
-            s.data = [obj.data zeros(3,1); 0 0 0 1];
+            
+            for i=1:length(obj)
+                s(i) = SE3();
+                s(i).data = [obj(i).data zeros(3,1); 0 0 0 1];
+            end
         end
         
         function q = UnitQuaternion(obj)
@@ -542,39 +546,54 @@ classdef SO3 < RTBPose
             %SO3.Rx Rotation about X axis
             %
             % P = SO3.Rx(THETA) is an SO3 object representing a rotation of THETA
-            % radians about the x-axis.
+            % radians about the x-axis.  If the THETA is a vector (1xN) then P will be
+            % a vector (1xN) of corresponding SO3 objects.
             %
             % P = SO3.Rx(THETA, 'deg') as above but THETA is in degrees.
             %
             % See also SO3.Ry, SO3.Rz, rotx.
             
-            obj = SO3( rotx(varargin{:}) );
+            theta = varargin{1};
+            args = varargin; args{1} = [];
+            for i=1:length(theta)
+                obj(i) = SO3( rotx(theta(i), args{:}) );
+            end
         end
         
         function obj = Ry(varargin)
             %SO3.Ry Rotation about Y axis
             %
             % P = SO3.Ry(THETA) is an SO3 object representing a rotation of THETA
-            % radians about the y-axis.
+            % radians about the y-axis.  If the THETA is a vector (1xN) then P will be
+            % a vector (1xN) of corresponding SO3 objects.
             %
             % P = SO3.Ry(THETA, 'deg') as above but THETA is in degrees.
             %
             % See also SO3.Rx, SO3.Rz, roty.
             
-            obj = SO3( roty(varargin{:}) );
+            theta = varargin{1};
+            args = varargin; args{1} = [];
+            for i=1:length(theta)
+                obj(i) = SO3( roty(theta(i), args{:}) );
+            end
         end
         
         function obj = Rz(varargin)
             %SO3.Rz Rotation about Z axis
             %
             % P = SO3.Rz(THETA) is an SO3 object representing a rotation of THETA
-            % radians about the z-axis.
+            % radians about the z-axis.  If the THETA is a vector (1xN) then P will be
+            % a vector (1xN) of corresponding SO3 objects.
             %
             % P = SO3.Rz(THETA, 'deg') as above but THETA is in degrees.
             %
             % See also SO3.Rx, SO3.Ry, rotz.
             
-            obj = SO3( rotz(varargin{:}) );
+            theta = varargin{1};
+            args = varargin; args{1} = [];
+            for i=1:length(theta)
+                obj(i) = SO3( rotz(theta(i), args{:}) );
+            end
         end
                 
         
