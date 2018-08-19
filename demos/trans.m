@@ -1,10 +1,3 @@
-% In the field of robotics there are many possible ways of representing 
-% positions and orientations, but the homogeneous transformation is well 
-% matched to MATLABs powerful tools for matrix manipulation.
-%
-% Homogeneous transformations describe the relationships between Cartesian 
-% coordinate frames in terms of translation and orientation. 
-
 
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
@@ -25,6 +18,14 @@
 %
 % http://www.petercorke.com
 
+%%begin
+
+% In the field of robotics there are many possible ways of representing 
+% positions and orientations, but the homogeneous transformation is well 
+% matched to MATLABs powerful tools for matrix manipulation.
+%
+% Homogeneous transformations describe the relationships between Cartesian 
+% coordinate frames in terms of translation and orientation. 
 
 %  A pure translation of 0.5m in the X direction is represented by
 

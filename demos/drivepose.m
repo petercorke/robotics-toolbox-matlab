@@ -1,7 +1,3 @@
-% We will show how to make a mobile robot with "car-like" steering drive from
-% one pose to another.
-
-
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
@@ -20,6 +16,11 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+%%begin
+
+% We will show how to make a mobile robot with "car-like" steering drive from
+% one pose to another.
 
 
 % The goal pose is

@@ -1,8 +1,3 @@
-% A quadrotor is a simple flying vehicle with 4 propellers with their thrust
-% axes pointing upwards.  This demo shows an animation of a flying quadrotor
-% with a nested control system.
-
-
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
@@ -21,6 +16,12 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+%%begin
+
+% A quadrotor is a simple flying vehicle with 4 propellers with their thrust
+% axes pointing upwards.  This demo shows an animation of a flying quadrotor
+% with a nested control system.
 
 % We can open a Simulink model of the quadrotor and its controller.
 sl_quadrotor
