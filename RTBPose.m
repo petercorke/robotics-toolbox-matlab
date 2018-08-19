@@ -356,7 +356,8 @@ classdef (Abstract) RTBPose
                     % special case, planar rigid body transform of a polyshape
                     out = polyshape( (obj * a.Vertices')' );
             elseif isa(obj, 'SE3') && isa(a, 'Plucker')
-                out = obj.inv.Ad * a;   % invokes mtimes Plucker.mtimes
+                A = [obj.R -skew(obj.t); zeros(3,3) obj.R];
+                out = A * a;   % invokes mtimes Plucker.mtimes
             else
                 error('RTB:RTBPose:badops', 'invalid operand types to * operator');
             end
@@ -655,7 +656,11 @@ classdef (Abstract) RTBPose
             %
             % See also SO2, SO3, SE2, SE3.
             
-            loose = strcmp( get(0, 'FormatSpacing'), 'loose');
+            try  % for Octave
+                loose = strcmp( get(0, 'FormatSpacing'), 'loose');
+            catch
+                loose = 0;
+            end
             if loose
                 disp(' ');
             end
