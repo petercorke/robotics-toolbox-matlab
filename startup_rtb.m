@@ -30,6 +30,8 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+
 fp = fopen('RELEASE', 'r');
 release = fgetl(fp);
 fclose(fp);
@@ -37,6 +39,7 @@ fprintf('- Robotics Toolbox for MATLAB (release %s)\n', release)
 tbpath = fileparts(which('Link'));
 addpath( fullfile(tbpath, 'demos') );
 addpath( fullfile(tbpath, 'examples') );
+addpath( fullfile(tbpath, 'Apps') );
 addpath( fullfile(tbpath, 'mex') );
 addpath( fullfile(tbpath, 'models') );
 addpath( fullfile(tbpath, 'data') );
@@ -68,4 +71,3 @@ p = fullfile(rvcpath, 'contrib/paretofront');
 %     end
 % end
 clear status release currentversion tbpath
-disp('Run rtbdemo to explore the toolbox');
