@@ -30,6 +30,9 @@
 % http://www.petercorke.com
 
 function R = rotz(t, deg)
+    
+    assert(isreal(t) & isscalar(t), 'RTB:rotz:badarg', 'theta must be a real scalar');
+
     if nargin > 1 && strcmp(deg, 'deg')
         t = t *pi/180;
     end
