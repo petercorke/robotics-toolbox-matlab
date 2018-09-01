@@ -1,6 +1,9 @@
 ## Synopsis
 
-Robotics Toolbox for MATLAB release 10.
+Robotics Toolbox for MATLAB&reg; release 10.
+
+This toolbox brings robotics specific functionality to MATLAB, exploiting the native capabilities of MATLAB (linear algebra, portability, graphics).
+
 The toolbox contains functions and classes to represent orientation and pose in 2D and 3D (SO(2), SE(2), SO(3), SE(3)) as matrices, quaternions, twists, triple angles, and matrix exponentials. The Toolbox also provides functions for manipulating and converting between datatypes such as vectors, homogeneous transformations and unit-quaternions which are necessary to represent 3-dimensional position and orientation.
 
 The Toolbox uses a very general method of representing the kinematics and dynamics of serial-link manipulators as MATLAB®  objects –  robot objects can be created by the user for any serial-link manipulator and a number of examples are provided for well known robots from Kinova, Universal Robotics, Rethink as well as classical robots such as the Puma 560 and the Stanford arm.
@@ -14,7 +17,7 @@ Advantages of the Toolbox are that:
 
 ## Code Example
 
-```
+```matlab
 >> rotx(0.2)  % SO(3) rotation matrix
 ans =
     1.0000         0         0
@@ -22,29 +25,43 @@ ans =
          0    0.1987    0.9801
 ```
 
-## Motivation
 
-This toolbox brings robotics specific functionality to MATLAB, exploiting the native 
-capabilities of MATLAB (linear algebra, portability, graphics).
-
-## Installation
+## Installation from github
 
 You need to have a recent version of MATLAB, R2016b or later.
 
-Installable distributions of the toolbox are available from the [download page](http://petercorke.com/wordpress/toolboxes/robotics-toolbox)
+The Robotics Toolbox for MATLAB has dependency on the repository `toolbox-common-matlab`.  
 
-You can also this, my working version of the toolbox, directly:
-  * clone this repo
-  * also clone the [toolbox-common-matlab](https://github.com/petercorke/toolbox-common-matlab) repo
-  * add both folders to your MATLAB path
-  * run the demo
-```
->>> rtbdemo
+To install the Toolbox on your computer from github follow these simple instructions.
+
+From the shell:
+
+```shell
+% mkdir rvctools
+% cd rvctools
+% git clone https://github.com/petercorke/robotics-toolbox-matlab.git robot
+% git clone https://github.com/petercorke/toolbox-common-matlab.git common
+% mv common/startup_rvc.m .
 ```
 
-Distributions are built using the tools in the `distrib` and `doc` folders.
+From within MATLAB
+```matlab
+>> cd rvctools  % this is the same folder as above
+>> startup_rvc
+```
+The second line sets up the MATLAB path appropriately but it's only for the current session.  You can either:
+1. Repeat this everytime you start MATLAB
+2. Add it to your `startup.m` file
+3. Once you have run startup_rvc, run `pathtool` and push the `Save` button
+
+
+## Online resources:
+
+* [Home page](http://www.petercorke.com)
+* [Discussion group](http://groups.google.com/group/robotics-tool-box?hl=en)
+
+Please email bug reports, comments or code contribtions to me at rvc@petercorke.com
   
-## API Reference
 
 ## Contributors
 
