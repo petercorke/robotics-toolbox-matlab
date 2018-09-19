@@ -5,6 +5,11 @@ function tests = SimulinkTest
   tests = functiontests(localfunctions);
 end
 
+function teardownOnce(tc)
+    delete('*.slxc')
+    bdclose
+end
+
 function braitenberg_test(testCase)
     sim('sl_braitenberg');
 	close all
@@ -20,6 +25,7 @@ function pursuit_test(testCase)
 	close all
 
 end
+
 function drivepoint_test(testCase)
     assignin('base', 'xg', [5 5]);
     assignin('base', 'x0', [8 5 pi/2]);
@@ -77,11 +83,7 @@ function vlooptest_test(testCase)
 	close all
 
 end
-function vloop_test2_test(testCase)
-    sim('vloop_test2');
-	close all
 
-end
 function plooptest_test(testCase)
     sim('ploop_test');
 	close all
@@ -91,7 +93,7 @@ function ctorque_test(testCase)
     mdl_puma560
     p560 = p560.nofriction();
     assignin('base', 'p560', p560);
-    sim('sl_ctorque');
+    sim('sl_ctorque', 1);
 	close all
 
 end
@@ -99,23 +101,23 @@ function feedforward_test(testCase)
     mdl_puma560
     p560 = p560.nofriction();
     assignin('base', 'p560', p560);
-    sim('sl_fforward');
+    sim('sl_fforward', 1);
 	close all
 
 end
 function flexlink_test(testCase)
     mdl_twolink
     assignin('base', 'twolink', twolink);
-    sim('sl_flex');
+    sim('sl_flex', 1);
 	close all
 
 end
 function quadcopter_test(testCase)
-    sim('sl_quadrotor');
+    sim('sl_quadrotor', 1);
 	close all
 
 end
 function quadcopter_vs_test(testCase)
-    sim('sl_quadrotor_vs');
+    sim('sl_quadrotor_vs', 1);
 	close all
 end
