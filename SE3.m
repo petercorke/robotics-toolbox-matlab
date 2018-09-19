@@ -413,7 +413,7 @@ classdef SE3 < SO3
             it = SE3( obj.R', -obj.R'*obj.t);
         end
         
-        function Ti = interp(obj1, obj2, varargin)
+        function Ti = interp(obj1, varargin)
             %SE3.interp Interpolate SE3 poses
             %
             % P1.interp(P2, s) is an SE3 object representing an interpolation
@@ -431,10 +431,14 @@ classdef SE3 < SO3
             %
             % See also TRINTERP, UnitQuaternion.
             
-            try
+            if isa(varargin{1}, 'SE3')
+                % interp(SE3, SE3, s)  interpolate between given values
+                obj2 = varargin{1};
+                varargin = varargin(2:end);
                 Ti = SE3( trinterp(obj1.T, obj2.T, varargin{:}) );
-            catch
-                error('RTB:SE3:interp:badarg', 'error in trinterp');
+            else
+                % interp(SE3, s)  interpolate between null and given value
+                Ti = SE3( trinterp(obj1.T, varargin{:}) );
             end
         end
         
