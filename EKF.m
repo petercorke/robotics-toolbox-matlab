@@ -375,6 +375,7 @@ classdef EKF < handle
         %   cleared.
         
             opt.plot = true;
+            opt.movie = [];
             opt = tb_optparse(opt, varargin);
             
             ekf.init();
@@ -394,14 +395,16 @@ classdef EKF < handle
                             axis(ekf.dim);
                     end
                     set(gca, 'ALimMode', 'manual');
-
                 else
                     opt.plot = false;
                 end
+                axis manual
+                xlabel('X'); ylabel('Y')
             end
-            axis manual
+
 
             % simulation loop
+            anim = Animate(opt.movie);
             for k=1:n
                 
                 if opt.plot
@@ -410,7 +413,10 @@ classdef EKF < handle
                 end
                 
                 ekf.step(opt);
+                anim.add();
             end
+            
+            anim.close();
         end
         
         function xyt = get_xy(ekf)
