@@ -30,7 +30,7 @@ function DeadReckoning_test(tc)
     s = char(v);
 
     ekf = EKF(v, V, P0);
-    ekf.run(1000);
+    ekf.run(100);
 
     clf
     ekf.plot_xy
@@ -62,7 +62,7 @@ function MapLocalization_test(tc)
     sensor.interval = 5;
     ekf = EKF(veh, W, P0, sensor, W, map);
 
-    ekf.run(1000);
+    ekf.run(100);
 
     clf
     map.plot()
@@ -91,7 +91,7 @@ function Mapping_test(tc)
     sensor.interval = 5;
 
     ekf = EKF(veh, [], [], sensor, W, []);
-    ekf.run(1000);
+    ekf.run(100);
     
 
     clf
@@ -124,7 +124,7 @@ function SLAM_test(tc)
     ekf = EKF(veh, V, P0, sensor, W, []);
     ekf
     ekf.verbose = false;
-    ekf.run(1000);
+    ekf.run(100);
 
 
     clf
