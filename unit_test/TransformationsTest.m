@@ -25,7 +25,7 @@ function rotx_test(tc)
     verifyEqual(tc, simplify(det(R)), sym(1));
 
     %test for non-scalar input
-    verifyError(tc, @()rotx([1 2 3]),'MATLAB:catenate:dimensionMismatch');
+    verifyError(tc, @()rotx([1 2 3]),'RTB:rotx:badarg');
 end
     
 function roty_test(tc)
@@ -43,7 +43,7 @@ function roty_test(tc)
     verifyEqual(tc, simplify(det(R)), sym(1));
     
     %test for non-scalar input
-    verifyError(tc, @()roty([1 2 3]),'MATLAB:catenate:dimensionMismatch');
+    verifyError(tc, @()roty([1 2 3]),'RTB:roty:badarg');
 end
     
 function rotz_test(tc)
@@ -61,7 +61,7 @@ function rotz_test(tc)
     verifyEqual(tc, simplify(det(R)), sym(1));
     
      %test for non-scalar input
-    verifyError(tc, @()rotz([1 2 3]),'MATLAB:catenate:dimensionMismatch');
+    verifyError(tc, @()rotz([1 2 3]),'RTB:rotz:badarg');
 end
  
 function trotx_test(tc)
