@@ -30,8 +30,9 @@
 % http://www.petercorke.com
 
 function R = rotx(t, deg)
-
-    assert(isreal(t) & isscalar(t), 'RTB:rotx:badarg', 'theta must be a real scalar');
+    
+    assert((isreal(t) & isscalar(t)) | isa(t, 'sym'), ...
+        'RTB:rotx:badarg', 'theta must be a real scalar');
     
     if nargin > 1 && strcmp(deg, 'deg')
         t = t *pi/180;

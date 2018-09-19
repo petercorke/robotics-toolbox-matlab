@@ -31,8 +31,9 @@
 
 function R = roty(t, deg)
     
-    assert(isreal(t) & isscalar(t), 'RTB:roty:badarg', 'theta must be a real scalar');
-
+    assert((isreal(t) & isscalar(t)) | isa(t, 'sym'), ...
+        'RTB:roty:badarg', 'theta must be a real scalar');
+    
     if nargin > 1 && strcmp(deg, 'deg')
         t = t *pi/180;
     end
