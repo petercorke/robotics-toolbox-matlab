@@ -550,11 +550,11 @@ class Element {
 		// handle an optional minus sign
 		String negative = "";
 		
+
 		if (sRest.charAt(0) == '-') {
 			negative = "-";
 			sRest = sRest.substring(1);
 		}
-
 		
 		switch (sRest.charAt(0)) {
 		case 'q':
@@ -565,13 +565,18 @@ class Element {
 			break;
 		default:
 			try {
-				constant = -Integer.parseInt(sRest);
+				constant = Integer.parseInt(sRest);
+				if (negative == "-") {
+					constant = -constant;
+					negative = "";
+				}
 			}
 			catch(NumberFormatException e) {
 				System.err.println(e.getMessage());
 				throw(new IllegalArgumentException("bad argument in term " + s));
 			}
 		}
+		//System.out.println("ElementConstructor: " + this);
 	}
 
     /*
