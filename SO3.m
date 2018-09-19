@@ -554,7 +554,7 @@ classdef SO3 < RTBPose
             % See also SO3.Ry, SO3.Rz, rotx.
             
             theta = varargin{1};
-            args = varargin; args{1} = [];
+            args = varargin(2:end);
             for i=1:length(theta)
                 obj(i) = SO3( rotx(theta(i), args{:}) );
             end
@@ -572,7 +572,7 @@ classdef SO3 < RTBPose
             % See also SO3.Rx, SO3.Rz, roty.
             
             theta = varargin{1};
-            args = varargin; args{1} = [];
+            args = varargin(2:end);
             for i=1:length(theta)
                 obj(i) = SO3( roty(theta(i), args{:}) );
             end
@@ -590,7 +590,7 @@ classdef SO3 < RTBPose
             % See also SO3.Rx, SO3.Ry, rotz.
             
             theta = varargin{1};
-            args = varargin; args{1} = [];
+            args = varargin(2:end);
             for i=1:length(theta)
                 obj(i) = SO3( rotz(theta(i), args{:}) );
             end
