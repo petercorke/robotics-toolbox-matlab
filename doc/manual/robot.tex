@@ -1,5 +1,7 @@
 \documentclass[a4paper,twoside]{report}
 
+\newcommand{\rtbyear}{2018}
+
 \usepackage{times}
 \usepackage{graphicx}
 \usepackage{wrapfig}
@@ -66,12 +68,13 @@
 \setlength{\TPHorizModule}{1cm}
 \setlength{\TPVertModule}{1cm}
 
+%%%%%%%%%%%%%%%%% TITLE PAGE
 \begin{textblock}{19}(-3.5,-4.5)
 \includepdf{titlepage}
 \fontsize{75}{80}\selectfont
 \textbf{Robotics Toolbox}\\[5pt]
 \fontsize{40}{45}\selectfont
-for MATLAB\\[5pt]
+for MATLAB\textsuperscript{\textregistered}\\[5pt]
 Release 10
 
 \vspace*{20.5cm}
@@ -79,7 +82,7 @@ Release 10
 \end{textblock}
 \thispagestyle{empty}
 \newpage
-% inside front cover
+%%%%%%%%%%%%%%%%% INSIDE FRONT COVER
 \vspace*{\fill}
 \begin{tabular}{ll}
 Release & \release \\
@@ -90,17 +93,16 @@ Discussion group & \url{http://groups.google.com.au/group/robotics-tool-box}
 \end{tabular}
 \vspace*{\fill}
 \hrule
-Copyright \textcopyright 2017 Peter Corke\\
+Copyright \textcopyright \rtbyear Peter Corke\\
 peter.i.corke$@$gmail.com\\
 \url{http://www.petercorke.com}
 \vspace*{\fill}
 \setlength{\fboxsep}{10pt}%
 
-
-
+%%%%%%%%%%%%%%%% CONTENT
 \pagestyle{headings}        % Gives page headings at top of page
-\lfoot{Robotics Toolbox \release\ for \Mlab}
-\rfoot{Copyright \copyright Peter Corke 2017}
+\lfoot{Robotics Toolbox \release\ for \Mlab\textsuperscript{\textregistered} }
+\rfoot{Copyright \copyright Peter Corke \rtbyear}
 
 \setcounter{section}{0}
 \addcontentsline{toc}{section}{Preface}
@@ -111,7 +113,7 @@ peter.i.corke$@$gmail.com\\
 \end{wrapfigure}
 This, the tenth major release of the Toolbox, representing over twenty five years of continuous
 development and a substantial level of maturity.
-This version corresponds to the \textbf{second edition} of the book ``\textit{Robotics, Vision \& Control, second edition}'' published in June 2017 -- RVC2.
+This version corresponds to the \textbf{second edition} of the book ``\textit{Robotics, Vision \& Control}'' published in June 2017 -- RVC2.
 
 This \Mlab\textsuperscript{\textregistered} Toolbox has a rich collection of functions that are useful for the study and simulation
 of robots:  arm-type robot manipulators and mobile robots.
@@ -140,7 +142,7 @@ For elaboration on the underlying principles, extensive illustrations and worked
 \chapter*{Functions by category}
 \addcontentsline{toc}{section}{Functions by category}
 \begin{multicols}{2}
-\input{funcidx_body.tex}
+\IfFileExists{funcidx_body.tex}{\input{funcidx_body.tex}}{} 
 \end{multicols}
 
 \cleardoublepage
@@ -196,7 +198,7 @@ These changes are summarized in Table \ref{tab:changes}.
 \item The class \texttt{Twist} represents a twist in 3D or 2D.  Respectively, it is a 6-vector representation of the Lie algebra $se(3)$, or a
 3-vector representation of $se(2)$.
 \item The method \texttt{SerialLink.jointdynamics} returns a vector of \texttt{tf} objects representing the dynamics of the joint actuators.
-\item The class \texttt{Lattice} is a kino-dynamic lattice path planner.
+\item The class \texttt{Lattice} is a simple kino-dynamic lattice path planner.
 \item The class \texttt{PoseGraph} solves graph relaxation problems and can be used for bundle adjustment and pose graph SLAM.
 \item The class \texttt{Plucker} represents a line using Plücker coordinates.
 \item The folder \texttt{RST} contains Live Scripts that demonstrate some capabilities of the MATLAB Robotics System Toolbox\textsuperscript{TM}.
@@ -209,7 +211,7 @@ given a rotation matrix.
 data files.
 \end{itemize}
 
-Since its inception RTB has used matrices\footnote{Early versions of RTB, before 1999, used vectors to represent quaternions but that changed to an object once objects were added to the language.} to represent rotations and transformations in 2D and 3D.  A trajectory, or sequence, was represented by a 3-dimensional matrix, eg. $4\times 4 \times N$.  In RTB10 a set of classes have been introduced to represent orientation and pose in 2D and 3D: \texttt{SO2}, \texttt{SE2}, \texttt{SO3}, \texttt{SE3} and \texttt{UnitQuaternion}.  These classes are fairly polymorphic, that is, they share many methods and operators\footnote{For example, you could substitute objects of class \texttt{SO3} and \texttt{UnitQuaternion} with minimal code change.}.  All have a number of static methods that serve as constructors from particular representations.  A trajectory is represented by a vector of these objects which makes code easier to read and
+Since its inception RTB has used matrices\footnote{Early versions of RTB, before 1999, used vectors to represent quaternions but that changed to an object once objects were added to the language.} to represent rotations and transformations in 2D and 3D.  A trajectory, or sequence, was represented by a 3-dimensional matrix, eg. $4\times 4 \times N$.  In RTB10 a set of classes have been introduced to represent orientation and pose in 2D and 3D: \texttt{SO2}, \texttt{SE2}, \texttt{SO3}, \texttt{SE3}, \texttt{Twist} and \texttt{UnitQuaternion}.  These classes are fairly polymorphic, that is, they share many methods and operators\footnote{For example, you could substitute objects of class \texttt{SO3} and \texttt{UnitQuaternion} with minimal code change.}.  All have a number of static methods that serve as constructors from particular representations.  A trajectory is represented by a vector of these objects which makes code easier to read and
 understand.  Overloaded operators are used so the classes behave in a similar way to native matrices\footnote{The capability is extended so that we can element-wise multiple two vectors of transforms, multiply one transform over a vector of transforms or a set of points.}.
 The relationship between the classical Toolbox functions and the new classes are shown in Fig \ref{fig:newfunctions}.
 
@@ -226,7 +228,7 @@ You can continue to use the classical functions.  The new classes have methods w
 \begin{Code}
 >> T = SE3(1,2,3);  % create a pure translation SE3 object
 >> T2 = T*T;  % the result is an SE3 object
->> T3 = trinterp(T, 5); % create a vector of five SE3 objects 
+>> T3 = trinterp(T, T2,, 5); % create a vector of five SE3 objects between T and T2
 >> T3(1)  % the first element of the vector
 >> T3*T  % each element of T3 multiplies T, giving a vector of five SE3 objects
 \end{Code}
@@ -251,6 +253,81 @@ between representations.  Reproduced from ``\textit{Robotics, Vision \& Control,
 \item RangeBearingSensor animation
 \item All the java code that supports the \texttt{DHFactor} functionality now lives in the folder \texttt{java}.  The \texttt{Makefile} in there can be used
 to recompile the code.  There are java version issues and the shipped class files are built to java 1.7 which allows operation
+\end{itemize}
+
+\section{Changes in RTB 10.3}
+\begin{figure}[b]
+\centering
+\includegraphics[width=6cm]{figs/caranim.eps} 
+\caption{Car animation drawn with \texttt{demos/car\_anim} using \texttt{plot\_vehicle}}\label{fig:caranim}
+\end{figure}
+
+This release includes minor new features and  a number of bug fixes compared to 10.2:
+\begin{itemize}
+\item Serial-link manipulators
+    \begin{itemize}
+    \item The Symbolic Robot Modeling Toolbox component by Jörn Malzahn has been updated.  It offers amazing speedups by using symbolic algebra to create robot specific MATLAB code or MEX files and it can even generate optimised Simulink blocks.  I've seen speedups of over 50,000x.  You need to have the Symbolic Math Toolbox.
+    \item New robot kinematic models: Franka-Emika PANDA and Rethink Sawyer.
+    \item Methods \texttt{DH} and \texttt{MDH} on the \texttt{SerialLink} class convert models between DH and MDH kinematics. Dynamics not yet supported.
+    \item \texttt{plot3d} behaves like \texttt{plot} for the \texttt{'trail'} and \texttt{'movie'} options.
+    \item Experimental feature: Manipulator configuration (joint angle) vectors can be kept \textit{inside} the \texttt{SerialLink} object.  At constructor time
+    	the option \texttt{'configs', \{'qz', qz, 'qr', qr\}} adds these two configurations to the class instance, and they can be referenced later as, for 	example, \texttt{p560.qz}.  This reduces the number of workspace variables and confusion when working with several robots at the same 	time.
+	
+\item Fix bug in the \texttt{'trail'} option for \texttt{SerialLink.plot}.
+
+\item Fixed bug in \texttt{ikunc}, \texttt{ikcon} which ignored \texttt{q0}.
+    \end{itemize}
+\item Mobile robotics
+\begin{itemize}
+\item Added the ability to animate a picture of a vehicle to \texttt{plot\_vehicle}, see \texttt{demos/car\_demo} and Figure \ref{fig:caranim}.  Also added a \texttt{'trail'} feature, and updated documentation.
+	\item Experimental feature : A Reeds-Shepp path planner, see \texttt{rReedsShepp.m} and \texttt{demos/reedsshepp.mlx}, this is not (yet) properly integrated
+	into the \texttt{Navigation} class architecture.
+\end{itemize}
+
+\item Simulink
+\begin{itemize}
+\item Simulink blocks for Euler angles now have a checkbox to allow degrees mode.
+\item Simulink blocks for roll-pitch-yaw angles now have a checkbox to allow degrees mode and radio buttons to select the angle sequence.
+\item New Simulink block for \texttt{mstraj} gives full access to all capabilities of that function.
+\item A folder \texttt{simulink/R2015a} contains all the Simulink models exported as \texttt{.slx} files for Simulink R2015a.  This might
+ease problems for those using older versions of Simulink on the models in the top folder, many of which have been edited and saved
+under R2018a.  Check the README file for details.
+
+
+\end{itemize}
+
+\item A new script \texttt{rvccheck} which attempts to diagnose installation and MATLAB path issues.
+\item The \texttt{demos} folder now includes  LiveScript versions of  each demo, these are \texttt{.mlx} files.
+  I've done a first pass at formatting the content and in a few cases updating the content a little.  From here on, the \texttt{.m} files are 
+  deprecated.  You need MATLAB 2016a or later to run the LiveScripts.
+\item Major tidyup and documentation improvements for the \texttt{Twist} and \texttt{Plucker} objects.
+
+\item Changes to the \texttt{RTBPose.mtimes} method which now allows you to:
+\begin{itemize}
+	\item postmultiply an \texttt{SE3} object by a \texttt{Plucker} object which returns a \texttt{Plucker} object.  This applies a rigid-body transformation to the line in space.
+	\item postmultiply an \texttt{SE2} object by a MATLAB \texttt{polyshape} object which returns a  \texttt{polyshape} object.  This applies a rigid-body transformation to the polygon.
+\end{itemize}
+\item  Added a \texttt{disp} method to various toolbox objects, invokes \texttt{display}, which provides a display of the type from within the  debugger.
+
+\item \texttt{Quaternion} \texttt{==} operator
+\item  \texttt{UnitQuaternion}  \texttt{==}  accounts for double mapping
+\item \texttt{UnitQuaternion} has a \texttt{rand} method that generates a randomly distributed rotation,  also used by \texttt{SO3.rand} and  \texttt{SE3.rand}.
+\item \texttt{tr2rpy} fixed a long standing bug with the pitch angle in certain corner cases, the pitch angle now lies in the range $[-\pi, \,+\pi)$.
+
+\item Remove dependency on \texttt{numrows()} and \texttt{numcols()} for \texttt{rt2tr}, \texttt{tr2rt}, \texttt{transl}, \texttt{transl2} which simplifies standalone operation.
+
+\item A campaign to reduce the size of the RTB distribution file:
+\begin{itemize}
+	\item \texttt{tripleangle} uses updated STL files with reduced triangle counts for faster loading.
+	\item This manual is compressed.
+	\item Removal of extraneous files.
+\end{itemize}
+\begin{wrapfigure}{l}{4cm}
+\vspace{-2ex}\includegraphics[width=3.5cm]{figs/frontcover.pdf}
+\end{wrapfigure}
+
+\item Options to RTB functions can now be strings or character arrays, ie. \texttt{rotx(45, 'deg')} or \texttt{rotx(45, "deg")}.  If you don't yet know about MATLAB strings (with double quotes) check them out.
+\item General tidyup to code and documentation, added missing files from earlier releases.
 \end{itemize}
 
 \section{Changes in RTB 10.2}
@@ -542,7 +619,7 @@ to each other.
 
 
 \section{Compatible MATLAB versions}
-The Toolbox has been tested under R2016b and R2017bPRE.  Compatibility problems are increasingly likely the older your version of \Mlab\ is.
+The Toolbox has been tested under R2018a and R2018bPRE.  Compatibility problems are increasingly likely the older your version of \Mlab\ is.
 
 \section{Use in teaching}
 This is definitely encouraged!
@@ -596,12 +673,10 @@ The Robotics System Toolbox\textsuperscript{TM} (RST) from MathWorks is an offic
 RST has a growing set of functions for mobile robots, arm robots, ROS integration and pose representations but its design (classes and functions) and syntax is quite different to RTB.  A number of examples illustrating the use of RST are given in the folder \texttt{RST} as Live Scripts (extension \texttt{.mlx}), but you need to have the  Robotics System Toolbox\textsuperscript{TM} installed in order to use it.
 
 \subsection{Octave}
-GNU Octave (www.octave.org) is an impressive piece of free software that implements a language that is close to, but not the same as, \Mlab. The Toolboxes will not work well with Octave, though with Octave 4 the incompatibilities are greatly reduced. An old version of the arm-robot functions described in Chap. 7--9 have been ported to Octave and this code is distributed in \texttt{RVCDIR/robot/octave}.
+GNU Octave (www.octave.org) is an impressive piece of free software that implements a language that is close to, but not the same as, \Mlab. The Toolboxes currently do not work well with Octave, though as time goes by compatibility improves.  
+Many Toolbox functions work just fine under Octave, but most classes do not.
 
-Many Toolbox functions work just fine under Octave.
-Three important classes (Quaternion, Link and SerialLink) will not work so modified versions of these classes is provided in the subdirectory
-called \texttt{Octave}.  Copy all the directories from \texttt{Octave} to the main Robotics Toolbox directory.
-The Octave port is now quite dated and not recently tested -- it is offered in the hope that you might find it useful. 
+For uptodate information about running the Toolbox with Octave check out the page \url{http://petercorke.com/wordpress/toolboxes/other-languages}.
 
 \subsection{Machine Vision toolbox}
 Machine Vision toolbox (MVTB) for {\Mlab}.  This was described in an article
@@ -617,8 +692,9 @@ Machine Vision toolbox (MVTB) for {\Mlab}.  This was described in an article
         Year = {2005}}
 \end{verbatim}
 and provides a very wide range of useful computer vision functions and is used to illustrate principals in the Robotics, Vision \& Control book.  You can obtain this from \url{http://www.petercorke.com/vision}.
-More recent products such as \Mlab Image Processing
-Toolbox and \Mlab Computer Vision System Toolbox provide functionality that overlaps with MVTB.  
+More recent products such as \Mlab\ Image Processing
+Toolbox and \Mlab\ Computer Vision System Toolbox provide functionality that overlaps with MVTB.  
+
 \section{Contributing to the Toolboxes}
 I am very happy to accept contributions for inclusion in future versions of the
 toolbox.  You will, of course, be suitably acknowledged (see below).
@@ -629,14 +705,14 @@ release of this Toolbox.  Some have identified bugs and shortcomings
 in the documentation, and even better, some have provided bug fixes and
 even new modules, thankyou.  See the file \texttt{CONTRIB} for details.
 
-Giorgio Grisetti and Gian Diego Tipaldi for the core of the pose graph solver.
+I would especially like to thank the following. Giorgio Grisetti and Gian Diego Tipaldi for the core of the pose graph solver.
 Arturo Gil for allowing me to ship the STL robot models
 from \href{http://arvc.umh.es/arte/index_en.html}{ARTE}.
 J\"{o}rn Malzahn has donated a considerable amount of code, his
 Robot Symbolic Toolbox for MATLAB.
 Bryan Moutrie has contributed parts of his open-source package phiWARE to RTB, the remainder of that package can be found online.
 %Alexander Lavin has contributed variants of A* and D* planners.
-Other mentions to Gautam Sinha, Wynand Smart for models of industrial robot arm, Paul Pounds for the quadrotor and related models, 
+Other special mentions to Gautam Sinha, Wynand Smart for models of industrial robot arm, Pauline Pounds for the quadrotor and related models, 
  Paul Newman for inspiring the mobile robot code, and Giorgio Grissetti for inspiring the pose graph code.
 
 
@@ -645,7 +721,7 @@ Other mentions to Gautam Sinha, Wynand Smart for models of industrial robot arm,
 %\settocdepth{section}
 \newpage
 \chapter{Functions and classes}
-\input{all}
+\IfFileExists{all.tex}{\input{all}}{} 
 
 \bibliographystyle{ieeetr}
 \bibliography{strings,robot,control,dynamics,kinematics,force,grind,publist,software}
