@@ -8,12 +8,22 @@ function teardownOnce(tc)
     close all
 end
 
-function tpoly_test(tc)
-    s1 = 1;    T = trinterp2(T0, T1, [0.5 0 1]);
+function trinterp2_test(tc)
+    T0 = transl2(1, 2) * trot2(20, 'deg');
+    T1 = transl2(3, 6) * trot2(60, 'deg');
+    Tm = transl2(2, 4) * trot2(40, 'deg');
+    
+    T = trinterp2(T0, T1, [0.5 0 1]);
     tc.verifyEqual(size(T), [3 3 3]);
     tc.verifyEqual(T(:,:,1), Tm, 'abstol', 1e-10);
     tc.verifyEqual(T(:,:,2), T0, 'abstol', 1e-10);
     tc.verifyEqual(T(:,:,3), T1, 'abstol', 1e-10);
+end
+
+function tpoly_test(tc)
+
+    
+    s1 = 1;
     s2 = 2;
     
     %% no boundary conditions
@@ -41,7 +51,7 @@ function tpoly_test(tc)
     tc.verifyEqual(s(1), s1, 'absTol',1e-10);
     tc.verifyEqual(s(end), s2, 'absTol',1e-10);
     
-    tc.verifyTrue(all(sd >= 0));  % velocity is >= 0
+    tc.verifyTrue(all(sd >= -10*eps));  % velocity is >= 0
     tc.verifyEqual(sd(1), 0, 'absTol',1e-10);
     tc.verifyEqual(sd(end), 0, 'absTol',1e-10);
     
@@ -523,7 +533,7 @@ function mstraj_test(tc)
      verifyEqual(tc, size(t,2), 1);
      
      verifyEqual(tc, length(info), size(via,1)+1);
-     verifyTrue(tc, isa(info, 'struct');
+     verifyTrue(tc, isa(info, 'struct'));
 end
 
 
