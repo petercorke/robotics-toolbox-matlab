@@ -56,8 +56,8 @@
 
 classdef Twist
     properties (SetAccess = protected)
-        v
-        w
+        v  axis direction (column vector)
+        w  moment (column vector)
     end
     
     methods
@@ -99,7 +99,8 @@ classdef Twist
                             % 2D case
                             
                             point = varargin{1};
-                            v = -cross([0 0 1]', [point(:); 0]);
+                            point = point(:);
+                            v = -cross([0 0 1]', [point; 0]);
                             w = 1;
                             v = v(1:2);
                         else
@@ -148,7 +149,7 @@ classdef Twist
                     % it's an augmented skew matrix, unpack it
                     [skw,v] = tr2rt(T);
                     tw.v = v;
-                    tw.w = vex(skw)';
+                    tw.w = vex(skw);
                 end
             elseif isvector(T)
                 % its a row vector form of twist, unpack it
@@ -203,11 +204,22 @@ classdef Twist
         %
         % TW * S with its twist coordinates scaled by scalar S.
         %
+        % TW * T compounds a twist with an SE2/3 transformation
+        %
             
-            if isa(a, 'Twist') && isa(b, 'Twist')
-                % composition
-                c = Twist( a.exp * b.exp);
-                
+            if isa(a, 'Twist')
+                if isa(b, 'Twist')
+                    % twist composition
+                    c = Twist( a.exp * b.exp);
+                elseif length(a.v) == 2 && ishomog2(b)
+                    % compose a twist with SE2, result is an SE3
+                    c = SE2(a.T * double(b));
+                elseif length(a.v) == 3 && ishomog(b)
+                    % compose a twist with SE2, result is an SE3
+                    c = SE3(a.T * double(b));
+                else
+                    error('RTB:Twist', 'twist * SEn, operands don''t conform');
+                end
             elseif isreal(a) && isa(b, 'Twist')
                 c = Twist(a * b.S);
             elseif isa(a, 'Twist') && isreal(b)
@@ -220,7 +232,7 @@ classdef Twist
         function x = exp(tw, varargin)
         %Twist.exp Convert twist to homogeneous transformation
         %
-        % TW.exp is the homogeneous transformation equivalent to the twist (3x3 or 4x4).
+        % TW.exp is the homogeneous transformation equivalent to the twist (SE2 or SE3).
         %
         % TW.exp(THETA) as above but with a rotation of THETA about the twist.
         %
@@ -228,27 +240,35 @@ classdef Twist
         % - For the second form the twist must, if rotational, have a unit rotational component.
         %
         % See also Twist.T, trexp, trexp2.
-        opt.deg = false;
-        [opt,args] = tb_optparse(opt, varargin);
-        
-        if opt.deg && all(tw.w == 0)
-            warning('Twist: using degree mode for a prismatic twist');
-        end
-        
-        if length(args) > 0
-            theta = args{1};
-            
-            if opt.deg
-                theta = theta * pi/180;
+            opt.deg = false;
+            [opt,args] = tb_optparse(opt, varargin);
+
+            if opt.deg && all(tw.w == 0)
+                warning('Twist: using degree mode for a prismatic twist');
             end
-        else
-            theta = 1;
-        end
-        if length(tw.v) == 2
-            x = trexp2( tw.S * theta );
-        else
-            x = trexp( tw.S * theta );
+
+            if length(args) > 0
+                theta = args{1};
+
+                if opt.deg
+                    theta = theta * pi/180;
                 end
+            else
+                theta = 1;
+            end
+
+            n = length(theta);
+            if length(tw.v) == 2
+                x(n) = SE2;
+                for i=1:n
+                    x(i) = trexp2( tw.S * theta(i) );
+                end
+            else
+                x(n) = SE3;
+                for i=1:n
+                    x(i) = trexp( tw.S * theta(i) );
+                end
+            end
         end
         
         function x = ad(tw)
@@ -261,6 +281,16 @@ classdef Twist
             x = [ skew(tw.w) skew(tw.v); zeros(3,3) skew(tw.w) ];
         end
         
+        function x = Ad(tw)
+        %Twist.Ad Adjoint
+        %
+        % TW.Ad is the adjoint matrix of the corresponding
+        % homogeneous transformation.
+        %
+        % See also SE3.Ad.
+            x = tw.SE.Ad;
+        end
+        
         
         function out = SE(tw)
         %Twist.SE Convert twist to SE2 or SE3 object
@@ -268,11 +298,11 @@ classdef Twist
         % TW.SE is an SE2 or SE3 object representing the homogeneous transformation equivalent to the twist.
         %
         % See also Twist.T, SE2, SE3.
-                    if length(tw.v) == 2
-                        out = SE2( tw.T );
-                    else
-                        out = SE3( tw.T );
-                    end
+            if length(tw.v) == 2
+                out = SE2( tw.T );
+            else
+                out = SE3( tw.T );
+            end
         end 
                 
         function x = T(tw, varargin)
@@ -285,9 +315,10 @@ classdef Twist
         % Notes::
         % - For the second form the twist must, if rotational, have a unit rotational component.
         %
-        % See also Twist.exp, trexp, trexp2.
-            x = tw.exp( varargin{:} );
+        % See also Twist.exp, trexp, trexp2, trinterp, trinterp2.
+            x = double( tw.exp(varargin{:}) );
         end
+        
         
         function p = pitch(tw)
         %Twist.pitch Pitch of the twist
@@ -315,7 +346,7 @@ classdef Twist
         % See also Plucker.
         
                 % V = -tw.v - tw.pitch * tw.w;
-                L = Plucker('wv', tw.w, tw.v - tw.pitch * tw.w);
+                L = Plucker('wv', tw.w, -tw.v - tw.pitch * tw.w);
         end
         
         function p = pole(tw)
