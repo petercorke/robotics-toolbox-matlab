@@ -56,8 +56,8 @@
 
 classdef Twist
     properties (SetAccess = protected)
-        v  axis direction (column vector)
-        w  moment (column vector)
+        v  %axis direction (column vector)
+        w  %moment (column vector)
     end
     
     methods
@@ -131,6 +131,12 @@ classdef Twist
                         v = unit(dir(:));
                 end
                 
+                if ~isa(v, 'sym')
+                    v(abs(v)<eps) = 0;
+                end
+                if ~isa(w, 'sym')
+                    w(abs(w)<eps) = 0;
+                end
                 tw.v = v;
                 tw.w = w;
             elseif numrows(T) == numcols(T)
@@ -166,6 +172,20 @@ classdef Twist
             end
         end
         
+        function Su = unit(S)
+        %Twist.unit Return a unit twist
+        %
+        % TW.unit() is a Twist object representing a unit aligned with the Twist
+        % TW.
+            if abs(S.w) > 10*eps
+                % rotational twist
+                Su = Twist( double(S) / norm(S.w) );
+            else
+                % prismatic twist
+                Su = Twist( [unit(S.v); 0; 0; 0] );
+            end
+        end
+        
         function x = S(tw)
         %Twist.S Return the twist vector
         %
@@ -179,11 +199,13 @@ classdef Twist
         function x = double(tw)
         %Twist.double Return the twist vector
         %
-        % double(TW) is the twist vector in se(2) or se(3) as a vector (1x3 or 1x6).
+        % double(TW) is the twist vector in se(2) or se(3) as a vector (3x1 or
+        % 6x1). If TW is a vector (1xN) of Twists the result is a matrix (6xN) with
+        % one column per twist.
         %
         % Notes::
         % - Sometimes referred to as the twist coordinate vector.
-            x = [tw.v; tw.w]';
+            x = [tw.v; tw.w];
         end
         
         function x = se(tw)
@@ -201,6 +223,9 @@ classdef Twist
         %
         % TW1 * TW2 is a new Twist representing the composition of twists TW1 and
         % TW2.
+        %
+        % TW * T is an SE2 or SE3 that is the composition of the twist TW and the
+        % homogeneous transformation object T.
         %
         % TW * S with its twist coordinates scaled by scalar S.
         %
@@ -228,7 +253,7 @@ classdef Twist
                 error('RTB:Twist: incorrect operand types for * operator')
             end
         end
-        
+                
         function x = exp(tw, varargin)
         %Twist.exp Convert twist to homogeneous transformation
         %
@@ -257,16 +282,29 @@ classdef Twist
                 theta = 1;
             end
 
-            n = length(theta);
-            if length(tw.v) == 2
-                x(n) = SE2;
-                for i=1:n
-                    x(i) = trexp2( tw.S * theta(i) );
+            ntheta = length(theta);
+            assert(length(tw) == ntheta || length(tw) == 1, 'Twist:exp:badarg', 'length of twist vector must be 1 or length of theta vector')
+            if length(tw(1).v) == 2
+                x(ntheta) = SE2;
+                if length(tw) == ntheta
+                    for i=1:ntheta
+                        x(i) = trexp2( tw(i).S * theta(i) );
+                    end
+                else
+                    for i=1:ntheta
+                        x(i) = trexp2( tw.S * theta(i) );
+                    end
                 end
             else
-                x(n) = SE3;
-                for i=1:n
-                    x(i) = trexp( tw.S * theta(i) );
+                x(ntheta) = SE3;
+                if length(tw) == ntheta
+                    for i=1:ntheta
+                        x(i) = trexp( tw(i).S * theta(i) );
+                    end
+                else
+                    for i=1:ntheta
+                        x(i) = trexp( tw.S * theta(i) );
+                    end
                 end
             end
         end
@@ -346,7 +384,24 @@ classdef Twist
         % See also Plucker.
         
                 % V = -tw.v - tw.pitch * tw.w;
-                L = Plucker('wv', tw.w, -tw.v - tw.pitch * tw.w);
+                for i=1:length(tw)
+                    L(i) = Plucker('wv', tw(i).w, -tw(i).v - tw(i).pitch * tw(i).w);
+                end
+        end
+        
+        function out = prod(obj)
+            %Twist.prod Compound array of twists
+            %
+            % TW.prod is a twist representing the product (composition) of the
+            % successive elements of TW (1xN), an array of Twists.
+            %
+            %
+            % See also RTBPose.prod, Twist.mtimes.
+            out = obj(1);
+            
+            for i=2:length(obj)
+                out = out .* obj(i);
+            end
         end
         
         function p = pole(tw)
@@ -420,8 +475,6 @@ classdef Twist
             disp([inputname(1), ' = '])
             disp( char(tw) );
         end % display()
-        
 
-        
     end
 end

@@ -287,7 +287,6 @@ classdef (Abstract) RTBPose
             %
             % See also RTBPose.mrdivide.
 
-            
             if strcmp(class(obj), class(a))
                 % obj * obj
                 obj1 = obj(1);
@@ -363,8 +362,26 @@ classdef (Abstract) RTBPose
             end
         end
         
+        function out = prod(obj)
+            %RTBPose.prod Compound array of poses
+            %
+            % T.prod is a pose representing the product (composition) of the
+            % successive elements of T (1xN).  P is a scalar of the same type (SO2,
+            % SE2, SO3, SE3) as T.
+            %
+            % Note::
+            % - Composition is performed with the .* operator.
+            %
+            % See also RTBPose.times, RTBPose.mtimes.
+            out = obj(1);
+            
+            for i=2:length(obj)
+                out = out .* obj(i);
+            end
+        end
+        
         function out = mrdivide(obj, a)
-            %SO2.mrdivide  Compound SO2 object with inverse
+            %RTBPose.mrdivide  Compound SO2 object with inverse
             %
             % R = P/Q is a pose object representing the composition of the pose object P by the
             % inverse of the pose object Q, which is matrix multiplication

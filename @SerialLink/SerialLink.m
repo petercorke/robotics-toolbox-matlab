@@ -1031,6 +1031,30 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             rdh = SerialLink(link, 'base', base, 'tool', r.tool);
         end
         
+        function [tw,T0] = twists(r)
+            
+            [Tn,T] = r.fkine( zeros(1, r.n) );
+            if r.isdh
+                % DH case
+                for i=1:r.n
+                    if i == 1
+                        tw(i) = Twist( r.links(i).type, [0 0 1], [0 0 0]);
+                    else
+                        tw(i) = Twist( r.links(i).type, T(i-1).a, T(i-1).t);
+                    end
+                end
+            else
+                % MDH case
+                for i=1:r.n
+                    tw(i) = Twist( r.links(i).type, T(i).a, T(i).t);
+                end
+            end
+            
+            if nargout > 1
+                T0 = Tn;
+            end
+        end
+        
         function v = ismdh(r)
         %SerialLink.ismdh Test if SerialLink object has a modified DH model
         %
