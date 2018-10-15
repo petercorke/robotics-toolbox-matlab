@@ -683,19 +683,72 @@ end
             v = strcmpi(r.config(), s);
         end
         
-        function payload(r, m, p)
-        %SerialLink.payload Add payload mass
+        function payload(r, m, varargin)
+        %SerialLink.payload Adds payload to end-effector
         %
-        % R.payload(M, P) adds a payload with point mass M at position P 
-        % in the end-effector coordinate frame.
+        % R.payload(M, P, I) adds a payload with point mass M at position P 
+        % in the end-effector coordinate frame and inertia tensor I about payload's center of mass.
+        % If only mass is passed it's simply added to the link mass.
+        % If both mass and its position in the end-effector
+        % coordinate frame are passed, mass will be added to the link
+        % mass and link center of mass will be recalculated.
+        % Additionally, if payload's inertia is passed, link's inertia will
+        % be recalculated according to parallel axis theorem.
         %
         % Notes::
         % - An added payload will affect the inertia, Coriolis and gravity terms.
+        % - Addition of new payload will override the previous one.
         %
         % See also SerialLink.rne, SerialLink.gravload.
             lastlink = r.links(r.n);
-            lastlink.m = m;
-            lastlink.r = p;
+            if ~isprop(r, 'original_ee_m') || ~isprop(r, 'original_ee_com') || ~isprop(r, 'original_ee_I')
+               addprop(r, 'original_ee_m')
+               addprop(r, 'original_ee_com')
+               addprop(r, 'original_ee_I')
+               r.original_ee_m = lastlink.m;
+               r.original_ee_com = lastlink.r;
+               r.original_ee_I = lastlink.I;
+            end
+            
+            lastlink.m = r.original_ee_m + m;
+           
+            if length(varargin) >= 1
+                p = varargin{1};
+                if ~isequal(size(r.original_ee_com), size(p))
+                    error('Payload mass position must have same size as the center of mass');
+                end
+                composite_com = (r.original_ee_com * r.original_ee_m + p * m) / lastlink.m;
+                lastlink.r = composite_com;
+            end
+            
+            if length(varargin) == 2
+                I = varargin{2};
+                if ~isequal(size(r.original_ee_I), size(I))
+                    error('Inertia must be 3x3 matrix');
+                end
+                d_original = composite_com - r.original_ee_com;
+                d_payload = composite_com - p;
+                
+                d_o_x = d_original(1);
+                d_o_y = d_original(2);
+                d_o_z = d_original(3);
+
+                d_o_I = [d_o_z*d_o_z + d_o_y*d_o_y, -d_o_x*d_o_y, -d_o_x*d_o_z;
+                    -d_o_x*d_o_y, d_o_x*d_o_x + d_o_z*d_o_z, -d_o_y*d_o_z;
+                    -d_o_x*d_o_z, -d_o_y*d_o_z, d_o_x*d_o_x + d_o_y*d_o_y];
+                
+                d_p_x = d_payload(1);
+                d_p_y = d_payload(2);
+                d_p_z = d_payload(3);
+                
+                d_p_I = [d_p_y*d_p_y + d_p_z*d_p_z, -d_p_x*d_p_y, -d_p_x*d_p_z;
+                    -d_p_x*d_p_y, d_p_z*d_p_z +  d_p_x*d_p_x, -d_p_y*d_p_z;
+                    -d_p_x*d_p_z, -d_p_y*d_p_z, d_p_y*d_p_y + d_p_x*d_p_x];
+                
+                moved_original_I = r.original_ee_I + r.original_ee_m * d_o_I;
+                moved_payload_I = I + m * d_p_I;
+                lastlink.I = moved_original_I + moved_payload_I;
+            end
         end
         
         function jt = jtraj(r, T1, T2, t, varargin)
