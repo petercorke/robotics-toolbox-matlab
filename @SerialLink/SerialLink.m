@@ -684,20 +684,20 @@ end
         end
         
         function payload(r, m, varargin)
-        %SerialLink.payload Adds payload to end-effector
+        %SerialLink.payload Adds payload to the end effector
         %
         % R.payload(M, P, I) adds a payload with point mass M at position P 
-        % in the end-effector coordinate frame and inertia tensor I about payload's center of mass.
-        % If only mass is passed it's simply added to the link mass.
-        % If both mass and its position in the end-effector
-        % coordinate frame are passed, mass will be added to the link
-        % mass and link center of mass will be recalculated.
-        % Additionally, if payload's inertia is passed, link's inertia will
-        % be recalculated according to parallel axis theorem.
+        % in the end effector coordinate frame and inertia tensor I about the payload's center of mass.
+        % If only mass is passed, it's simply added to the link mass.
+        % If both mass and its position in the end effector
+        % coordinate frame are passed, the mass is added to the link
+        % mass, and the link center of mass is recalculated.
+        % Additionally, if payload's inertia is passed, link's inertia
+        % is recalculated according to the parallel axis theorem.
         %
         % Notes::
-        % - An added payload will affect the inertia, Coriolis and gravity terms.
-        % - Addition of new payload will override the previous one.
+        % - An added payload affects the inertia, Coriolis and gravity terms.
+        % - Addition of new payload overrides the previous one.
         %
         % See also SerialLink.rne, SerialLink.gravload.
             lastlink = r.links(r.n);
@@ -711,6 +711,8 @@ end
             end
             
             lastlink.m = r.original_ee_m + m;
+            lastlink.r = r.original_ee_com;
+            lastlink.I = r.original_ee_I;
            
             if length(varargin) >= 1
                 p = varargin{1};
@@ -720,7 +722,7 @@ end
                 composite_com = (r.original_ee_com * r.original_ee_m + p * m) / lastlink.m;
                 lastlink.r = composite_com;
             end
-            
+            % Recalculate inertia using parallel axis theorem
             if length(varargin) == 2
                 I = varargin{2};
                 if ~isequal(size(r.original_ee_I), size(I))
