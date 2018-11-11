@@ -93,7 +93,7 @@ function urdf = urdfparse(filename)
     end
     
     transforms = strtrim(transforms);
-    urdf.transforms = char(transforms);
+    urdf.ets = char(transforms);
     
     %% display a summary
     fprintf('\nLinks::\n');    
