@@ -14,7 +14,8 @@
 % '[no]loop'        Loop over the trajectory forever
 % '[no]raise'       Autoraise the figure
 % 'movie',M         Save an animation to the movie M
-% 'trail',L         Draw a line recording the tip path, with line style L
+% 'trail',L         Draw a line recording the tip path, with line style L.
+%                   L can be a cell array, eg. {'r', 'LineWidth', 2}
 %-
 % 'scale',S         Annotation scale factor
 % 'zoom',Z          Reduce size of auto-computed workspace by Z, makes
@@ -483,8 +484,8 @@ function h = create_robot(robot, opt)
         h.shadow = line('LineWidth', opt.shadowwidth, 'Color', opt.shadowcolor);
     end
     
-    if opt.trail
-        h.trail = plot(0, 0, opt.trail);
+    if ~isempty(opt.trail)
+        h.trail = plot(0, 0, opt.trail{:});
         robot.trail = [];
     end
     
