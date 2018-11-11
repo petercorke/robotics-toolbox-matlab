@@ -246,7 +246,7 @@ public class DHFactor {
 		ElementList l = new ElementList();
 
 
-		System.out.println(buffer);
+		System.out.println("INIT: " + buffer);
 		
 		// each token is [R|T][x|y|z](arg)
 		Pattern pattern = Pattern.compile("([RT][xyz]\\([^)]+\\))");
@@ -255,7 +255,7 @@ public class DHFactor {
 		while (tokens.find())
 			l.add( new Element(tokens.group(1)) );
 
-		System.out.println(l);
+		System.out.println("PARSED: " + l);
 
 		l.simplify();
 		System.out.println(l);
