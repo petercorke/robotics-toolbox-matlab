@@ -70,7 +70,11 @@ end
 	%  convert to Jacobian in base coordinates
 	%
 	Tn = fkine(robot, q);	% end-effector transformation
-	R = Tn.R;
+    if isa(Tn, 'SE3')
+        R = Tn.R;
+    else
+        R = t2r(Tn);
+    end
 	J0 = [R zeros(3,3); zeros(3,3) R] * Jn;
 
     % convert to analytical Jacobian if required
