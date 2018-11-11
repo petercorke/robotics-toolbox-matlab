@@ -56,7 +56,7 @@ function T = trchain(s, q)
     end
     % s = 'Rx(q1)Tx(a1)Ry(q2)Tx(a3)Rz(q3)Tx(a3)';
     
-    tokens = regexp(s, '\s*(?<op>R.?|T.)\(\s*(?<arg>[A-Za-z\-][A-Za-z0-9+\-\*/]*)\s*\)\s*', 'names');
+    tokens = regexp(char(s), '\s*(?<op>R.?|T.)\(\s*(?<arg>[A-Za-z0-9\-][A-Za-z0-9+\-\*/]*)\s*\)\s*', 'names');
     
     T = eye(4,4);
     joint = 1;

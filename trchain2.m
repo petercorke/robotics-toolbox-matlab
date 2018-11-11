@@ -51,7 +51,7 @@ function T = trchain2(s, q)
     
     %s = 'R(q1)Tx(a1)R(q2)Tx(a3)R(q3)Tx(a3)';
     
-    tokens = regexp(s, '\s*(?<op>R.?|T.)\(\s*(?<arg>[A-Za-z][A-Za-z0-9]*)\s*\)\s*', 'names');
+    tokens = regexp(char(s), '\s*(?<op>R.?|T.)\(\s*(?<arg>[A-Za-z0-9-][A-Za-z0-9]*)\s*\)\s*', 'names');
 
     if isa(q, 'symfun')
         q = formula(q);
