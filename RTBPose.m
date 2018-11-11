@@ -426,6 +426,19 @@ classdef (Abstract) RTBPose
                 error('RTB:RTBPose:badops', 'invalid operand types to / operator');
             end
         end
+  
+        function v = subs(obj, old, new)
+            %RTBPose.subs Symbolic substitution
+            %
+            % T = subs(T, old, new) replaces OLD with NEW in the symbolic
+            % transformation T.
+            %
+            % See also: subs
+
+            v = obj.new();  % clone the input
+            v.data = subs(v.data, old, new);
+        end
+        
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%  COMPATABILITY/CONVERSION METHODS
@@ -655,7 +668,7 @@ classdef (Abstract) RTBPose
             v = obj.dim == 3 && obj.isSE;
         end
         
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%  DISPLAY METHODS
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
