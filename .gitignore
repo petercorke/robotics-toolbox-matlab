@@ -1,4 +1,11 @@
 # ignore png, gimp and pdf files
+*.swp
+*.slxc
+*.ctf
+*.mlapp
+*.mltbx
+*.mlappinstall
+.mexmaci64
 *.xcf
 *.log
 *.aux
