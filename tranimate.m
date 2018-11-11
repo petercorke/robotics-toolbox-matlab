@@ -149,7 +149,6 @@ function tranimate(P2, varargin)
     end
     ud.Ttraj = Ttraj;
 
-    
     if ~isempty(opt.time)
         ud.htime = uicontrol('Parent', gcf, 'Style', 'text', ...
             'HorizontalAlignment', 'left', 'Position', [50 20 100 20]);
@@ -166,6 +165,10 @@ function tranimate(P2, varargin)
     start(t);
     
     waitfor(t)
+    
+    if ~isempty(ud.opt.movie)
+        ud.anim.close();
+    end
     delete(t)
         if opt.cleanup
             delete(hg);
@@ -185,7 +188,7 @@ function guts(ud, i)
     end
     
     if ~isempty(ud.opt.movie)
-        anim.add();
+        ud.anim.add();
     end
     
     if ~isempty(ud.opt.time)
@@ -195,16 +198,16 @@ function guts(ud, i)
               
 end
 
-    function timer_callback(timerObj, ~)
-        ud = get(timerObj, 'UserData');
-                if ~ishandle(ud.hg)
-            % the figure has been closed
-            stop(timerObj);
-            delete(timerObj);
-        end
-
-        i = timerObj.TasksExecuted;
-        
-        guts(ud, i);
- 
+function timer_callback(timerObj, ~)
+    ud = get(timerObj, 'UserData');
+    if ~ishandle(ud.hg)
+        % the figure has been closed
+        stop(timerObj);
+        delete(timerObj);
     end
+    
+    i = timerObj.TasksExecuted;
+    
+    guts(ud, i);
+    
+end
