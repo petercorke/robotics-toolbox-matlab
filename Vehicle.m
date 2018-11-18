@@ -99,6 +99,9 @@ classdef Vehicle < handle
         driver      % driver object
         x0          % initial state
         options
+        
+        vhandle     % handle to vehicle graphics object
+        vtrail      % vehicle trail
     end
 
     methods(Abstract)
@@ -110,7 +113,7 @@ classdef Vehicle < handle
         function veh = Vehicle(varargin)
         %Vehicle Vehicle object constructor
         %
-        % V = Vehicle(OPTIONS)  creates a Vehicle object that implements the
+        % V = Vehicle(OPTIONS) creates a Vehicle object that implements the
         % kinematic model of a wheeled vehicle. 
         %
         % Options::
@@ -134,6 +137,7 @@ classdef Vehicle < handle
             opt.dt = 0.1;
             opt.x0 = zeros(3,1);
             opt.speedmax = 1;
+            opt.vhandle = [];
             
             [opt,args] = tb_optparse(opt, varargin);
             
@@ -144,7 +148,7 @@ classdef Vehicle < handle
             assert(isvec(veh.x0, 3), 'Initial configuration must be a 3-vector');
             veh.speedmax = opt.speedmax;
             veh.options = args;  % unused options go back to the subclass
-
+            veh.vhandle = opt.vhandle;
             veh.x_hist = [];
         end
 
@@ -168,6 +172,8 @@ classdef Vehicle < handle
             if ~isempty(veh.driver)
                 veh.driver.init();
             end
+            
+            veh.vhandle = [];
         end
 
         function yy = path(veh, t, u, y0)
@@ -408,11 +414,9 @@ classdef Vehicle < handle
         %
         % See also Vehicle.plotv, plot_vehicle.
 
-            h = findobj(gcf, 'Tag', 'Vehicle.plot');
-            if isempty(h)
-                % no instance of vehicle graphical object found
-                h = Vehicle.plotv(veh.x, varargin{:});
-                set(h, 'Tag', 'Vehicle.plot');  % tag it
+
+            if isempty(veh.vhandle)
+                veh.vhandle = Vehicle.plotv(veh.x, varargin{:});
             end
             
             if ~isempty(varargin) && isnumeric(varargin{1})
@@ -422,16 +426,12 @@ classdef Vehicle < handle
                 % V.plot()
                 pos = veh.x;    % use current state
             end
-            Vehicle.plotv(h, pos);
             
-            h = findobj(gcf, 'Tag', 'Vehicle.trail');
-            if ~isempty(h)
-                if length(h.XData) == 1
-                    set(h, 'XData', veh.x0(1), 'YData', veh.x0(2));
-                end
-                set(h, 'XData', [h.XData pos(1)], 'YData', [h.YData pos(2)]);
+            % animate it
+            Vehicle.plotv(veh.vhandle, pos);
+            
             end
-        end
+
 
         function out = plot_xy(veh, varargin)
             %Vehicle.plot_xy Plots true path followed by vehicle
@@ -509,7 +509,7 @@ classdef Vehicle < handle
 
     methods(Static)
 
-        function h_ = plotv(x, varargin)
+        function h = plotv(varargin)
         %Vehicle.plotv Plot ground vehicle pose
         %
         % H = Vehicle.plotv(X, OPTIONS) draws a representation of a ground robot as an 
@@ -540,85 +540,14 @@ classdef Vehicle < handle
         % - This is a class method.
         %
         % See also Vehicle.plot.
-
-            if isscalar(x) && ishandle(x)
-                % plotv(h, x)
-                h = x;
-                x = varargin{1};
-                x = x(:)';
-                T = transl([x(1:2) 0]) * trotz( x(3) );
-                set(h, 'Matrix', T);
-                return
-            end
-
-            opt.scale = 1/60;
-            opt.size = [];
-            opt.fillcolor = [];
-            opt.fps = 10;
-            opt.trail = [];  % not exposed, used by plot() method
-            
-            [opt,args] = tb_optparse(opt, varargin);
-
-%HACK             lineprops = { 'Color', opt.color' };
-%             if opt.fill
-%                 lineprops = [lineprops 'fill' opt.color ];
-%             end
-            lineprops = { 'fillcolor', 'b', 'alpha', 0.5 };
-            
-            % compute the dimensions of the robot
-            if ~isempty(opt.size)
-                d = opt.size;
-            else
-                % get the current axes dimensions
-                a = axis;
-                d = (a(2)+a(4) - a(1)-a(3)) * opt.scale;
-            end
-            
-            % draw it
-            points = [
-                d 0
-                -d -0.6*d
-                -d 0.6*d
-            ]';
-            
-            h = hgtransform();
-            hp = plot_poly(points, lineprops{:});
-            for hh=hp
-                set(hh, 'Parent', h);
-            end
-
-            if (numel(x) > 3) && (numcols(x) == 3)
-                % animation mode
-                for i=1:numrows(x)
-                    T = transl([x(i,1:2) 0]) * trotz( x(i,3) );
-                    set(h, 'Matrix', T);
-                    pause(1/opt.fps);
-                end
-            elseif (numel(x) == 3)
-                % compute the pose
-                % convert vector form of pose to SE(3)
-            
-                x = x(:)';
-                T = transl([x(1:2) 0]) * trotz( x(3) );
-                set(h, 'Matrix', T);
-            else
-                error('bad pose');
-            end
-            
-            if ~isempty(opt.trail)
-                if iscell(opt.trail)
-                    line(0, 0, 'Tag', 'Vehicle.trail', opt.trail{:});
-                else
-                    line(0, 0, 'Tag', 'Vehicle.trail', opt.trail)
-                end
-            end
-                
-
-            if nargout > 0
-                h_ = h;
-            end
+        
+        if isstruct(varargin{1})
+            plot_vehicle(varargin{2}, 'handle', varargin{1});
+        else
+            h = plot_vehicle(varargin{1}, 'fillcolor', 'b', 'alpha', 0.5);
         end
 
+        end
     end % static methods
 
 end % classdef

@@ -5,21 +5,23 @@
 % If X is a matrix (Nx3) then an animation of the robot motion is shown and
 % animated at the specified frame rate.
 %
+% Image mode::
+%
+% Create a structure with the following elements and pass it with the
+% 'model' option.
+%
+%  image      an RGB image (HxWx3)
+%  alpha      an alpha plane (HxW) with pixels 0 if transparent
+%  rotation   image rotation in degrees required for front to pointing to the right
+%  centre     image coordinate (U,V) of the centre of the back axle
+%  length     length of the car in real-world units
+%
 % Animation mode::
 %
 % H = PLOT_VEHICLE(X,OPTIONS) as above draws the robot and returns a handle.
 %
 % PLOT_VEHICLE(X, 'handle', H) updates the pose X (1x3) of the previously drawn
 % robot.
-%
-% Image mode::
-%
-% PLOT_VEHICLE(X, 'image', IMG) where IMG is an RGB image that is scaled
-% and centered on the robot's position.  The vertical axis of the image
-% becomes the x-axi in the plot, ie. it is rotated.  If you wish to specify
-% the rotation then use 
-%
-% PLOT_VEHICLE(X, 'image', {IMG,R}) where R is the counterclockwise rotation angle in degrees.
 % 
 % Options::
 %  'scale',S       draw vehicle with length S x maximum axis dimension (default
@@ -35,6 +37,14 @@
 %                  elements: image, alpha, rotation (deg), centre (pix), length (m).
 %  'axis',h        handle of axis or UIAxis to draw into (default is current axis)
 %
+% Example::
+%          [car.image,~,car.alpha] = imread('car2.png');  % image and alpha layer
+%          car.rotation = 180;  % image rotation to align front with world x-axis 
+%          car.centre = [648; 173]; % image coordinates of centre of the back wheels
+%          car.length = 4.2; % real world length for scaling (guess)
+%          h = plot_vehicle(x, 'model', car)  % draw car at configuration x
+%          plot_vehicle(x, 'handle', h)  % animate car to configuration x
+%
 % Notes::
 % - The vehicle is drawn relative to the size of the axes, so set them
 %   first using axis().
@@ -47,7 +57,7 @@
 %   car, the image is scaled to be that length in the plot.
 % - Set 'fps' to Inf to have zero pause
 %
-% See also Vehicle.plot, plot_poly.
+% See also Vehicle.plot, plot_poly, demos/car_animation
 
 
 % Copyright (C) 1993-2017, by Peter I. Corke
@@ -76,50 +86,73 @@ function h_ = plot_vehicle(x, varargin)
     opt.scale = 1/60;
     opt.size = [];
     opt.shape = {'triangle', 'box'};
-    opt.fps = 10;
+    opt.fps = 20;
     opt.handle = [];
     opt.image = [];
     opt.model = [];
     opt.retain = false;
     opt.axis = [];
+    opt.trail = '';
+    
+    if numel(x) == 3
+        x = x(:)';   % enforce row vector
+    end
     
     [opt,args] = tb_optparse(opt, varargin);
-        
-    if ~isempty(opt.handle)
-        % animation mode
-        opt.handle.Matrix = SE2(x).SE3.T;
-        
-        if ~isinf(opt.fps)
-            pause(1/opt.fps)
-        end
-        return
-    end
-
-    % compute some default dimensions based on axis scaling
-    if isempty(opt.axis)
-        opt.axis = gca;
-    end
-    ax = opt.axis;
-    a = [ax.XLim ax.YLim];
-    d = (a(2)+a(4) - a(1)-a(3)) * opt.scale;
     
-    % trajectory mode
 
-    for i=1:numrows(x)
-        if i==1 || opt.retain
-            h = draw_robot(d, opt, args);
+    if isempty(opt.handle)
+        % create a new robot
+        % compute some default dimensions based on axis scaling
+        if isempty(opt.axis)
+            opt.axis = gca;
         end
-
-        % animate the robot
-        h.Matrix = SE2(x(i,:)).SE3.T;  % convert (x,y,th) to SE(3)
         
-        if ~isinf(opt.fps)
-            pause(1/opt.fps)
+        ax = opt.axis;
+        a = [ax.XLim ax.YLim];
+        d = (a(2)+a(4) - a(1)-a(3)) * opt.scale;
+        
+        % create the robot
+        h.vehicle = draw_robot(d, opt, args);
+        
+        if ~isempty(opt.trail)
+            hold on
+            h.trail = plot(0,0, opt.trail);
+            hold off
+        end
+        h.opt = opt;
+        
+        plot_vehicle(x, 'handle', h);
+    else
+        % we are animating
+        h = opt.handle;
+        
+        for i=1:numrows(x)
+            h.vehicle.Matrix = SE2(x(i,:)).SE3.T;  % convert (x,y,th) to SE(3)
+            
+            % check if retain is on
+            if h.opt.retain
+                plot_vehicle(x(i,:));
+            end
+
+            % extend the line if required
+            if ~isempty(h.opt.trail)
+
+                l = h.trail;
+                l.XData = [l.XData x(i,1)];
+                l.YData = [l.YData x(i,2)];
+            end
+            
+            % pause a while
+            if ~isinf(h.opt.fps)
+                pause(1/h.opt.fps)
+            end
         end
     end
-        if nargout > 0
-            h_ = h;
-        end
+ 
+    if nargout > 0
+        h_ = h;
+    end
 
 end
 

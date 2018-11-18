@@ -33,12 +33,12 @@ function Bicycle_constructor_test(tc)
     tc.verifyEqual(v.V, [1 2;3 4]);
     tc.verifyEqual(v.speedmax, 5);
     tc.verifyEqual(v.L, 2.5);
-    tc.verifyEqual(v.x0, [1 2 3]);
+    tc.verifyEqual(v.x0, [1 2 3]');
     tc.verifyEqual(v.dt, 0.5);
     tc.verifyEqual(v.rdim, 0.3);
 
     v.init()
-    tc.verifyEqual(v.x, [1 2 3]);
+    tc.verifyEqual(v.x, [1 2 3]');
     
 end
 
@@ -156,12 +156,12 @@ function Unicycle_constructor_test(tc)
     tc.verifyEqual(v.V, [1 2;3 4]);
     tc.verifyEqual(v.speedmax, 5);
     tc.verifyEqual(v.L, 2.5);
-    tc.verifyEqual(v.x0, [1 2 3]);
+    tc.verifyEqual(v.x0, [1 2 3]');
     tc.verifyEqual(v.dt, 0.5);
     tc.verifyEqual(v.rdim, 0.3);
 
     v.init()
-    tc.verifyEqual(v.x, [1 2 3]);
+    tc.verifyEqual(v.x, [1 2 3]');
 end
 
 function Unicycle_deriv_test(tc)
