@@ -200,7 +200,7 @@ These changes are summarized in Table \ref{tab:changes}.
 \item The method \texttt{SerialLink.jointdynamics} returns a vector of \texttt{tf} objects representing the dynamics of the joint actuators.
 \item The class \texttt{Lattice} is a simple kino-dynamic lattice path planner.
 \item The class \texttt{PoseGraph} solves graph relaxation problems and can be used for bundle adjustment and pose graph SLAM.
-\item The class \texttt{Plucker} represents a line using Plücker coordinates.
+\item The class \texttt{Plucker} represents a line using Pl\'{u}cker coordinates.
 \item The folder \texttt{RST} contains Live Scripts that demonstrate some capabilities of the MATLAB Robotics System Toolbox\textsuperscript{TM}.
 \item The folder \texttt{symbolic} contains Live Scripts that demonstrate use of the MATLAB Symbolic Math Toolbox\textsuperscript{TM}
 for deriving Jacobians used in EKF SLAM (vehicle and sensor), inverse kinematics for a 2-joint planar arm and solving for roll-pitch-yaw angles
@@ -266,7 +266,7 @@ This release includes minor new features and  a number of bug fixes compared to 
 \begin{itemize}
 \item Serial-link manipulators
     \begin{itemize}
-    \item The Symbolic Robot Modeling Toolbox component by Jörn Malzahn has been updated.  It offers amazing speedups by using symbolic algebra to create robot specific MATLAB code or MEX files and it can even generate optimised Simulink blocks.  I've seen speedups of over 50,000x.  You need to have the Symbolic Math Toolbox.
+    \item The Symbolic Robot Modeling Toolbox component by J\"{o}rn Malzahn has been updated.  It offers amazing speedups by using symbolic algebra to create robot specific MATLAB code or MEX files and it can even generate optimised Simulink blocks.  I've seen speedups of over 50,000x.  You need to have the Symbolic Math Toolbox.
     \item New robot kinematic models: Franka-Emika PANDA and Rethink Sawyer.
     \item Methods \texttt{DH} and \texttt{MDH} on the \texttt{SerialLink} class convert models between DH and MDH kinematics. Dynamics not yet supported.
     \item \texttt{plot3d} behaves like \texttt{plot} for the \texttt{'trail'} and \texttt{'movie'} options.
