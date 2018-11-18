@@ -48,10 +48,10 @@
 % http://www.petercorke.com
 
 
-syms a1 a2 g
-syms c1 c2 m1 m2 
+syms a1 a2 g real
+syms c1 c2 m1 m2 real
 
-%syms Iyy1 Iyy2 b1 b2
+%syms Iyy1 Iyy2 b1 b2 real
 Iyy1 = 0
 Iyy2 = 0
 b1 = 0
@@ -67,4 +67,4 @@ twolink = twolink.sym();
 twolink.gravity = [0; 0; g];
 twolink.base = trotx(sym('pi')/2);
 
-syms q1 q2 q1d q2d q1dd q2dd
+syms q1 q2 q1d q2d q1dd q2dd real
