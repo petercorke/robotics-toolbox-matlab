@@ -157,7 +157,7 @@ _markup:
 	cp contents_alpha.html info
 	cp contents_toc.html info
 
-	# create the helptoc.xml file
+# create the helptoc.xml file
 	cp $(SRC)/doc/info/helptoc.xml info
 	#sed '/<!--INSERT_HERE-->/r helpfuncbycat.xml' < $(SRC)/info/helptoc.xml > info/helptoc.xml
 
