@@ -12,6 +12,7 @@
 %  ad            logarithm of adjoint
 %  pitch         pitch of the screw, SE(3) only
 %  pole          a point on the line of the screw
+%  prod          product of a vector of Twists
 %  theta         rotation about the screw
 %  line          Plucker line object representing line of the screw
 %  display       print the Twist parameters in human readable form
@@ -427,7 +428,7 @@ classdef Twist
         % TW.theta is the rotation (1x1) about the twist axis in radians.
         %
 
-        th = norm(tw.w);
+            th = norm(tw.w);
         end
         
             
