@@ -9,10 +9,11 @@
 % QPLOT(T, Q) as above but displays the joint angle trajectory versus time
 % given the time vector T (Mx1).
 %
-% See also JTRAJ, PLOT.
+% See also JTRAJ, PLOTP, PLOT.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -41,8 +42,8 @@ function qplot(t, q)
     plot(t, q(:,1:3))
     plot(t, q(:,4:6), '--')
     grid on
-    xlabel('time')
-    ylabel('q')
+    xlabel('Time (s)')
+    ylabel('Joint coordinates (rad,m)')
     legend('q1', 'q2', 'q3', 'q4', 'q5', 'q6');
     hold off
 

@@ -1,6 +1,7 @@
 % set the dimensions of the two leg links
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -18,7 +19,18 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function walking(varargin)
+
+    
+    opt.niterations = 500;
+    opt.movie = [];
+    
+    opt = tb_optparse(opt, varargin);
+    
 L1 = 0.1; L2 = 0.1;
+
+fprintf('create leg model\n');
 
 % create the leg links based on DH parameters
 %                    theta   d     a  alpha  
@@ -60,14 +72,17 @@ segments = [xf y zd; xb y zd; xb y zu; xf y zu] * 0.01;
 % first 1->2 segment includes the initial ramp up, and the final 3->4
 % has the slow down.  However the middle 2->3->4->1 is smooth cyclic
 % motion so we "cut it out" and use it.
+fprintf('create trajectory\n');
+
 segments = [segments; segments];
 tseg = [3 0.25 0.5 0.25]';
 tseg = [1; tseg; tseg];
 x = mstraj(segments, [], tseg, segments(1,:), 0.01, 0.1);
 
 % pull out the cycle
+fprintf('inverse kinematics (this will take a while)...');
 xcycle = x(100:500,:);
-qcycle = leg.ikine( transl(xcycle), [], [1 1 1 0 0 0], 'pinv' );
+qcycle = leg.ikine( transl(xcycle), 'mask', [1 1 1 0 0 0] );
 
 % dimensions of the robot's rectangular body, width and height, the legs
 % are at each corner.
@@ -81,6 +96,8 @@ W = 0.1; L = 0.2;
 %     'nowrist', 'nojaxes'});
 % plotopt = leg.plot({'noraise', 'norender', 'nobase', 'noshadow', ...
 %     'nowrist', 'nojaxes', 'ortho'});
+
+fprintf('\nanimate\n');
 
 plotopt = {'noraise', 'nobase', 'noshadow', 'nowrist', 'nojaxes', 'delay', 0};
 
@@ -106,14 +123,16 @@ hold off
 
 % walk!
 k = 1;
-%A = Animate('walking');
-%while 1
-for i=1:500
+A = Animate(opt.movie);
+
+for i=1:opt.niterations
     legs(1).animate( gait(qcycle, k, 0,   0));
     legs(2).animate( gait(qcycle, k, 100, 0));
     legs(3).animate( gait(qcycle, k, 200, 1));
     legs(4).animate( gait(qcycle, k, 300, 1));
     drawnow
     k = k+1;
-    %A.add();
+    A.add();
+end
+
 end

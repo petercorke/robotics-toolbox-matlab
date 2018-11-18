@@ -77,6 +77,10 @@ function [sys,x0,str,ts] = mdlInitializeSizes(ts,plot,enable)
         figure(plot);
         clf;
         %colordef(1,'none');
+        %global anim
+        %anim = Animate('quad-movie');
+        
+        %TODO enable animation saving from the block
     end
     % End of mdlInitializeSizes.
     
@@ -123,6 +127,7 @@ function sys = mdlOutputs(t,u,s, plot, enable, quad)
         plot3([s s],[s -s],[0 0],'-b')
         plot3([s -s],[-s s],[0 0],'-b')
         plot3([-s s],[-s s],[0 0],'-b')
+        grid on
         
         %READ STATE
         z = [u(1);u(2);u(3)];
@@ -182,6 +187,9 @@ function sys = mdlOutputs(t,u,s, plot, enable, quad)
         xlabel('x');
         ylabel('y');
         zlabel('z (height above ground)');
+        
+        %global anim
+        %anim.add();
     end
         
     sys = [];

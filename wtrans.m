@@ -8,7 +8,8 @@
 % See also TR2DELTA, TR2JAC.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -28,7 +29,11 @@
 % http://www.petercorke.com
 
 function Wt = wtrans(T, W)
+    
+    assert(ishomog(T), 'RTB:wtrans:badarg', 'T must be 4x4');
+    assert(isvec(W,6), 'RTB:wtrans:badarg', 'W must be a 6-vector');
 
+    W = W(:);
     f = W(1:3); m = W(4:6);
     k = cross(f, transl(T) ) + m;
 

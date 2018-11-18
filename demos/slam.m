@@ -1,5 +1,6 @@
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -31,8 +32,8 @@
 
 V = diag([0.005, 0.5*pi/180].^2);
 
-% then use this to create an instance of a Vehicle class
-veh = Vehicle(V);
+% then use this to create an instance of a Bicycle class
+veh = Bicycle('covar', V);
 
 % and then add a "driver" to move it between random waypoints in a square
 % region with dimensions from -10 to +10
@@ -41,14 +42,14 @@ veh.add_driver( RandomPath(10) );
 
 % Creating the map.  The map covers a square region with dimensions from 
 % -10 to +10 and contains 20 randomly placed landmarks
-map = Map(20, 10);
+map = LandmarkMap(20, 10);
 
 % Creating the sensor.  We firstly define the covariance of the sensor measurements
 % which report distance and bearing angle
 W = diag([0.1, 1*pi/180].^2);
 
 % and then use this to create an instance of the Sensor class.
-sensor = RangeBearingSensor(veh, map, W, 'animate');
+sensor = RangeBearingSensor(veh, map, 'covar', W, 'animate', 'angle', [-pi/2 pi/2], 'range', 5);
 % Note that the sensor is mounted on the moving robot and observes the features
 % in the world so it is connected to the already created Vehicle and Map objects.
 
@@ -83,6 +84,6 @@ ekf.plot_error()
 % simultaneously estimated the positions of the landmarks as well.  How well did it
 % do at that task?  We will show the landmarks in the map again
 map.plot();
-% and this time overlay the estimated landmark (with a +) and the 3sigma 
-% uncertainty bounds as green ellipses
-ekf.plot_map(3,'g');
+% and this time overlay the estimated landmark (with a +) and the 95% confidence
+% bounds as green ellipses
+ekf.plot_map('g');

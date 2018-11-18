@@ -4,13 +4,42 @@ function tests = TransformationsTest
 end
 
 function setupOnce(testCase)
-    mdl_puma560_3
-    p560 = p560.nofriction('all');
-    testCase.TestData.rob = p560;
-    % mdl_twolink
-    % tStruct.rob = twolink;
-    testCase.TestData.nTrials = 1000; % number of tests to perform in each subroutine
-    % tStruct.nTrials = 1; % number of tests to perform in each subroutine
+    % Create a test robot based on the first three links of the Puma 560.
+    deg = pi/180;
+    L(1) = Revolute('d', 0, 'a', 0, 'alpha', pi/2, ...
+    'I', [0, 0.35, 0, 0, 0, 0], ...
+    'r', [0, 0, 0], ...
+    'm', 0, ...
+    'Jm', 200e-6, ...
+    'G', -62.6111, ...
+    'B', 1.48e-3, ...
+    'Tc', [0.395 -0.435], ...
+    'qlim', [-160 160]*deg );
+
+    L(2) = Revolute('d', 0, 'a', 0.4318, 'alpha', 0, ...
+    'I', [0.13, 0.524, 0.539, 0, 0, 0], ...
+    'r', [-0.3638, 0.006, 0.2275], ...
+    'm', 17.4, ...
+    'Jm', 200e-6, ...
+    'G', 107.815, ...
+    'B', .817e-3, ...
+    'Tc', [0.126 -0.071], ...
+    'qlim', [-45 225]*deg );
+    
+    L(3) = Revolute('d', 0.15005, 'a', 0.0203, 'alpha', -pi/2,  ...
+    'I', [0.066, 0.086, 0.0125, 0, 0, 0], ...
+    'r', [-0.0203, -0.0141, 0.070], ...
+    'm', 4.8, ...
+    'Jm', 200e-6, ...
+    'G', -53.7063, ...
+    'B', 1.38e-3, ...
+    'Tc', [0.132, -0.105], ...
+    'qlim', [-225 45]*deg );
+
+    testRob = SerialLink(L, 'name', 'UnitTestRobot');
+    testCase.TestData.rob = testRob.nofriction('all');
+
+    testCase.TestData.nTrials = 10; % number of tests to perform in each subroutine
     
     testCase.TestData.cGen = CodeGenerator(testCase.TestData.rob,'default','logfile','cGenUnitTestLog.txt');
     testCase.TestData.cGen.verbose = 0;
@@ -45,8 +74,8 @@ function genfkine_test(testCase)
     for iTry = 1:testCase.TestData.nTrials
         q = Q(iTry,:);
         
-        resRTB(:,:,iTry) =  testCase.TestData.rob.fkine(q);
-        resSym(:,:,iTry) = subs(T,symQ,q);
+        resRTB(:,:,iTry) =  testCase.TestData.rob.fkine(q).T;
+        resSym(:,:,iTry) = subs(T.T,symQ,q);
         resM(:,:,iTry) = specRob.fkine(q);
     end
     profile off;
@@ -118,9 +147,9 @@ function genjacobian_test(testCase)
         resSym0(:,:,iTry) = subs(J0,symQ,q);
         resM0(:,:,iTry) = specRob.jacob0(q);
         
-        resRTBn(:,:,iTry) =  testCase.TestData.rob.jacobn(q);
+        resRTBn(:,:,iTry) =  testCase.TestData.rob.jacobe(q);
         resSymn(:,:,iTry) = subs(Jn,symQ,q);
-        resMn(:,:,iTry) = specRob.jacobn(q);
+        resMn(:,:,iTry) = specRob.jacobe(q);
     end
     profile off;
     pstat = profile('info');
@@ -148,7 +177,7 @@ function genjacobian_test(testCase)
     for iTry = 1:testCase.TestData.nTrials
         q = Q(iTry,:);
         resMEX0(:,:,iTry) = specRob.jacob0(q);
-        resMEXn(:,:,iTry) = specRob.jacobn(q);
+        resMEXn(:,:,iTry) = specRob.jacobe(q);
     end
     profile off;
     pstat = profile('info');
@@ -460,8 +489,8 @@ function geninvdyn_test(testCase)
     [symQ, symQD, symQDD] = testCase.TestData.rob.gencoords;
     
     Q = rand(testCase.TestData.nTrials,specRob.n);
-    QD = rand(testCase.TestData.nTrials,specRob.n);
-    QDD = rand(testCase.TestData.nTrials,specRob.n);
+    QD = 0*rand(testCase.TestData.nTrials,specRob.n);
+    QDD = 0*rand(testCase.TestData.nTrials,specRob.n);
     resRTB = rand(specRob.n,1,testCase.TestData.nTrials);
     resSym = rand(specRob.n,1,testCase.TestData.nTrials);
     resM = rand(specRob.n,1,testCase.TestData.nTrials);
@@ -527,6 +556,7 @@ end
     
     
 function genfdyn_test(testCase)
+    
     % - test forward dynamics against numeric version
     IqddSym = testCase.TestData.cGen.genfdyn.';
     
@@ -539,11 +569,12 @@ function genfdyn_test(testCase)
     Q = rand(testCase.TestData.nTrials,specRob.n);
     QD = rand(testCase.TestData.nTrials,specRob.n);
     TAU = rand(testCase.TestData.nTrials,specRob.n);
-    resRTB = rand(specRob.n,1,testCase.TestData.nTrials);
-    resSym = rand(specRob.n,1,testCase.TestData.nTrials);
-    resM = rand(specRob.n,1,testCase.TestData.nTrials);
-    resMEX = rand(specRob.n,1,testCase.TestData.nTrials);
+    resRTB = zeros(specRob.n,1,testCase.TestData.nTrials);
+    resSym = zeros(specRob.n,1,testCase.TestData.nTrials);
+    resM = zeros(specRob.n,1,testCase.TestData.nTrials);
+    resMEX = zeros(specRob.n,1,testCase.TestData.nTrials);
     
+
     profile on
     % test symbolics and generated m-code
     for iTry = 1:testCase.TestData.nTrials
@@ -557,6 +588,7 @@ function genfdyn_test(testCase)
         
     end
     profile off;
+    
     pstat = profile('info');
     statRTB = getprofilefunctionstats(pstat,['SerialLink',filesep,'accel']);
     statSym = getprofilefunctionstats(pstat,['sym',filesep,'subs']);
@@ -567,7 +599,6 @@ function genfdyn_test(testCase)
     
     % assertions so far?
     verifyEqual(testCase, resRTB, resM, 'absTol', 1e-6);
-    % verifyEqual(testCase, resRTB, resSym);
     
     testCase.TestData.cGen.genccodefdyn;
     testCase.TestData.cGen.genmexfdyn;
@@ -583,7 +614,9 @@ function genfdyn_test(testCase)
         tau = TAU(iTry,:);
         
         resMEX(:,:,iTry) = specRob.accel(q,qd,tau);
+
     end
+ 
     profile off;
     pstat = profile('info');
     statMEX = getprofilefunctionstats(pstat,[testCase.TestData.cGen.getrobfname,filesep,'accel.',mexext],'mex-function');

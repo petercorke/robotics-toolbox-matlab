@@ -18,12 +18,14 @@
 % Notes::
 % - There is a singularity for the case where THETA=0 in which case PHI is arbitrarily
 %   set to zero and PSI is the sum (PHI+PSI).
+% - Translation component is ignored.
 %
 % See also  EUL2TR, TR2RPY.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -42,52 +44,49 @@
 %
 % http://www.petercorke.com
 
-function euler = tr2eul(R, varargin)
-
+function euler = tr2eul(RR, varargin)
+    
     opt.deg = false;
     opt.flip = false;
     opt = tb_optparse(opt, varargin);
-
-	s = size(R);
-	if length(s) > 2
-        euler = zeros(s(3), 3);
-		for i=1:s(3)
-			euler(i,:) = tr2eul(R(:,:,i));
-		end
-
-        if opt.deg
-            euler = euler * 180/pi;
-        end
-		return
-	end
-
-	euler = zeros(1,3);
-
-	% Method as per Paul, p 69.
-    % euler = [phi theta psi]
-    %
-
-	if abs(R(1,3)) < eps && abs(R(2,3)) < eps
-		% singularity
-		euler(1) = 0;
-		sp = 0;
-		cp = 1;
-		euler(2) = atan2(cp*R(1,3) + sp*R(2,3), R(3,3));
-		euler(3) = atan2(-sp * R(1,1) + cp * R(2,1), -sp*R(1,2) + cp*R(2,2));
-    else
-        % non singular
+    
+    RR = SO3.check(RR);
+    euler = zeros(length(RR),3);
+    
+    for i=1:length(RR)
         
-        % Only positive phi is returned.
-        if opt.flip
-            euler(1) = atan2(-R(2,3), -R(1,3));
+        R = RR(i).R;
+        
+        % Method as per Paul, p 69.
+        % euler = [phi theta psi]
+        %
+        
+        if abs(R(1,3)) < eps && abs(R(2,3)) < eps
+            % singularity
+            eul(1) = 0;
+            sp = 0;
+            cp = 1;
+            eul(2) = atan2(cp*R(1,3) + sp*R(2,3), R(3,3));
+            eul(3) = atan2(-sp * R(1,1) + cp * R(2,1), -sp*R(1,2) + cp*R(2,2));
         else
-            euler(1) = atan2(R(2,3), R(1,3));
+            % non singular
+            
+            % Only positive phi is returned.
+            if opt.flip
+                eul(1) = atan2(-R(2,3), -R(1,3));
+            else
+                eul(1) = atan2(R(2,3), R(1,3));
+            end
+            sp = sin(eul(1));
+            cp = cos(eul(1));
+            eul(2) = atan2(cp*R(1,3) + sp*R(2,3), R(3,3));
+            eul(3) = atan2(-sp * R(1,1) + cp * R(2,1), -sp*R(1,2) + cp*R(2,2));
         end
-		sp = sin(euler(1));
-		cp = cos(euler(1));
-		euler(2) = atan2(cp*R(1,3) + sp*R(2,3), R(3,3));
-		euler(3) = atan2(-sp * R(1,1) + cp * R(2,1), -sp*R(1,2) + cp*R(2,2));
-	end
+        
+        euler(i,:) = eul;
+    end
+    
     if opt.deg
         euler = euler * 180/pi;
     end
+end

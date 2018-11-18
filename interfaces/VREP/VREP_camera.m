@@ -203,7 +203,7 @@ classdef VREP_camera < VREP_obj
             %fprintf('Captured %dx%d image\n', res(1), res(2));
             
             if nargout == 0
-                idisp(image);
+                idisp(image, 'plain');
             elseif nargout > 0
                 im = image;
             end

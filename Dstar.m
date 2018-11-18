@@ -5,20 +5,19 @@
 % facilitates incremental replanning.
 %
 % Methods::
-% plan              Compute the cost map given a goal and map
-% path              Compute a path to the goal (inherited from Navigation)
-% visualize         Display the obstacle map (deprecated)
-% plot              Display the obstacle map
-% costmap_modify    Modify the costmap
-% modify_cost       Modify the costmap (deprecated, use costmap_modify)
-% costmap_get       Return the current costmap
-% costmap_set       Set the current costmap
-% distancemap_get   Set the current distance map
-% display           Print the parameters in human readable form
-% char              Convert to string
+%  Dstar             Constructor
+%  plan              Compute the cost map given a goal and map
+%  query             Find a path 
+%  plot              Display the obstacle map
+%  display           Print the parameters in human readable form
+%  char              Convert to string%  costmap_modify    Modify the costmap
+%--
+%  modify_cost       Modify the costmap
 %
-% Properties::
-% costmap    Distance from each point to the goal.
+% Properties (read only)::
+%  distancemap       Distance from each point to the goal.
+%  costmap           Cost of traversing cell (in any direction).
+%  niter             Number of iterations.
 %
 % Example::
 %        load map1           % load map
@@ -26,24 +25,26 @@
 %        start=[20,10];
 %        ds = Dstar(map);    % create navigation object
 %        ds.plan(goal)       % create plan for specified goal
-%        ds.path(start)      % animate path from this start location
+%        ds.query(start)      % animate path from this start location
 %
 % Notes::
 % - Obstacles are represented by Inf in the costmap.
-% - The value of each element in the costmap is the shortest distance from the 
+% - The value of each element in the costmap is the shortest distance from the
 %   corresponding point in the map to the current goal.
 %
 % References::
 % - The D* algorithm for real-time planning of optimal traverses,
 %   A. Stentz,
 %   Tech. Rep. CMU-RI-TR-94-37, The Robotics Institute, Carnegie-Mellon University, 1994.
+%   https://www.ri.cmu.edu/pub_files/pub3/stentz_anthony__tony__1994_2/stentz_anthony__tony__1994_2.pdf
 % - Robotics, Vision & Control, Sec 5.2.2,
 %   Peter Corke, Springer, 2011.
 %
 % See also Navigation, DXform, PRM.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -75,36 +76,37 @@
 % pic 7/09
 
 classdef Dstar < Navigation
-
+    
     properties (SetAccess=private, GetAccess=private)
-
-        costmap   % world cost map: obstacle = Inf
+        
         G         % index of goal point
-
+        
         % info kept per cell (state)
         b       % backpointer (0 means not set)
         t       % tag: NEW OPEN CLOSED
         h       % distance map, path cost
-
+        
+        validplan   % a plan has been computed for current costmap
+        
         % list of open states: 2xN matrix
         %   each open point is a column, row 1 = index of cell, row 2 = k
         openlist
-
-        niter
-
-        changed
-
+        
         openlist_maxlen     % keep track of maximum length
-        quiet
-
+        
         % tag state values
         NEW = 0;
         OPEN = 1;
         CLOSED = 2;
     end
-
+    
+    properties (SetAccess=private, GetAccess=public)
+        niter
+        costmap   % world cost map: obstacle = Inf
+    end
+    
     methods
-
+        
         % constructor
         function ds = Dstar(world, varargin)
             %Dstar.Dstar D* constructor
@@ -120,58 +122,44 @@ classdef Dstar < Navigation
             % 'metric',M    Specify the distance metric as 'euclidean' (default)
             %               or 'cityblock'.
             % 'inflate',K   Inflate all obstacles by K cells.
-            % 'quiet'       Don't display the progress spinner
+            % 'progress'    Don't display the progress spinner
             %
             % Other options are supported by the Navigation superclass.
             %
             % See also Navigation.Navigation.
-
+            
             % invoke the superclass constructor
             ds = ds@Navigation(world, varargin{:});
-
-            opt.quiet = false;
-            opt = tb_optparse(opt, varargin);
-            ds.quiet = opt.quiet;
-
-            ds.occgrid2costmap(ds.occgrid);
-
-
+         
             % init the D* state variables
             ds.reset();
             if ~isempty(ds.goal)
                 ds.goal_change();
             end
-            ds.changed = false;
-        end
+            
+            ds.reset();
 
+        end
+        
         function reset(ds)
             %Dstar.reset Reset the planner
             %
             % DS.reset() resets the D* planner.  The next instantiation
             % of DS.plan() will perform a global replan.
-
+            
             % build the matrices required to hold the state of each cell for D*
             ds.b = zeros(size(ds.costmap), 'uint32');  % backpointers
             ds.t = zeros(size(ds.costmap), 'uint8');   % tags
             ds.h = Inf*ones(size(ds.costmap));         % path cost estimate
-            ds.openlist = zeros(2,0);               % the open list, one column per point
-
+            ds.openlist = zeros(2,0);                  % the open list, one column per point
+            
             ds.openlist_maxlen = -Inf;
+            
+            ds.occgrid2costmap(ds.occgridnav);
+            
+            ds.validplan = false;     % plan doesn't match costmap
         end
-
-        function goal_change(ds)
-
-            if isempty(ds.b)
-                return;
-            end
-            goal = ds.goal;
-
-            % keep goal in index rather than row,col format
-            ds.G = sub2ind(size(ds.occgrid), goal(2), goal(1));
-            ds.INSERT(ds.G, 0, 'goalset');
-            ds.h(ds.G) = 0;
-        end
-
+        
         function s = char(ds)
             %Dstar.char Convert navigation object to string
             %
@@ -179,18 +167,23 @@ classdef Dstar < Navigation
             % object in human-readable form.
             %
             % See also Dstar.display, Navigation.char.
- 
+            
             % most of the work is done by the superclass
             s = char@Navigation(ds);
-
+            
             % Dstar specific stuff
             if ~isempty(ds.costmap)
                 s = char(s, sprintf('  costmap: %dx%d, open list %d', size(ds.costmap), numcols(ds.openlist)));
             else
                 s = char(s, sprintf('  costmap: empty:'));
             end
+            if ds.validplan
+                s = char(s, sprintf('  plan: valid'));
+            else
+                s = char(s, sprintf('  plan: stale'));
+            end
         end
-
+        
         function plot(ds, varargin)
             %Dstar.plot Visualize navigation environment
             %
@@ -204,13 +197,13 @@ classdef Dstar < Navigation
             %
             % See also Navigation.plot.
             
-            plot@Navigation(ds, 'distance', ds.h, varargin{:});
+            plot@Navigation(ds, varargin{:}, 'distance', ds.h);
         end
-
+        
         % invoked by Navigation.step
         function n = next(ds, current)
-
-            if ds.changed
+            
+            if ~ds.validplan
                 error('Cost map has changed, replan');
             end
             X = sub2ind(size(ds.costmap), current(2), current(1));
@@ -222,149 +215,151 @@ classdef Dstar < Navigation
                 n = [c;r];
             end
         end
-
-        function plan(ds, goal)
+        
+        function plan(ds, varargin)
             %Dstar.plan Plan path to goal
             %
-            % DS.plan() updates DS with a costmap of distance to the
-            % goal from every non-obstacle point in the map.  The goal is
-            % as specified to the constructor.
+            % DS.plan(OPTIONS) create a D* plan to reach the goal from all free cells
+            % in the map.  Also updates a D* plan after changes to the costmap. The 
+            % goal is as previously specified.
             %
-            % DS.plan(GOAL) as above but uses the specified goal.
+            % DS.plan(GOAL,OPTIONS) as above but goal given explicitly.
+            %
+            % Options::
+            % 'animate'    Plot the distance transform as it evolves
+            % 'progress'   Display a progress bar
             %
             % Note::
             % - If a path has already been planned, but the costmap was
             %   modified, then reinvoking this method will replan,
             %   incrementally updating the plan at lower cost than a full
             %   replan.
-
+            % - The reset method causes a fresh plan, rather than replan.
+            %
+            % See also Dstar.reset.
             
-            if nargin > 1
-                ds.goal = goal;
+            opt.progress = true;
+            opt.animate = false;
+            [opt,args] = tb_optparse(opt, varargin);
+            
+                        % was a goal given here
+            if ~isempty(args) && isvec(args{1},2)
+                goal = args{1};
+                ds.setgoal(goal);
+                ds.reset();
             end
-            % for replanning no goal is needed, 
-            if isempty(ds.goal)
-                error('must specify a goal point');
-            end
+            
+            % check we have a goal
+            assert(~isempty(ds.goal), 'RTB:Dstar:plan', 'no goal specified here or in constructor');
+            
+            goal = ds.goal;
+            
+            % keep goal in index rather than row,col format
+            ds.G = sub2ind(size(ds.occgridnav), goal(2), goal(1));
+            ds.INSERT(ds.G, 0, 'goalset');
+            ds.h(ds.G) = 0;
             
             ds.niter = 0;
-            while true
-                if ~ds.quiet && mod(ds.niter, 20) == 0
-                    ds.spinner();
-                end
+            if opt.progress
+                % for replanning we don't really know how many iterations, so scale it to
+                % the worst case, a full replan
+                hprog = Navigation.progress_init('D* planning');
+            end
+            
+            % number of free cells, upper bound on number of iterations, trapped free
+            % cells will never be reached
+            nfree = prod(size(ds.occgridnav)) - sum(sum(ds.occgridnav > 0));
+            nupdate = round(nfree/100);
+            
+            while true  
                 ds.niter = ds.niter + 1;
-
+                if opt.progress && mod(ds.niter, nupdate) == 0
+                    Navigation.progress(hprog, ds.niter/nfree);
+                    
+                    if opt.animate
+                        Navigation.show_distance(ds.h);
+                    end
+                end
+                
                 if ds.PROCESS_STATE() < 0
                     break;
                 end
-                if ds.verbose
-                    disp(' ')
-                end
             end
-            if ~ds.quiet
-                fprintf('\r');
+            
+            if opt.progress
+                Navigation.progress_delete(hprog);
             end
-            ds.changed = false;
+            ds.validplan = true;
+            fprintf('%d iterations\n', ds.niter)
         end
-
-        function c = distancemap_get(ds)
-        %Dstar.distancemap_get Get the current distance map
-        %
-        % C = DS.distancemap_get() is the current distance map.  This map is the same size
-        % as the occupancy grid and the value of each element is the shortest distance 
-        % from the corresponding point in the map to the current goal.  It is computed
-        % by Dstar.plan.
-        %
-        % See also Dstar.plan.
-            c = ds.h;
-        end
-
-        % functions should be more consistently named:
-        %   costmap_set
-        %   costmap_get
-        %   costmap_modify
-
-        function c = costmap_get(ds)
-        %Dstar.costmap_get Get the current costmap
-        %
-        % C = DS.costmap_get() is the current costmap.  The cost map is the same size
-        % as the occupancy grid and the value of each element represents the cost
-        % of traversing the cell.  It is autogenerated by the class constructor from
-        % the occupancy grid such that:
-        % - free cell (occupancy 0) has a cost of 1
-        % - occupied cell (occupancy >0) has a cost of Inf
-        %
-        % See also Dstar.costmap_set, Dstar.costmap_modify.
-
-            c = ds.costmap;
-        end
-
-        function costmap_set(ds, costmap)
-        %Dstar.costmap_set Set the current costmap
-        %
-        % DS.costmap_set(C) sets the current costmap.  The cost map is the same size
-        % as the occupancy grid and the value of each element represents the cost
-        % of traversing the cell.  A high value indicates that the cell is more costly
-        % (difficult) to traverese.  A value of Inf indicates an obstacle.
-        %
-        % Notes::
-        % - After the cost map is changed the path should be replanned by 
-        %   calling DS.plan(). 
-        %
-        % See also Dstar.costmap_get, Dstar.costmap_modify.
-            if ~all(size(costmap) == size(ds.occgrid))
+        
+        
+        function set_cost(ds, costmap)
+            %Dstar.set_cost Set the current costmap
+            %
+            % DS.set_cost(C) sets the current costmap.  The cost map is the same size
+            % as the occupancy grid and the value of each element represents the cost
+            % of traversing the cell.  A high value indicates that the cell is more costly
+            % (difficult) to traverese.  A value of Inf indicates an obstacle.
+            %
+            % Notes::
+            % - After the cost map is changed the path should be replanned by
+            %   calling DS.plan().
+            %
+            % See also Dstar.modify_cost.
+            if ~all(size(costmap) == size(ds.occgridnav))
                 error('costmap must be same size as occupancy grid');
             end
             ds.costmap = costmap;
-            ds.changed = true;
+            ds.validplan = false;
         end
+        
+        function modify_cost(ds, xy, newcost)
+            %Dstar.modify_cost Modify cost map
+            %
+            % DS.modify_cost(P, C) modifies the cost map for the points described by
+            % the columns of P (2xN) and sets them to the corresponding elements of C
+            % (1xN).  For the particular case where P (2x2) the first and last columns
+            % define the corners of a rectangular region which is set to C (1x1).
+            %
+            % Notes::
+            % - After one or more point costs have been updated the path
+            %   should be replanned by calling DS.plan().
+            %
+            % See also Dstar.set_cost.
 
-        function costmap_modify(ds, point, newcost)
-        %Dstar.costmap_modify Modify cost map
-        %
-        % DS.costmap_modify(P, NEW) modifies the cost map at P=[X,Y] to
-        % have the value NEW.  If P (2xM) and NEW (1xM) then the cost of
-        % the points defined by the columns of P are set to the corresponding
-        % elements of NEW.
-        %
-        % Notes::
-        % - After one or more point costs have been updated the path
-        %   should be replanned by calling DS.plan(). 
-        % - Replaces modify_cost, same syntax.
-        %
-        % See also Dstar.costmap_set, Dstar.costmap_get.
-
-            modify_cost(ds, point, newcost);
-        end
-
-        function modify_cost(ds, point, newcost)
-        %Dstar.modify_cost Modify cost map
-        %
-        % Notes::
-        % - Deprecated: use modify_cost instead instead.
-        %
-        % See also Dstar.costmap_set, Dstar.costmap_get.
-
-            if numel(point) == 2
-                % for case of single point ensure it is a column vector
-                point = point(:);
+            
+            function modify(ds, x, y, newcost)
+                X = sub2ind(size(ds.costmap), y, x);
+                ds.costmap(X) = newcost;
+                
+                if ds.t(X) == ds.CLOSED
+                    ds.INSERT(X, ds.h(X), 'modifycost');
+                end
             end
-            if numcols(point) ~= numcols(newcost)
-                error('number of columns in point must match columns in newcost');
+            
+            if all(size(xy) == [2 2]) && numel(newcost) == 1
+                % a rectangular region is specified
+                for xx=xy(1,1):xy(1,2)
+                    for yy=xy(2,1):xy(2,2)
+                            modify(ds, xx, yy, newcost);
+                    end
+                end
+            elseif numcols(xy) == numel(newcost)
+                % a set of column vectors specifying the points to change
+                for i=1:numcols(xy)
+                    modify(ds, xy(1,i), xy(2,i), newcost(i));
+                end
+            else
+                error('number of columns of P and C must match');
             end
-            for i=1:numcols(point)
-                X = sub2ind(size(ds.costmap), point(2,i), point(1,i));
-                ds.costmap(X) = newcost(i);
-            end
-            if ds.t(X) == ds.CLOSED
-                ds.INSERT(X, ds.h(X), 'modifycost');
-            end
-            ds.changed = true;
+            
+            ds.validplan = false;
         end
     end % public methods
-
+    
     methods (Access=protected)
-
+        
         function occgrid2costmap(ds, og, cost)
             if nargin < 3
                 cost = 1;
@@ -373,22 +368,22 @@ classdef Dstar < Navigation
             ds.costmap(ds.costmap==1) = Inf;      % occupied cells have Inf driving cost
             ds.costmap(ds.costmap==0) = cost;     % unoccupied cells have driving cost
         end
-
+        
         % The main D* function as per the Stentz paper, comments Ln are the original
         % line numbers.
         function r = PROCESS_STATE(d)
-
+            
             %% states with the lowest k value are removed from the
             %% open list
             X = d.MIN_STATE();                          % L1
-
+            
             if isempty(X)                               % L2
                 r = -1;
                 return;
             end
-
+            
             k_old = d.GET_KMIN(); d.DELETE(X);          % L3
-
+            
             if k_old < d.h(X)                           % L4
                 d.message('k_old < h(X):  %f %f\n', k_old, d.h(X));
                 for Y=d.neighbours(X)                   % L5
@@ -398,7 +393,7 @@ classdef Dstar < Navigation
                     end
                 end
             end
-
+            
             %% can we lower the path cost of any neighbours?
             if k_old == d.h(X)                          % L8
                 d.message('k_old == h(X): %f\n', k_old);
@@ -408,7 +403,7 @@ classdef Dstar < Navigation
                             ( (d.b(Y) ~= X) && (d.h(Y) > (d.h(X) + d.c(X,Y))) )
                         d.b(Y) = X; d.INSERT(Y, d.h(X)+d.c(X,Y), 'L13');   % L13
                     end
-                 end
+                end
             else                                        % L14
                 d.message('k_old > h(X)');
                 for Y=d.neighbours(X)                   % L15
@@ -424,28 +419,29 @@ classdef Dstar < Navigation
                             end
                         end
                     end
-                 end
+                end
             end
             
             r = 0;
             return;
         end % process_state(0
-
+        
         function kk = k(ds, X)
             i = ds.openlist(1,:) == X;
             kk = ds.openlist(2, i);
         end
-
+        
+        % add node to open list
         function INSERT(ds, X, h_new, where)
-
+            
             % where is for diagnostic purposes only
             ds.message('insert (%s) %d = %f\n', where, X, h_new);
-
+            
             i = find(ds.openlist(1,:) == X);
             if length(i) > 1
                 error('D*:INSERT: state in open list %d times', X);
             end
-
+            
             if ds.t(X) == ds.NEW
                 k_new = h_new;
                 % add a new column to the open list
@@ -457,25 +453,29 @@ classdef Dstar < Navigation
                 % add a new column to the open list
                 ds.openlist = [ds.openlist [X; k_new]];
             end
-
+            
             if numcols(ds.openlist) > ds.openlist_maxlen
                 ds.openlist_maxlen = numcols(ds.openlist);
             end
-
+            
             ds.h(X) = h_new;
             ds.t(X) = ds.OPEN;
         end
-
+        
+        % remove node from open list
         function DELETE(ds, X)
             ds.message('delete %d\n', X);
             i = find(ds.openlist(1,:) == X);
             if length(i) ~= 1
                 error('D*:DELETE: state %d doesnt exist', X);
             end
+            if length(i) > 1
+                disp('hello')
+            end
             ds.openlist(:,i) = []; % remove the column
             ds.t(X) = ds.CLOSED;
         end
-
+        
         % return the index of the open state with the smallest k value
         function ms = MIN_STATE(ds)
             if isempty(ds.openlist)
@@ -483,36 +483,36 @@ classdef Dstar < Navigation
             else
                 % find the minimum k value on the openlist
                 [~,i] = min(ds.openlist(2,:));
-
+                
                 % return its index
                 ms = ds.openlist(1,i);
             end
         end
-
+        
         function kmin = GET_KMIN(ds)
             kmin = min(ds.openlist(2,:));
         end
-
+        
         % return the cost of moving from state X to state Y
         function cost = c(ds, X, Y)
             [r,c] = ind2sub(size(ds.costmap), [X; Y]);
             dist = sqrt(sum(diff([r c]).^2));
             dcost = (ds.costmap(X) + ds.costmap(Y))/2;
-
+            
             cost = dist * dcost;
         end
-
+        
         % return index of neighbour states as a row vector
         function Y = neighbours(ds, X)
             dims = size(ds.costmap);
             [r,c] = ind2sub(dims, X);
-
+            
             % list of 8-way neighbours
             Y = [r-1 r-1 r-1 r r  r+1 r+1 r+1; c-1 c c+1 c-1 c+1 c-1 c c+1];
             k = (min(Y)>0) & (Y(1,:)<=dims(1)) & (Y(2,:)<=dims(2));
             Y = Y(:,k);
             Y = sub2ind(dims, Y(1,:)', Y(2,:)')';
         end
-
+        
     end % protected methods
 end % classdef

@@ -6,7 +6,8 @@
 % QD (MxN) and QDD (MxN) respectively.  The trajectory outputs have one row per 
 % time step, and one column per axis.
 %
-% The shape of the trajectory is given by the scalar trajectory function TFUNC
+% The shape of the trajectory is given by the scalar trajectory function
+% TFUNC which is applied to each axis:
 %      [S,SD,SDD] = TFUNC(S0, SF, M);
 % and possible values of TFUNC include @lspb for a trapezoidal trajectory, or
 % @tpoly for a polynomial trajectory.
@@ -23,7 +24,8 @@
 % See also JTRAJ, MSTRAJ, LSPB, TPOLY.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

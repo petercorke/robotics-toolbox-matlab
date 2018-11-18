@@ -1,4 +1,4 @@
-%JTRAJ Compute a joint space trajectory between two configurations
+%JTRAJ Compute a joint space trajectory
 %
 % [Q,QD,QDD] = JTRAJ(Q0, QF, M) is a joint space trajectory Q (MxN) where the joint
 % coordinates vary from Q0 (1xN) to QF (1xN).  A quintic (5th order) polynomial is used 
@@ -8,20 +8,26 @@
 % The trajectory Q, QD and QDD are MxN matrices, with one row per time step,
 % and one column per joint.
 %
-% [Q,QD,QDD] = JTRAJ(Q0, QF, M, QD0, QDF) as above but also specifies initial 
-% and final joint velocity for the trajectory.
+% [Q,QD,QDD] = JTRAJ(Q0, QF, M, QD0, QDF) as above but also specifies
+% initial QD0 (1xN) and final QDF (1xN) joint velocity for the trajectory.
 %
-% [Q,QD,QDD] = JTRAJ(Q0, QF, T) as above but the trajectory length is defined
-% by the length of the time vector T (Mx1).
+% [Q,QD,QDD] = JTRAJ(Q0, QF, T) as above but the number of steps in the
+% trajectory is defined by the length of the time vector T (Mx1).
 %
 % [Q,QD,QDD] = JTRAJ(Q0, QF, T, QD0, QDF) as above but specifies initial and 
 % final joint velocity for the trajectory and a time vector.
+%
+% Notes::
+% - When a time vector is provided the velocity and acceleration outputs
+%   are scaled assumign that the time vector starts at zero and increases
+%   linearly.
 %
 % See also QPLOT, CTRAJ, SerialLink.jtraj.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -1,18 +1,19 @@
 %SerialLink.GRAVJAC Fast gravity load and Jacobian
 % 
 % [TAU,JAC0] = R.gravjac(Q) is the generalised joint force/torques due to
-% gravity (1xN) and the manipulator Jacobian in the base frame (6xN) for
+% gravity TAU (1xN) and the manipulator Jacobian in the base frame JAC0 (6xN) for
 % robot pose Q (1xN), where N is the number of robot joints.
 %
-% [TAU,JAC0] = R.gravjac(Q,GRAV) as above but gravity is given explicitly
-% by GRAV (3x1).
+% [TAU,JAC0] = R.gravjac(Q,GRAV) as above but gravitational acceleration is
+% given explicitly by GRAV (3x1).
 %
 % Trajectory operation::
 %
 % If Q is MxN where N is the number of robot joints then a trajectory is
-% assumed where each row of Q corresponds to a pose.  TAU (MxN) is the
-% generalised joint torque, each row corresponding to an input pose, and
-% JAC0 (6xNxM) where each plane is a Jacobian corresponding to an input pose.
+% assumed where each row of Q corresponds to a robot configuration.  TAU
+% (MxN) is the generalised joint torque, each row corresponding to an input
+% pose, and JAC0 (6xNxM) where each plane is a Jacobian corresponding to an
+% input pose.
 %
 % Notes::
 % - The gravity vector is defined by the SerialLink property if not explicitly given.

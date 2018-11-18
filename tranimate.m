@@ -4,7 +4,6 @@
 % to pose X2.  Poses X1 and X2 can be represented by:
 %   - homogeneous transformation matrices (4x4)
 %   - orthonormal rotation matrices (3x3)
-%   - Quaternion
 %
 % TRANIMATE(X, OPTIONS) animates a coordinate frame moving from the identity pose
 % to the pose X represented by any of the types listed above.
@@ -12,27 +11,26 @@
 % TRANIMATE(XSEQ, OPTIONS) animates a trajectory, where XSEQ is any of
 %   - homogeneous transformation matrix sequence (4x4xN)
 %   - orthonormal rotation matrix sequence (3x3xN)
-%   - Quaternion vector (Nx1)
 %
 % Options::
 %  'fps', fps    Number of frames per second to display (default 10)
 %  'nsteps', n   The number of steps along the path (default 50)
 %  'axis',A      Axis bounds [xmin, xmax, ymin, ymax, zmin, zmax]
-%  'movie',M     Save frames as files in the folder M
-%
+%  'movie',M     Save frames as a movie or sequence of frames
+%  'cleanup'     Remove the frame at end of animation
+%  'noxyz'       Don't label the axes
+%  'rgb'         Color the axes in the order x=red, y=green, z=blue
+%  'retain'      Retain frames, don't animate
 %  Additional options are passed through to TRPLOT.
 %
 % Notes::
 % - Uses the Animate helper class to record the frames.
-% - Poses X1 and X2 must both be of the same type
-% - The 'movie' options saves frames as files NNNN.png.
-% - To convert frames to a movie use a command like:
-%        ffmpeg -r 10 -i %04d.png out.avi
 %
-% See also TRPLOT, Animate.
+% See also TRPLOT, Animate, SE3.animate.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -59,26 +57,28 @@ function tranimate(P2, varargin)
     opt.nsteps = 50;
     opt.axis = [];
     opt.movie = [];
+    opt.cleanup = false;
+    opt.retain = false;
+    opt.time = [];
 
     [opt, args] = tb_optparse(opt, varargin);
     
+    ud.opt = opt;
+    ud.args = args;
+    
     if ~isempty(opt.movie)
-        anim = Animate(opt.movie);
+        ud.anim = Animate(opt.movie);
     end
     P1 = [];
+    if ~isempty(opt.time) && isempty(opt.fps)
+        opt.fps = 1 /(opt.time(2) - opt.time(1));
+    end
+
 
     % convert quaternion and rotation matrix to hom transform
-    if isa(P2, 'Quaternion')
-        T2 = P2.T;   % convert quaternion to transform
-        if ~isempty(args) && isa(args{1},'Quaternion')
-            T1 = T2;
-            Q2 = args{1};
-            T2 = Q2.T;
-            args = args(2:end);
-        else
-            T1 = eye(4,4);
-        end
-    elseif isrot(P2)
+    if isrot(P2)
+        % tranimate(R1, options)
+        % tranimate(R1, R2, options)
         T2 = r2t(P2);
         if ~isempty(args) && isrot(args{1})
             T1 = T2;
@@ -88,6 +88,8 @@ function tranimate(P2, varargin)
             T1 = eye(4,4);
         end
     elseif ishomog(P2)
+        % tranimate(T1, options)
+        % tranimate(T1, T2, options)
         T2 = P2;
         if ~isempty(args) && ishomog(args{1})
             T1 = T2;
@@ -96,6 +98,16 @@ function tranimate(P2, varargin)
         else
             T1 = eye(4,4);
         end
+    elseif isa(P2, 'function_handle')
+        % we were passed a handle
+        %
+        % tranimate( @func(x), x, options)
+        T2 = [];
+        for x = args{1}
+            T2 = cat(3, T2, P2(x));
+        end
+    else
+        error('RTB:tranimate:badarg', 'argument must be 3x3 or 4x4 matrix');
     end
     
     % at this point
@@ -125,18 +137,77 @@ function tranimate(P2, varargin)
         axlim = [mn; mx];
         axlim = axlim(:)';
         args = [args 'axis' axlim];
+    else
+        args = [args 'axis' opt.axis];
     end
     
-    hg = trplot(eye(4,4), args{:});  % create a frame at the origin
-
-    % animate it for all poses in the sequence
-    for i=1:size(Ttraj,3)
-        T = Ttraj(:,:,i);
-        trplot(hg, T);
-        
-        if ~isempty(opt.movie)
-            anim.add();
-        end
-        
-        pause(1/opt.fps);
+    if opt.retain
+        hold on
+        ud.hg = [];  % indicate no animation
+    else
+        ud.hg = trplot(eye(4,4), args{:});  % create a frame at the origin
     end
+    ud.Ttraj = Ttraj;
+
+    if ~isempty(opt.time)
+        ud.htime = uicontrol('Parent', gcf, 'Style', 'text', ...
+            'HorizontalAlignment', 'left', 'Position', [50 20 100 20]);
+    end
+    % animate it for all poses in the sequence
+    
+
+    t = timer('ExecutionMode', 'fixedRate', ...
+        'BusyMode', 'queue', ...
+        'UserData', ud, ...
+        'TasksToExecute', length(ud.Ttraj), ...
+        'Period', 1/opt.fps/2);
+    t.TimerFcn = @timer_callback;
+    start(t);
+    
+    waitfor(t)
+    
+    if ~isempty(ud.opt.movie)
+        ud.anim.close();
+    end
+    delete(t)
+        if opt.cleanup
+            delete(hg);
+        end
+end
+
+function guts(ud, i)
+    if isa(ud.Ttraj, 'SO3')
+        T = ud.Ttraj(i);
+    else
+        T = ud.Ttraj(:,:,i);
+    end
+    if ud.opt.retain
+        trplot(T, ud.args{:});
+    else
+        trplot(T, 'handle', ud.hg);
+    end
+    
+    if ~isempty(ud.opt.movie)
+        ud.anim.add();
+    end
+    
+    if ~isempty(ud.opt.time)
+        set(ud.htime, 'String', sprintf('time %g', ud.opt.time(i)));
+    end
+    drawnow
+              
+end
+
+function timer_callback(timerObj, ~)
+    ud = get(timerObj, 'UserData');
+    if ~ishandle(ud.hg)
+        % the figure has been closed
+        stop(timerObj);
+        delete(timerObj);
+    end
+    
+    i = timerObj.TasksExecuted;
+    
+    guts(ud, i);
+    
+end

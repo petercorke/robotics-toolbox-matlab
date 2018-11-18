@@ -1,9 +1,10 @@
 %LSPB  Linear segment with parabolic blend
 %
-% [S,SD,SDD] = LSPB(S0, SF, M) is a scalar trajectory (Mx1) that varies 
-% smoothly from S0 to SF in M steps using a constant velocity segment and 
-% parabolic blends (a trapezoidal path).  Velocity and acceleration can be
-% optionally returned as SD (Mx1) and SDD (Mx1).
+% [S,SD,SDD] = LSPB(S0, SF, M) is a scalar trajectory (Mx1) that varies
+% smoothly from S0 to SF in M steps using a constant velocity segment and
+% parabolic blends (a trapezoidal velocity profile).  Velocity and
+% acceleration can be optionally returned as SD (Mx1) and SDD (Mx1)
+% respectively.
 %
 % [S,SD,SDD] = LSPB(S0, SF, M, V) as above but specifies the velocity of 
 % the linear segment which is normally computed automatically.
@@ -19,9 +20,13 @@
 % figure.
 %
 % Notes::
-% - Velocity is in units of distance per trajectory step, not per second.
-% - Acceleration is in units of distance per trajectory step squared, not
-%   per second squared. 
+% - If M is given
+%   - Velocity is in units of distance per trajectory step, not per second.
+%   - Acceleration is in units of distance per trajectory step squared, not
+%     per second squared. 
+% - If T is given then results are scaled to units of time.
+% - The time vector T is assumed to be monotonically increasing, and time
+%   scaling is based on the first and last element.
 % - For some values of V no solution is possible and an error is flagged.
 %
 % References::
@@ -31,7 +36,8 @@
 % See also TPOLY, JTRAJ.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -61,6 +67,7 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
     else
         t = t(:);
     end
+    plotsargs = {'Markersize', 16};
 
     tf = max(t(:));
 
@@ -126,24 +133,39 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
             % highlight the accel, coast, decel phases with different
             % colored markers
             hold on
+            %plot(xt, p);
             k = t<= tb;
-            plot(xt(k), p(k), 'r-o');
+            plot(xt(k), p(k), 'r.-', plotsargs{:});
             k = (t>=tb) & (t<= (tf-tb));
-            plot(xt(k), p(k), 'b-o');
+            plot(xt(k), p(k), 'b.-', plotsargs{:});
             k = t>= (tf-tb);
-            plot(xt(k), p(k), 'g-o');
+            plot(xt(k), p(k), 'g.-', plotsargs{:});
             grid; ylabel('$s$', 'FontSize', 16, 'Interpreter','latex');
 
             hold off
 
             subplot(312)
-            plot(xt, pd); grid; ylabel('$\dot{s}$', 'FontSize', 16, 'Interpreter','latex');
+            plot(xt, pd, '.-', plotsargs{:});
+            grid;
+            if isscalar(t0)
+                ylabel('$ds/dk$', 'FontSize', 16, 'Interpreter','latex');
+            else
+                ylabel('$ds/dt$', 'FontSize', 16, 'Interpreter','latex');
+            end
             
             subplot(313)
-            plot(xt, pdd); grid; ylabel('$\ddot{s}$', 'FontSize', 16, 'Interpreter','latex');
-            if ~isscalar(t0)
-                xlabel('time')
+            plot(xt, pdd, '.-', plotsargs{:});
+            grid;
+            if isscalar(t0)
+                ylabel('$ds^2/dk^2$', 'FontSize', 16, 'Interpreter','latex');
             else
+                ylabel('$ds^2/dt^2$', 'FontSize', 16, 'Interpreter','latex');
+            end
+            
+            if ~isscalar(t0)
+                xlabel('t (seconds)')
+            else
+                xlabel('k (step)');
                 for c=findobj(gcf, 'Type', 'axes')
                     set(c, 'XLim', [1 t0]);
                 end

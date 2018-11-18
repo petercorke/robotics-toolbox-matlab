@@ -12,24 +12,24 @@
 %
 % It is used in conjunction with:
 %   - a kinematic vehicle model that provides odometry output, represented 
-%     by a Vehicle object.  
+%     by a Vehicle sbuclass object.  
 %   - The vehicle must be driven within the area of the map and this is 
-%     achieved by connecting the Vehicle object to a Driver object.  
+%     achieved by connecting the Vehicle subclass object to a Driver object.  
 %   - a map containing the position of a number of landmark points and is
-%     represented by a Map object.
+%     represented by a LandmarkMap object.
 %   - a sensor that returns measurements about landmarks relative to the 
-%     vehicle's location and is represented by a Sensor object subclass.
+%     vehicle's pose and is represented by a Sensor object subclass.
 %
 % The EKF object updates its state at each time step, and invokes the 
-% state update methods of the Vehicle.  The complete history of estimated
+% state update methods of the vehicle object.  The complete history of estimated
 % state and covariance is stored within the EKF object.
 %
 % Methods::
 %   run            run the filter
 %   plot_xy        plot the actual path of the vehicle
 %   plot_P         plot the estimated covariance norm along the path
-%   plot_map       plot estimated feature points and confidence limits
-%   plot_ellipse   plot estimated path with covariance ellipses
+%   plot_map       plot estimated landmark points and confidence limits
+%   plot_vehicle   plot estimated vehicle covariance ellipses
 %   plot_error     plot estimation error with standard deviation bounds
 %   display        print the filter state in human readable form
 %   char           convert the filter state to human readable string
@@ -39,7 +39,7 @@
 %  P          estimated covariance
 %  V_est      estimated odometry covariance
 %  W_est      estimated sensor covariance
-%  features   maps sensor feature id to filter state element
+%  landmarks   maps sensor landmark id to filter state element
 %  robot      reference to the Vehicle object
 %  sensor     reference to the Sensor subclass object
 %  history    vector of structs that hold the detailed filter state from
@@ -61,8 +61,8 @@
 %    veh.plot_xy('b');
 % and overlay the estimated path
 %    ekf.plot_xy('r');
-% and overlay uncertainty ellipses at every 20 time steps
-%    ekf.plot_ellipse(20, 'g');
+% and overlay uncertainty ellipses
+%    ekf.plot_ellipse('g');
 % We can plot the covariance against time as
 %    clf
 %    ekf.plot_P();
@@ -70,13 +70,13 @@
 % Map-based vehicle localization::
 %
 % Create a vehicle with odometry covariance V, add a driver to it,
-% create a map with 20 point features, create a sensor that uses the map 
-% and vehicle state to estimate feature range and bearing with covariance
+% create a map with 20 point landmarks, create a sensor that uses the map 
+% and vehicle state to estimate landmark range and bearing with covariance
 % W, the Kalman filter with estimated covariances V_est and W_est and initial
 % vehicle state covariance P0
-%    veh = Vehicle(V);
+%    veh = Bicycle(V);
 %    veh.add_driver( RandomPath(20, 2) );
-%    map = Map(20);
+%    map = LandmarkMap(20);
 %    sensor = RangeBearingSensor(veh, map, W);
 %    ekf = EKF(veh, V_est, P0, sensor, W_est, map);
 % We run the simulation for 1000 time steps
@@ -86,8 +86,8 @@
 %    veh.plot_xy('b');
 % and overlay the estimatd path
 %    ekf.plot_xy('r');
-% and overlay uncertainty ellipses at every 20 time steps
-%    ekf.plot_ellipse([], 'g');
+% and overlay uncertainty ellipses
+%    ekf.plot_ellipse('g');
 % We can plot the covariance against time as
 %    clf
 %    ekf.plot_P();
@@ -95,34 +95,35 @@
 % Vehicle-based map making::
 %
 % Create a vehicle with odometry covariance V, add a driver to it,
-% create a sensor that uses the map and vehicle state to estimate feature range 
+% create a sensor that uses the map and vehicle state to estimate landmark range 
 % and bearing with covariance W, the Kalman filter with estimated sensor 
 % covariance W_est and a "perfect" vehicle (no covariance),
 % then run the filter for N time steps.
 %
 %    veh = Vehicle(V);
 %    veh.add_driver( RandomPath(20, 2) );
+%    map = LandmarkMap(20);
 %    sensor = RangeBearingSensor(veh, map, W);
 %    ekf = EKF(veh, [], [], sensor, W_est, []);
 % We run the simulation for 1000 time steps
 %    ekf.run(1000);
 % Then plot the true map
 %    map.plot();
-% and overlay the estimated map with 3 sigma ellipses
-%    ekf.plot_map(3, 'g');
+% and overlay the estimated map with 97% confidence ellipses
+%    ekf.plot_map('g', 'confidence', 0.97);
 %
 % Simultaneous localization and mapping (SLAM)::
 %
 % Create a vehicle with odometry covariance V, add a driver to it,
-% create a map with 20 point features, create a sensor that uses the map 
-% and vehicle state to estimate feature range and bearing with covariance
+% create a map with 20 point landmarks, create a sensor that uses the map 
+% and vehicle state to estimate landmark range and bearing with covariance
 % W, the Kalman filter with estimated covariances V_est and W_est and initial
 % state covariance P0, then run the filter to estimate the vehicle state at 
 % each time step and the map.
 %
 %    veh = Vehicle(V);
 %    veh.add_driver( RandomPath(20, 2) );
-%    map = Map(20);
+%    map = PointMap(20);
 %    sensor = RangeBearingSensor(veh, map, W);
 %    ekf = EKF(veh, V_est, P0, sensor, W, []);
 % We run the simulation for 1000 time steps
@@ -132,8 +133,8 @@
 %    veh.plot_xy('b');
 % and overlay the estimated path
 %    ekf.plot_xy('r');
-% and overlay uncertainty ellipses at every 20 time steps
-%    ekf.plot_ellipse([], 'g');
+% and overlay uncertainty ellipses
+%    ekf.plot_ellipse('g');
 % We can plot the covariance against time as
 %    clf
 %    ekf.plot_P();
@@ -157,10 +158,11 @@
 % Inspired by code of Paul Newman, Oxford University, 
 % http://www.robots.ox.ac.uk/~pnewman
 %
-% See also Vehicle, RandomPath, RangeBearingSensor, Map, ParticleFilter.
+% See also Vehicle, RandomPath, RangeBearingSensor, PointMap, ParticleFilter.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -182,26 +184,25 @@ classdef EKF < handle
 
     %TODO
     % add a hook for data association
-    % show ellipses and laser scan landmark strikes (perhaps this in Map
-    % class)
     % show landmark covar as ellipse or pole
     % show vehicle covar as ellipse
     % show track
+    % landmarks property should be an array of structs
+    
     properties
         % STATE:
         % the state vector is [x_vehicle x_map] where
         % x_vehicle is 1x3 and
-        % x_map is 1x(2N) where N is the number of map features
+        % x_map is 1x(2N) where N is the number of map landmarks
         x_est           % estimated state
         P_est           % estimated covariance
 
-        % Features keeps track of features we've seen before.
-        % Each column represents a feature.  This is a fixed size
-        % array, indexed by feature id.
-        % row 1: the start of this feature's state in the feature
-        %        part of the state vector, initially NaN
-        % row 2: the number of times we've sighted the feature
-        features           % map state
+        % landmarks keeps track of landmarks we've seen before.
+        % Each column represents a landmark.  This is a fixed size
+        % array, indexed by landmark id.
+        % row 1: the start of this landmark's state in the state vector, initially NaN
+        % row 2: the number of times we've sighted the landmark
+        landmarks           % map state
 
         V_est           % estimate of covariance V
         W_est           % estimate of covariance W
@@ -243,20 +244,21 @@ classdef EKF < handle
             %EKF.EKF EKF object constructor
             %
             % E = EKF(VEHICLE, V_EST, P0, OPTIONS) is an EKF that estimates the state
-            % of the VEHICLE with estimated odometry covariance V_EST (2x2) and
+            % of the VEHICLE (subclass of Vehicle) with estimated odometry covariance V_EST (2x2) and
             % initial covariance (3x3).
             %
             % E = EKF(VEHICLE, V_EST, P0, SENSOR, W_EST, MAP, OPTIONS) as above but
             % uses information from a VEHICLE mounted sensor, estimated
-            % sensor covariance W_EST and a MAP.
+            % sensor covariance W_EST and a MAP (LandmarkMap class).
             %
             % Options::
             % 'verbose'      Be verbose.
             % 'nohistory'    Don't keep history.
             % 'joseph'       Use Joseph form for covariance
-            % 'dim',D        Dimension of the robot's workspace.  Scalar D is DxD,
-            %                2-vector D(1)xD(2), 4-vector is D(1)<x<D(2), D(3)<y<D(4).
-            % 
+            % 'dim',D        Dimension of the robot's workspace.
+            %                - D scalar; X: -D to +D, Y: -D to +D
+            %                - D (1x2); X: -D(1) to +D(1), Y: -D(2) to +D(2)
+            %                - D (1x4); X: D(1) to D(2), Y: D(3) to D(4)
             %
             % Notes::
             % - If MAP is [] then it will be estimated.
@@ -267,7 +269,7 @@ classdef EKF < handle
             % - EKF subclasses Handle, so it is a reference object.
             % - Dimensions of workspace are normally taken from the map if given.
             %
-            % See also Vehicle, Sensor, RangeBearingSensor, Map.
+            % See also Vehicle, Bicycle, Unicycle, Sensor, RangeBearingSensor, LandmarkMap.
 
             opt.history = true;
             opt.joseph = true;
@@ -312,8 +314,8 @@ classdef EKF < handle
             end
             
             % check types for passed objects
-            if ~isempty(map) && ~isa(map, 'Map')
-                error('RTB:EKF:badarg', 'expecting Map object');
+            if ~isempty(map) && ~isa(map, 'LandmarkMap')
+                error('RTB:EKF:badarg', 'expecting LandmarkMap object');
             end
             if ~isempty(sensor) && ~isa(sensor, 'Sensor')
                 error('RTB:EKF:badarg', 'expecting Sensor object');
@@ -329,17 +331,13 @@ classdef EKF < handle
             ekf.map = map;
             ekf.W_est = W_est;
             
-            if ~isempty(sensor)
-                ekf.features = NaN*zeros(2, sensor.map.nfeatures);
-            end
-
             ekf.init();
         end
 
         function init(ekf)
         %EKF.init Reset the filter
         %
-        % E.init() resets the filter state and clears the history.
+        % E.init() resets the filter state and clears landmarks and history.
             ekf.robot.init();
 
             % clear the history
@@ -355,8 +353,12 @@ classdef EKF < handle
                 ekf.x_est = ekf.robot.x(:);   % column vector
                 ekf.P_est = ekf.P0;
                 ekf.estVehicle = true;
-                
-            end     
+            end
+            
+            if ~isempty(ekf.sensor)
+                ekf.landmarks = NaN*zeros(2, ekf.sensor.map.nlandmarks);
+            end
+            
         end
 
         function run(ekf, n, varargin)
@@ -373,6 +375,7 @@ classdef EKF < handle
         %   cleared.
         
             opt.plot = true;
+            opt.movie = [];
             opt = tb_optparse(opt, varargin);
             
             ekf.init();
@@ -391,12 +394,17 @@ classdef EKF < handle
                         case 4
                             axis(ekf.dim);
                     end
+                    set(gca, 'ALimMode', 'manual');
                 else
                     opt.plot = false;
                 end
+                axis manual
+                xlabel('X'); ylabel('Y')
             end
 
+
             % simulation loop
+            anim = Animate(opt.movie);
             for k=1:n
                 
                 if opt.plot
@@ -405,69 +413,74 @@ classdef EKF < handle
                 end
                 
                 ekf.step(opt);
+                anim.add();
             end
+            
+            anim.close();
         end
-
-        function out = plot_xy(ekf, varargin)
-        %EKF.plot_xy Plot vehicle position
+        
+        function xyt = get_xy(ekf)
+        %EKF.plot_xy Get vehicle position
         %
-        % E.plot_xy() overlay the current plot with the estimated vehicle path in 
-        % the xy-plane.
-        %
-        % E.plot_xy(LS) as above but the optional line style arguments
-        % LS are passed to plot.
-        %
-        % P = E.plot_xy() is the estimated vehicle pose trajectory
+        % P = E.get_xy() is the estimated vehicle pose trajectory
         % as a matrix (Nx3) where each row is x, y, theta.
         %
-        % See also EKF.plot_error, EKF.plot_ellipse, EKF.plot_P.
-
-            
+        % See also EKF.plot_xy, EKF.plot_error, EKF.plot_ellipse, EKF.plot_P.
+        
             if ekf.estVehicle
                 xyt = zeros(length(ekf.history), 3);
                 for i=1:length(ekf.history)
                     h = ekf.history(i);
                     xyt(i,:) = h.x_est(1:3)';
                 end
-                if nargout == 0
-                    plot(xyt(:,1), xyt(:,2), varargin{:});
-                end
             else
                 xyt = [];
             end
-            if nargout > 0
-                out = xyt;
-            end
+        end
+
+        function out = plot_xy(ekf, varargin)
+            %EKF.plot_xy Plot vehicle position
+            %
+            % E.plot_xy() overlay the current plot with the estimated vehicle path in
+            % the xy-plane.
+            %
+            % E.plot_xy(LS) as above but the optional line style arguments
+            % LS are passed to plot.
+            %
+            % See also EKF.get_xy, EKF.plot_error, EKF.plot_ellipse, EKF.plot_P.
+            
+            xyt=ekf.get_xy();
+            plot(xyt(:,1), xyt(:,2), varargin{:});
+            plot(xyt(1,1), xyt(1,2), 'ko', 'MarkerSize', 8, 'LineWidth', 2);
         end
         
         function out = plot_error(ekf, varargin)
         %EKF.plot_error Plot vehicle position
         %
         % E.plot_error(OPTIONS) plot the error between actual and estimated vehicle 
-        % path (x, y, theta).  Heading error is wrapped into the range [-pi,pi)
-        %
-        % OUT = E.plot_error() is the estimation error versus time as a matrix (Nx3) 
-        % where each row is x, y, theta.
+        % path (x, y, theta) versus time.  Heading error is wrapped into the range [-pi,pi)
         %
         % Options::
-        % 'bound',S         Display the S sigma confidence bounds (default 3).
-        %                   If S =0 do not display bounds.
-        % 'boundcolor',C    Display the bounds using color C
-        % LS                Use MATLAB linestyle LS for the plots
+        % 'bound',S    Display the confidence bounds (default 0.95).
+        % 'color',C    Display the bounds using color C
+        % LS           Use MATLAB linestyle LS for the plots
         %
         % Notes::
         % - The bounds show the instantaneous standard deviation associated
         %   with the state.  Observations tend to decrease the uncertainty
         %   while periods of dead-reckoning increase it.
+        % - Set bound to zero to not draw confidence bounds.
         % - Ideally the error should lie "mostly" within the +/-3sigma
         %   bounds.
         %
         % See also EKF.plot_xy, EKF.plot_ellipse, EKF.plot_P.            
-            opt.bounds = 3;
-            opt.boundcolor = 'r';
+            opt.color = 'r';
+            opt.confidence = 0.95;
+            opt.nplots = 3;
             
             [opt,args] = tb_optparse(opt, varargin);
             
+            clf
             if ekf.estVehicle
                 err = zeros(length(ekf.history), 3);
                 for i=1:length(ekf.history)
@@ -476,81 +489,116 @@ classdef EKF < handle
                     err(i,:) = ekf.robot.x_hist(i,:) - h.x_est(1:3)';
                     err(i,3) = angdiff(err(i,3));
                     P = diag(h.P);
-                    pxy(i,:) = opt.bounds*sqrt(P(1:3));
+                    pxy(i,:) = sqrt( chi2inv_rtb(opt.confidence, 2)*P(1:3) );
                 end
                 if nargout == 0
                     clf
                     t = 1:numrows(pxy);
                     t = [t t(end:-1:1)]';
 
-                    subplot(311)
-                    if opt.bounds
+                    subplot(opt.nplots*100+11)
+                    if opt.confidence
                         edge = [pxy(:,1); -pxy(end:-1:1,1)];
-                        h = patch(t, edge ,opt.boundcolor);
+                        h = patch(t, edge ,opt.color);
                         set(h, 'EdgeColor', 'none', 'FaceAlpha', 0.3);
-                        hold on
-                        plot(err(:,1), args{:});
-                        hold off
                     end
+                    hold on
+                    plot(err(:,1), args{:});
+                    hold off
                     grid
                     ylabel('x error')
                     
-                    subplot(312)
-                    edge = [pxy(:,2); -pxy(end:-1:1,2)];
-                    h = patch(t, edge, opt.boundcolor);
-                    set(h, 'EdgeColor', 'none', 'FaceAlpha', 0.3);
+                    subplot(opt.nplots*100+12)
+                    if opt.confidence
+                        edge = [pxy(:,2); -pxy(end:-1:1,2)];
+                        h = patch(t, edge, opt.color);
+                        set(h, 'EdgeColor', 'none', 'FaceAlpha', 0.3);
+                    end
                     hold on
                     plot(err(:,2), args{:});
                     hold off
                     grid
                     ylabel('y error')
-                       
-                    subplot(313)
-                    edge = [pxy(:,3); -pxy(end:-1:1,3)];
-                    h = patch(t, edge, opt.boundcolor);
-                    set(h, 'EdgeColor', 'none', 'FaceAlpha', 0.3);
+                    
+                    subplot(opt.nplots*100+13)
+                    if opt.confidence
+                        edge = [pxy(:,3); -pxy(end:-1:1,3)];
+                        h = patch(t, edge, opt.color);
+                        set(h, 'EdgeColor', 'none', 'FaceAlpha', 0.3);
+                    end
                     hold on
                     plot(err(:,3), args{:});
                     hold off
                     grid
-                    xlabel('time (samples)')
+                    xlabel('Time step')
                     ylabel('\theta error')
+                    
+                    if opt.nplots > 3
+                        subplot(opt.nplots*100+14);
+                    end
                 else
                     out = pxy;
                 end
             end
         end
         
-        function out = plot_map(ekf, covar, varargin)
-        %EKF.plot_map Plot landmarks
-        %
-        % E.plot_map() overlay the current plot with the estimated landmark 
-        % position (a +-marker) and a covariance ellipses.
-        %
-        %
-        % E.plot_map(LS) as above but pass line style arguments
-        % LS to plot_ellipse.
-        %
-        % P = E.plot_map() is the estimated landmark locations (2xN)
-        % and column I is the I'th map feature.  If the landmark was not
-        % estimated the corresponding column contains NaNs.
-        %
-        % See also plot_ellipse.
-
-        % TODO:  some option to plot map evolution, layered ellipses
-
-            if nargin < 2
-                covar = 1;
-            end
+        function xy = get_map(ekf, varargin)
+            %EKF.get_map Get landmarks
+            %
+            % P = E.get_map() is the estimated landmark coordinates (2xN) one per
+            % column.  If the landmark was not estimated the corresponding column
+            % contains NaNs.
+            %
+            % See also EKF.plot_map, EKF.plot_ellipse.
             
             xy = [];
-            for i=1:numcols(ekf.features)
-                n = ekf.features(1,i);
+            for i=1:numcols(ekf.landmarks)
+                n = ekf.landmarks(1,i);
                 if isnan(n)
+                    % this landmark never observed
                     xy = [xy [NaN; NaN]];
                     continue;
                 end
-                % n is an index into the *feature* part of the state
+                % n is an index into the *landmark* part of the state
+                % vector, we need to offset it to account for the vehicle
+                % state if we are estimating vehicle as well
+                if ekf.estVehicle
+                    n = n + 3;
+                end
+                xf = ekf.x_est(n:n+1);
+                xy = [xy xf];
+            end
+        end
+        
+        function plot_map(ekf, varargin)
+        %EKF.plot_map Plot landmarks
+        %
+        % E.plot_map(OPTIONS) overlay the current plot with the estimated landmark 
+        % position (a +-marker) and a covariance ellipses.
+        %
+        % E.plot_map(LS, OPTIONS) as above but pass line style arguments
+        % LS to plot_ellipse.
+        %
+        % Options::
+        % 'confidence',C   Draw ellipse for confidence value C (default 0.95)
+        %
+        % See also EKF.get_map, EKF.plot_ellipse.
+
+        % TODO:  some option to plot map evolution, layered ellipses
+
+            opt.confidence = 0.95;
+            
+            [opt,args] = tb_optparse(opt, varargin);
+            
+            xy = [];
+            for i=1:numcols(ekf.landmarks)
+                n = ekf.landmarks(1,i);
+                if isnan(n)
+                    % this landmark never observed
+                    xy = [xy [NaN; NaN]];
+                    continue;
+                end
+                % n is an index into the *landmark* part of the state
                 % vector, we need to offset it to account for the vehicle
                 % state if we are estimating vehicle as well
                 if ekf.estVehicle
@@ -558,66 +606,95 @@ classdef EKF < handle
                 end
                 xf = ekf.x_est(n:n+1);
                 P = ekf.P_est(n:n+1,n:n+1);
-                % TODO reinstate the interval feature
+                % TODO reinstate the interval landmark
                 %plot_ellipse(xf, P, interval, 0, [], varargin{:});
-                plot_ellipse(covar^2*P, xf, varargin{:});
-                plot(xf(1), xf(2), '+')
-                
-                xy = [xy xf];
+                plot_ellipse( P * chi2inv_rtb(opt.confidence, 2), xf, args{:});
+                plot(xf(1), xf(2), 'k.', 'MarkerSize', 10)
             end
+        end
+
+        function P = get_P(ekf, k)
+            %EKF.get_P Get covariance magnitude
+            %
+            % E.get_P() is a vector of estimated covariance magnitude at each time step.
             
-            if nargout > 0
-                out = xy;
-            end
-        end
-
-        function out = plot_P(ekf, varargin)
-        %EKF.plot_P Plot covariance magnitude
-        %
-        % E.plot_P() plots the estimated covariance magnitude against
-        % time step.
-        %
-        % E.plot_P(LS) as above but the optional line style arguments
-        % LS are passed to plot.
-        %
-        % M = E.plot_P() is the estimated covariance magnitude at
-        % all time steps as a vector.
-            p = zeros(length(ekf.history),1);
+            P = zeros(length(ekf.history),1);
             for i=1:length(ekf.history)
-                p(i) = sqrt(det(ekf.history(i).P));
+                P(i) = sqrt(det(ekf.history(i).P));
             end
-             if nargout == 0
-                 plot(p, varargin{:});
-                 xlabel('sample');
-                 ylabel('(det P)^{0.5}')
-             else
-                out = p;
-             end
+        end
+        
+        function plot_P(ekf, varargin)
+            %EKF.plot_P Plot covariance magnitude
+            %
+            % E.plot_P() plots the estimated covariance magnitude against
+            % time step.
+            %
+            % E.plot_P(LS) as above but the optional line style arguments
+            % LS are passed to plot.
+            
+            p = ekf.get_P();
+            
+            plot(p, varargin{:});
+            xlabel('Time step');
+            ylabel('(det P)^{0.5}')
+            
         end
 
-        function plot_ellipse(ekf, interval, varargin)
+        function show_P(ekf, k)
+            clf
+            if nargin < 2
+                k = length(ekf.history);
+            end
+            z = log10(abs(ekf.history(k).P));
+            mn = min(z(~isinf(z)))
+            z(isinf(z)) = mn;
+            cmap = flip( gray(256), 1);
+            %colormap(parula);
+            colormap(flipud(bone))
+            c = gray;
+            c = [ones(numrows(c),1) 1-c(:,1:2)];
+            colormap(c)
+            
+%             imshow(z, ...
+%                 'DisplayRange', [min(z(:)) max(z(:))], ...
+%                 'ColorMap', cmap, ...
+%                 'InitialMagnification', 'fit'   )
+            image(z, 'CDataMapping', 'scaled')
+            xlabel('state'); ylabel('state');
+
+            c = colorbar();
+            c.Label.String = 'log covariance';
+        end
+        
+        
+        function plot_ellipse(ekf, varargin)
             %EKF.plot_ellipse Plot vehicle covariance as an ellipse
             %
             % E.plot_ellipse() overlay the current plot with the estimated
             % vehicle position covariance ellipses for 20 points along the
             % path.
             %
-            % E.plot_ellipse(I) as above but for I points along the path.
+            % E.plot_ellipse(LS) as above but pass line style arguments
+            % LS to plot_ellipse.
             %
-            % E.plot_ellipse(I, LS) as above but pass line style arguments
-            % LS to plot_ellipse.  If I is [] then assume 20.
+            % Options::
+            % 'interval',I        Plot an ellipse every I steps (default 20)
+            % 'confidence',C      Confidence interval (default 0.95)
             %
             % See also plot_ellipse.
 
-            if nargin < 2 || isempty(interval)
-                interval = round(length(ekf.history)/20);
-            end
+            opt.interval = round(length(ekf.history)/20);
+            opt.confidence = 0.95;
+            
+            [opt,args] = tb_optparse(opt, varargin);
+            
             holdon = ishold;
             hold on
-            for i=1:interval:length(ekf.history)
+            for i=1:opt.interval:length(ekf.history)
                 h = ekf.history(i);
                 %plot_ellipse(h.x_est(1:2), h.P(1:2,1:2), 1, 0, [], varargin{:});
-                plot_ellipse(h.P(1:2,1:2), h.x_est(1:2), varargin{:});
+                plot_ellipse(h.P(1:2,1:2) * chi2inv_rtb(opt.confidence, 2), h.x_est(1:2), args{:});
             end
             if ~holdon
                 hold off
@@ -763,9 +840,8 @@ classdef EKF < handle
                 % read the sensor
                 [z,js] = ekf.sensor.reading();
                                 
-                % if isnan(i) then the sensor has not returned a reading
-                % at this time interval
-                sensorReading = ~isnan(js);
+                % test if the sensor has returned a reading at this time interval
+                sensorReading = js > 0;
             end
 
             if sensorReading
@@ -781,12 +857,12 @@ classdef EKF < handle
                     if ekf.seenBefore(js)
 
                         % get previous estimate of its state
-                        jx = ekf.features(1,js);
+                        jx = ekf.landmarks(1,js);
                         xf = xm_pred(jx:jx+1);
 
-                        % compute Jacobian for this particular feature
-                        Hx_k = ekf.sensor.Hxf(xv_pred', xf);
-                        % create the Jacobian for all features
+                        % compute Jacobian for this particular landmark
+                        Hx_k = ekf.sensor.Hp(xv_pred', xf);
+                        % create the Jacobian for all landmarks
                         Hx = zeros(2, length(xm_pred));
                         Hx(:,jx:jx+1) = Hx_k;
 
@@ -823,7 +899,7 @@ classdef EKF < handle
                 %  map creation              if sensor reading & not first
                 %                              sighting
                 %  SLAM                      if sighting of a previously
-                %                              seen feature
+                %                              seen landmark
 
             if doUpdatePhase
                 %fprintf('do update\n');
@@ -885,13 +961,13 @@ classdef EKF < handle
         end
 
         function s = seenBefore(ekf, jf)
-            if ~isnan(ekf.features(1,jf))
-                %% we have seen this feature before, update number of sightings
+            if ~isnan(ekf.landmarks(1,jf))
+                %% we have seen this landmark before, update number of sightings
                 if ekf.verbose
-                    fprintf('feature %d seen %d times before, state_idx=%d\n', ...
-                        jf, ekf.features(2,jf), ekf.features(1,jf));
+                    fprintf('landmark %d seen %d times before, state_idx=%d\n', ...
+                        jf, ekf.landmarks(2,jf), ekf.landmarks(1,jf));
                 end
-                ekf.features(2,jf) = ekf.features(2,jf)+1;  
+                ekf.landmarks(2,jf) = ekf.landmarks(2,jf)+1;  
                 s = true;
             else
                 s = false;
@@ -901,16 +977,16 @@ classdef EKF < handle
 
         function [x_ext, P_ext] = extendMap(ekf, P, xv, xm, z, jf)
             
-            %% this is a new feature, we haven't seen it before
-            % estimate position of feature in the world based on 
+            %% this is a new landmark, we haven't seen it before
+            % estimate position of landmark in the world based on 
             % noisy sensor reading and current vehicle pose
 
             if ekf.verbose
-                fprintf('feature %d first sighted\n', jf);
+                fprintf('landmark %d first sighted\n', jf);
             end
 
             % estimate its position based on observation and vehicle state
-            xf = ekf.sensor.g(xv, z)';
+            xf = ekf.sensor.g(xv, z);
 
             % append this estimate to the state vector
             if ekf.estVehicle
@@ -919,7 +995,7 @@ classdef EKF < handle
                 x_ext = [xm; xf];
             end
 
-            % get the Jacobian for the new feature
+            % get the Jacobian for the new landmark
             Gz = ekf.sensor.Gz(xv, z);
 
             % extend the covariance matrix
@@ -933,23 +1009,34 @@ classdef EKF < handle
             end
     
             % record the position in the state vector where this 
-            % feature's state starts
-            ekf.features(1,jf) = length(xm)+1;
-            %ekf.features(1,jf) = length(ekf.x_est)-1;
-            ekf.features(2,jf) = 1;        % seen it once
+            % landmark's state starts
+            ekf.landmarks(1,jf) = length(xm)+1;
+            %ekf.landmarks(1,jf) = length(ekf.x_est)-1;
+            ekf.landmarks(2,jf) = 1;        % seen it once
 
             if ekf.verbose
                 fprintf('extended state vector\n');
             end
 
             % plot an ellipse at this time
-%                jx = features(1,jf);
+%                jx = landmarks(1,jf);
 %                plot_ellipse(x_est(jx:jx+1), P_est(jx:jx+1,jx:jx+1), 5);
 
         end
     end % private methods
 end % classdef
 
+function f = chi2inv_rtb(confidence, n)
+ 
+ assert(n == 2, 'chi2inv_rtb: only valid for 2DOF');
+ 
+ c = linspace(0,1,101);
+ % build a lookup table:
+ %x = chi2inv(c,2)
+ %fprintf('%f ');
+ x = [0.000000 0.020101 0.040405 0.060918 0.081644 0.102587 0.123751 0.145141 0.166763 0.188621 0.210721 0.233068 0.255667 0.278524 0.301646 0.325038 0.348707 0.372659 0.396902 0.421442 0.446287 0.471445 0.496923 0.522730 0.548874 0.575364 0.602210 0.629421 0.657008 0.684981 0.713350 0.742127 0.771325 0.800955 0.831031 0.861566 0.892574 0.924071 0.956072 0.988593 1.021651 1.055265 1.089454 1.124238 1.159637 1.195674 1.232372 1.269757 1.307853 1.346689 1.386294 1.426700 1.467938 1.510045 1.553058 1.597015 1.641961 1.687940 1.735001 1.783196 1.832581 1.883217 1.935168 1.988505 2.043302 2.099644 2.157619 2.217325 2.278869 2.342366 2.407946 2.475749 2.545931 2.618667 2.694147 2.772589 2.854233 2.939352 3.028255 3.121295 3.218876 3.321462 3.429597 3.543914 3.665163 3.794240 3.932226 4.080442 4.240527 4.414550 4.605170 4.815891 5.051457 5.318520 5.626821 5.991465 6.437752 7.013116 7.824046 9.210340 Inf];
+ 
+ f = interp1(c, x, confidence);
 
-
+end
  

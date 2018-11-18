@@ -1,5 +1,4 @@
-
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -17,7 +16,6 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
-
 
 %%begin
 % A Braitenberg vehicle is a simple reactive machine, that is, it exhibits useful

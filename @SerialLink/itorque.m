@@ -17,7 +17,8 @@
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -37,4 +38,4 @@
 % http://www.petercorke.com
 
 function it = itorque(robot, q, qdd)
-	it = rne(robot, q, zeros(size(q)), qdd, [0;0;0]);
+	it = rne(robot, q, zeros(size(q)), qdd, 'gravity', [0;0;0]);

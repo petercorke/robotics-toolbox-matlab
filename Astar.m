@@ -56,7 +56,8 @@
 % 
 % See Also Navigation, Dstar
 
-% Copyright (C) 1993-2014, by Peter I. Corke, Alexander Lavin
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -74,9 +75,6 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
-%
-% The RTB implementation of this algorithm is done by Alexander Lavin.
-% http://alexanderlavin.com
 
 
 % Implementation notes:

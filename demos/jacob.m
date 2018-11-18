@@ -1,5 +1,6 @@
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -76,7 +77,7 @@ J = p560.jacob0(q)
 
 % Alternatively the Jacobian can be expressed in the T6 coordinate frame
 
-J = p560.jacobn(q)
+J = p560.jacobe(q)
 % Note the top right 3x3 block is all zero.  This indicates, correctly, that
 % motion of joints 4-6 does not cause any translational motion of the robot's
 % end-effector.
@@ -126,10 +127,10 @@ qvel'
 % At the Puma's `ready' position for instance, two of the wrist joints are
 % aligned resulting in the loss of one degree of freedom.  This is revealed by
 % the rank of the Jacobian
-rank( p560.jacobn(qr) )
+rank( p560.jacobe(qr) )
 
 % and the singular values are
-svd( jacobn(p560, qr) )
+svd( jacobe(p560, qr) )
 
 % When not actually at a singularity the Jacobian can provide information 
 % about how `well-conditioned' the manipulator is for making certain motions,

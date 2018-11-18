@@ -88,16 +88,19 @@ Jacobians, animations, path planning, forward and inverse kinematics, and forwar
       <label>Braitenberg vehicle</label>
       <callback>braitnav</callback>
       <description>Demonstrate a Braitenberg vehicle</description>
+      <dependency>Simulink</dependency>
    </demoitem>
    <demoitem>
       <label>Driving to a pose</label>
       <callback>drivepose</callback>
       <description>Control a car-like mobile robot to move toward a desired pose</description>
+      <dependency>Simulink</dependency>
    </demoitem>
    <demoitem>
       <label>Quadrotor flying</label>
       <callback>quadrotor</callback>
       <description>Control a quadrotor flying vehicle to take off and fly in a circle</description>
+      <dependency>Simulink</dependency>
    </demoitem>
 </demosection>
 
@@ -110,7 +113,7 @@ Jacobians, animations, path planning, forward and inverse kinematics, and forwar
       <description>Demonstrate the Bug2 goal finding algorithm</description>
    </demoitem>
    <demoitem>
-      <label></label>
+      <label>D* planning</label>
       <callback>dstarnav</callback>
       <description>Demonstrate D* path planning</description>
    </demoitem>
@@ -120,7 +123,7 @@ Jacobians, animations, path planning, forward and inverse kinematics, and forwar
       <description>Demonstrate probabistic roadmap path planning</description>
    </demoitem>
    <demoitem>
-      <label>SLAM</label>
+      <label>EKF SLAM</label>
       <callback>slam</callback>
       <description>Demonstrate the simultaneous estimation of robot pose and landmark positions using an extended Kalman filter (EKF)</description>
    </demoitem>

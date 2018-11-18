@@ -9,8 +9,10 @@
 % TRPRINT T  is the command line form of above, and displays in RPY format.
 %
 % Options::
-% 'rpy'        display with rotation in roll/pitch/yaw angles (default)
-% 'euler'      display with rotation in ZYX Euler angles
+% 'rpy'        display with rotation in ZYX roll/pitch/yaw angles (default)
+% 'xyz'        change RPY angle sequence to XYZ
+% 'yxz'        change RPY angle sequence to YXZ
+% 'euler'      display with rotation in ZYZ Euler angles
 % 'angvec'     display with rotation in angle/vector format
 % 'radian'     display angle in radians (default is degrees)
 % 'fmt', f     use format string f for all numbers, (default %g)
@@ -18,15 +20,20 @@
 %
 % Examples::
 %        >> trprint(T2)
-%        t = (0,0,0), RPY = (-122.704,65.4084,-8.11266) deg
+%        t = (0,0,0), RPY/zyx = (-122.704,65.4084,-8.11266) deg
 %
 %        >> trprint(T1, 'label', 'A')
-%               A:t = (0,0,0), RPY = (-0,0,-0) deg
+%               A:t = (0,0,0), RPY/zyx = (-0,0,-0) deg
+%
+% Notes::
+% - If the 'rpy' option is selected, then the particular angle sequence can be
+%   specified with the options 'xyz' or 'yxz'.  'zyx' is the default.
 %
 % See also TR2EUL, TR2RPY, TR2ANGVEC.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -58,15 +65,15 @@ function out = trprint(T, varargin)
     opt.radian = false;
     opt.label = '';
 
-    opt = tb_optparse(opt, varargin);
+    [opt,args] = tb_optparse(opt, varargin);
 
     s = '';
 
     if size(T,3) == 1
         if isempty(opt.fmt)
-            opt.fmt = '%g';
+            opt.fmt = '%.3g';
         end
-        s = tr2s(T, opt);
+        s = tr2s(T, opt, args{:});
     else
         if isempty(opt.fmt)
             opt.fmt = '%8.2g';
@@ -74,7 +81,7 @@ function out = trprint(T, varargin)
         
         for i=1:size(T,3)
             % for each 4x4 transform in a possible 3D matrix
-            s = char(s, tr2s(T(:,:,i), opt) );
+            s = char(s, tr2s(T(:,:,i), opt, args{:}) );
         end
     end
 
@@ -86,7 +93,7 @@ function out = trprint(T, varargin)
     end
 end
 
-function s = tr2s(T, opt)
+function s = tr2s(T, opt, varargin)
     % print the translational part if it exists
     if ~isempty(opt.label)
         s = sprintf('%8s: ', opt.label);
@@ -102,8 +109,8 @@ function s = tr2s(T, opt)
         case {'rpy', 'euler'}
             % angle as a 3-vector
             if strcmp(opt.mode, 'rpy')
-                ang = tr2rpy(T);
-                label = 'RPY';
+                [ang,order] = tr2rpy(T, varargin{:});
+                label = ['RPY/' order];
             else
                 ang = tr2eul(T);
                 label = 'EUL';
@@ -133,9 +140,12 @@ end
 function s = vec2s(fmt, v)
     s = '';
     for i=1:length(v)
-        s = strcat(s, sprintf(fmt, v(i)));
+        if abs(v(i)) < 1000*eps
+            v(i) = 0;
+        end
+        s = [s, sprintf(fmt, v(i))];
         if i ~= length(v)
-            s = strcat(s, ', ');
+            s = [s, ', ']; % don't use strcat, removes trailing spaces
         end
     end
 end

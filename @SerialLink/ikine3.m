@@ -1,6 +1,6 @@
 %SerialLink.ikine3 Inverse kinematics for 3-axis robot with no wrist
 %
-% Q = R.ikine3(T) is the joint coordinates corresponding to the robot
+% Q = R.ikine3(T) is the joint coordinates (1x3) corresponding to the robot
 % end-effector pose T represented by the homogenenous transform.  This
 % is a analytic solution for a 3-axis robot (such as the first three joints
 % of a robot like the Puma 560).
@@ -20,6 +20,12 @@
 % - Joint offsets, if defined, are added to the inverse kinematics to 
 %   generate Q.
 %
+% Trajectory operation::
+%
+% In all cases if T is a vector of SE3 objects (1xM) or a homogeneous
+% transform sequence (4x4xM) then returns the joint coordinates
+% corresponding to each of the transforms in the sequence.  Q is Mx3. 
+%
 % Reference::
 %
 % Inverse kinematics for a PUMA 560 based on the equations by Paul and Zhang
@@ -37,14 +43,13 @@
 
 function theta = ikine3(robot, T, varargin)
 
-    if ~strncmp(robot.config, 'RRR', 3)
-        error('Solution only applicable for 6DOF all-revolute manipulator');
-    end
+    assert( strncmp(robot.config, 'RRR', 3), 'Solution only applicable for 3DOF all-revolute manipulator');    
+    assert( robot.mdh ~= 0, 'Solution only applicable for standard DH conventions');
 
-    if robot.mdh ~= 0
-        error('Solution only applicable for standard DH conventions');
+    if isa(T, 'SE3')
+        T = T.T;
     end
-
+    
     if ndims(T) == 3
         theta = zeros(size(T,3),robot.n);
         for k=1:size(T,3)

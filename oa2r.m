@@ -5,20 +5,21 @@
 % = [N O A] and N = O x A.
 %
 % Notes::
-% - The submatrix is guaranteed to be orthonormal so long as O and A 
+% - The matrix is guaranteed to be orthonormal so long as O and A 
 %   are not parallel.
 % - The vectors O and A are parallel to the Y- and Z-axes of the coordinate
 %   frame.
 %
 % References::
-% - Robot manipulators: mathematis, programming and control
+% - Robot manipulators: mathematics, programming and control
 %   Richard Paul, MIT Press, 1981.
 %
-% See also RPY2R, EUL2R, OA2TR.
+% See also RPY2R, EUL2R, OA2TR, SO3.oa.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -39,9 +40,7 @@
 
 function R = oa2r(o, a)
 
-    if nargin < 2 || ~isvec(o) || ~isvec(a)
-        error('RTB:oa2r:badarg', 'bad arguments');
-    end
+    assert( nargin >= 2 && isvec(o) && isvec(a), 'RTB:oa2r:badarg', 'bad arguments');
 
     o = o(:); a = a(:);
 	n = cross(o, a);

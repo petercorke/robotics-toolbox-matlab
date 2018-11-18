@@ -1,30 +1,31 @@
 %EUL2TR Convert Euler angles to homogeneous transform
 %
-% T = EUL2TR(PHI, THETA, PSI, OPTIONS) is a SE(3) homogeneous
-% transformation matrix (4x4) equivalent to the specified Euler angles.
-% These correspond to rotations about the Z, Y, Z axes respectively. If
-% PHI, THETA, PSI are column vectors (Nx1) then they are assumed to
-% represent a trajectory and R is a three-dimensional matrix (4x4xN), where
-% the last index corresponds to rows of PHI, THETA, PSI.
+% T = EUL2TR(PHI, THETA, PSI, OPTIONS) is an SE(3) homogeneous
+% transformation matrix (4x4) with zero translation and rotation equivalent
+% to the specified Euler angles. These correspond to rotations about the Z,
+% Y, Z axes respectively. If PHI, THETA, PSI are column vectors (Nx1) then
+% they are assumed to represent a trajectory and R is a three-dimensional
+% matrix (4x4xN), where the last index corresponds to rows of PHI, THETA,
+% PSI.
 %
-% T = EUL2TR(EUL, OPTIONS) as above but the Euler angles are taken from
-% consecutive columns of the passed matrix EUL = [PHI THETA PSI].  If EUL
-% is a matrix (Nx3) then they are assumed to represent a trajectory and T
-% is a three-dimensional matrix (4x4xN), where the last index corresponds
-% to rows of EUL which are assumed to be [PHI, THETA, PSI].
+% R = EUL2R(EUL, OPTIONS) as above but the Euler angles are taken from the
+% vector (1x3)  EUL = [PHI THETA PSI]. If EUL is a matrix (Nx3) then R is a
+% three-dimensional matrix (4x4xN), where the last index corresponds to
+% rows of RPY which are assumed to be [PHI,THETA,PSI].
 %
 % Options::
-%  'deg'      Compute angles in degrees (radians default)
+%  'deg'      Angles given in degrees (radians default)
 %
 % Note::
 % - The vectors PHI, THETA, PSI must be of the same length.
 % - The translational part is zero.
 %
-% See also EUL2R, RPY2TR, TR2EUL.
+% See also EUL2R, RPY2TR, TR2EUL, SE3.eul.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

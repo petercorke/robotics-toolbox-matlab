@@ -9,7 +9,8 @@
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -70,7 +71,7 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
     end
 	
     if robot.issym || any([isa(Q,'sym'), isa(Qd,'sym'), isa(Qdd,'sym')])
-        tau(np, n) = sym();
+        tau = zeros(np,n, 'sym');
     else
         tau = zeros(np,n);
     end
@@ -94,11 +95,12 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 		for j=1:n
 			link = robot.links(j);
 			Tj = link.A(q(j));
-			if link.RP == 'R'
-				D = link.d;
-			else
-				D = q(j);
-			end
+            switch link.type
+                case 'R'
+                    D = link.d;
+                case 'P'
+                    D = q(j);
+            end
 			alpha = link.alpha;
 			pm = [link.a; -D*sin(alpha); D*cos(alpha)];	% (i-1) P i
 			if j == 1
@@ -121,28 +123,29 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 
 			R = Rm{j}.';	% transpose!!
 			P = Pm(:,j);
-			Pc = link.r;
-
-			%
-			% trailing underscore means new value
-			%
-			if link.RP == 'R'
-				% revolute axis
-				w_ = R*w + z0*qd(j);
-				wd_ = R*wd + cross(R*w,z0*qd(j)) + z0*qdd(j);
-				%v = cross(w,P) + R*v;
-				vd_ = R * (cross(wd,P) + ...
-					cross(w, cross(w,P)) + vd);
-
-			else
-				% prismatic axis
-				w_ = R*w;
-				wd_ = R*wd;
-				%v = R*(z0*qd(j) + v) + cross(w,P);
-				vd_ = R*(cross(wd,P) + ...
-					cross(w, cross(w,P)) + vd ...
-				      ) + 2*cross(R*w,z0*qd(j)) + z0*qdd(j);
-			end
+            Pc = link.r;
+            
+            %
+            % trailing underscore means new value
+            %
+            switch link.type
+                case 'R'
+                    % revolute axis
+                    w_ = R*w + z0*qd(j);
+                    wd_ = R*wd + cross(R*w,z0*qd(j)) + z0*qdd(j);
+                    %v = cross(w,P) + R*v;
+                    vd_ = R * (cross(wd,P) + ...
+                        cross(w, cross(w,P)) + vd);
+                    
+                case 'P'
+                    % prismatic axis
+                    w_ = R*w;
+                    wd_ = R*wd;
+                    %v = R*(z0*qd(j) + v) + cross(w,P);
+                    vd_ = R*(cross(wd,P) + ...
+                        cross(w, cross(w,P)) + vd ...
+                        ) + 2*cross(R*w,z0*qd(j)) + z0*qdd(j);
+            end
 			% update variables
 			w = w_;
 			wd = wd_;
@@ -200,16 +203,17 @@ function tau = rne_mdh(robot, a1, a2, a3, a4, a5)
 				fprintf('\nn: '); fprintf('%.3f ', nn)
 				fprintf('\n');
 			end
-			if link.RP == 'R'
-				% revolute
-				tau(p,j) = nn.'*z0 + ...
-					link.G^2 * link.Jm*qdd(j) - ...
-					friction(link, qd(j));
-			else
-				% prismatic
-				tau(p,j) = f.'*z0 + ...
-					link.G^2 * link.Jm*qdd(j) - ...
-					friction(link, qd(j));
-			end
+            switch link.type
+                case 'R'
+                    % revolute
+                    tau(p,j) = nn.'*z0 + ...
+                        link.G^2 * link.Jm*qdd(j) - ...
+                        friction(link, qd(j));
+                case 'P'
+                    % prismatic
+                    tau(p,j) = f.'*z0 + ...
+                        link.G^2 * link.Jm*qdd(j) - ...
+                        friction(link, qd(j));
+            end
 		end
 	end

@@ -5,11 +5,12 @@
 % represents an infinitessimal motion, and is an approximation to the spatial 
 % velocity multiplied by time.
 %
-% See also TR2DELTA.
+% See also tr2delta, SE3.delta.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

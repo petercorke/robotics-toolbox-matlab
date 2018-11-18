@@ -5,11 +5,12 @@
 %
 % R = ROTZ(THETA, 'deg') as above but THETA is in degrees.
 %
-% See also ROTX, ROTY, ANGVEC2R, ROT2.
+% See also ROTX, ROTY, ANGVEC2R, ROT2, SO3.Rx.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -29,14 +30,31 @@
 % http://www.petercorke.com
 
 function R = rotz(t, deg)
+    
+    assert((isreal(t) & isscalar(t)) | isa(t, 'sym'), ...
+        'RTB:rotz:badarg', 'theta must be a real scalar or symbolic');
+
     if nargin > 1 && strcmp(deg, 'deg')
         t = t *pi/180;
     end
     
     ct = cos(t);
     st = sin(t);
+    
+    % make almost zero elements exactly zero
+    if ~isa(t, 'sym')
+        if abs(st) < eps
+            st = 0;
+        end
+        if abs(ct) < eps
+            ct = 0;
+        end
+    end
+    
+    % create the rotation matrix
     R = [
         ct  -st  0
         st   ct  0
         0    0   1
         ];
+end

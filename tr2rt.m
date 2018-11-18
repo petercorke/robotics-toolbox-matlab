@@ -18,7 +18,8 @@
 % See also RT2TR, R2T, T2R.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -38,20 +39,18 @@
 % http://www.petercorke.com
 
 function [R,t] = tr2rt(T)
-    if numcols(T) ~= numrows(T)
-        error('T must be square');
-    end
+    assert(size(T,1) == size(T,2), 'T must be square');
 
-    n = numcols(T);
+    n = size(T,2)-1;
 
     if size(T,3) > 1
-        R = zeros(3,3,size(T,3));
-        t = zeros(size(T,3), 3);
+        R = zeros(n,n,size(T,3));
+        t = zeros(size(T,3), n);
         for i=1:size(T,3)
-            R(:,:,i) = T(1:n-1,1:n-1,i);
-            t(i,:) = T(1:n-1,n,i)';
+            R(1:n,1:n,i) = T(1:n,1:n,i);
+            t(i,:) = T(1:n,n+1,i)';
         end
     else
-        R = T(1:n-1,1:n-1);
-        t = T(1:n-1,n);
+        R = T(1:n,1:n);
+        t = T(1:n,n+1);
     end

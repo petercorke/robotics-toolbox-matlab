@@ -1,16 +1,31 @@
 %SKEW Create skew-symmetric matrix
 %
-% S = SKEW(V) is a skew-symmetric matrix formed from V (3x1).
+% S = SKEW(V) is a skew-symmetric matrix formed from V.
+% 
+% If V (1x1) then S =
 %
-%           | 0   -vz  vy|
-%           | vz   0  -vx|
-%           |-vy   vx  0 |
+%           | 0  -v |
+%           | v   0 |
 %
-% See also VEX.
+% and if V (1x3) then S =
+%
+%           |  0  -vz   vy |
+%           | vz    0  -vx |
+%           |-vy   vx    0 |
+%
+%
+% Notes::
+% - This is the inverse of the function VEX().
+% - These are the generator matrices for the Lie algebras so(2) and so(3).
+%
+% References::
+% - Robotics, Vision & Control: Second Edition, Chap 2,
+%   P. Corke, Springer 2016.
+%
+% See also SKEWA, VEX.
 
 
-
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

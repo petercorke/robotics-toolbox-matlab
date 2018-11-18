@@ -42,7 +42,8 @@
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -439,7 +440,7 @@ classdef Frame < handle
             mn = [Inf Inf Inf];
             mx = -[Inf Inf Inf];
             for frame=findobj('Tag', 'Frame')'
-                T = frame.
+                %%T = frame.
                 
             end
         end

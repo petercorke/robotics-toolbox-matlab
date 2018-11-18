@@ -4,19 +4,17 @@
 % transform navigation algorithm which computes minimum distance paths.
 %
 % Methods::
+%  DXform       Constructor
+%  plan         Compute the cost map given a goal and map
+%  query        Find a path
+%  plot         Display the distance function and obstacle map
+%  plot3d       Display the distance function as a surface
+%  display      Print the parameters in human readable form
+%  char         Convert to string
 %
-% plan         Compute the cost map given a goal and map
-% path         Compute a path to the goal (inherited)
-% visualize    Display the obstacle map (deprecated)
-% plot         Display the distance function and obstacle map
-% plot3d       Display the distance function as a surface
-% display      Print the parameters in human readable form
-% char         Convert to string
-%
-% Properties::
-%
-% distancemap   The distance transform of the occupancy grid.
-% metric        The distance metric, can be 'euclidean' (default) or 'cityblock'
+% Properties (read only)::
+%  distancemap   Distance from each point to the goal.
+%  metric        The distance metric, can be 'euclidean' (default) or 'cityblock'
 %
 % Example::
 %
@@ -25,7 +23,7 @@
 %        start = [20, 10];   % start point
 %        dx = DXform(map);   % create navigation object
 %        dx.plan(goal)       % create plan for specified goal
-%        dx.path(start)      % animate path from this start location
+%        dx.query(start)     % animate path from this start location
 %
 % Notes::
 % - Obstacles are represented by NaN in the distancemap.
@@ -39,7 +37,8 @@
 % See also Navigation, Dstar, PRM, distancexform.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -94,8 +93,6 @@ classdef DXform < Navigation
             opt.metric = {'euclidean', 'cityblock'};
             [opt,args] = tb_optparse(opt, varargin);
             dx.metric = opt.metric;
-
-
         end
 
         function s = char(dx)
@@ -127,57 +124,60 @@ classdef DXform < Navigation
                 disp('Goal changed -> distancemap cleared');
             end
         end
-
-            
-        function plan(dx, goal, show)
+  
+        function plan(dx, varargin)
             %DXform.plan Plan path to goal
             %
-            % DX.plan() updates the internal distancemap where the value of each element is 
-            % the minimum distance from the corresponding point to the goal.  The goal is
-            % as specified to the constructor.
+            % DX.plan(GOAL, OPTIONS) plans a path to the goal given to the constructor,
+            % updates the internal distancemap where the value of each element is the 
+            % minimum distance from the corresponding point to the goal.
             %
-            % DX.plan(GOAL) as above but uses the specified goal.
+            % DX.plan(GOAL, OPTIONS) as above but goal is specified explicitly
             %
-            % DX.plan(GOAL, S) as above but displays the evolution of the
-            % distancemap, with one iteration displayed every S seconds.
+            % Options::
+            % 'animate'    Plot the distance transform as it evolves
             %
             % Notes::
             % - This may take many seconds.
             %
             % See also Navigation.path.
 
-
-            if nargin < 3
+            opt.animate = false;
+            
+            [opt,args] = tb_optparse(opt, varargin);
+            
+            if opt.animate
+                show = 0.05;
+            else
                 show = 0;
             end
-
-            if nargin > 1
-                dx.goal = goal;
+            
+            if ~isempty(args) && isvec(args{1},2)
+                dx.setgoal(args{1});
             end
+            
+            assert(~isempty(dx.goal), 'RTB:DXform:plan', 'no goal specified here or in constructor');
 
-            if isempty(dx.goal)
-                error('No goal specified');
-            end
-
-            %dx.occgrid(dx.goal(2), dx.goal(1))
-            dx.distancemap = distancexform(dx.occgrid, dx.goal, dx.metric, show);
-
+            dx.distancemap = distancexform(dx.occgridnav, dx.goal, dx.metric, show);
         end
 
         function plot(dx, varargin)
             %DXform.plot Visualize navigation environment
             %
-            % DX.plot() displays the occupancy grid and the goal distance
+            % DX.plot(OPTIONS) displays the occupancy grid and the goal distance
             % in a new figure.  The goal distance is shown by intensity which
             % increases with distance from the goal.  Obstacles are overlaid
             % and shown in red.
             %
-            % DX.plot(P) as above but also overlays a path given by the set
-            % of points P (2xM).
+            % DX.plot(P, OPTIONS) as above but also overlays a path given by the set
+            % of points P (Mx2).
+            %
+            % Notes::
+            % - See Navigation.plot for options.
             %
             % See also Navigation.plot.
 
-            plot@Navigation(dx, 'distance', dx.distancemap, varargin{:});
+            plot@Navigation(dx, varargin{:}, 'distance', dx.distancemap);
 
         end
 
@@ -234,7 +234,7 @@ classdef DXform < Navigation
             % DX.plot3d(P) as above but also overlays a path given by the set
             % of points P (Mx2).
             %
-            % DX.plot3d(P, LS) as above but plot the line with the linestyle LS.
+            % DX.plot3d(P, LS) as above but plot the line with the MATLAB linestyle LS.
             %
             % See also Navigation.plot.
             surf(dx.distancemap);

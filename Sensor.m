@@ -1,6 +1,6 @@
 %Sensor Sensor superclass
 %
-% A superclass to represent robot navigation sensors.
+% An abstract superclass to represent robot navigation sensors.
 %
 % Methods::
 %   plot        plot a line from robot to map feature
@@ -9,7 +9,7 @@
 %
 % Properties::
 % robot   The Vehicle object on which the sensor is mounted
-% map     The Map object representing the landmarks around the robot
+% map     The PointMap object representing the landmarks around the robot
 %
 % Reference::
 %
@@ -17,10 +17,11 @@
 %   Peter Corke,
 %   Springer 2011
 %
-% See also RangeBearing, EKF, Vehicle, Map.
+% See also RangeBearingSensor, EKF, Vehicle, LandmarkMap.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -39,7 +40,7 @@
 %
 % http://www.petercorke.com
 
-classdef Sensor < handle
+classdef (Abstract) Sensor < handle
     % TODO, pose option, wrt vehicle
 
     properties
@@ -62,14 +63,19 @@ classdef Sensor < handle
         function s = Sensor(robot, map, varargin)
         %Sensor.Sensor Sensor object constructor
         %
-        % S = Sensor(VEHICLE, MAP, OPTIONS) is a sensor mounted on a vehicle described by the Vehicle class object
-        % VEHICLE and observing landmarks in a map described by the Map class object MAP.
+        % S = Sensor(VEHICLE, MAP, OPTIONS) is a sensor mounted on a vehicle
+        % described by the Vehicle subclass object VEHICLE and observing landmarks
+        % in a map described by the LandmarkMap class object MAP.
         %
         % Options::
         % 'animate'    animate the action of the laser scanner
         % 'ls',LS      laser scan lines drawn with style ls (default 'r-')
         % 'skip', I    return a valid reading on every I'th call
         % 'fail',T     sensor simulates failure between timesteps T=[TMIN,TMAX]
+        %
+        % Notes::
+        % - Animation shows a ray from the vehicle position to the selected
+        %   landmark.
         %
         
             opt.skip = 1;
@@ -111,8 +117,12 @@ classdef Sensor < handle
             
             % there is a sensor line animate it
             
-            xi = s.map.map(:,jf);
-            set(h, 'XData', [s.robot.x(1), xi(1)], 'YData', [s.robot.x(2), xi(2)]);
+            if jf == 0
+                set(h, 'Visible', 'off');
+            else
+                xi = s.map.map(:,jf);
+                set(h, 'Visible', 'on', 'XData', [s.robot.x(1), xi(1)], 'YData', [s.robot.x(2), xi(2)]);
+            end
             pause(s.delay);
 
             drawnow

@@ -9,11 +9,12 @@
 % are attached to the same moving body.  The pose of {B} relative to {A} is
 % represented by the homogeneous transform TAB (4x4).
 %
-% See also WTRANS, TR2DELTA, DELTA2TR.
+% See also WTRANS, TR2DELTA, DELTA2TR, SE3.velxform.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

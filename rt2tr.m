@@ -1,21 +1,21 @@
 %RT2TR Convert rotation and translation to homogeneous transform
 %
-% TR = RT2TR(R, t) is a homogeneous transformation matrix (MxM) formed from an 
-% orthonormal rotation matrix R (NxN) and a translation vector t (Nx1) where
-% M=N+1.
-%
-% For a sequence R (NxNxK) and t (NxK) results in a transform sequence (MxMxK).
-%
-% Notes::
-% - Works for R in SO(2) or SO(3)
+% TR = RT2TR(R, t) is a homogeneous transformation matrix (N+1xN+1) formed
+% from an orthonormal rotation matrix R (NxN) and a translation vector t
+% (Nx1).  Works for R in SO(2) or SO(3):
 %  - If R is 2x2 and t is 2x1, then TR is 3x3
 %  - If R is 3x3 and t is 3x1, then TR is 4x4
+%
+% For a sequence R (NxNxK) and t (NxK) results in a transform sequence (N+1xN+1xK).
+%
+% Notes::
 % - The validity of R is not checked
 %
 % See also T2R, R2T, TR2RT.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -35,25 +35,26 @@
 % http://www.petercorke.com
 
 function T = rt2tr(R, t)
-    if numcols(R) ~= numrows(R)
+    t = t(:);
+    if size(R,1) ~= size(R,2)
         error('R must be square');
     end
-    if numrows(R) ~= numrows(t)
+    if size(R,1) ~= size(t,1)
         error('R and t must have the same number of rows');
     end
 
-    if size(R,3) ~= numcols(t)
+    if size(R,3) ~= size(t,2)
         error('For sequence size(R,3) must equal size(t,2)');
     end
 
     if size(R,3) > 1
-        Z = zeros(numcols(R),1);
+        Z = zeros(size(R,2),1);
         B = [Z' 1];
         T = zeros(4,4,size(R,3));
         for i=1:size(R,3)
             T(:,:,i) = [R(:,:,i) t(:,i); B];
         end
     else
-        T = [R t; zeros(1,numcols(R)) 1];
+        T = [R t; zeros(1,size(R,2)) 1];
     end
 

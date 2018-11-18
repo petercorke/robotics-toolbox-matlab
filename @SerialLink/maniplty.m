@@ -13,9 +13,11 @@
 % [M,CI] = R.maniplty(Q, OPTIONS) as above, but for the case of the Asada
 % measure returns the Cartesian inertia matrix CI.
 %
+% R.maniplty(Q) displays the translational and rotational manipulability.
+%
 % Two measures can be computed:
 % - Yoshikawa's manipulability measure is based on the shape of the velocity
-%   ellipsoid and depends only on kinematic parameters.
+%   ellipsoid and depends only on kinematic parameters (default).
 % - Asada's manipulability measure is based on the shape of the acceleration
 %   ellipsoid which in turn is a function of the Cartesian inertia matrix and
 %   the dynamic parameters.  The scalar measure computed here is the ratio of 
@@ -23,8 +25,8 @@
 %   spherical, giving a ratio of 1, but in practice will be less than 1.
 %
 % Options::
-% 'T'           manipulability for transational motion only (default)
-% 'R'           manipulability for rotational motion only
+% 'trans'       manipulability for transational motion only (default)
+% 'rot'         manipulability for rotational motion only
 % 'all'         manipulability for all motions
 % 'dof',D       D is a vector (1x6) with non-zero elements if the
 %               corresponding DOF is to be included for manipulability
@@ -35,7 +37,7 @@
 % - The 'all' option includes rotational and translational dexterity, but
 %   this involves adding different units.  It can be more useful to look at the
 %   translational and rotational manipulability separately.
-% - Examples in the RVC book can be replicated by using the 'all' option
+% - Examples in the RVC book (1st edition) can be replicated by using the 'all' option
 %
 % References::
 %
@@ -48,13 +50,15 @@
 %   H. Asada, 
 %   Journal of Dynamic Systems, Measurement, and Control,
 %   vol. 105, p. 131, 1983.
+% - Robotics, Vision & Control, P. Corke, Springer 2011.
 %
 % See also SerialLink.inertia, SerialLink.jacob0.
 
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -77,18 +81,31 @@
 % return the ellipsoid?
 
 function [w,mx] = maniplty(robot, q, varargin)
+    
+
 
     opt.method = {'yoshikawa', 'asada'};
-    opt.axes = {'T', 'all', 'R'};
+    opt.axes = {'all', 'trans', 'rot'};
     opt.dof = [];
-
+    
     opt = tb_optparse(opt, varargin);
+    
+    if nargout == 0
+        opt.axes = 'trans';
+        mt = maniplty(robot, q, 'setopt', opt);
+        opt.axes = 'rot';
+        mr = maniplty(robot, q, 'setopt', opt);
+        for i=1:numrows(mt)
+        fprintf('Manipulability: translation %g, rotation %g\n', mt(i), mr(i));
+        end
+        return;
+    end
     
     if isempty(opt.dof)
         switch opt.axes
-            case 'T'
+            case 'trans'
                 dof = [1 1 1 0 0 0];
-            case 'R'
+            case 'rot'
                 dof = [0 0 0 1 1 1];
             case 'all'
                 dof = [1 1 1 1 1 1];
@@ -129,7 +146,9 @@ function m = yoshi(robot, q, opt)
     J = robot.jacob0(q);
     
     J = J(opt.dof,:);
-    m = sqrt(det(J * J'));
+    m2 = det(J * J');
+    m2 = max(0, m2);    % clip it to positive
+    m = sqrt(m2);
 
 function [m, mx] = asada(robot, q, opt)
     J = robot.jacob0(q);

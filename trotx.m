@@ -8,11 +8,12 @@
 % Notes::
 % - Translational component is zero.
 %
-% See also ROTX, TROTY, TROTZ, TROT2.
+% See also rotx, troty, trotz, trot2, SE3.Rx.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

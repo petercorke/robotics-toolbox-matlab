@@ -1,0 +1,11 @@
+<productinfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:noNamespaceSchemaLocation="optional">
+    <?xml-stylesheet type="text/xsl"href="optional"?>
+    
+    <matlabrelease>2017b</matlabrelease>
+    <name>Robotics Toolbox for MATLAB</name>
+    <type>toolbox</type>
+    <icon></icon>
+    <help_location>info</help_location>
+    
+</productinfo>

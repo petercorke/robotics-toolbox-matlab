@@ -1,5 +1,5 @@
 
-function [sys,x0,str,ts] = quadrotor_dynamics(t,x,u,flag, quad)
+function [sys,x0,str,ts] = quadrotor_dynamics(t,x,u,flag, quad, x0, groundflag)
     % Flyer2dynamics lovingly coded by Paul Pounds, first coded 12/4/04
     % A simulation of idealised X-4 Flyer II flight dynamics.
     % version 2.0 2005 modified to be compatible with latest version of Matlab
@@ -7,9 +7,11 @@ function [sys,x0,str,ts] = quadrotor_dynamics(t,x,u,flag, quad)
     % version 4.0 4/2/10, fixed rotor flapping rotation matrix bug, mirroring
     % version 5.0 8/8/11, simplified and restructured
    % version 6.0 25/10/13, fixed rotation matrix/inverse wronskian definitions, flapping cross-product bug
-    
+
     warning off MATLAB:divideByZero
     
+    global groundFlag;
+        
     % New in version 2:
     %   - Generalised rotor thrust model
     %   - Rotor flapping model
@@ -39,17 +41,19 @@ function [sys,x0,str,ts] = quadrotor_dynamics(t,x,u,flag, quad)
     %   n      Attitude                         3x1   (Y,P,R)
     %   o      Angular velocity                 3x1   (wx,wy,wz)
     %   w      Rotor angular velocity           4x1
+    %
+    % Notes: z-axis downward so altitude is -z(3)
     
     %CONTINUOUS STATE MATRIX MAPPING
     %   x = [z1 z2 z3 n1 n2 n3 z1 z2 z3 o1 o2 o3 w1 w2 w3 w4]
     
     %INITIAL CONDITIONS
-    z0 = [-1 0 -.15];              %   z0      Position initial conditions         1x3
     n0 = [0 0 0];               %   n0      Ang. position initial conditions    1x3
     v0 = [0 0 0];               %   v0      Velocity Initial conditions         1x3
     o0 = [0 0 0];               %   o0      Ang. velocity initial conditions    1x3
-    init = [z0 n0 v0 o0];
-    
+    init = [x0 n0 v0 o0];       % x0 is the passed initial position 1x3
+    groundFlag = groundflag;
+
     %CONTINUOUS STATE EQUATIONS
     %   z` = v
     %   v` = g*e3 - (1/m)*T*R*e3
@@ -59,7 +63,6 @@ function [sys,x0,str,ts] = quadrotor_dynamics(t,x,u,flag, quad)
     
     % Dispatch the flag.
     %
-    
     switch flag
         case 0
             [sys,x0,str,ts]=mdlInitializeSizes(init, quad); % Initialization
@@ -115,7 +118,7 @@ end % End of mdlInitializeSizes.
 %==============================================================
 %
 function sys = mdlDerivatives(t,x,u, quad)
-    global a1s b1s
+    global a1s b1s groundFlag
     
     %CONSTANTS
     %Cardinal Direction Indicies
@@ -135,7 +138,7 @@ function sys = mdlDerivatives(t,x,u, quad)
     e2 = [0;1;0];
     e3 = [0;0;1];
     
-    %EXTRACT STATES FROM U
+    %EXTRACT ROTOR SPEEDS FROM U
     w = u(1:4);
     
     %EXTRACT STATES FROM X
@@ -165,6 +168,11 @@ function sys = mdlDerivatives(t,x,u, quad)
     iW = [0        sin(psi)          cos(psi);             %inverted Wronskian
           0        cos(psi)*cos(the) -sin(psi)*cos(the);
           cos(the) sin(psi)*sin(the) cos(psi)*sin(the)] / cos(the);
+    if any(w == 0)
+        % might need to fix this, preculudes aerobatics :(
+        % mu becomes NaN due to 0/0
+        error('quadrotor_dynamics: not defined for zero rotor speed');
+    end
     
     %ROTOR MODEL
     for i=[N E S W] %for each rotor
@@ -197,6 +205,12 @@ function sys = mdlDerivatives(t,x,u, quad)
     dn = iW*o;
     
     dv = quad.g*e3 + R*(1/quad.M)*sum(T,2);
+    
+    % vehicle can't fall below ground
+    if groundFlag && (z(3) > 0)
+        z(3) = 0;
+        dz(3) = 0;
+    end
     do = inv(quad.J)*(cross(-o,quad.J*o) + sum(tau,2) + sum(Q,2)); %row sum of torques
     sys = [dz;dn;dv;do];   %This is the state derivative vector
 end % End of mdlDerivatives.
@@ -208,16 +222,6 @@ end % End of mdlDerivatives.
 %==============================================================
 %
 function sys = mdlOutputs(t,x, quad)
-    %CRASH DETECTION
-    if x(3)>0
-        x(3) = 0;
-        if x(6) > 0
-            x(6) = 0;
-        end
-    end
-    %if (x(3)>0)&(crash)
-    %    error('CRASH!')
-    %end
     
     %TELEMETRY
     if quad.verbose

@@ -41,6 +41,11 @@
 #define	DEBUG
 */
 
+#ifdef DEBUG
+#include    <stdio.h>
+#include    "mex.h"
+#endif
+
 /*
  * Bunch of macros to make the main code easier to read.  Dereference vectors
  * from the Link structures for the manipulator.
@@ -107,7 +112,37 @@ newton_euler (
 		n_tip.z = fext[5];
 	}
 
-
+#ifdef DEBUG
+    /* display the incoming parameters */
+    mexPrintf("-------------------- ne.c ------------------\n");
+    mexPrintf("njoints: %d\n", robot->njoints);
+    mexPrintf("gravity: %f %f %f\n", robot->gravity->x, robot->gravity->y, robot->gravity->z);
+    
+    mexPrintf("qd: ");
+    for (j=0; j<robot->njoints; j++)
+        mexPrintf("%f ", qd[j]);
+    mexPrintf("\n");
+    
+    mexPrintf("qdd: ");
+    for (j=0; j<robot->njoints; j++)
+        mexPrintf("%f ", qdd[j]);
+    mexPrintf("\n");
+    
+    for (j=0; j<robot->njoints; j++) {
+        mexPrintf("-- joint %d:\n", j);
+        Link *l = &robot->links[j];
+        mexPrintf("DH:  %f %f %f %f\n", l->theta, l->D, l->A, l->alpha, l->jointtype);
+        mexPrintf("CoM: %f %f %f\n", l->rbar->x, l->rbar->y, l->rbar->z);
+        mexPrintf("m:   %f\n", l->m);
+        mexPrintf("J:   %f %f %f\n", l->I[0], l->I[1], l->I[2]);
+        mexPrintf("     %f %f %f\n", l->I[3], l->I[4], l->I[5]);
+        mexPrintf("     %f %f %f\n", l->I[6], l->I[7], l->I[8]);
+        mexPrintf("G:   %f\n", l->G);
+        mexPrintf("B:   %f\n", l->B);
+        mexPrintf("Jm:   %f\n", l->Jm);
+    }
+#endif
+    
 /******************************************************************************
  * forward recursion --the kinematics
  ******************************************************************************/
@@ -122,7 +157,7 @@ newton_euler (
 		qdv.z = qd[j*stride]; 
 		qddv.z = qdd[j*stride];
 
-		switch (links[j].sigma) {
+		switch (links[j].jointtype) {
 		case REVOLUTE:
 			/* 
 			 * calculate angular velocity of link j
@@ -230,7 +265,7 @@ newton_euler (
 		qdv.z = qd[j*stride]; 
 		qddv.z = qdd[j*stride];
 
-		switch (links[j].sigma) {
+		switch (links[j].jointtype) {
 		case REVOLUTE:
 			/* 
 			 * calculate omega[j]
@@ -450,7 +485,7 @@ newton_euler (
 		else
 			rot_trans_vect_mult(&t1, ROT(j), &z0);
 
-		switch (l->sigma) {
+		switch (l->jointtype) {
 		case REVOLUTE:
 			t = vect_dot(n(j), &t1);
 			break;

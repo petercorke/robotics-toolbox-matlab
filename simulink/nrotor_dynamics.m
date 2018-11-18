@@ -1,5 +1,5 @@
 
-function [sys,x0,str,ts] = nrotor_dynamics(t,x,u,flag, vehicle)
+function [sys,x0,str,ts] = nrotor_dynamics(t,x,u,flag, vehicle, x0, groundflag)
     % Flyer2dynamics lovingly coded by Paul Pounds, first coded 12/4/04
     % A simulation of idealised X-4 Flyer II flight dynamics.
     % version 2.0 2005 modified to be compatible with latest version of Matlab
@@ -9,6 +9,7 @@ function [sys,x0,str,ts] = nrotor_dynamics(t,x,u,flag, vehicle)
    % version 6.0 25/10/13, fixed rotation matrix/inverse wronskian definitions, flapping cross-product bug
     
     % modified by PIC for N rotors
+    global groundFlag
     
     warning off MATLAB:divideByZero
     
@@ -45,11 +46,11 @@ function [sys,x0,str,ts] = nrotor_dynamics(t,x,u,flag, vehicle)
     %   x = [z1 z2 z3 n1 n2 n3 z1 z2 z3 o1 o2 o3 w1 w2 w3 w4]
     
     %INITIAL CONDITIONS
-    z0 = [-1 0 -.15];              %   z0      Position initial conditions         1x3
     n0 = [0 0 0];               %   n0      Ang. position initial conditions    1x3
     v0 = [0 0 0];               %   v0      Velocity Initial conditions         1x3
     o0 = [0 0 0];               %   o0      Ang. velocity initial conditions    1x3
-    init = [z0 n0 v0 o0];
+    init = [x0 n0 v0 o0];       % x0 is the passed initial position 1x3
+    groundFlag = groundflag;;
     
     %CONTINUOUS STATE EQUATIONS
     %   z' = v
@@ -68,6 +69,8 @@ function [sys,x0,str,ts] = nrotor_dynamics(t,x,u,flag, vehicle)
     if vehicle.nrotors < 4
         error('RTB:nrotor_dynamics:bardarg', 'Number of rotors must be at least 4')
     end
+    
+    groundFlag = groundflag;
     
     % Dispatch the flag.
     switch flag
@@ -201,8 +204,14 @@ function sys = mdlDerivatives(t,x,u, quad)
     
     %RIGID BODY DYNAMIC MODEL
     dz = v;
-    dn = iW*o;
     
+    % vehicle can't fall below ground
+    if groundFlag && (z(3) > 0)
+        z(3) = 0;
+        dz(3) = 0;
+    end
+    
+    dn = iW*o;
     dv = quad.g*e3 + R*(1/quad.M)*sum(T,2);
     do = inv(quad.J)*(cross(-o,quad.J*o) + sum(tau,2) + sum(Q,2)); %row sum of torques
     sys = [dz;dn;dv;do];   %This is the state derivative vector

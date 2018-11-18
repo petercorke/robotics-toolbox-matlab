@@ -1,66 +1,87 @@
 %SerialLink Serial-link robot class
 %
-% A concrete class that represents a serial-link arm-type robot.  The
-% mechanism is described using Denavit-Hartenberg parameters, one set
-% per joint.
+% A concrete class that represents a serial-link arm-type robot.  Each link
+% and joint in the chain is described by a Link-class object using Denavit-Hartenberg
+% parameters (standard or modified).
 %
-% Methods::
+% Constructor methods::
+%  SerialLink    general constructor
+%  L1+L2         construct from Link objects
 %
+% Display/plot methods::
+%  animate       animate robot model
+%  display       print the link parameters in human readable form
+%  dyn           display link dynamic parameters
+%  edit          display and edit kinematic and dynamic parameters
+%  getpos        get position of graphical robot
 %  plot          display graphical representation of robot
 %  plot3d        display 3D graphical model of robot
 %  teach         drive the graphical robot
-%  getpos        get position of graphical robot
-%-
-%  jtraj         a joint space trajectory
-%-
-%  edit          display and edit kinematic and dynamic parameters
-%-
-%  isspherical   test if robot has spherical wrist
+%
+% Testing methods::
 %  islimit       test if robot at joint limit
 %  isconfig      test robot joint configuration
-%-
-%  fkine         forward kinematics
+%  issym         test if robot has symbolic parameters
+%  isprismatic   index of prismatic joints
+%  isrevolute    index of revolute joints
+%  isspherical   test if robot has spherical wrist
+%  isdh          test if robot has standard DH model
+%  ismdh         test if robot has modified DH model
+%
+% Conversion methods::
+%  char          convert to string
+%  sym           convert to symbolic parameters
+%  todegrees     convert joint angles to degrees
+%  toradians     convert joint angles to radians
+
+% Kinematic methods::
 %  A             link transforms
-%  trchain       forward kinematics as a chain of elementary transforms
-%-
+%  fkine         forward kinematics
 %  ikine6s       inverse kinematics for 6-axis spherical wrist revolute robot
 %  ikine         inverse kinematics using iterative numerical method
 %  ikunc         inverse kinematics using optimisation
 %  ikcon         inverse kinematics using optimisation with joint limits
 %  ikine_sym     analytic inverse kinematics obtained symbolically
-%-
+%  trchain       forward kinematics as a chain of elementary transforms
+%  DH            convert modified DH model to standard
+%  MDH           convert standard DH model to modified
+%  twists        joint axis twists                       
+%
+% Velocity kinematic methods::
+%  fellipse      display force ellipsoid
 %  jacob0        Jacobian matrix in world frame
-%  jacobn        Jacobian matrix in tool frame
+%  jacobe        Jacobian matrix in end-effector frame
 %  jacob_dot     Jacobian derivative
 %  maniplty      manipulability
 %  vellipse      display velocity ellipsoid
-%  fellipse      display force ellipsoid
 %  qmincon       null space motion to centre joints between limits
+%
+% Dynamics methods::
+%  accel           joint acceleration
+%  cinertia        Cartesian inertia matrix
+%  coriolis        Coriolis joint force
+%  fdyn            forward dynamics
+%  friction        friction force
+%  gravjac         gravity load and Jacobian
+%  gravload        gravity joint force
+%  inertia         joint inertia matrix
+%  itorque         inertial torque
+%  jointdynamics   model of LTI joint dynamics
+%  nofriction      set friction parameters to zero
+%  perturb         randomly perturb link dynamic parameters
+%  rne             inverse dynamics
 %-
-%  accel         joint acceleration
-%  coriolis      Coriolis joint force
-%  dyn           show dynamic properties of links
-%  friction      friction force
-%  gravload      gravity joint force
-%  inertia       joint inertia matrix
-%  cinertia      Cartesian inertia matrix
-%  nofriction    set friction parameters to zero
-%  rne           inverse dynamics
-%  fdyn          forward dynamics
-%-
-%  payload       add a payload in end-effector frame
-%  perturb       randomly perturb link dynamic parameters
-%  gravjac       gravity load and Jacobian
-%  paycap        payload capacity
-%  pay           payload effect
-%-
-%  sym           a symbolic version of the object
+%  pay             payload effect
+%  payload         add a payload in end-effector frame
+%  gravjac         gravity load and Jacobian
+%  paycap          payload capacity
+%
+% Operation methods::
+%  jtraj         joint space trajectory
 %  gencoords     symbolic generalized coordinates
 %  genforces     symbolic generalized forces
-%  issym         test if object is symbolic
 %
 % Properties (read/write)::
-%
 %  links      vector of Link objects (1xN)
 %  gravity    direction of gravity [gx gy gz]
 %  base       pose of robot's base (4x4 homog xform)
@@ -75,7 +96,6 @@
 %             file exists.  Default is true.
 %
 % Properties (read only)::
-%
 %  n           number of joints
 %  config      joint configuration string, eg. 'RRRRRR'
 %  mdh         kinematic convention boolean (0=DH, 1=MDH)
@@ -85,6 +105,7 @@
 %  alpha       kinematic: link twists (1xN)
 %
 % Overloaded operators::
+%  R+L     append a Link object to a SerialLink manipulator
 %  R1*R2   concatenate two SerialLink manipulators R1 and R2
 %
 % Note::
@@ -100,7 +121,8 @@
 % See also Link, DHFactor.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -121,15 +143,17 @@
 
 % TODO:
 % fix payload as per GG discussion
+% if we subclass mixin.Copyable there are problem with
+                        %subclass constructures...
 
-classdef SerialLink < handle
+classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
 
     properties
         name
         gravity
         base
         tool
-        manuf
+        manufacturer
         comment
 
         plotopt  % options for the plot method, follow plot syntax
@@ -143,8 +167,7 @@ classdef SerialLink < handle
         trail   % to support trail option
         
         % to support plot method
-        moviepath
-        framenum
+        movie
         delay
         loop
         
@@ -163,8 +186,11 @@ classdef SerialLink < handle
     properties (SetAccess = private)
         n
         links
-        mdh
         T
+    end
+    
+    properties (Access = private)
+        mdh
     end
 
     properties (Dependent = true, SetAccess = private)
@@ -181,26 +207,26 @@ classdef SerialLink < handle
     end
 
     methods
-        function r = SerialLink(L, varargin)
+        function r = SerialLink(varargin)
         %SerialLink Create a SerialLink robot object
         %
         % R = SerialLink(LINKS, OPTIONS) is a robot object defined by a vector 
-        % of Link class objects which can be instances of Link, Revolute,
+        % of Link class objects which includes the subclasses Revolute,
         % Prismatic, RevoluteMDH or PrismaticMDH.
         %
         % R = SerialLink(OPTIONS) is a null robot object with no links.
         %
         % R = SerialLink([R1 R2 ...], OPTIONS) concatenate robots, the base of
-        % R2 is attached to the tip of R1.  Can also be written R1*R2 etc.
+        % R2 is attached to the tip of R1.  Can also be written as R1*R2 etc.
         %
         % R = SerialLink(R1, options) is a deep copy of the robot object R1, 
         % with all the same properties.
         %
-        % R = SerialLink(DH, OPTIONS) is a robot object with kinematics defined
-        % by the matrix DH which has one row per joint and each row is
-        % [theta d a alpha] and joints are assumed revolute.  An optional 
-        % fifth column sigma indicate revolute (sigma=0, default) or 
-        % prismatic (sigma=1).
+        % R = SerialLink(DH, OPTIONS) is a robot object with kinematics defined by
+        % the matrix DH which has one row per joint and each row is [theta d a
+        % alpha] and joints are assumed revolute.  An optional fifth column sigma
+        % indicate revolute (sigma=0) or prismatic (sigma=1).  An optional sixth
+        % column is the joint offset.
         %
         % Options::
         %
@@ -213,6 +239,8 @@ classdef SerialLink < handle
         %  'plotopt',P             set default options for .plot() to P
         %  'plotopt3d',P           set default options for .plot3d() to P
         %  'nofast'                don't use RNE MEX file
+        %  'configs',P             provide a cell array of predefined
+        %                          configurations, as name, value pairs
         %
         % Examples::
         %
@@ -244,24 +272,18 @@ classdef SerialLink < handle
         %
         % See also Link, Revolute, Prismatic, RevoluteMDH, PrismaticMDH, SerialLink.plot.
 
-            r.name = 'noname';
-            r.manuf = '';
-            r.comment = '';
+
             r.links = [];
             r.n = 0;
-            r.mdh = 0;
-            r.gravity = [0; 0; 9.81];
-            r.base = eye(4,4);
-            r.tool = eye(4,4);
             
-            r.plotopt = {};
-            r.plotopt3d = {};
-
-            if exist('frne') == 3
-                r.fast = true;
-            else
-                r.fast = false;
-            end
+            % default properties
+            default.name = 'noname';
+            default.comment = '';
+            default.manufacturer = '';
+            default.base = eye(4,4);
+            default.tool = eye(4,4);
+            default.gravity = [0; 0; 9.81];
+            
             
             % process the rest of the arguments in key, value pairs
             opt.name = [];
@@ -269,93 +291,121 @@ classdef SerialLink < handle
             opt.manufacturer = [];
             opt.base = [];
             opt.tool = [];
+            opt.gravity = [];
+            
             opt.offset = [];
             opt.qlim = [];
-            opt.plotopt = [];
+            opt.plotopt = {};
+            opt.plotopt3d = {};
             opt.ikine = [];
             opt.fast = r.fast;
             opt.modified = false;
+            opt.configs = [];
 
-            [opt,out] = tb_optparse(opt, varargin);
-            if ~isempty(out)
-                error('unknown option <%s>', out{1});
-            end
+            [opt,arg] = tb_optparse(opt, varargin);
+            
 
-            if nargin == 0
-                % zero argument constructor, sets default values
-                return;
-            else
+            if length(arg) == 1
                 % at least one argument, either a robot or link array
-
-                if isa(L, 'SerialLink')
-                    if length(L) == 1
-                        % clone the passed robot
-                        for j=1:L.n
-                            newlinks(j) = copy(L.links(j));
-                        end
-                        r.links = newlinks;
-                        r.name = [L.name ' copy'];
-                        r.base = L.base;
-                        r.tool = L.tool;
-                    else
-                        % compound the robots in the vector
-                        r = L(1);
-                        for k=2:length(L)
-                            r = r * L(k);
-                        end
-                        r.base = L(1).base;
-                        r.tool = L(end).tool;
-                    end
-                elseif isa(L, 'Link')
-                    r.links = L;    % attach the links
+                
+                L = arg{1};
+                
+                if isa(L, 'Link')
+                    % passed an array of Link objects
+                    r.links = L;
+                    
                 elseif numcols(L) >= 4 && (isa(L, 'double') || isa(L, 'sym'))
-                    % legacy matrix
+                    % passed a legacy DH matrix
                     dh_dyn = L;
                     clear L
                     for j=1:numrows(dh_dyn)
-                        if opt.modified 
+                        if opt.modified
                             L(j) =        Link(dh_dyn(j,:), 'modified');
                         else
                             L(j) =        Link(dh_dyn(j,:));
-                            
-                        end
-%                         L(j).theta =  dh_dyn(j,1);
-%                         L(j).d =      dh_dyn(j,2);
-%                         L(j).a =      dh_dyn(j,3);
-%                         L(j).alpha =  dh_dyn(j,4);
-
-%                         if numcols(dh_dyn) > 4
-%                             L(j).sigma = dh_dyn(j,5);
-%                         end
+                        end                      
                     end
                     r.links = L;
+                    
+                elseif isa(L, 'SerialLink')
+                    % passed a SerialLink object
+                    if length(L) == 1
+                        % clone the passed robot and the attached links
+                        copy(r, L); 
+
+                        r.links = copy(L.links);
+                        default.name = [L.name ' copy'];
+                    else
+                        % compound the robots in the vector
+                        copy(r, L(1));
+                        
+                        for k=2:length(L)
+                            r.links = [r.links copy(L(k).links)];
+                            r.name = [r.name '+' L(k).name];
+                        end
+                        
+                        r.tool = L(end).tool; % tool of composite robot from the last one
+                        r.gravity = L(1).gravity; % gravity of composite robot from the first one
+                    end
+                    
                 else
                     error('unknown type passed to robot');
                 end
                 r.n = length(r.links);
             end
-
-
-
-            % copy the properties to robot object
-            p = properties(r);
-            for i=1:length(p)
-                if isfield(opt, p{i}) && ~isempty(getfield(opt, p{i}))
-                    r.(p{i}) = getfield(opt, p{i});
+            
+            
+            % set properties of robot object from passed options or defaults
+            for p=properties(r)'
+                p = p{1};  % property name
+                
+                if isfield(opt, p) && ~isempty( opt.(p) )
+                    % if there's a set option, override what's in the robot
+                    r.(p) = opt.(p);
+                end
+                
+                if isfield(default, p) && isempty( r.(p) ) 
+                    % otherwise if there's a set default, use that
+                    r.(p) = default.(p);
                 end
             end
-            r.ikineType = opt.ikine;
+            
+            % other properties
 
+            if exist('frne') == 3
+                r.fast = true;
+            else
+                r.fast = false;
+            end
+            
+            r.ikineType = opt.ikine;
+            
+            r.gravity = r.gravity(:);
+            assert(length(r.gravity) == 3, 'RTB:SerialLink:badarg', 'gravity must be a 3-vector');
 
             % set the robot object mdh status flag
-            mdh = [r.links.mdh];
-            if all(mdh == 0)
-                r.mdh = mdh(1);
-            elseif all (mdh == 1)
-                r.mdh = mdh(1);
-            else
-                error('robot has mixed D&H links conventions');
+            if ~isempty(r.links)
+                mdh = [r.links.mdh];
+                if all(mdh == 0)
+                    r.mdh = mdh(1);
+                elseif all (mdh == 1)
+                    r.mdh = mdh(1);
+                else
+                    error('RTB:SerialLink:badarg', 'robot has mixed D&H links conventions');
+                end
             end
+            
+            if ~isempty(opt.configs)
+                % add passed configurations as dynamic properties of the robot
+                for i=1:2:length(opt.configs)
+                    name = opt.configs{i}; val = opt.configs{i+1};
+                    assert(ischar(name), 'configs: expecting a char array')
+                    assert(isnumeric(val) && length(val) == length(r.links), 'configs: expecting a n-vector');
+                    addprop(r, name);
+                    r.(name) = val;
+                end
+            end
+            
         end
 
         %{
@@ -370,7 +420,36 @@ classdef SerialLink < handle
             end
         end
         %}
+        
+        function copy(out, in)
+            C = metaclass(in);
+            P = C.Properties;
+            
+            for k=1:length(P)
+                if ~P{k}.Dependent
+                    out.(P{k}.Name) = in.(P{k}.Name);
+                end
+            end
+        end
+        
+        function r2 = plus(R, L)
+            %SerialLink.plus  Append a link objects to a robot
+            %
+            % R+L is a SerialLink object formed appending a deep copy of the Link L to the SerialLink
+            % robot R.
+            %
+            % Notes::
+            % - The link L can belong to any of the Link subclasses.
+            % - Extends to arbitrary number of objects, eg. R+L1+L2+L3+L4.
+            %
+            % See also Link.plus.
+            assert( isa(L, 'Link'), 'RTB:SerialLink: second operand for + operator must be a Link class');
+            
+            R.links = [R.links L];
+            r2 = R;
 
+        end
+        
         function r2 = mtimes(r, l)
         %SerialLink.mtimes Concatenate robots
         %
@@ -379,13 +458,10 @@ classdef SerialLink < handle
         %
         % Notes::
         % - If R1 has a tool transform or R2 has a base transform these are 
-        %   discarded since DH convention does not allow for arbitrary intermediate
+        %   discarded since DH convention does not allow for general intermediate
         %   transformations.
             if isa(l, 'SerialLink')
-                r2 = SerialLink(r);
-                r2.links = [r2.links l.links];
-                r2.base = r.base;
-                r2.n = length(r2.links);
+                r2 = SerialLink([r l]);
             elseif isa(l, 'Link')
                 r2 = SerialLink(r);
                 r2.links = [r2.links l];
@@ -431,27 +507,38 @@ classdef SerialLink < handle
                 r = robot(j);
 
                 % informational line
+                info = '';
                 if r.mdh
-                    convention = 'modDH';
+                    info = strcat(info, 'modDH');
                 else
-                    convention = 'stdDH';
+                    info = strcat(info, 'stdDH');
                 end
                 if r.fast
-                    fast = 'fastRNE';
+                    info = strcat(info, ', fastRNE');
                 else
-                    fast = 'slowRNE';
+                    info = strcat(info, ', slowRNE');
                 end
-                s = sprintf('%s (%d axis, %s, %s, %s)', r.name, r.n, r.config, convention, fast);
+                if r.issym
+                    info = strcat(info, ', Symbolic');;
+                end
+                manuf = '';
+                if ~isempty(r.manufacturer)
+                    manuf = [' [' r.manufacturer ']'];
+                end
+
+                s = sprintf('%s%s:: %d axis, %s, %s', r.name, manuf, r.n, r.config, info);
 
                 % comment and other info
                 line = '';
-                if ~isempty(r.manuf)
-                    line = strcat(line, sprintf(' %s;', r.manuf));
-                end
+%                 if ~isempty(r.manufacturer)
+%                     line = strcat(line, sprintf(' from %s;', r.manufacturer));
+%                 end
                 if ~isempty(r.comment)
-                    line = strcat(line, sprintf(' %s;', r.comment));
+                    line = strcat(line, sprintf(' - %s;', r.comment));
                 end
+                if ~isempty(line)
                 s = char(s, line);
+                end
 
                 % link parameters
                 s = char(s, '+---+-----------+-----------+-----------+-----------+-----------+');
@@ -462,15 +549,21 @@ classdef SerialLink < handle
 
 
                 % gravity, base, tool
-                s_grav = horzcat(char('grav = ', ' ', ' '), mat2str(r.gravity));
-                s_grav = char(s_grav, ' ');
-                s_base = horzcat(char('  base = ',' ',' ', ' '), mat2str(r.base));
+%                s_grav = horzcat(char('grav = ', ' ', ' '), mat2str(r.gravity'));
+%                 s_grav = char(s_grav, ' ');
+%                 s_base = horzcat(char('  base = ',' ',' ', ' '), mat2str(r.base));
+% 
+%                 s_tool = horzcat(char('   tool =  ',' ',' ', ' '), mat2str(r.tool));
+% 
+%                 line = horzcat(s_grav, s_base, s_tool);
+                %s = char(s, sprintf('gravity: (%g, %g, %g)', r.gravity));
+                if ~isidentity(r.base)
+                    s = char(s, ['base:    ' trprint(r.base.T, 'xyz')]);
+                end
+                if ~isidentity(r.tool)
+                    s = char(s, ['tool:    ' trprint(r.tool.T, 'xyz')]);
+                end
 
-                s_tool = horzcat(char('   tool =  ',' ',' ', ' '), mat2str(r.tool));
-
-                line = horzcat(s_grav, s_base, s_tool);
-
-                s = char(s, ' ', line);
                 if j ~= length(robot)
                     s = char(s, ' ');
                 end
@@ -480,11 +573,12 @@ classdef SerialLink < handle
         function T = A(r, joints, q)
         %SerialLink.A Link transformation matrices
         %
-        % S = R.A(J, QJ) is an SE(3) homogeneous transform (4x4) that transforms
-        % from link frame {J-1} to frame {J} which is a function of the J'th joint
-        % variable QJ.
+        % S = R.A(J, Q) is an SE3 object (4x4) that transforms between link frames
+        % for the J'th joint.  Q is a vector (1xN) of joint variables. For:
+        %  - standard DH parameters, this is from frame {J-1} to frame {J}.
+        %  - modified DH parameters, this is from frame {J} to frame {J+1}.
         %
-        % S = R.A(jlist, q) as above but is a composition of link transform
+        % S = R.A(JLIST, Q) as above but is a composition of link transform
         % matrices given in the list JLIST, and the joint variables are taken from
         % the corresponding elements of Q.
         %
@@ -493,12 +587,14 @@ classdef SerialLink < handle
         %          robot.A(4, q4)
         %
         % The link transform for  joints 3 through 6 is
-        %          robot.A([3 4 5 6], q)
+        %          robot.A(3:6, q)
         % where q is 1x6 and the elements q(3) .. q(6) are used.
         %
         % Notes::
-        % - base and tool transforms are not applied.
-            T = eye(4,4);
+        % - Base and tool transforms are not applied.
+        %
+        % See also Link.A.
+            T = SE3;
             
             for joint=joints
                 T = T * r.links(joint).A(q(joint));
@@ -506,27 +602,27 @@ classdef SerialLink < handle
         end
         
         function q = getpos(robot)
-        %SerialLink.getpos Get joint coordinates from graphical display
-        %
-        % q = R.getpos() returns the joint coordinates set by the last plot or
-        % teach operation on the graphical robot.
-        %
-        % See also SerialLink.plot, SerialLink.teach.
-    
-        rhandles = findobj('Tag', robot.name);
-        
-        % find the graphical element of this name
-        if isempty(rhandles)
-            error('RTB:getpos:badarg', 'No graphical robot of this name found');
+            %SerialLink.getpos Get joint coordinates from graphical display
+            %
+            % q = R.getpos() returns the joint coordinates set by the last plot or
+            % teach operation on the graphical robot.
+            %
+            % See also SerialLink.plot, SerialLink.teach.
+            
+            rhandles = findobj('Tag', robot.name);
+            
+            % find the graphical element of this name
+            if isempty(rhandles)
+                error('RTB:getpos:badarg', 'No graphical robot of this name found');
+            end
+            % get the info from its Userdata
+            info = get(rhandles(1), 'UserData');
+            
+            % the handle contains current joint angles (set by plot)
+            if ~isempty(info.q)
+                q = info.q;
+            end
         end
-        % get the info from its Userdata
-        info = get(rhandles(1), 'UserData');
-        
-        % the handle contains current joint angles (set by plot)
-        if ~isempty(info.q)
-            q = info.q;
-        end
-end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %   set/get methods
@@ -535,11 +631,9 @@ end
 
         function set.tool(r, v)
             if isempty(v)
-                r.base = eye(4,4);
-            elseif ~ishomog(v)
-                error('tool must be a homogeneous transform');
+                r.base = SE(3);
             else
-                r.tool = v;
+                r.tool = SE3(v);
             end
         end
         
@@ -553,11 +647,9 @@ end
 
         function set.base(r, v)
             if isempty(v)
-                r.base = eye(4,4);
-            elseif ~ishomog(v)
-                error('base must be a homogeneous transform');
+                r.base = SE3();
             else
-                r.base = v;
+                r.base = SE3(v);
             end
         end
 
@@ -625,9 +717,10 @@ end
         end
 
         function v = get.config(r)
+        %SerialLink.config Returnt the joint configuration string
             v = '';
             for i=1:r.n
-                v(i) = r.links(i).RP;
+                v(i) = r.links(i).type;
             end
         end
 
@@ -640,8 +733,10 @@ end
         % false (0) if Q(i) is within the joint limits, else true (1).
         %
         % Notes::
-        % - Joint limits are purely advisory and are not used in any
-        %   other function.  Just seemed like a useful thing to include...
+        % - Joint limits are not used by many methods, exceptions being:
+        %   - ikcon() to specify joint constraints for inverse kinematics.
+        %   - by plot() for prismatic joints to help infer the size of the
+        %     workspace
         %
         % See also Link.islimit.
             L = r.links;
@@ -667,7 +762,7 @@ end
             v =  all([L(1:2).a] == 0) && ...
                 (L(2).d == 0) && ...
                 (all([L(1:2).alpha] == alpha) || all([L(1:2).alpha] == -alpha)) && ...
-                all([L(1:3).sigma] == 0);
+                all([L(1:3).isrevolute]);
         end
         
         function v = isconfig(r, s)
@@ -684,18 +779,69 @@ end
         end
         
         function payload(r, m, p)
-        %SerialLink.payload Add payload mass
-        %
-        % R.payload(M, P) adds a payload with point mass M at position P 
-        % in the end-effector coordinate frame.
-        %
-        % Notes::
-        % - An added payload will affect the inertia, Coriolis and gravity terms.
-        %
-        % See also SerialLink.rne, SerialLink.gravload.
+            %SerialLink.payload Add payload mass
+            %
+            % R.payload(M, P) adds a payload with point mass M at position P 
+            % in the end-effector coordinate frame.
+            %
+            % R.payload(0) removes added payload
+            %
+            % Notes::
+            % - An added payload will affect the inertia, Coriolis and gravity terms.
+            % - Sets, rather than adds, the payload.  Mass and CoM of the last link is
+            %   overwritten.
+            %
+            % See also SerialLink.rne, SerialLink.gravload.
+
             lastlink = r.links(r.n);
-            lastlink.m = m;
-            lastlink.r = p;
+
+            if nargin == 3
+                lastlink.m = m;
+                lastlink.r = p;
+            elseif nargin == 2 && m == 0
+                % clear/reset the payload
+                lastlink.m = m;
+            end
+        end
+        
+        function t = jointdynamics(robot, q, qd)
+            %SerialLink.jointdyamics Transfer function of joint actuator
+            %
+            % TF = R.jointdynamic(Q) is a vector of N continuous-time transfer function
+            % objects that represent the transfer function 1/(Js+B) for each joint
+            % based on the dynamic parameters of the robot and the configuration Q
+            % (1xN).  N is the number of robot joints.
+            %
+            % % TF = R.jointdynamic(Q, QD) as above but include the linearized effects
+            % of Coulomb friction when operating at joint velocity QD (1xN).
+            %
+            % Notes::
+            % - Coulomb friction is ignoredf.
+            %
+            % See also tf, SerialLink.rne.
+            
+            for j=1:robot.n
+                link = robot.links(j);
+                
+                % compute inertia for this joint
+                zero = zeros(1, robot.n);
+                qdd = zero; qdd(j) = 1;
+                M = robot.rne(q, zero, qdd, 'gravity', [0 0 0]);
+                J = link.Jm + M(j)/abs(link.G)^2;
+                
+                % compute friction
+                B = link.B;
+                if nargin == 3
+                    % add linearized Coulomb friction at the operating point
+                    if qd > 0
+                        B = B + link.Tc(1)/qd(j);
+                    elseif qd < 0
+                        B = B + link.Tc(2)/qd(j);
+                    end
+                end
+                t(j) = tf(1, [J B]);
+
+            end
         end
         
         function jt = jtraj(r, T1, T2, t, varargin)
@@ -703,56 +849,275 @@ end
             %
             % Q = R.jtraj(T1, T2, K, OPTIONS) is a joint space trajectory (KxN) where
             % the joint coordinates reflect motion from end-effector pose T1 to T2 in K
-            % steps  with default zero boundary conditions for velocity and
-            % acceleration. The trajectory Q has one row per time step, and one column
-            % per joint, where N is the number of robot joints.
+            % steps, where N is the number of robot joints. T1 and T2 are SE3 objects or homogeneous transformation
+            % matrices (4x4). The trajectory Q has one row per time step, and one
+            % column per joint.
             %
             % Options::
             % 'ikine',F   A handle to an inverse kinematic method, for example
             %             F = @p560.ikunc.  Default is ikine6s() for a 6-axis spherical
             %             wrist, else ikine().
             %
-            % Additional options are passed as trailing arguments to the inverse
-            % kinematic function.
+            % Notes::
+            % - Zero boundary conditions for velocity and acceleration are assumed.
+            % - Additional options are passed as trailing arguments to the
+            %   inverse kinematic function, eg. configuration options like 'ru'.
             %
             % See also jtraj, SerialLink.ikine, SerialLink.ikine6s.
             if r.isspherical && (r.n == 6)
-                opt.ikine = @r.ikine;
-            else
                 opt.ikine = @r.ikine6s;
+            else
+                opt.ikine = @r.ikine;
             end
             [opt,args] = tb_optparse(opt, varargin);
-
+            
             q1 = opt.ikine(T1, args{:});
             q2 = opt.ikine(T2, args{:});
             
             jt = jtraj(q1, q2, t);
         end
-
-
+        
+        
         function dyn(r, j)
-        %SerialLink.dyn Print inertial properties
-        %
-        % R.dyn() displays the inertial properties of the SerialLink object in a multi-line 
-        % format.  The properties shown are mass, centre of mass, inertia, gear ratio, 
-        % motor inertia and motor friction.
-        %
-        % R.dyn(J) as above but display parameters for joint J only.
-        %
-        % See also Link.dyn.
+            %SerialLink.dyn Print inertial properties
+            %
+            % R.dyn() displays the inertial properties of the SerialLink object in a multi-line
+            % format.  The properties shown are mass, centre of mass, inertia, gear ratio,
+            % motor inertia and motor friction.
+            %
+            % R.dyn(J) as above but display parameters for joint J only.
+            %
+            % See also Link.dyn.
             if nargin == 2
                 r.links(j).dyn()
             else
                 r.links.dyn();
             end
         end
-
+        
         function sr = sym(r)
             sr = SerialLink(r);
             for i=1:r.n
                 sr.links(i) = r.links(i).sym;
             end
         end
+
+                 
+        function p = isprismatic(robot)
+        %SerialLink.isprismatic identify prismatic joints
+        %
+        % X = R.isprismatic is a list of logical variables, one per joint, true if
+        % the corresponding joint is prismatic, otherwise false.
+        %
+        % See also Link.isprismatic, SerialLink.isrevolute.
+            p = robot.links.isprismatic();
+        end
+        
+        function p = isrevolute(robot)
+        %SerialLink.isrevolute identify revolute joints
+        %
+        % X = R.isrevolute is a list of logical variables, one per joint, true if
+        % the corresponding joint is revolute, otherwise false.
+        %
+        % See also Link.isrevolute, SerialLink.isprismatic.
+            p = robot.links.isrevolute();
+        end
+        
+        function qdeg = todegrees(robot, q)
+        %SerialLink.todegrees Convert joint angles to degrees
+        %
+        % Q2 = R.todegrees(Q) is a vector of joint coordinates where those elements
+        % corresponding to revolute joints are converted from radians to degrees.
+        % Elements corresponding to prismatic joints are copied unchanged.
+        %
+        % See also SerialiLink.toradians.
+            k = robot.isrevolute;
+            qdeg = q;
+            qdeg(:,k) = qdeg(:,k) * pi/180;
+        end
+        
+        function qrad = toradians(robot, q)
+        %SerialLink.toradians Convert joint angles to radians
+        %
+        % Q2 = R.toradians(Q) is a vector of joint coordinates where those elements
+        % corresponding to revolute joints are converted from degrees to radians.
+        % Elements corresponding to prismatic joints are copied unchanged.
+        %
+        % See also SerialiLink.todegrees.
+            k = robot.isrevolute;
+            qrad = q;
+            qrad(:,k) = qrad(:,k) * 180/pi;
+        end
+        
+        function J = jacobn(robot, varargin)
+            warning('RTB:SerialLink:deprecated', 'Use jacobe instead of jacobn');
+            J = robot.jacobe(varargin{:});
+        end
+        
+        function rmdh = MDH(r)
+        %SerialLink.MDH  Convert standard DH model to modified
+        %
+        % rmdh = R.MDH() is a SerialLink object that represents the same kinematics
+        % as R but expressed using modified DH parameters.
+        %
+        % Notes::
+        % - can only be applied to a model expressed with standard DH parameters.
+        %
+        % See also:  DH
+        
+            assert(isdh(r), 'RTB:SerialLink:badmodel', 'this method can only be applied to a model with standard DH parameters');
+            
+            % first joint
+            switch r.links(1).jointtype()
+                case 'R'
+                    link(1) = Link('modified', 'revolute', ...
+                        'd', r.links(1).d, ...
+                        'offset', r.links(1).offset, ...
+                        'qlim', r.links(1).qlim );
+                case 'P'
+                    link(1) = Link('modified', 'prismatic', ...
+                        'theta', r.links(1).theta, ...
+                        'offset', r.links(1).offset, ...
+                        'qlim', r.links(1).qlim );
+            end
+
+            % middle joints
+            for i=2:r.n
+                switch r.links(i).jointtype()
+                    case 'R'
+                        link(i) = Link('modified', 'revolute', ...
+                            'a', r.links(i-1).a, ...
+                            'alpha', r.links(i-1).alpha, ...
+                            'd', r.links(i).d, ...
+                            'offset', r.links(i).offset, ...
+                            'qlim', r.links(i).qlim );
+                    case 'P'
+                        link(i) = Link('modified', 'prismatic', ...
+                            'a', r.links(i-1).a, ...
+                            'alpha', r.links(i-1).alpha, ...
+                            'theta', r.links(i).theta, ...
+                            'offset', r.links(i).offset, ...
+                            'qlim', r.links(i).qlim );
+                end
+            end
+            
+            % last joint
+            tool = SE3(r.links(r.n).a, 0, 0) * SE3.Rx(r.links(r.n).alpha) * r.tool;
+            
+            rmdh = SerialLink(link, 'base', r.base, 'tool', tool);
+        end
+        
+        function rdh = DH(r)
+        %SerialLink.DH  Convert modified DH model to standard
+        %
+        % rmdh = R.DH() is a SerialLink object that represents the same kinematics
+        % as R but expressed using standard DH parameters.
+        %
+        % Notes::
+        % - can only be applied to a model expressed with modified DH parameters.
+        %
+        % See also:  MDH
+            
+            assert(ismdh(r), 'RTB:SerialLink:badmodel', 'this method can only be applied to a model with modified DH parameters');
+            
+            base = r.base * SE3(r.links(1).a, 0, 0) * SE3.Rx(r.links(1).alpha);
+
+            % middle joints
+            for i=1:r.n-1
+                switch r.links(i).jointtype()
+                    case 'R'
+                        link(i) = Link('modified', 'revolute', ...
+                            'a', r.links(i+1).a, ...
+                            'alpha', r.links(i+1).alpha, ...
+                            'd', r.links(i).d, ...
+                            'offset', r.links(i).offset, ...
+                            'qlim', r.links(i).qlim );
+                    case 'P'
+                        link(i) = Link('modified', 'prismatic', ...
+                            'a', r.links(i+1).a, ...
+                            'alpha', r.links(i+1).alpha, ...
+                            'theta', r.links(i).theta, ...
+                            'offset', r.links(i).offset, ...
+                            'qlim', r.links(i).qlim );
+                end
+            end
+            
+            % last joint
+            switch r.links(1).jointtype()
+                case 'R'
+                    link(r.n) = Link('modified', 'revolute', ...
+                        'd', r.links(r.n).d, ...
+                        'offset', r.links(r.n).offset, ...
+                        'qlim', r.links(r.n).qlim );
+                case 'P'
+                    link(r.n) = Link('modified', 'prismatic', ...
+                        'theta', r.links(r.n).theta, ...
+                        'offset', r.links(r.n).offset, ...
+                        'qlim', r.links(r.n).qlim );
+            end
+            
+            rdh = SerialLink(link, 'base', base, 'tool', r.tool);
+        end
+        
+        function [tw,T0] = twists(r, q)
+        %SerialLink.twists Joint axis twists
+        %
+        % [TW,T0] = R.twists(Q) is a vector of Twist objects (1xN) that represent
+        % the axes of the joints for the robot with joint coordinates Q (1xN).  T0
+        % is an SE3 object representing the pose of the tool.
+        %
+        % [TW,T0] = R.twists() as above but the joint coordinates are taken to be
+        % zero.
+        %
+        % Notes::
+        % - [TW,T0] is the product of exponential representation of the robot's
+        %   forward kinematics:  prod( [TW.exp(Q) T0] )
+        %
+        % See also Twist.
+            if nargin < 2
+                q = zeros(1, r.n);
+            end
+            
+            [Tn,T] = r.fkine( q );
+            if r.isdh
+                % DH case
+                for i=1:r.n
+                    if i == 1
+                        tw(i) = Twist( r.links(i).type, [0 0 1], [0 0 0]);
+                    else
+                        tw(i) = Twist( r.links(i).type, T(i-1).a, T(i-1).t);
+                    end
+                end
+            else
+                % MDH case
+                for i=1:r.n
+                    tw(i) = Twist( r.links(i).type, T(i).a, T(i).t);
+                end
+            end
+            
+            if nargout > 1
+                T0 = Tn;
+            end
+        end
+        
+        function v = ismdh(r)
+        %SerialLink.ismdh Test if SerialLink object has a modified DH model
+        %
+        % v = R.ismdh() is true if the SerialLink manipulator R has a modified DH model
+        %
+        % See also: isdh
+            v = r.mdh;
+        end
+        
+        function v = isdh(r)
+        %SerialLink.isdh Test if SerialLink object has a standard DH model
+        %
+        % v = R.isdh() is true if the SerialLink manipulator R has a standard DH model
+        %
+        % See also: ismdh
+            v = ~r.mdh;
+        end
+        
     end % methods
 
 end % classdef
@@ -786,3 +1151,4 @@ function s = mat2str(m)
         s = num2str(m);
     end
 end
+

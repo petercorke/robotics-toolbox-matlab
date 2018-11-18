@@ -1,0 +1,61 @@
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration build-checksum="2172555650" file="/Users/corkep/code/rvc/robotics-toolbox-matlab/Polynomialspirals.prj" location="/Users/corkep/code/rvc/robotics-toolbox-matlab" name="Polynomialspirals" target="target.mlapps" target-name="Package App">
+    <param.appname>Polynomialspirals</param.appname>
+    <param.authnamewatermark>Peter Corke</param.authnamewatermark>
+    <param.email />
+    <param.company />
+    <param.icon />
+    <param.icons />
+    <param.summary>Interactively plot cubic polynomial spirals</param.summary>
+    <param.description>Plot the curve whose curvature is defined as a function of length: from 0 to s_f.  The user can adjust the 4 polynomial coefficients (a,b,c,d), the final value of s (s_f) and the initial heading angle (psi0).</param.description>
+    <param.screenshot>/Users/corkep/Desktop/polyspiral.png</param.screenshot>
+    <param.version>1.0</param.version>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
+    <param.platforms />
+    <param.output>/Users/corkep/code/rvc/robotics-toolbox-matlab</param.output>
+    <param.guid>3d8f2693-09b6-4b18-8886-6ea99415b6dd</param.guid>
+    <unset>
+      <param.email />
+      <param.company />
+      <param.icon />
+      <param.icons />
+      <param.version />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
+      <param.platforms />
+      <param.output />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}/polyspiral.mlapp</file>
+    </fileset.main>
+    <fileset.depfun />
+    <fileset.resources />
+    <fileset.package />
+    <build-deliverables>
+      <file location="/Users/corkep/code/rvc" name="robotics-toolbox-matlab" optional="false">/Users/corkep/code/rvc/robotics-toolbox-matlab</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/Applications/MATLAB_R2018a.app</root>
+      <toolboxes />
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>true</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.13.3</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>maci64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

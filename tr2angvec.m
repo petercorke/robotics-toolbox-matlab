@@ -15,13 +15,17 @@
 % 'deg'   Return angle in degrees
 %
 % Notes::
+% - For an identity rotation matrix both THETA and V are set to zero.
+% - The rotation angle is always in the interval [0 pi], negative rotation
+%   is handled by inverting the direction of the rotation axis.
 % - If no output arguments are specified the result is displayed.
 %
-% See also ANGVEC2R, ANGVEC2TR.
+% See also ANGVEC2R, ANGVEC2TR, TRLOG.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -42,8 +46,9 @@
 
 function [theta_, n_] = tr2angvec(R, varargin)
 
+    assert(ishomog(R) || isrot(R), 'RTB:tr2angvec:badarg', 'argument must be SO(3) or SE(3)');
+
     opt.deg = false;
-    
     opt = tb_optparse(opt, varargin);
     
     % get the rotation submatrix(s)
@@ -51,12 +56,6 @@ function [theta_, n_] = tr2angvec(R, varargin)
         R = t2r(R);
     end
     
-    % check the determinant
-    if abs(det(R)-1) > 10*eps
-           error('matrix not orthonormal rotation matrix');
-    end
-        
-
     if size(R,3) > 1
         theta = zeros(size(R,3),1);
         v = zeros(size(R,3),3);
@@ -86,55 +85,31 @@ function [theta_, n_] = tr2angvec(R, varargin)
         %
         % Use eigenvectors, get angle from trace which is defined over -pi to
         % pi.  Don't use eigenvalues since they only give angles -pi/2 to pi/2.
+        %
+        % 4.
+        %
+        % Take the log of the rotation matrix
         
-        [v,d] = eig(R(:,:,i));
-
-        unit_evec = abs(real(diag(d))-1) < 20*eps;
+        Ri = R(:,:,i);
         
-        switch sum(unit_evec)
-            case 0
-                % no unit eigenvalues, matrix is not orthonormal
-                error('matrix not orthonormal rotation matrix');
-                
-            case 1
-                % one unit eigenvalue, should always be this case
-                k = find(unit_evec);
-            otherwise
-                % for the case of a matrix very close to unity, the results
-                % become complex, with a conjugate pair of eigenvectors and one
-                % with zero complex part.
-                for k=1:3
-                    if isreal(v(:,k))
-                        break;
-                    end
-                end
+        % check the determinant
+        assert( abs(det(Ri)-1) < 10*eps, 'RTB:tr2angvec:badarg', 'matrix is not orthonormal');
+        
+        [th,v] = trlog(Ri);
+        theta(i) = th;
+        n(i,:) = v;
+        
+        if opt.deg
+            theta(i) = theta(i) * 180/pi;
+            units = 'deg';
+        else
+            units = 'rad';
         end
-         
-        
-        % get the direction, eigenvector corresponding to real eigenvalue
-        n(i,:) = real(v(:,k));
-
-        % rotation comes from the trace
-        ac = (trace(R(:,:,i)) - 1) / 2;
-        ac = max( min(ac, 1), -1);  % clip it to robustly handle slight non-orthonormality
-        theta(i) = acos( ac );
         
         if nargout == 0
             % if no output arguments display the angle and vector
-            if opt.deg
-                fprintf('Rotation: %f deg x [%f %f %f]\n', theta(i)*180/pi, n(i,1), n(i,2), n(i,3));
-            else
-                fprintf('Rotation: %f rad x [%f %f %f]\n', theta(i), n(i,1), n(i,2), n(i,3));
-            end
+            fprintf('Rotation: %f %s x [%f %f %f]\n', theta(i), units, n(i,:));
         end
-    end
-    
-    if ~isreal(theta) || ~isreal(n)
-        error('complex');
-    end
-    
-    if opt.deg
-        theta = theta * 180/pi;
     end
     
     if nargout == 1

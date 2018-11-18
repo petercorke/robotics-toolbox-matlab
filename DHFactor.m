@@ -36,7 +36,7 @@
 %   last line above.
 % - Implemented in Java.
 % - Not all sequences can be converted to DH format, if conversion cannot be 
-%   achieved an error is generated.
+%   achieved an error is reported.
 %
 % Reference::
 % - A simple and systematic approach to assigning Denavit-Hartenberg parameters,
@@ -47,7 +47,8 @@
 % See also SerialLink.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

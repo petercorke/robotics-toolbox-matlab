@@ -1,15 +1,14 @@
 %ROT2 SO(2) Rotation matrix
 %
-% R = ROT2(THETA) is an SO(2) rotation matrix representing a rotation of THETA 
+% R = ROT2(THETA) is an SO(2) rotation matrix (2x2) representing a rotation of THETA 
 % radians.
 %
 % R = ROT2(THETA, 'deg') as above but THETA is in degrees.
 %
-% See also TROT2, ROTX, ROTY, ROTZ.
+% See also SE2, TROT2, ISROT2, TRPLOT2, ROTX, ROTY, ROTZ, SO2.
 
 
-
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -2,21 +2,21 @@
 %
 % T = R2T(R) is an SE(2) or SE(3) homogeneous transform equivalent to an
 % SO(2) or SO(3) orthonormal rotation matrix R with a zero translational
-% component.
-%
-% Notes::
-% - Works for T in either SE(2) or SE(3)
+% component. Works for T in either SE(2) or SE(3):
 %  - if R is 2x2 then T is 3x3, or
 %  - if R is 3x3 then T is 4x4.
+%
+% Notes::
 % - Translational component is zero.
-% - For a rotation matrix sequence returns a homogeneous transform
-%   sequence.
+% - For a rotation matrix sequence (KxKxN) returns a homogeneous transform
+%   sequence (K+1xK+1xN).
 %
 % See also T2R.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -36,15 +36,11 @@
 % http://www.petercorke.com
 
 function T = r2t(R)
-
+    
     % check dimensions: R is SO(2) or SO(3)
     d = size(R);
-    if d(1) ~= d(2)
-        error('matrix must be square');
-    end
-    if ~any(d(1) == [2 3])
-        error('argument is not a rotation matrix (sequence)');
-    end
+    assert(d(1) == d(2), 'RTB:r2t:badarg', 'matrix must be square');
+    assert(any(d(1) == [2 3]), 'RTB:r2t:badarg', 'argument is not a rotation matrix (sequence)');
     
     Z = zeros(d(1),1);
     B = [Z' 1];
@@ -59,3 +55,4 @@ function T = r2t(R)
             T(:,:,i) = [R(:,:,i) Z; B];
         end
     end
+end

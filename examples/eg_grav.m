@@ -1,5 +1,6 @@
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -17,7 +18,8 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
-[Q2,Q3] = meshgrid(-pi:0.1:pi, -pi:0.1:pi);
+theta = linspace(-pi, pi, 75);
+[Q2,Q3] = meshgrid(theta, theta);
 for i=1:numcols(Q2),
 	for j=1:numcols(Q3);
 		g = p560.gravload([0 Q2(i,j) Q3(i,j) 0 0 0]);

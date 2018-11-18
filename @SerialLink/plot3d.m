@@ -20,6 +20,8 @@
 % '[no]loop'        Loop over the trajectory forever
 % '[no]raise'       Autoraise the figure
 % 'movie',M         Save frames as files in the folder M
+% 'trail',L         Draw a line recording the tip path, with line style L.
+%                   L can be a cell array, eg. {'r', 'LineWidth', 2}
 %-
 % 'scale',S         Annotation scale factor
 % 'ortho'           Orthographic view (default)
@@ -44,28 +46,39 @@
 % '[no]base'        Enable display of base shape
 %
 % Notes::
-% - Solid models of the robot links are required as STL ascii format files,
-%   with extensions .stl
-% - Suitable STL files can be found in the package ARTE: A ROBOTICS TOOLBOX
-%   FOR EDUCATION by Arturo Gil, https://arvc.umh.es/arte
-% - The root of the solid models is an installation of ARTE with an empty
-%   file called arte.m at the top level
+% - Solid models of the robot links are required as STL files (ascii or
+%   binary) with extension .stl.
+% - The solid models live in RVCTOOLS/robot/data/ARTE.
 % - Each STL model is called 'linkN'.stl where N is the link number 0 to N
 % - The specific folder to use comes from the SerialLink.model3d property
-% - The path of the folder containing the STL files can be specified using
+% - The path of the folder containing the STL files can be overridden using
 %   the 'path' option
 % - The height of the floor is set in decreasing priority order by:
 %   - 'workspace' option, the fifth element of the passed vector
 %   - 'floorlevel' option
 %   - the lowest z-coordinate in the link1.stl object
 %
-% Authors::
-% - Peter Corke, based on existing code for plot()
-% - Bryan Moutrie, demo code on the Google Group for connecting ARTE and RTB
-% - Don Riley, function rndread() extracted from cad2matdemo (MATLAB
-%   File Exchange)
+% Making an animation::
 %
-% See also SerialLink.plot, plotbotopt3d, SerialLink.animate, SerialLink.teach, SerialLink.fkine.
+% The 'movie' options saves the animation as a movie file or separate frames in a folder
+% - 'movie','file.mp4' saves as an MP4 movie called file.mp4
+% - 'movie','folder' saves as files NNNN.png into the specified folder
+%   - The specified folder will be created
+%   - NNNN are consecutive numbers: 0000, 0001, 0002 etc.
+%   - To convert frames to a movie use a command like:
+%          ffmpeg -r 10 -i %04d.png out.avi
+%
+% Authors::
+% - Peter Corke, based on existing code for plot().
+% - Bryan Moutrie, demo code on the Google Group for connecting ARTE and
+%   RTB.
+%
+% Acknowledgments::
+% - STL files are from ARTE: A ROBOTICS TOOLBOX FOR EDUCATION by Arturo Gil
+%   (https://arvc.umh.es/arte) are included, with permission.
+% - The various authors of STL reading code on file exchange, see stlRead.m
+%
+% See also SerialLink.plot, plotbotopt3d, SerialLink.animate, SerialLink.teach, stlRead.
 
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
@@ -90,12 +103,13 @@
 function plot3d(robot, q, varargin)
     
     
-    if robot.mdh
-        error('RTB:plot3d:badmodel', '3D models are defined for standard, not modified, DH parameters');
-    end
+    assert( ~robot.mdh, 'RTB:plot3d:badmodel', '3D models are defined for standard, not modified, DH parameters');
     
-    clf
     opt = plot_options(robot, varargin);
+    
+    if opt.movie
+        robot.movie = Animate(opt.movie);
+    end
     
     %-- load the shape if need be
     
@@ -106,13 +120,13 @@ function plot3d(robot, q, varargin)
         
         if isempty(opt.path)
             % first find the path to the models
-            pth = which('arte.m');
+            pth = which('rotx.m');
             if ~pth
                 error('RTB:plot3d:nomodel', 'no 3D model found, install the RTB contrib zip file');
             end
             
             % find the path to this specific model
-            pth = fullfile(fileparts(pth), 'robots', robot.model3d);
+            pth = fullfile(fileparts(pth), 'data/ARTE', robot.model3d);
         else
             pth = opt.path;
         end
@@ -120,11 +134,14 @@ function plot3d(robot, q, varargin)
         % now load the STL files
         robot.points = cell(1, robot.n+1);
         robot.faces = cell(1, robot.n+1);
+        fprintf('Loading STL models from ARTE Robotics Toolbox for Education  by Arturo Gil (http://arvc.umh.es/arte)');
         for i=1:nshapes
-            [F,P] = rndread( fullfile(pth, sprintf('link%d.stl', i-1)) );
+            [P,F] = stlRead( fullfile(pth, sprintf('link%d.stl', i-1)) );
             robot.points{i} = P;
             robot.faces{i} = F;
+            fprintf('.');
         end
+        fprintf('\n');
     end
     
     % if a base is specified set the floor height to this
@@ -171,6 +188,7 @@ function plot3d(robot, q, varargin)
         create_tiled_floor(opt);
     end
     
+
     %--- configure view and lighting
     if isstr(opt.view)
         switch opt.view
@@ -229,15 +247,39 @@ function plot3d(robot, q, varargin)
         end
     end
     
+        % display the wrist coordinate frame
+    if opt.wrist
+        if opt.arrow
+            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), ...
+                'arrow', 'rgb', 'length', 0.4);
+        else
+            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), ...
+                'rgb', 'length', 0.4);
+        end
+    else
+        h.wrist = [];
+    end
+    
+    if ~isempty(opt.trail)
+        h.trail = plot(0, 0, opt.trail{:});
+        robot.trail = [];
+    end
+    
+    
     % enable mouse-based 3D rotation
     rotate3d on
     
-    h.wrist = [];  % HACK, should be trplot
     h.robot = robot;
     h.link = [0 h.link];
     set(group, 'UserData', h);
     
+    robot.trail = []; % clear the previous trail
+        
     robot.animate(q);
+    
+    if opt.movie
+        robot.movie.close();
+    end
     
     if ~ish
         hold off
@@ -258,6 +300,7 @@ function opt = plot_options(robot, optin)
     
     % general appearance
     opt.scale = 1;
+    opt.trail = [];
     
     opt.workspace = [];
     opt.floorlevel = [];
@@ -288,7 +331,7 @@ function opt = plot_options(robot, optin)
     
     % misc
     opt.movie = [];
-
+    
     % build a list of options from all sources
     %   1. the M-file plotbotopt if it exists
     %   2. robot.plotopt
@@ -323,6 +366,10 @@ function opt = plot_options(robot, optin)
             reach = reach + abs(L(i).a) + abs(L(i).d);
         end
         
+%         if opt.wrist
+%             reach = reach + 1;
+%         end
+        
         % if we have a floor, quantize the reach to a tile size
         if opt.tiles
             reach = opt.tilesize * ceil(reach/opt.tilesize);
@@ -353,124 +400,11 @@ function opt = plot_options(robot, optin)
     opt.scale = opt.scale * reach/40;
     
     % deal with a few options that need to be stashed in the SerialLink object
-    % movie mode has not already been flagged
-    if opt.movie
-        robot.framenum = 0;
-        robot.moviepath = opt.movie;
-    else
-        robot.framenum = [];
-    end 
-    
-    if ~isempty(opt.movie)
-        mkdir(opt.movie);
-        framenum = 1;
-    end
     
     robot.delay = opt.delay;
     robot.loop = opt.loop;   
 end
 
-% Extracted from cad2matdemo
-% http://www.mathworks.com/matlabcentral/fileexchange/3642-cad2matdemo-m/content/cad2matR2.zip
-%
-% Copyright (c) 2003, Don Riley
-% All rights reserved.
-%
-% Redistribution and use in source and binary forms, with or without
-% modification, are permitted provided that the following conditions are
-% met:
-%
-%     * Redistributions of source code must retain the above copyright
-%       notice, this list of conditions and the following disclaimer.
-%     * Redistributions in binary form must reproduce the above copyright
-%       notice, this list of conditions and the following disclaimer in
-%       the documentation and/or other materials provided with the distribution
-%     * Neither the name of the Walla Walla University nor the names
-%       of its contributors may be used to endorse or promote products derived
-%       from this software without specific prior written permission.
-%
-% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-% AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-% IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-% ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-% LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-% CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-% SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-% INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-% CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-% ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-% POSSIBILITY OF SUCH DAMAGE.
-
-function [fout, vout, cout] = rndread(filename)
-    
-    % Reads CAD STL ASCII files, which most CAD programs can export.
-    % Used to create Matlab patches of CAD 3D data.
-    % Returns a vertex list and face list, for Matlab patch command.
-    %
-    % filename = 'hook.stl';  % Example file.
-    %
-    fid=fopen(filename, 'r'); %Open the file, assumes STL ASCII format.
-    if fid == -1
-        error('File could not be opened, check name or path.')
-    end
-    %
-    % Render files take the form:
-    %
-    %solid BLOCK
-    %  color 1.000 1.000 1.000
-    %  facet
-    %      normal 0.000000e+00 0.000000e+00 -1.000000e+00
-    %      normal 0.000000e+00 0.000000e+00 -1.000000e+00
-    %      normal 0.000000e+00 0.000000e+00 -1.000000e+00
-    %    outer loop
-    %      vertex 5.000000e-01 -5.000000e-01 -5.000000e-01
-    %      vertex -5.000000e-01 -5.000000e-01 -5.000000e-01
-    %      vertex -5.000000e-01 5.000000e-01 -5.000000e-01
-    %    endloop
-    % endfacet
-    %
-    % The first line is object name, then comes multiple facet and vertex lines.
-    % A color specifier is next, followed by those faces of that color, until
-    % next color line.
-    %
-    CAD_object_name = sscanf(fgetl(fid), '%*s %s');  %CAD object name, if needed.
-    %                                                %Some STLs have it, some don't.
-    vnum=0;       %Vertex number counter.
-    report_num=0; %Report the status as we go.
-    VColor = 0;
-    %
-    while feof(fid) == 0                    % test for end of file, if not then do stuff
-        tline = fgetl(fid);                 % reads a line of data from file.
-        fword = sscanf(tline, '%s ');       % make the line a character string
-        % Check for color
-        if strncmpi(fword, 'c',1) == 1;    % Checking if a "C"olor line, as "C" is 1st char.
-            VColor = sscanf(tline, '%*s %f %f %f'); % & if a C, get the RGB color data of the face.
-        end                                % Keep this color, until the next color is used.
-        if strncmpi(fword, 'v',1) == 1;    % Checking if a "V"ertex line, as "V" is 1st char.
-            vnum = vnum + 1;                % If a V we count the # of V's
-            report_num = report_num + 1;    % Report a counter, so long files show status
-            if report_num > 249;
-                %disp(sprintf('Reading vertix num: %d.',vnum));
-                report_num = 0;
-            end
-            v(:,vnum) = sscanf(tline, '%*s %f %f %f'); % & if a V, get the XYZ data of it.
-            c(:,vnum) = VColor;              % A color for each vertex, which will color the faces.
-        end                                 % we "*s" skip the name "color" and get the data.
-    end
-    %   Build face list; The vertices are in order, so just number them.
-    %
-    fnum = vnum/3;      %Number of faces, vnum is number of vertices.  STL is triangles.
-    flist = 1:vnum;     %Face list of vertices, all in order.
-    F = reshape(flist, 3,fnum); %Make a "3 by fnum" matrix of face list data.
-    %
-    %   Return the faces and vertexs.
-    %
-    fout = F';  %Orients the array for direct use in patch.
-    vout = v';  % "
-    cout = c';
-    %
-    fclose(fid);
-end
 
 % draw a tiled floor in the current axes
 function create_tiled_floor(opt)

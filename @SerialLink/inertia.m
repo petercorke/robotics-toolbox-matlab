@@ -18,7 +18,8 @@
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -58,6 +59,6 @@ function M = inertia(robot, q)
 
 	M = zeros(n,n,0);
 	for Q = q.'
-		m = rne(robot, ones(n,1)*Q.', zeros(n,n), eye(n), [0;0;0]);
+		m = rne(robot, ones(n,1)*Q.', zeros(n,n), eye(n), 'gravity', [0 0 0]);
 		M = cat(3, M, m);
 	end

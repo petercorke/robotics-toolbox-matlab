@@ -1,13 +1,20 @@
 %RTBDEMO 	Robot toolbox demonstrations
 %
 % rtbdemo displays a menu of toolbox demonstration scripts that illustrate:
-%   - homogeneous transformations
-%   - trajectories
-%   - forward kinematics
-%   - inverse kinematics
-%   - robot animation
-%   - inverse dynamics
-%   - forward dynamics
+%   - fundamental datatypes
+%     - rotation and homogeneous transformation matrices
+%     - quaternions
+%     - trajectories
+%   - serial link manipulator arms
+%     - forward and inverse kinematics
+%     - robot animation
+%     - forward and inverse dynamics
+%   - mobile robots
+%     - kinematic models and control
+%     - path planning (D*, PRM, Lattice, RRT)
+%     - localization (EKF, particle filter)
+%     - SLAM (EKF, pose graph)
+%     - quadrotor control
 %
 % rtbdemo(T) as above but waits for T seconds after every statement, no
 % need to push the enter key periodically.
@@ -15,9 +22,12 @@
 % Notes::
 % - By default the scripts require the user to periodically hit <Enter> in
 %   order to move through the explanation.
+% - Some demos require Simulink
+
+% TODO: triple angle, pose graph slam example, lattice planner
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -49,10 +59,6 @@ function rtbdemo(timeout)
     % create the options to pass through to runscript
     opts = {'begin', 'path', demopath};
     
-    % if a timeout interval is given, add this to the options
-    if nargin > 0
-        opts = {opts, 'delay', timeout};
-    end
     
     % display a help message in the consolde
     msg = {
@@ -77,13 +83,14 @@ function rtbdemo(timeout)
         'V-REP simulator', 'vrepdemo';
         'Create a model', 'robot';
         'Animation', 'graphics';
+        'Rendered animation', 'puma_path';
+        '3-point turn', 'car_anim_rs';
         'Forward kinematics', 'fkine';
         'Inverse kinematics', 'ikine';
         'Jacobians', 'jacob';
         'Inverse dynamics', 'idyn';
         'Forward dynamics', 'fdyn';
         'Symbolic', 'symbolic';
-        'Code generation', 'codegen';
         'Driving to a pose', 'drivepose';
         'Quadrotor flying', 'quadrotor';
         'Braitenberg vehicle', 'braitnav';
@@ -92,6 +99,7 @@ function rtbdemo(timeout)
         'PRM navigation', 'prmnav';
         'SLAM demo', 'slam';
         'Particle filter localization', 'particlefilt';
+        'Pose graph SLAM', 'pgslam';
         };
     
     % display the GUI panel
@@ -105,14 +113,25 @@ function rtbdemo(timeout)
         'gui_Callback',   []);
     h = gui_mainfcn(gui_State);
 
-    
     % now set the callback for every button, can't seem to make this work using
     % GUIDE.
-    for hh=get(h, 'Children')'
-        if ~strcmp( get(hh, 'Style'), 'pushbutton')
-            continue;
+    
+    cb = findobj(h, 'Tag', 'checkbox1');
+    
+    for hh=h.Children'
+        switch hh.Type
+            case 'uicontrol'                
+                if strcmp( hh.Style, 'pushbutton')
+                    set(hh, 'Callback', @demo_pushbutton_callback);
+                end
+            case 'uipanel'
+                for hhh=hh.Children'
+                    if strcmp( hhh.Style, 'pushbutton')
+                        set(hhh, 'Callback', @demo_pushbutton_callback);
+                    end
+                    continue;
+                end
         end
-        set(hh, 'Callback', @demo_pushbutton_callback);
     end
     
     % TODO:
@@ -142,10 +161,25 @@ function rtbdemo(timeout)
         for i=1:size(demos, 1)
             if strcmp(selection, demos{i,1})
                 % then run the appropriate script
-                script = demos{i,2}
+                script = demos{i,2};
                 set(h, 'Visible', 'off');
+                
+                if cb.Value > 0
+                    % pause after each command
+                    opts1 = opts;
+                else
+                    % no pause
+                    
+                    delay = 0;
+                    % if delay given on command use that
+                    if nargin > 0
+                        delay = timeout;
+                    end
+                    opts1 = [opts, 'delay', delay];
+                end
+    
                 try
-                runscript(script, opts{:})
+                    runscript(script, opts1{:})
                 catch me
                     disp('error in executing demo script');
                     me.getReport()
@@ -194,4 +228,4 @@ function demo_pushbutton_callback(hObject, eventdata, handles)
         % eventdata  reserved - to be defined in a future version of MATLAB
         % handles    structure with handles and user data (see GUIDATA)
         set(gcf, 'Userdata', get(hObject, 'String'));
-    end
+end

@@ -20,7 +20,8 @@
 %
 % See also DXForm, PRM, RRT.
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -53,9 +54,9 @@ function world = makemap(Nw)
         world = Nw;
     end
 
-    imagesc(world);
+    himg = imagesc(world);
     set(gca, 'Ydir', 'normal');
-    grid
+    grid on
     binary_cmap = [1 1 1; 1 0 0];
     colormap(binary_cmap);
     caxis([0 1]);
@@ -76,7 +77,7 @@ function world = makemap(Nw)
         drawnow
 
         k = waitforbuttonpress;
-        if k == 1,
+        if k == 1
             % key pressed
             c = get(gcf, 'CurrentCharacter');
             switch c
@@ -140,11 +141,11 @@ function world = makemap(Nw)
             end
         else
             % button pressed
-            point1 = get(gca,'CurrentPoint');    % button down detected
-            point2 = get(gca,'CurrentPoint');    % button up detected
 
-            point1 = round(point1(1,1:2));       % extract x and y
-            point2 = round(point2(1,1:2));
+            [point1, point2] = pickregion('pressed')
+
+            point1 = round(point1);       % extract x and y
+            point2 = round(point2);
 
             x1 = max(1, point1(1));
             x2 = min(Nw, point2(1));
@@ -166,5 +167,5 @@ function world = makemap(Nw)
         world = min(world, 1);
 
         % update the world display
-        set(gco, 'CData', world);
+        set(himg, 'CData', world);
     end

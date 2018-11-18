@@ -1,5 +1,6 @@
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -36,8 +37,8 @@ bug.plot()
 % where obstacles are marked in red.
 
 % Now we define the goal and start coordinates
-bug.goal = [50,30];
+goal = [50,30];
 start = [20, 10];
 
 % then ask the robot to find the path, it will be animated with green dots
-bug.path(start);
+bug.query(start, goal, 'animate');

@@ -7,12 +7,23 @@
 % - Viscous friction which is a linear function of velocity.
 % - Coulomb friction which is proportional to sign(QD).
 %
+% Notes::
+% - The friction value should be added to the motor output torque, it has a
+%   negative value when QD>0. 
+% - The returned friction value is referred to the output of the gearbox.
+% - The friction parameters in the Link object are referred to the motor.
+% - Motor viscous friction is scaled up by G^2.
+% - Motor Coulomb friction is scaled up by G.
+% - The appropriate Coulomb friction value to use in the non-symmetric case
+%   depends on the sign of the joint velocity, not the motor velocity.
+% - The absolute value of the gear ratio is used.  Negative gear ratios are
+%   tricky: the Puma560 has negative gear ratio for joints 1 and 3.
+%
 % See also Link.friction.
 
 
 
-
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

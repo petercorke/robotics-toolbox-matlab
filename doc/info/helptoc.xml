@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<toc version="2.0">
+
+<!-- this goes into the RTB menu in the doc browser contents pane -->
+
+<!-- Robotics Toolbox -->
+<tocitem target="robot_product_page.html" image="$toolbox/matlab/icons/book_mat.gif">Robotics Toolbox for MATLAB
+
+<!--INSERT_HERE-->
+
+  <!-- Help -->
+
+  <!-- MATLAB Functions -->
+  <tocitem target="contents.html" image="$toolbox/matlab/icons/help_fx.gif" >Functions
+    <tocitem target="contents.html" image="$toolbox/matlab/icons/reficon.gif">Functions by category</tocitem>
+    <tocitem target="contents_alpha.html" image="$toolbox/matlab/icons/reficon.gif">Functions alphabetic order</tocitem>
+  </tocitem>
+
+  <!-- Simulink -->
+  <tocitem target="simulink.html" image="$toolbox/matlab/icons/reficon.gif">Simulink</tocitem>
+
+  <!-- Manual -->
+  <tocitem target="../robot/robot.pdf" image="HelpIcon.USER_GUIDE">Manual (PDF, ~400 pages)</tocitem>
+
+  <!-- About -->
+  <tocitem target="introduction.html" image="HelpIcon.RELEASE_NOTES">About</tocitem>
+
+  <!-- Acknowledgements -->
+  <tocitem target="acknowledgements.html" image="HelpIcon.RELEASE_NOTES">Acknowledgements</tocitem>
+
+  <!-- Release Notes & Version History -->
+  <tocitem target="release.html" image="HelpIcon.RELEASE_NOTES">Release Notes &amp; Version History</tocitem>
+  
+  <!-- Copyrights & License -->
+  <tocitem target="license.html" image="HelpIcon.RELEASE_NOTES">Copyrights &amp; License</tocitem>
+  
+  <!-- Web Pages -->
+  <tocitem target="robot_product_page.html" image="$toolbox/matlab/icons/webicon.gif">Web Pages
+    <tocitem target="http://petercorke.com/wordpress/toolboxes/robotics-toolbox" image="$toolbox/matlab/icons/webicon.gif">Robotics Toolbox web page</tocitem>
+    <tocitem target="http://groups.google.com/group/robotics-tool-box?hl=en" image="$toolbox/matlab/icons/webicon.gif">Robotics Toolbox discussion group</tocitem>
+    <tocitem target="http://www.petercorke.com/RVC" image="$toolbox/matlab/icons/webicon.gif">Robotics, Vision &amp; Control (the book)</tocitem>
+  </tocitem>
+
+</tocitem>
+</toc>

@@ -20,7 +20,7 @@
 % for the corresponding trajectory step.
 %
 % Notes::
-% - Requires fmincon from the Optimization Toolbox.
+% - Requires fmincon from the MATLAB Optimization Toolbox.
 % - Robot must be redundant.
 %
 % Author::
@@ -52,9 +52,9 @@
 function [qstar, error, exitflag] = qmincon(robot, q)
     
     % check if Optimization Toolbox exists, we need it
-    if ~exist('fmincon')
-        error('rtb:qmincon:nosupport', 'Optimization Toolbox required');
-    end
+    assert( exist('fmincon')>0, 'rtb:qmincon:nosupport', 'Optimization Toolbox required');
+    assert( robot.n > 6, 'rtb:qmincon:badarg', 'pHRIWARE:Robot is not redundant');
+
     M = size(q,1);
     n = robot.n;
     
@@ -74,12 +74,8 @@ function [qstar, error, exitflag] = qmincon(robot, q)
     for m = 1:M
         q_m = q(m,:);
         
-        J = robot.jacobn(q(m,:));
+        J = robot.jacobe(q(m,:));
         N = null(J);
-        
-        if isempty(N)
-            error('rtb:qmincon:badarg', 'pHRIWARE:Robot is not redundant');
-        end
         
         f = @(x) sumsqr((2*(N*x + q_m') - ub - lb)./(ub-lb));
         

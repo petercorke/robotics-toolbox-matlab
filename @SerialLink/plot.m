@@ -13,8 +13,9 @@
 % 'fps',fps         Number of frames per second for display, inverse of 'delay' option
 % '[no]loop'        Loop over the trajectory forever
 % '[no]raise'       Autoraise the figure
-% 'movie',M         Save frames as files in the folder M
-% 'trail',L         Draw a line recording the tip path, with line style L
+% 'movie',M         Save an animation to the movie M
+% 'trail',L         Draw a line recording the tip path, with line style L.
+%                   L can be a cell array, eg. {'r', 'LineWidth', 2}
 %-
 % 'scale',S         Annotation scale factor
 % 'zoom',Z          Reduce size of auto-computed workspace by Z, makes
@@ -48,6 +49,7 @@
 % '[no]jvec'        Enable display of joint axis vectors (default false)
 % '[no]joints'      Enable display of joints
 % 'jointcolor',C    Colorspec for joint cylinders (default [0.7 0 0])
+% 'pjointcolor',C   Colorspec for prismatic joint boxes (default [0.4 1 .03])
 % 'jointdiam',D     Diameter of joint cylinder in scale units (default 5)
 %-
 % 'linkcolor',C     Colorspec of links (default 'b')
@@ -63,7 +65,7 @@
 % - List of arguments in the command line.
 %
 % Many boolean options can be enabled or disabled with the 'no' prefix.  The
-% various option sources can toggle an option, the last value is taken.
+% various option sources can toggle an option, the last value encountered is used.
 %
 % Graphical annotations and options::
 %
@@ -123,11 +125,15 @@
 %           bob.plot(q');
 %         end
 %
-% Making an animation movie::
-% - The 'movie' options saves frames as files NNNN.png into the specified folder
-% - The specified folder will be created
-% - To convert frames to a movie use a command like:
-%        ffmpeg -r 10 -i %04d.png out.avi
+% Making an animation::
+%
+% The 'movie' options saves the animation as a movie file or separate frames in a folder
+% - 'movie','file.mp4' saves as an MP4 movie called file.mp4
+% - 'movie','folder' saves as files NNNN.png into the specified folder
+%   - The specified folder will be created
+%   - NNNN are consecutive numbers: 0000, 0001, 0002 etc.
+%   - To convert frames to a movie use a command like:
+%          ffmpeg -r 10 -i %04d.png out.avi
 %
 % Notes::
 % - The options are processed when the figure is first drawn, to make different options come
@@ -145,7 +151,7 @@
 %   robot.  If a prismatic joint is present the 'workspace' option is
 %   required.  The 'zoom' option can reduce the size of this workspace.
 %
-% See also SerialLink.plot3d, plotbotopt, SerialLink.animate, SerialLink.teach, SerialLink.fkine.
+% See also SerialLink.plot3d, plotbotopt, SerialLink.animate, SerialLink.teach.
 
 
 % HANDLES:
@@ -170,7 +176,8 @@
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -196,15 +203,14 @@ function plot(robot, qq, varargin)
     
     % check the joint angle data matches the robot
     n = robot.n;
-    if numcols(qq) ~= n
-        error('Insufficient columns in q')
-    end
+    assert(numcols(qq) == n, 'RTB:SerialLink:plot:badarg', 'Insufficient columns in q')
+
     
     % process options, these come from:
     %  - passed arguments
     %  - the robot object itself
     %  - the file plotopt.m
-    opt = plot_options(robot, varargin);
+    opt = RTBPlot.plot_options(robot, varargin);
     
 
     % logic to handle where the plot is drawn, are old figures updated or
@@ -232,9 +238,8 @@ function plot(robot, qq, varargin)
                 % create the robot and floor
                 newplot();
 
-                if opt.tiles
-                    create_tiled_floor(opt);
-                end
+                RTBPlot.create_floor(opt);
+
                 handle = create_robot(robot, opt);
                 set(gca, 'Tag', 'RTB.plot');
             end
@@ -243,25 +248,20 @@ function plot(robot, qq, varargin)
         
     else
         % this axis never had a robot drawn in it before, let's use it
-        if opt.tiles
-            create_tiled_floor(opt);
-        end
+        RTBPlot.create_floor(opt);
         handle = create_robot(robot, opt);
         set(gca, 'Tag', 'RTB.plot');
         set(gcf, 'Units', 'Normalized');
         pf = get(gcf, 'Position');
-        if strcmp( get(gcf, 'WindowStyle'), 'docked') == 0
-            set(gcf, 'Position', [0.1 1-pf(4) pf(3) pf(4)]);
-        end
+%         if strcmp( get(gcf, 'WindowStyle'), 'docked') == 0
+%             set(gcf, 'Position', [0.1 1-pf(4) pf(3) pf(4)]);
+%         end
     end
     
     % deal with a few options that need to be stashed in the SerialLink object
     % movie mode has not already been flagged
     if opt.movie
-        robot.framenum = 0;
-        robot.moviepath = opt.movie;
-    else
-        robot.framenum = [];
+        robot.movie = Animate(opt.movie);
     end
     robot.delay = opt.delay;
     robot.loop = opt.loop;   
@@ -279,6 +279,7 @@ function plot(robot, qq, varargin)
         switch opt.view
             case 'top'
                 view(0, 90);
+                set(gca, 'OuterPosition', [-0.8 -0.8 2.5 2.5]);
             case 'x'
                 view(0, 0);
             case 'y'
@@ -293,12 +294,13 @@ function plot(robot, qq, varargin)
     % enable mouse-based 3D rotation
     rotate3d on
     
-    if ~isempty(opt.movie)
-        mkdir(opt.movie);
-        framenum = 1;
-    end
+    robot.trail = []; % clear the previous trail
+    
     robot.animate(qq);
     
+    if opt.movie
+        robot.movie.close();
+    end
 end
 
 % Create a new graphical robot in the current figure.
@@ -331,7 +333,7 @@ function h = create_robot(robot, opt)
     
     % create the base
     if opt.base
-        bt = transl(robot.base);
+        bt = robot.base.t;
         bt = [bt'; bt'];
         bt(1,3) = opt.floorlevel;
         line(bt(:,1), bt(:,2), bt(:,3), 'LineWidth', opt.basewidth, 'Color', opt.basecolor);
@@ -339,7 +341,7 @@ function h = create_robot(robot, opt)
     
     % add the robot's name
     if opt.name
-        b = transl(robot.base);
+        b = robot.base.t;
         bz = 0;
         if opt.base
             bz = 0.5*opt.floorlevel;
@@ -362,7 +364,7 @@ function h = create_robot(robot, opt)
         if opt.joints
             % create the body of the joint
             if links(L).isrevolute
-                cyl('z', 2*s, opt.jointdiam/2*s*[-1 1], opt.jointcolor, [], 'Parent', h.link(L));
+                RTBPlot.cyl('z', opt.jointdiam*s, opt.jointlen*s*[-1 1], opt.jointcolor, [], 'Parent', h.link(L));
             else
                 % create an additional hgtransform for positioning and scaling the prismatic
                 % element.  The element is created with unit length.
@@ -370,9 +372,9 @@ function h = create_robot(robot, opt)
                 if links(L).mdh
                     % make the box extend in negative z-dir because scaling factor in animate
                     % must be positive
-                    box('z', s, [0 -1], opt.jointcolor, [], 'Parent', h.pjoint(L));
+                    RTBPlot.box('z', s, [0 -1], opt.jointcolor, [], 'Parent', h.pjoint(L));
                 else
-                    box('z', s, [0 1], opt.jointcolor, [], 'Parent', h.pjoint(L));
+                    RTBPlot.box('z', s, [0 1], opt.jointcolor, [], 'Parent', h.pjoint(L));
                 end
             end
         end
@@ -387,54 +389,52 @@ function h = create_robot(robot, opt)
                 A = links(L+1).A(0);
                 t = transl(A);
                 if t(1) ~= 0
-                    cyl('x', s, [0 t(1)], opt.linkcolor, [], 'Parent', h.link(L));
+                    RTBPlot.cyl('x', s, [s t(1)], opt.linkcolor, [], 'Parent', h.link(L));
                 end
                 if t(2) ~= 0
-                    cyl('y', s, [0 t(2)], opt.linkcolor, [t(1) 0 0], 'Parent', h.link(L));
+                    RTBPlot.cyl('y', s, [s t(2)], opt.linkcolor, [t(1) 0 0], 'Parent', h.link(L));
                 end
                 if t(3) ~= 0
-                    cyl('z', s, [0 t(3)], opt.linkcolor, [t(1) t(2) 0], 'Parent', h.link(L));
+                    RTBPlot.cyl('z', s, [s t(3)], opt.linkcolor, [t(1) t(2) 0], 'Parent', h.link(L));
                 end
             end
         else
             % standard DH convention
             if L > 1
                 Ainv = inv(links(L-1).A(0));
-                t = transl(Ainv);
+                t = Ainv.t;
                 if t(1) ~= 0
-                    cyl('x', s, [0 t(1)], opt.linkcolor, [], 'Parent', h.link(L));
+                    RTBPlot.cyl('x', s, [0 t(1)], opt.linkcolor, [], 'Parent', h.link(L));
                 end
                 if t(2) ~= 0
-                    cyl('y', s, [s t(2)], opt.linkcolor, [t(1) 0 0], 'Parent', h.link(L));
+                    RTBPlot.cyl('y', s, [s t(2)], opt.linkcolor, [t(1) 0 0], 'Parent', h.link(L));
                 end
                 if t(3) ~= 0
-                    cyl('z', s, [s t(3)], opt.linkcolor, [t(1) t(2) 0], 'Parent', h.link(L));
+                    RTBPlot.cyl('z', s, [s t(3)], opt.linkcolor, [t(1) t(2) 0], 'Parent', h.link(L));
                 end
                 %line([0 t(1)]', [0 t(2)]', [0 t(3)]', 'Parent', h.link(L));
             end
         end
         
-        if opt.jaxes && opt.jvec
-            error('RTB:plot:badopt', 'Can''t specify ''jaxes'' and ''jvec''')
-        end
+        assert( ~(opt.jaxes && opt.jvec), 'RTB:plot:badopt', 'Can''t specify ''jaxes'' and ''jvec''')
         % create the joint axis line
         if opt.jaxes
             line('XData', [0 0], ...
                 'YData', [0 0], ...
-                'ZData', 12*s*[-1 1], ...
+                'ZData', 14*s*[-1 1], ...
                 'LineStyle', ':', 'Parent', h.link(L));
             
             % create the joint axis label
-            text(0, 0, 12*s, sprintf('q%d', L), 'Parent', h.link(L))
+            text(0, 0, 14*s, sprintf('q%d', L), 'Parent', h.link(L))
         end
          % create the joint axis vector
         if opt.jvec
             daspect([1 1 1]);
-            ha = arrow3([0 0 -12*s], [0 0 20*s]);
+            ha = arrow3([0 0 -12*s], [0 0 15*s], 'c');
             set(ha, 'Parent', h.link(L));
             
             % create the joint axis label
-            text(0, 0, -12*s, sprintf('q%d', L), 'Parent', h.link(L))
+            text(0, 0, 20*s, sprintf(' q%d', L), 'Parent', h.link(L))
         end
     end
     if opt.debug
@@ -442,33 +442,38 @@ function h = create_robot(robot, opt)
     end
     % display the tool transform if it exists
     h.link(N+1) = hgtransform('Tag', sprintf('link%d', N+1), 'Parent', group);
-    tool = eye(4,4);
+    tool = SE3();
     if ~robot.mdh
         tool = links(L).A(0);
     end
     if ~isempty(robot.tool)
         tool = tool * robot.tool;
     end
-    t = transl(inv(tool));
+    Tinv = inv(tool);
+    t = Tinv.t;
     if t(1) ~= 0
-        cyl('x', s, [0 t(1)], 'r', [], 'Parent', h.link(N+1));
+        RTBPlot.cyl('x', s, [0 t(1)], 'r', [], 'Parent', h.link(N+1));
     end
     if t(2) ~= 0
-        cyl('y', s, [s t(2)], 'r', [t(1) 0 0], 'Parent', h.link(N+1));
+        RTBPlot.cyl('y', s, [s t(2)], 'r', [t(1) 0 0], 'Parent', h.link(N+1));
     end
     if t(3) ~= 0
-        cyl('z', s, [s t(3)], 'r', [t(1) t(2) 0], 'Parent', h.link(N+1));
+        RTBPlot.cyl('z', s, [s t(3)], 'r', [t(1) t(2) 0], 'Parent', h.link(N+1));
     end
     
     % display the wrist coordinate frame
     if opt.wrist
         if opt.arrow
-            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), ...
-                'arrow', 'rgb', 'length', 15*s);
+            % compute arrow3 scale factor...
+            d = axis(gca);
+            d = norm( d(4:6)-d(1:3) ) / 72;
+            extra = {'arrow', 'width', 1.5*s/d};
         else
-            h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), ...
-                'rgb', 'length', 15*s);
+            extra = {};
         end
+        h.wrist = trplot(eye(4,4), 'labels', upper(opt.wristlabel), ...
+                'rgb', 'length', opt.wristlen*s, extra{:});
+
     else
         h.wrist = [];
     end
@@ -479,8 +484,8 @@ function h = create_robot(robot, opt)
         h.shadow = line('LineWidth', opt.shadowwidth, 'Color', opt.shadowcolor);
     end
     
-    if opt.trail
-        h.trail = plot(0, 0, opt.trail);
+    if ~isempty(opt.trail)
+        h.trail = plot(0, 0, opt.trail{:});
         robot.trail = [];
     end
     
@@ -509,244 +514,3 @@ end
 % draw a cylinder of radius r in the direction specified by ax, with an
 % extent from extent(1) to extent(2)
 
-function cyl(ax, r, extent, color, offset, varargin)
-    if abs(extent(1) - extent(2)) < eps
-        return
-    end
-    
-    if isempty(offset)
-        offset = [0 0 0];
-    end
-    
-    %fprintf('   cyl: %s, r=%f, extent=[%g, %g]\n', ax, r, extent);
-    
-    n = 20;
-    
-    r = [r;r];
-    
-    theta = (0:n)/n*2*pi;
-    sintheta = sin(theta); sintheta(n+1) = 0;
-    
-    switch ax
-        case 'x'
-            y = r * cos(theta) + offset(2);
-            z = r * sintheta + offset(3);
-            x = extent(:) * ones(1,n+1) + offset(1);
-        case 'y'
-            x = r * cos(theta) + offset(1);
-            z = r * sintheta + offset(3);
-            y = extent(:) * ones(1,n+1) + offset(2);
-        case 'z'
-            x = r * cos(theta) + offset(1);
-            y = r * sintheta + offset(2);
-            z = extent(:) * ones(1,n+1) + offset(3);
-    end
-    
-    % walls of the cylinder
-    surf(x,y,z, 'FaceColor', color, 'EdgeColor', 'none', varargin{:})
-    
-    % put the ends on
-    patch(x', y', z', color, 'EdgeColor', 'none', varargin{:});
-end
-
-% draw a cylinder of radius r in the direction specified by ax, with an
-% extent from extent(1) to extent(2)
-
-function box(ax, r, extent, color, offset, varargin)
-    if abs(extent(1) - extent(2)) < eps
-        return
-    end
-    %fprintf('   box: %s, r=%f, extent=[%g, %g]\n', ax, r, extent);
-    n = 4;
-    
-    r = [r;r];
-    
-    theta = (0:n)/n*2*pi;
-    sintheta = sin(theta); sintheta(n+1) = 0;
-    
-    switch ax
-        case 'x'
-            y = r * cos(theta);
-            z = r * sintheta;
-            x = extent(:) * ones(1,n+1);
-        case 'y'
-            x = r * cos(theta);
-            z = r * sintheta;
-            y = extent(:) * ones(1,n+1);
-        case 'z'
-            y = r * cos(theta);
-            x = r * sintheta;
-            z = extent(:) * ones(1,n+1);
-    end
-    
-    % walls of the cylinder
-    surf(x,y,z, 'FaceColor', color, 'EdgeColor', 'none', varargin{:})
-    
-    % put the ends on
-    patch(x', y', z', color, 'EdgeColor', 'none', varargin{:});
-end
-
-% draw a tiled floor in the current axes
-function create_tiled_floor(opt)
-    
-    xmin = opt.workspace(1);
-    xmax = opt.workspace(2);
-    ymin = opt.workspace(3);
-    ymax = opt.workspace(4);
-    
-    % create a colored tiled floor
-    xt = xmin:opt.tilesize:xmax;
-    yt = ymin:opt.tilesize:ymax;
-    Z = opt.floorlevel*ones( numel(yt), numel(xt));
-    C = zeros(size(Z));
-    [r,c] = ind2sub(size(C), 1:numel(C));
-    C = bitand(r+c,1);
-    C = reshape(C, size(Z));
-    C = cat(3, opt.tile1color(1)*C+opt.tile2color(1)*(1-C), ...
-        opt.tile1color(2)*C+opt.tile2color(2)*(1-C), ...
-        opt.tile1color(3)*C+opt.tile2color(3)*(1-C));
-    [X,Y] = meshgrid(xt, yt);
-    surface(X, Y, Z, C, ...
-        'FaceColor','texturemap',...
-        'EdgeColor','none',...
-        'CDataMapping','direct');
-end
-
-    % process a cell array of options and return a struct
-    % define all possible options and their default values
-    
-function opt = plot_options(robot, optin)
-    
-    % timing/looping
-    opt.delay = 0.1;
-    opt.fps = [];
-    opt.loop = false;
-    
-    opt.raise = false;
-    
-    % general appearance
-    opt.scale = 1;
-    opt.zoom = 1;
-    opt.trail = [];
-    
-    opt.workspace = [];
-    opt.name = true;
-    opt.projection = {'ortho', 'perspective'};
-    opt.view = [];
-    opt.top = false;
-
-    % 3D rendering
-    opt.shading = true;
-    opt.lightpos = [0 0 20];
-    
-    % tiled floor
-    opt.tiles = true;
-    opt.tile1color = [0.5 1 0.5];  % light green
-    opt.tile2color = [1 1 1];  % white
-    opt.floorlevel = [];
-    opt.tilesize = 0.2;
-    
-    % shadow on the floor
-    opt.shadow = true;
-    opt.shadowcolor = [0.5 0.5 0.5];
-    opt.shadowwidth = 6;
-     
-    % the base or pedestal
-    opt.base = true;
-    opt.basewidth = 3;
-    opt.basecolor = 'k';
-    
-    % wrist
-    opt.wrist = true;
-    opt.wristlabel = {'xyz', 'noa'};
-    opt.arrow = true;
-    
-    % joint rotation axes
-    opt.jaxes = false;
-    opt.jvec = false;
-    
-    % joint cylinders
-    opt.joints = true;
-    opt.jointdiam = 5;
-    opt.jointcolor = [0.7 0 0];
-    
-    % links
-    opt.linkcolor = 'b';
-    opt.toolcolor = 'r';
-    
-    % misc
-    opt.movie = [];
-
-    
-    % build a list of options from all sources
-    %   1. the M-file plotbotopt if it exists
-    %   2. robot.plotopt
-    %   3. command line arguments
-    if exist('plotbotopt', 'file') == 2
-        options = [plotbotopt robot.plotopt optin];
-    else
-        options = [robot.plotopt optin];
-    end
-    
-    % parse the options
-    [opt,args] = tb_optparse(opt, options);
-    if ~isempty(args)
-        error(['unknown option: ' args{1}]);
-    end
-    
-    if opt.top
-        opt.view = 'top';
-    end
-    if ~isempty(opt.projection)
-        opt.projection = 'ortho';
-    end
-    
-    % figure the size of the figure
-    if isempty(opt.workspace)
-        %
-        % simple heuristic to figure the maximum reach of the robot
-        %
-        L = robot.links;
-        if any(L.isprismatic)
-            error('Prismatic joint(s) present: requires the ''workspace'' option');
-        end
-        reach = 0;
-        for i=1:robot.n
-            reach = reach + abs(L(i).a) + abs(L(i).d);
-        end
-        reach = reach + sum(abs(transl(robot.tool)));
-        reach = reach/opt.zoom;
-        
-        % if we have a floor, quantize the reach to a tile size
-        if opt.tiles
-            reach = opt.tilesize * ceil(reach/opt.tilesize);
-        end
-        
-        % now create a 3D volume based on this reach
-        opt.workspace = [-reach reach -reach reach -reach reach];
-        
-        % if a floorlevel has been given, ammend the 3D volume
-        if ~isempty(opt.floorlevel)
-            opt.workspace(5) = opt.floorlevel;
-        else
-            opt.floorlevel = -reach;
-        end
-    else
-        reach = min(abs(diff(reshape(opt.workspace, [2 3]))));
-        if opt.tiles
-            % set xy limits to be integer multiple of tilesize
-            opt.workspace(1:4) = opt.tilesize * round(opt.workspace(1:4)/opt.tilesize);
-            opt.floorlevel = opt.workspace(5);
-        end
-    end
-    
-    % update the fundamental scale factor (given by the user as a multiplier) by a length derived from
-    % the overall workspace dimension
-    %  we need that a lot when creating the robot model
-    opt.scale = opt.scale * reach/40;
-    
-    if ~isempty(opt.fps)
-        opt.delay = 1/opt.fps;
-    end
-    
-end

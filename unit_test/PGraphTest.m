@@ -6,6 +6,7 @@ function PGraph2_test(testCase)
     randinit
     g = PGraph(2);
 
+    % add first component, nodes 1-5
     g.add_node( rand(2,1));
     g.add_node( rand(2,1));
     g.add_node( rand(2,1));
@@ -46,15 +47,23 @@ function PGraph2_test(testCase)
 
     s = g.char();
 
-    g.setdata(1, [1 2 3]);
-    d = g.data(1);
+    % test node data
+    g.setvdata(1, [1 2 3]);
+    d = g.vdata(1);
     verifyEqual(testCase, d, [1 2 3]);
-
-    % add second component
+    
+    % test edge data
+    g.setedata(1, [4 5 6 7]);
+    d = g.edata(1);
+    verifyEqual(testCase, d, [4 5 6 7]);
+    
+    % add second component, nodes 6-8
 
     g.add_node( rand(2,1));
     g.add_node( rand(2,1), 6, 1);
     g.add_node( rand(2,1), 7);
+    g.add_edge(6,7);
+    g.add_edge(6,8);
 
     verifyEqual(testCase, g.nc, 2);
 
@@ -67,10 +76,6 @@ function PGraph2_test(testCase)
     g.highlight_path(path);
     verifyEqual(testCase, path, [3 2 4 5]);
     verifyEqual(testCase,  cost, 2.1536, 'absTol',1e-4)
-
-    g.goal(5);
-    path = g.path(3);
-    verifyEqual(testCase, path, [3 2 4 5]);
 
     verifyEqual(testCase, g.closest([0 0]), 4);
 

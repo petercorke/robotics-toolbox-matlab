@@ -1,18 +1,19 @@
-%TROTY Rotation about Y axis
+%troty Rotation about Y axis
 %
-% T = TROTY(THETA) is a homogeneous transformation (4x4) representing a rotation 
+% T = troty(THETA) is a homogeneous transformation (4x4) representing a rotation 
 % of THETA radians about the y-axis.
 %
-% T = TROTY(THETA, 'deg') as above but THETA is in degrees.
+% T = troty(THETA, 'deg') as above but THETA is in degrees.
 %
 % Notes::
 % - Translational component is zero.
 %
-% See also ROTY, TROTX, TROTZ, TROT2.
+% See also roty, trotx, trotz, trot2, SE3.Ry.
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

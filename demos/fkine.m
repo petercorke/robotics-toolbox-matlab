@@ -1,5 +1,6 @@
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -54,31 +55,30 @@ T = p560.fkine(q);
 
 about T
 
-% where T is a 3-dimensional matrix, the first two dimensions are a 4x4 
-% homogeneous transformation and the third dimension is time.
+% where T is a vector of SE3 objects.
 %
 % For example, the first point is
 
-T(:,:,1)
+T(1)
 
 % and the tenth point is
 
-T(:,:,10)
+T(10)
 
-%
-% Elements (1:3,4) correspond to the X, Y and Z coordinates respectively, and 
-% may be plotted against time
+% the translational part of this can be extracted using the transl method
+% which is a 36x3 matrix, one row per time step
+p = T.transl;
 
 subplot(3,1,1)
-plot(t, squeeze(T(1,4,:)))
+plot(t, p(:,1))
 xlabel('Time (s)');
 ylabel('X (m)')
 subplot(3,1,2)
-plot(t, squeeze(T(2,4,:)))
+plot(t, p(:,1))
 xlabel('Time (s)');
 ylabel('Y (m)')
 subplot(3,1,3)
-plot(t, squeeze(T(3,4,:)))
+plot(t, p(:,1))
 xlabel('Time (s)');
 ylabel('Z (m)')
 
@@ -86,7 +86,7 @@ ylabel('Z (m)')
 % by the manipulator.
 
 subplot(1,1,1)
-plot(squeeze(T(1,4,:)), squeeze(T(3,4,:)));
+plot(p(:,1), p(:,3));
 xlabel('X (m)')
 ylabel('Z (m)')
 grid

@@ -134,18 +134,12 @@ classdef VREP < handle
             end
             obj.path = opt.path;
             
-            
-            % % for 3.0.4
-            %   libpath = { fullfile(path, 'programming', 'remoteApi')
-            %   fullfile(path, 'programming', 'Matlab')
-            %  fullfile(path, 'programming', 'remoteApiSharedLib')
-            %  };
-            %  port = 19998;
-            
-            % for 3.1.x
+            k = findstr(opt.path, '_'); k = k(end);
+            arch = opt.path(k+1:end);
+            % for 3.5.x
             libpath = { fullfile(opt.path, 'programming', 'remoteApi')
                 fullfile(opt.path, 'programming', 'remoteApiBindings', 'matlab', 'matlab')
-                fullfile(opt.path, 'programming', 'remoteApiBindings', 'lib', 'lib')
+                fullfile(opt.path, 'programming', 'remoteApiBindings', 'lib', 'lib', arch)
                 };
             
             addpath( libpath{:} );
@@ -166,7 +160,7 @@ classdef VREP < handle
                 ~opt.reconnect, opt.timeout, opt.cycle);
             
             if obj.client < 0
-                error('RTB:VREP:noconnect', 'Can''t connect to V-REP simulator');
+                error('RTB:VREP:noconnect', 'Can''t connect to V-REP simulator, error %d', obj.client);
             end
             
             obj.mode = obj.vrep.simx_opmode_oneshot_wait;
@@ -329,7 +323,20 @@ classdef VREP < handle
             %
             % See also VREP.simstart.
             s = obj.vrep.simxStopSimulation(obj.client, obj.mode);
+            
+            obj.isrunning
+            while obj.isrunning
+                pause(0.5);
+                disp('still running')
+            end
+            pause(0.5);
         end
+        
+        function v = isrunning(obj)
+            [s,running] = obj.vrep.simxGetInMessageInfo(obj.client, obj.vrep.simx_headeroffset_server_state);
+            v = (running & 1) == 0;
+        end
+            
         
         function simpause(obj)
             %VREP.pause Pause V-REP simulation

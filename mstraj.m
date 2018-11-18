@@ -1,33 +1,36 @@
 %MSTRAJ Multi-segment multi-axis trajectory
 %
-% TRAJ = MSTRAJ(P, QDMAX, TSEG, Q0, DT, TACC, OPTIONS) is a trajectory
+% TRAJ = MSTRAJ(WP, QDMAX, TSEG, Q0, DT, TACC, OPTIONS) is a trajectory
 % (KxN) for N axes moving simultaneously through M segment.  Each segment
 % is linear motion and polynomial blends connect the segments.  The axes
 % start at Q0 (1xN) and pass through M-1 via points defined by the rows of
-% the matrix P (MxN), and finish at the point defined by the last row of P.
+% the matrix WP (MxN), and finish at the point defined by the last row of WP.
 % The  trajectory matrix has one row per time step, and one column per
 % axis.  The number of steps in the trajectory K is a function of the
 % number of via points and the time or velocity limits that apply.
 %
-% - P (MxN) is a matrix of via points, 1 row per via point, one column 
+% - WP (MxN) is a matrix of via points, 1 row per via point, one column 
 %   per axis.  The last via point is the destination.
 % - QDMAX (1xN) are axis speed limits which cannot be exceeded,
 % - TSEG (1xM) are the durations for each of the K segments
 % - Q0 (1xN) are the initial axis coordinates
 % - DT is the time step
-% - TACC (1x1) this acceleration time is applied to all segment transitions
-% - TACC (1xM) acceleration time for each segment, TACC(i) is the acceleration 
+% - TACC (1x1) is the acceleration time used for all segment transitions
+% - TACC (1xM) is the acceleration time per segment, TACC(i) is the acceleration 
 %   time for the transition from segment i to segment i+1.  TACC(1) is also 
 %   the acceleration time at the start of segment 1.
 %
-% TRAJ = MSTRAJ(SEGMENTS, QDMAX, Q0, DT, TACC, QD0, QDF, OPTIONS) as above
+% TRAJ = MSTRAJ(WP, QDMAX, TSEG, [], DT, TACC, OPTIONS) as above but the
+% initial coordinates are taken from the first row of WP.
+%
+% TRAJ = MSTRAJ(WP, QDMAX, Q0, DT, TACC, QD0, QDF, OPTIONS) as above
 % but additionally specifies the initial and final axis velocities (1xN).
 %
 % Options::
 % 'verbose'    Show details.
 %
 % Notes::
-% - Only one of QDMAX or TSEG should be specified, the other is set to [].
+% - Only one of QDMAX or TSEG can be specified, the other is set to [].
 % - If no output arguments are specified the trajectory is plotted.
 % - The path length K is a function of the number of via points, Q0, DT
 %   and TACC.
@@ -41,9 +44,7 @@
 %
 % See also MTRAJ, LSPB, CTRAJ.
 
-
-
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -62,18 +63,23 @@
 %
 % http://www.petercorke.com
 
-function [TG, taxis]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargin)
+function [TG, t, info]  = mstraj(segments, qdmax, tsegment, q0, dt, Tacc, varargin)
 
-
+    if isempty(q0)
+        q0 = segments(1,:);
+        segments = segments(2:end,:);
+    end
+    
+    assert(size(segments,2) == size(q0,2), 'RTB:mstraj:badarg', 'WP and Q0 must have same number of columns');
+    assert(xor(~isempty(qdmax), ~isempty(tsegment)), 'RTB:mstraj:badarg', 'Must specify either qdmax or tsegment, but not both');
+    if isempty(qdmax)
+        assert(length(tsegment) == size(segments,1), 'RTB:mstraj:badarg', 'Length of TSEG does not match number of segments');
+    else
+        assert(length(qdmax) == size(segments,2), 'RTB:mstraj:badarg', 'Length of QDMAX does not match number of axes'); 
+    end
+    
     ns = numrows(segments);
     nj = numcols(segments);
-
-    if ~isempty(qdmax) && ~isempty(tsegment)
-        error('Can only specify one of qdmax or tsegment');
-    end
-    if isempty(qdmax) && isempty(tsegment)
-        error('Must specify one of qdmax or tsegment');
-    end
 
     [opt,args] = tb_optparse([], varargin);
 
@@ -89,7 +95,7 @@ function [TG, taxis]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargin)
     end
 
     % set the initial conditions
-    q_prev = q;
+    q_prev = q0;
     qd_prev = qd0;
 
     clock = 0;      % keep track of time
@@ -146,7 +152,11 @@ function [TG, taxis]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargin)
             % find the total time and slowest axis
             tt = tb + tl;
             [tseg,slowest] = max(tt);
-            taxis(seg,:) = tt;
+            
+            info(seg).slowest = slowest;
+            info(seg).segtime = tseg;
+            info(seg).axtime = tt;
+            info(seg).clock = clock;
 
             % best if there is some linear motion component
             if tseg <= 2*tacc
@@ -175,7 +185,7 @@ function [TG, taxis]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargin)
         qd = dq / tseg;
 
         % add the blend polynomial
-        qb = jtraj(q, q_prev+tacc2*qd, 0:dt:taccx, qd_prev, qd);
+        qb = jtraj(q0, q_prev+tacc2*qd, 0:dt:taccx, qd_prev, qd);
         tg = [tg; qb(2:end,:)];
 
         clock = clock + taccx;     % update the clock
@@ -183,8 +193,8 @@ function [TG, taxis]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargin)
         % add the linear part, from tacc/2+dt to tseg-tacc/2
         for t=tacc2+dt:dt:tseg-tacc2
             s = t/tseg;
-            q = (1-s) * q_prev + s * q_next;       % linear step
-            tg = [tg; q];
+            q0 = (1-s) * q_prev + s * q_next;       % linear step
+            tg = [tg; q0];
             clock = clock + dt;
         end
 
@@ -192,8 +202,10 @@ function [TG, taxis]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargin)
         qd_prev = qd;
     end
     % add the final blend
-    qb = jtraj(q, q_next, 0:dt:tacc2, qd_prev, qdf);
+    qb = jtraj(q0, q_next, 0:dt:tacc2, qd_prev, qdf);
     tg = [tg; qb(2:end,:)];
+    info(seg+1).segtime = tacc2;
+    info(seg+1).clock = clock;
 
     % plot a graph if no output argument
     if nargout == 0
@@ -206,6 +218,14 @@ function [TG, taxis]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargin)
         grid
         xlabel('time');
         xaxis(t(1), t(end))
-    else 
+        return
+    end
+    if nargout > 0
         TG = tg;
+    end
+    if nargout > 1
+        t = (0:numrows(tg)-1)'*dt;
+    end
+    if nargout > 2
+        infout = info;
     end

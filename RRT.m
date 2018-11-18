@@ -5,28 +5,23 @@
 % that takes into account the motion constraints of the vehicle.
 %
 % Methods::
+%  RRT          Constructor
+%  plan         Compute the tree
+%  query        Compute a path 
+%  plot         Display the tree
+%  display      Display the parameters in human readable form
+%  char         Convert to string
 %
-% plan         Compute the tree
-% path         Compute a path 
-% plot         Display the tree
-% display      Display the parameters in human readable form
-% char         Convert to string
+% Properties (read only)::
+%  graph        A PGraph object describign the tree
 %
 % Example::
-%
 %        goal = [0,0,0];
 %        start = [0,2,0];
-%        veh = Vehicle([], 'stlim', 1.2);
-%        rrt = RRT([], veh, 'goal', goal, 'range', 5);
+%        veh = Bicycle('steermax', 1.2);
+%        rrt = RRT(veh, 'goal', goal, 'range', 5);
 %        rrt.plan()             % create navigation tree
-%        rrt.path(start, goal)  % animate path from this start location
-%
-%  Robotics, Vision & Control compatability mode:
-%        goal = [0,0,0];
-%        start = [0,2,0];
-%        rrt = RRT();           % create navigation object
-%        rrt.plan()             % create navigation tree
-%        rrt.path(start, goal)  % animate path from this start location
+%        rrt.query(start, goal)  % animate path from this start location
 %
 % References::
 % - Randomized kinodynamic planning,
@@ -40,7 +35,8 @@
 %
 % See also Navigation, PRM, DXform, Dstar, PGraph.
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -72,99 +68,96 @@ classdef RRT < Navigation
         npoints         % number of points to find
         graph           % graph Object representing random nodes
 
-        sim_time        % path simulation time
-        kine_model      % simulink model for kinematics
+        simtime         % path simulation time
 
-        xrange
-        yrange
+        xrange          % range of x coordinates
+        yrange          % range of y coordinates
         
-        plant
-
-        speed
-        steermax
-        vehicle
+        speed           % speed of vehicle
+        vehicle         % Vehicle class object describes kinematics
+        
+        revcost         % penalty for going backwards
+        
+        root            % coordinate of the root of the tree (3x1)
     end
 
     methods
 
-        function rrt = RRT(map, vehicle, varargin)
+        function rrt = RRT(vehicle, varargin)
         %RRT.RRT Create an RRT navigation object
         %
-        % R = RRT.RRT(MAP, VEH, OPTIONS) is a rapidly exploring tree navigation
-        % object for a region with obstacles defined by the map object MAP.
+        % R = RRT.RRT(VEH, OPTIONS) is a rapidly exploring tree navigation
+        % object  for a vehicle kinematic model given by a Vehicle subclass object VEH.
         %
-        % R = RRT.RRT() as above but internally creates a Vehicle class object
-        % and does not support any MAP or OPTIONS.  For compatibility with
-        % RVC book.
+        % R = RRT.RRT(VEH, MAP, OPTIONS) as above but for a region with obstacles
+        % defined by the occupancy grid MAP.
         %
         % Options::
         % 'npoints',N    Number of nodes in the tree (default 500)
-        % 'time',T       Interval over which to simulate dynamic model toward 
+        % 'simtime',T    Interval over which to simulate kinematic model toward 
         %                random point (default 0.5s)
-        % 'range',R      Specify rectangular bounds
+        % 'goal',P       Goal position (1x2) or pose (1x3) in workspace
+        % 'speed',S      Speed of vehicle [m/s] (default 1)
+        % 'root',R       Configuration of tree root (3x1) (default [0,0,0])
+        % 'revcost',C    Cost penalty for going backwards (default 1)
+        % 'range',R      Specify rectangular bounds of robot's workspace:
         %                - R scalar; X: -R to +R, Y: -R to +R
         %                - R (1x2); X: -R(1) to +R(1), Y: -R(2) to +R(2)
         %                - R (1x4); X: R(1) to R(2), Y: R(3) to R(4)
-        % 'goal',P       Goal position (1x2) or pose (1x3) in workspace
-        % 'speed',S      Speed of vehicle [m/s] (default 1)
-        % 'steermax',S   Steering angle of vehicle in the range -S to +S [rad] (default 1.2)
+        %
+        % Other options are provided by the Navigation superclass.
         %
         % Notes::
-        % - Does not (yet) support obstacles, ie. MAP is ignored but must be given.
-        % - 'steermax' selects the range of steering angles that the vehicle will
-        %   be asked to track.  If not given the steering angle range of the vehicle
-        %   object will be used.
-        % - There is no check that the steering range or speed is within the limits
-        %   of the vehicle object.
+        % - 'range' option is ignored if an occupacy grid is provided.
         %
         % Reference::
         % - Robotics, Vision & Control
         %   Peter Corke, Springer 2011.  p102.
         %
-        % See also Vehicle.
+        % See also Vehicle, Bicycle, Unicycle.
 
-            % invoke the superclass constructor
+            % invoke the superclass constructor, it handles some options
             rrt = rrt@Navigation(varargin{:});
 
-            rrt.graph = PGraph(3, 'distance', 'SE2');  % graph of points in SE(2)
-            if nargin == 0
-                rrt.vehicle = Vehicle([], 'stlim', 1.2);
-            else
-                % RVC book compatability mode
-                rrt.vehicle = vehicle;
-            end
+            rrt.vehicle = vehicle;
 
+            % handle the options not done by Navigation superclass
             opt.npoints = 500;
-            opt.time = 0.5;
-            opt.range = 5;
-            opt.goal = [0, 0, 0];
-            opt.steermax = [];
-            opt.speed = 1;
+            opt.simtime = 0.5;
+            opt.speed = vehicle.speedmax;
+            opt.revcost = 1;
+            opt.root = [0 0 0];
             
-            [opt,args] = tb_optparse(opt, varargin);
-            rrt.npoints = opt.npoints;
-            rrt.sim_time = opt.time;
-
-            switch length(opt.range)
-            case 1
-                rrt.xrange = [-opt.range opt.range];
-                rrt.yrange = [-opt.range opt.range];
-            case 2
-                rrt.xrange = [-opt.range(1) opt.range(1)];
-                rrt.yrange = [-opt.range(2) opt.range(2)];
-            case 4
-                rrt.xrange = [opt.range(1) opt.range(2)];
-                rrt.yrange = [opt.range(3) opt.range(4)];
-            otherwise
-                error('bad range specified');
-            end
-            if ~isempty(opt.steermax)
-                rrt.steermax = opt.steermax;
+            [rrt,args] = tb_optparse(opt, varargin, rrt);
+            
+            if isempty(rrt.occgrid)
+                opt = [];
+                opt.range = 5;
+                [opt,args] = tb_optparse(opt, args);
+                
+                % range can be specified as scalar, min/max, different min/max per
+                % direction
+                switch length(opt.range)
+                    case 1
+                        rrt.xrange = [-opt.range opt.range];
+                        rrt.yrange = [-opt.range opt.range];
+                    case 2
+                        rrt.xrange = [-opt.range(1) opt.range(1)];
+                        rrt.yrange = [-opt.range(2) opt.range(2)];
+                    case 4
+                        rrt.xrange = [opt.range(1) opt.range(2)];
+                        rrt.yrange = [opt.range(3) opt.range(4)];
+                    otherwise
+                        error('bad range specified');
+                end
             else
-                rrt.steermax = rrt.vehicle.alphalim;
+                rrt.xrange = [1 numcols(rrt.occgrid)];
+                rrt.yrange = [1 numrows(rrt.occgrid)];
             end
-            rrt.speed = opt.speed;
-            rrt.goal = opt.goal;
+
+            rrt.graph = PGraph(3, 'distance', 'SE2', ...
+                'dweight', 2*pi/norm(sum([rrt.xrange; rrt.yrange])) );  % graph of points in SE(2)
+
         end
 
         function plan(rrt, varargin)
@@ -211,24 +204,24 @@ classdef RRT < Navigation
                 hold on
             end
 
-            % check goal sanity
-            if isempty(rrt.goal)
-                error('no goal specified');
+            % check root node sanity
+            if isempty(rrt.root)
+                error('no root node specified');
             end
-            switch length(rrt.goal)
-            case 2
-                rrt.goal = [rrt.goal(:); 0];
-            case 3
-            otherwise
-                error('goal must be 3-vector');
+            if ~isvec(rrt.root, 3)
+                error('root must be 3-vector');
             end
+            assert( ~rrt.isoccupied(rrt.root(1:2)), 'root node cell is occupied')
 
             % add the goal point as the first node
-            rrt.graph.add_node(rrt.goal);
+            vroot = rrt.graph.add_node(rrt.root);
+            data.vel = 0;
+            data.path = [];
+            rrt.graph.setvdata(vroot, data);
 
             % graphics setup
             if opt.progress
-                h = waitbar(0, 'RRT planning...');
+                h = Navigation.progress_init('RRT planning...');
             end
             if opt.samples
                 clf
@@ -236,30 +229,31 @@ classdef RRT < Navigation
                 xlabel('x'); ylabel('y');
             end
 
-            for j=1:rrt.npoints       % build the tree
+            npoints = 0;
+            while npoints < rrt.npoints       % build the tree
 
-                if opt.progress
-                    waitbar(j / rrt.npoints);
-                end
-                
                 % Step 3
                 % find random state x,y
 
                 % pick a point not in obstacle
                 while true
                     xy = rrt.randxy();  % get random coordinate (x,y)
-
-                    % test if lies in the obstacle map (if it exists)
+                    
                     if isempty(rrt.occgrid)
-                        break;
-                    end
-                    try
-                        if rrt.occgrid(ixy(2),ixy(1)) == 0
-                            break;
+                        break
+                    else
+                        % we have an occgrid
+                        xy = round( xy );  % round it to a grid cell coordinate
+                        
+                        % test if lies in the obstacle map
+                        try
+                            if ~rrt.isoccupied(xy)
+                                break;
+                            end
+                        catch
+                            % index error, point must be off the map
+                            continue;
                         end
-                    catch
-                        % index error, point must be off the map
-                        continue;
                     end
                 end
                 theta = rrt.rand*2*pi;
@@ -273,6 +267,9 @@ classdef RRT < Navigation
 
                 vnear = rrt.graph.closest(xrand);   % nearest vertex
                 xnear = rrt.graph.coord(vnear);     % coord of nearest vertex
+%                 if rrt.graph.distance_metric(xnear, xrand) < 0.25
+%                     continue;
+%                 end
 
                 rrt.message('xrand (%g, %g) node %d', xy, vnear);
 
@@ -296,27 +293,41 @@ classdef RRT < Navigation
 
                 % Step 7,8
                 % add xnew to the graph, with an edge from xnear
-                v = rrt.graph.add_node(xnew);
-                rrt.graph.add_edge(vnear, v);
+                vnew = rrt.graph.add_node(xnew);
                 
-                rrt.graph.setdata(v, best);
+
+                if rrt.graph.vdata(vnear).vel * best.vel < 0
+                    % we changed direction, penalise that
+                    cost = rrt.revcost;
+                else
+                    cost = 1;
+                end
+                rrt.graph.add_edge(vnear, vnew, cost);
+                
+                rrt.graph.setvdata(vnew, best);
+                
+                npoints = npoints + 1;
+                if opt.progress
+                    Navigation.progress(h, npoints / rrt.npoints);
+                end
+                
             end
 
             if opt.progress
-                close(h)
+                Navigation.progress_delete(h)
             end
             rrt.message('graph create done');
         end
 
-        function p_ = path(rrt, xstart, xgoal)
-        %RRT.path Find a path between two points
+        function p_ = query(rrt, xstart, xgoal)
+        %RRT.query Find a path between two points
         %
-        % X = R.path(START, GOAL) finds a path (Nx3) from state START (1x3) 
-        % to the GOAL (1x3).
+        % X = R.path(START, GOAL) finds a path (Nx3) from pose START (1x3) 
+        % to pose GOAL (1x3).  The pose is expressed as [X,Y,THETA]. 
         %
-        % R.path(START, GOAL) as above but plots the path in 3D.  The nodes
-        % are shown as circles and the line segments are blue for forward motion
-        % and red for backward motion.
+        % R.path(START, GOAL) as above but plots the path in 3D, where the vertical
+        % axis is vehicle heading angle.  The nodes are shown as circles and the
+        % line segments are blue for forward motion and red for backward motion.
         %
         % Notes::
         % - The path starts at the vertex closest to the START state, and ends
@@ -325,24 +336,28 @@ classdef RRT < Navigation
         %
         % See also RRT.plot.
 
+            assert(rrt.graph.n > 0, 'RTB:RRT: there is no plan');
+            rrt.checkquery(xstart, xgoal);
+            
             g = rrt.graph;
             vstart = g.closest(xstart);
             vgoal = g.closest(xgoal);
 
             % find path through the graph using A* search
-            path = g.Astar(vstart, vgoal);
+            [path,cost] = g.Astar(vstart, vgoal);
             
+            fprintf('A* path cost %g\n', cost);
+          
             % concatenate the vehicle motion segments
             cpath = [];
             for i = 1:length(path)
                 p = path(i);
-                data = g.data(p);
+                data = g.vdata(p);
                 if ~isempty(data)
                     if i >= length(path) || g.edgedir(p, path(i+1)) > 0
                         cpath = [cpath data.path];
                     else
                         cpath = [cpath data.path(:,end:-1:1)];
-
                     end
                 end
             end
@@ -354,8 +369,8 @@ classdef RRT < Navigation
                 plot2(g.coord(path)', 'o');     % plot the node coordinates
                 
                 for i = 1:length(path)
-                    p = path(i)
-                    b = g.data(p);            % get path data for segment
+                    p = path(i);
+                    b = g.vdata(p);            % get path data for segment
                     
                     % draw segment with direction dependent color
                     if ~isempty(b)
@@ -389,18 +404,28 @@ classdef RRT < Navigation
         function plot(rrt, varargin)
         %RRT.plot Visualize navigation environment
         %
-        % R.plot() displays the navigation tree in 3D.
+        % R.plot() displays the navigation tree in 3D, where the vertical axis is
+        % vehicle heading angle.  If an occupancy grid was provided this is also
+        % displayed.
 
-            clf
-            rrt.graph.plot('noedges', 'NodeSize', 6, 'NodeFaceColor', 'g', 'NodeEdgeColor', 'g', 'edges');
 
-            hold on
-            for i=2:rrt.graph.n
-                b = rrt.graph.data(i);
-                plot2(b.path(:,1:b.k)')
-            end
+            % display the occgrid background
+            rrt.plot_bg(varargin{:});
+            
+            % display the graph
+            %rrt.graph.plot('noedges', 'NodeSize', 3, 'NodeFaceColor', 'm', 'NodeEdgeColor', 'm', 'edges');
+            
+            rrt.graph.plot('noedges', 'nocomponentcolor', 'NodeSize', 3, 'NodeFaceColor', 'b', 'NodeEdgeColor', 'b', 'edges');
+hold on
+            
+            % display the occgrid background
+            rrt.plot_fg(varargin{:});
+            axis([rrt.xrange rrt.yrange])
             xlabel('x'); ylabel('y'); zlabel('\theta');
-            grid; hold off
+            grid on; hold off
+            view(0,90);
+            axis equal
+            rotate3d
         end
 
         % required by abstract superclass
@@ -419,18 +444,15 @@ classdef RRT < Navigation
 
             % add RRT specific stuff information
             s = char(s, sprintf('  region: X %f : %f; Y %f : %f', rrt.xrange, rrt.yrange));
-            s = char(s, sprintf('  path time: %f', rrt.sim_time));
-            s = char(s, sprintf('  graph size: %d nodes', rrt.npoints));
+            s = char(s, sprintf('  sim time: %f', rrt.simtime));
+            s = char(s, sprintf('  speed: %f', rrt.speed));
+            s = char(s, sprintf(' Graph:'));
             s = char(s, char(rrt.graph) );
             if ~isempty(rrt.vehicle)
                 s = char(s, char(rrt.vehicle) );
             end
         end
         
-        function test(rrt)
-            xy = rrt.randxy()
-        end
-
 
     end % methods
 
@@ -455,11 +477,11 @@ classdef RRT < Navigation
                 else
                     vel = -rrt.speed;
                 end
-                steer = (2*rrt.rand - 1) * rrt.steermax;    % uniformly distributed
+                steer = (2*rrt.rand - 1) * rrt.vehicle.steermax;    % uniformly distributed
                 
                 % simulate motion of vehicle for this speed and steer angle which 
                 % results in a path
-                x = rrt.vehicle.run2(rrt.sim_time, x0, vel, steer)';
+                x = rrt.vehicle.run2(rrt.simtime, x0, vel, steer)';
                 
                 %% find point on the path closest to xg
                 % distance of all path points from goal
@@ -494,9 +516,9 @@ classdef RRT < Navigation
 
             xy = round(xy);
             try
-                % test that all points along the path do lie within an obstacle
+                % test that all points along the path do not lie within an obstacle
                 for pp=xy'
-                    if rrt.occgrid(pp(2), pp(1)) > 0
+                    if rrt.isoccupied(pp) > 0
                         c = false;
                         return;
                     end

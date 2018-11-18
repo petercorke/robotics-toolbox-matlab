@@ -239,17 +239,3 @@ function tb_optparse_test(testCase)
     verifyError(testCase,  @() tb_optparse(opt, 'bob'), 'RTB:tboptparse:badargs');
 end
 
-function trprint_test(testCase)
-
-    a = transl([1,2,3]) * eul2tr([.1, .2, .3]);
-
-    trprint(a);
-    trprint(a, 'euler');
-    trprint(a, 'euler', 'radian');
-    trprint(a, 'rpy');
-    trprint(a, 'rpy', 'radian');
-    trprint(a, 'angvec');
-    trprint(a, 'angvec', 'radian');
-    trprint(a, 'angvec', 'radian', 'fmt', '%g');
-    trprint(a, 'angvec', 'radian', 'fmt', '%g', 'label', 'bob');
-end

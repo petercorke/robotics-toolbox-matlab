@@ -11,12 +11,13 @@
 % TAUG = R.gravload(Q, GRAV) as above but the gravitational 
 % acceleration vector GRAV is given explicitly.
 %
-% See also SerialLink.rne, SerialLink.itorque, SerialLink.coriolis.
+% See also SerialLink.gravjac, SerialLink.rne, SerialLink.itorque, SerialLink.coriolis.
 
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

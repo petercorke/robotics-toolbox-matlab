@@ -1,5 +1,4 @@
-
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -24,6 +23,7 @@
 % axes pointing upwards.  This demo shows an animation of a flying quadrotor
 % with a nested control system.
 
+% We can open a Simulink model of the quadrotor and its controller.
 sl_quadrotor
 
 % Running the simulation shows the vehicle takes off and flying in a cirle.

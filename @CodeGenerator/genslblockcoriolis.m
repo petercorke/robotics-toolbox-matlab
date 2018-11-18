@@ -64,13 +64,13 @@ end
 
 % Subsystem in which individual rows are concatenated
 add_block('built-in/SubSystem',CoriolisBlock);                               % Add new inertia matrix block
-add_block('Simulink/Math Operations/Matrix Concatenate'...
+add_block('simulink/Math Operations/Matrix Concatenate'...
     , [CoriolisBlock,'/coriolis']...
     , 'NumInputs',num2str(nJoints)...
     , 'ConcatenateDimension','1');
-add_block('Simulink/Sinks/Out1',[CoriolisBlock,'/out'],'PortDimensions',['[',num2str(nJoints),', ',num2str(nJoints),']']);
-add_block('Simulink/Sources/In1',[CoriolisBlock,'/q'],'PortDimensions',['[',num2str(nJoints),', 1]']);
-add_block('Simulink/Sources/In1',[CoriolisBlock,'/qd'],'PortDimensions',['[',num2str(nJoints),', 1]']);
+add_block('simulink/Sinks/Out1',[CoriolisBlock,'/out']);
+add_block('simulink/Sources/In1',[CoriolisBlock,'/q']);
+add_block('simulink/Sources/In1',[CoriolisBlock,'/qd']);
 add_line(CoriolisBlock,'coriolis/1','out/1');
 CGen.logmsg('\t%s\n',' done!');
 
@@ -94,7 +94,7 @@ for kJoints = 1:nJoints
     end
     
     CGen.logmsg('%s',' block creation');
-    symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q.',qd.'});
+    symexpr2slblock(blockaddress,tmpStruct.(symname),'vars',{q,qd});
     
     
     % connect output
@@ -105,7 +105,7 @@ for kJoints = 1:nJoints
         % Function block outputs a scalar zero. We need to concatenate
         % a row vector of zeros here, which we have to construct on our
         % own.
-        add_block('Simulink/Math Operations/Matrix Concatenate'...              % Use a matrix concatenation block ...
+        add_block('simulink/Math Operations/Matrix Concatenate'...              % Use a matrix concatenation block ...
             , [CoriolisBlock,'/DimCorrection',num2str(kJoints)]...               % ... named with the current row number ...
             , 'NumInputs',num2str(nJoints),'ConcatenateDimension','2');         % ... intended to concatenate zero values for each joint ...
         % ... columnwise. This will circumvent the bug.

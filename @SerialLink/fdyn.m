@@ -1,48 +1,50 @@
 %SerialLink.fdyn Integrate forward dynamics
 %
-% [T,Q,QD] = R.fdyn(T, TORQFUN) integrates the dynamics of the robot over 
-% the time  interval 0 to T and returns vectors of time T, joint position Q
-% and joint velocity QD.  The initial joint position and velocity are zero.
-% The torque applied to the joints is computed by the user-supplied control
-% function TORQFUN:
+% [T,Q,QD] = R.fdyn(TMAX, FTFUN) integrates the dynamics of the robot over
+% the time  interval 0 to TMAX and returns vectors of time T (Kx1), joint
+% position Q (KxN) and joint velocity QD (KxN).  The initial joint position
+% and velocity are zero. The torque applied to the joints is computed by
+% the user-supplied control
+% function FTFUN:
 %
-%        TAU = TORQFUN(T, Q, QD)
+%        TAU = FTFUN(ROBOT, T, Q, QD)
 %
-% where Q and QD are the manipulator joint coordinate and velocity state 
-% respectively, and T is the current time. 
+% where Q (1xN) and QD (1xN) are the manipulator joint coordinate and
+% velocity state respectively, and T is the current time.
 %
-% [TI,Q,QD] = R.fdyn(T, TORQFUN, Q0, QD0) as above but allows the initial
-% joint position and velocity to be specified.
+% [TI,Q,QD] = R.fdyn(T, FTFUN, Q0, QD0) as above but allows the initial
+% joint position Q0 (1xN) and velocity QD0 (1x)  to be specified.
 %
-% [T,Q,QD] = R.fdyn(T1, TORQFUN, Q0, QD0, ARG1, ARG2, ...) allows optional 
+% [T,Q,QD] = R.fdyn(T1, FTFUN, Q0, QD0, ARG1, ARG2, ...) allows optional 
 % arguments to be passed through to the user-supplied control function:
 %
-%        TAU = TORQFUN(T, Q, QD, ARG1, ARG2, ...)
+%        TAU = FTFUN(ROBOT, T, Q, QD, ARG1, ARG2, ...)
 %
 % For example, if the robot was controlled by a PD controller we can define
 % a function to compute the control
 %
-%         function tau = mytorqfun(t, q, qd, qstar, P, D)
+%         function tau = myftfun(t, q, qd, qstar, P, D)
 %           tau = P*(qstar-q) + D*qd;
 %
 % and then integrate the robot dynamics with the control
 %
-%         [t,q] = robot.fdyn(10, @mytorqfun, qstar, P, D);
+%         [t,q] = robot.fdyn(10, @myftfun, qstar, P, D);
 %
 % Note::
 % - This function performs poorly with non-linear joint friction, such as
 %   Coulomb friction.  The R.nofriction() method can be used to set this 
 %   friction to zero.
-% - If TORQFUN is not specified, or is given as 0 or [],  then zero torque
+% - If FTFUN is not specified, or is given as 0 or [],  then zero torque
 %   is applied to the manipulator joints.
-% - The builtin integration function ode45() is used.
+% - The MATLAB builtin integration function ode45() is used.
 %
 % See also SerialLink.accel, SerialLink.nofriction, SerialLink.rne, ode45.
 
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -68,6 +70,8 @@ function [t, q, qd] = fdyn(robot, t1, torqfun, q0, qd0, varargin)
         error('fdyn now requires Matlab version >= 7');
     end
 
+    assert(isa(torqfun, 'function_handle'), 'RTB:fdyn:badarg', 'must pass a function handle');
+    
     n = robot.n;
     if nargin == 2
         torqfun = 0;
@@ -99,7 +103,7 @@ end
 % ROBOT is the object being integrated, and TORQUEFUN is the string name of
 % the function to compute joint torques and called as
 %
-%       TAU = TORQUEFUN(T, X)
+%       TAU = TORQUEFUN(ROBOT, T, X, VARARGIN)
 %
 % if not given zero joint torques are assumed.
 %

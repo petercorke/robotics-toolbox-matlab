@@ -3,11 +3,12 @@
 % VN = UNIT(V) is a unit-vector parallel to V.
 %
 % Note::
-% - Reports error for the case where norm(V) is zero.
+% - Reports error for the case where V is non-symbolic and norm(V) is zero
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -28,8 +29,7 @@
 
 function u = unit(v)
     n = norm(v, 'fro');
-    if n < eps
-        error('RTB:unit:zero_norm', 'vector has zero norm');
-    end
+    assert( isa(v, 'sym') || n > eps , 'RTB:unit:zero_norm', 'vector has zero norm');
 
 	u = v / n;
+end

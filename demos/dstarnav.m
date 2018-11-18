@@ -1,5 +1,6 @@
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -46,13 +47,13 @@ dstar.plot()
 % where the cost scale is shown by the bar to the right.
 
 % Now we can execute the planned path, it will be animated with green dots
-dstar.path(start)
+dstar.query(start, 'animate')
 
 % Now lets change the difficulty of some of the terrain, make it more costly
 % to travese
 for r=78:85
     for c=12:45
-        dstar.modify_cost([c,r], 2); 
+        dstar.modify_cost([c; r], 2); 
     end
 end
 
@@ -62,5 +63,5 @@ tic; dstar.plan(); toc
 % that took less time than before...
 
 % and the best path is now
-dstar.path(start)
+dstar.query(start, 'animate')
 % we can see that the path has avoided the high cost region we added

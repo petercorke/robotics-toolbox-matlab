@@ -13,7 +13,8 @@
 
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -81,7 +82,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
     end
     
     if robot.issym || any([isa(Q,'sym'), isa(Qd,'sym'), isa(Qdd,'sym')])
-        tau(np, n) = sym();
+        tau = zeros(np,n, 'sym');
     else
         tau = zeros(np,n);
     end
@@ -112,10 +113,11 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
         for j=1:n
             link = robot.links(j);
             Tj = link.A(q(j));
-            if link.RP == 'R'
-                d = link.d;
-            else
-                d = q(j);
+            switch link.type
+                case 'R'
+                    d = link.d;
+                case 'P'
+                    d = q(j);
             end
             alpha = link.alpha;
             % O_{j-1} to O_j in {j}, negative inverse of link xform
@@ -142,23 +144,24 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
             %
             % statement order is important here
             %
-            if link.RP == 'R'
-                % revolute axis
-                wd = Rt*(wd + z0*qdd(j) + ...
-                    cross(w,z0*qd(j)));
-                w = Rt*(w + z0*qd(j));
-                %v = cross(w,pstar) + Rt*v;
-                vd = cross(wd,pstar) + ...
-                    cross(w, cross(w,pstar)) +Rt*vd;
-
-            else
-                % prismatic axis
-                w = Rt*w;
-                wd = Rt*wd;
-                vd = Rt*(z0*qdd(j)+vd) + ...
-                    cross(wd,pstar) + ...
-                    2*cross(w,Rt*z0*qd(j)) +...
-                    cross(w, cross(w,pstar));
+            switch link.type
+                case 'R'
+                    % revolute axis
+                    wd = Rt*(wd + z0*qdd(j) + ...
+                        cross(w,z0*qd(j)));
+                    w = Rt*(w + z0*qd(j));
+                    %v = cross(w,pstar) + Rt*v;
+                    vd = cross(wd,pstar) + ...
+                        cross(w, cross(w,pstar)) +Rt*vd;
+                    
+                case 'P'
+                    % prismatic axis
+                    w = Rt*w;
+                    wd = Rt*wd;
+                    vd = Rt*(z0*qdd(j)+vd) + ...
+                        cross(wd,pstar) + ...
+                        2*cross(w,Rt*z0*qd(j)) +...
+                        cross(w, cross(w,pstar));
             end
 
             %whos
@@ -211,18 +214,19 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
             end
 
             R = Rm{j};
-            if link.RP == 'R'
-                % revolute
-                t = nn.'*(R.'*z0) + ...
-                    link.G^2 * link.Jm*qdd(j) - ...
-                     link.friction(qd(j));
-                tau(p,j) = t;
-            else
-                % prismatic
-                t = f.'*(R.'*z0) + ...
-                    link.G^2 * link.Jm*qdd(j) - ...
-                    link.friction(qd(j));
-                tau(p,j) = t;
+            switch link.type
+                case 'R'
+                    % revolute
+                    t = nn.'*(R.'*z0) + ...
+                        link.G^2 * link.Jm*qdd(j) - ...
+                        link.friction(qd(j));
+                    tau(p,j) = t;
+                case 'P'
+                    % prismatic
+                    t = f.'*(R.'*z0) + ...
+                        link.G^2 * link.Jm*qdd(j) - ...
+                        link.friction(qd(j));
+                    tau(p,j) = t;
             end
         end
         % this last bit needs work/testing

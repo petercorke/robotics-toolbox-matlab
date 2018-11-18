@@ -8,9 +8,11 @@
 % Useful for investigating the robustness of various model-based control 
 % schemes. For example to vary parameters in the range +/- 10 percent is:
 %    r2 = p560.perturb(0.1);
+%
+% See also SerialLink.rne.
 
 
-% Copyright (C) 1993-2015, by Peter I. Corke
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
