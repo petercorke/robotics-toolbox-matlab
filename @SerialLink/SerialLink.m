@@ -45,6 +45,7 @@
 %  trchain       forward kinematics as a chain of elementary transforms
 %  DH            convert modified DH model to standard
 %  MDH           convert standard DH model to modified
+%  twists        joint axis twists                       
 %
 % Velocity kinematic methods::
 %  fellipse      display force ellipsoid
@@ -900,22 +901,49 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                 sr.links(i) = r.links(i).sym;
             end
         end
-        
+
+                 
         function p = isprismatic(robot)
+        %SerialLink.isprismatic identify prismatic joints
+        %
+        % X = R.isprismatic is a list of logical variables, one per joint, true if
+        % the corresponding joint is prismatic, otherwise false.
+        %
+        % See also Link.isprismatic, SerialLink.isrevolute.
             p = robot.links.isprismatic();
         end
         
         function p = isrevolute(robot)
+        %SerialLink.isrevolute identify revolute joints
+        %
+        % X = R.isrevolute is a list of logical variables, one per joint, true if
+        % the corresponding joint is revolute, otherwise false.
+        %
+        % See also Link.isrevolute, SerialLink.isprismatic.
             p = robot.links.isrevolute();
         end
         
         function qdeg = todegrees(robot, q)
+        %SerialLink.todegrees Convert joint angles to degrees
+        %
+        % Q2 = R.todegrees(Q) is a vector of joint coordinates where those elements
+        % corresponding to revolute joints are converted from radians to degrees.
+        % Elements corresponding to prismatic joints are copied unchanged.
+        %
+        % See also SerialiLink.toradians.
             k = robot.isrevolute;
             qdeg = q;
             qdeg(:,k) = qdeg(:,k) * pi/180;
         end
         
         function qrad = toradians(robot, q)
+        %SerialLink.toradians Convert joint angles to radians
+        %
+        % Q2 = R.toradians(Q) is a vector of joint coordinates where those elements
+        % corresponding to revolute joints are converted from degrees to radians.
+        % Elements corresponding to prismatic joints are copied unchanged.
+        %
+        % See also SerialiLink.todegrees.
             k = robot.isrevolute;
             qrad = q;
             qrad(:,k) = qrad(:,k) * 180/pi;
@@ -1031,9 +1059,26 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             rdh = SerialLink(link, 'base', base, 'tool', r.tool);
         end
         
-        function [tw,T0] = twists(r)
+        function [tw,T0] = twists(r, q)
+        %SerialLink.twists Joint axis twists
+        %
+        % [TW,T0] = R.twists(Q) is a vector of Twist objects (1xN) that represent
+        % the axes of the joints for the robot with joint coordinates Q (1xN).  T0
+        % is an SE3 object representing the pose of the tool.
+        %
+        % [TW,T0] = R.twists() as above but the joint coordinates are taken to be
+        % zero.
+        %
+        % Notes::
+        % - [TW,T0] is the product of exponential representation of the robot's
+        %   forward kinematics:  prod( [TW.exp(Q) T0] )
+        %
+        % See also Twist.
+            if nargin < 2
+                q = zeros(1, r.n);
+            end
             
-            [Tn,T] = r.fkine( zeros(1, r.n) );
+            [Tn,T] = r.fkine( q );
             if r.isdh
                 % DH case
                 for i=1:r.n
