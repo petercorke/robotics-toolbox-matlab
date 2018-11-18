@@ -5,7 +5,7 @@ end
 % we will assume that the primitives rotx,trotx, etc. all work
 
 
-function constructor(testCase)
+function constructor_test(testCase)
     q = Quaternion([1 2 3 4]);
     verifyEqual(testCase, q.double(),[1 2 3 4],'absTol',1e-4);
     
@@ -16,7 +16,7 @@ function staticconstructors(testCase)
 end
 
 
-function multiply(testCase)
+function multiply_test(testCase)
     % scalar x scalar
     
         % vector x vector

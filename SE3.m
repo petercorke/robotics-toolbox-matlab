@@ -435,10 +435,29 @@ classdef SE3 < SO3
                 % interp(SE3, SE3, s)  interpolate between given values
                 obj2 = varargin{1};
                 varargin = varargin(2:end);
-                Ti = SE3( trinterp(obj1.T, obj2.T, varargin{:}) );
+                try
+                    Ti = SE3( trinterp(obj1.T, obj2.T, varargin{:}) );
+                catch me
+                    switch me.identifier
+                        case 'RTB:trinterp:badarg'
+                            throw( MException('RTB:SE3:interp:badarg', 'value of S outside interval [0,1]') );
+                        otherwise
+                            rethrow(me);
+                    end
+                end
             else
                 % interp(SE3, s)  interpolate between null and given value
-                Ti = SE3( trinterp(obj1.T, varargin{:}) );
+                try
+                    T = trinterp(obj1.T, varargin{:});
+                catch me
+                    switch me.identifier
+                        case 'RTB:trinterp:badarg'
+                            throw( MException('RTB:SE3:interp:badarg', 'value of S outside interval [0,1]') );
+                        otherwise
+                            rethrow(me);
+                    end
+                end
+                T = SE3(T);
             end
         end
         

@@ -64,7 +64,7 @@ function T = trinterp(A, B, C)
             % integer value
             r = linspace(0, 1, r);
         elseif any(r<0 | r>1)
-            error('RTB:trinterp', 'values of S outside interval [0,1]');
+            error('RTB:trinterp:badarg', 'values of S outside interval [0,1]');
         end
         
         q0 = UnitQuaternion(T0);
@@ -77,5 +77,5 @@ function T = trinterp(A, B, C)
         end
 
     else
-        error('RTB:trinterp:badarg', 'must be 2 or 3 arguments');
+        error('RTB:trinterp:wrongargs', 'must be 2 or 3 arguments');
     end    
