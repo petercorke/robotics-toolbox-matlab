@@ -1,13 +1,13 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
-  <configuration build-checksum="2986381713" file="/Users/corkep/code/rvc/robotics-toolbox-matlab/distrib/RTB.prj" location="/Users/corkep/code/rvc/robotics-toolbox-matlab/distrib" name="RTB" target="target.toolbox" target-name="Package Toolbox">
+  <configuration build-checksum="2968101904" file="/Users/corkep/code/rvc/robotics-toolbox-matlab/distrib/RTB.prj" location="/Users/corkep/code/rvc/robotics-toolbox-matlab/distrib" name="RTB" target="target.toolbox" target-name="Package Toolbox">
     <param.appname>Robotics Toolbox for MATLAB</param.appname>
     <param.authnamewatermark>Peter Corke</param.authnamewatermark>
     <param.email>rvc@petercorke.com</param.email>
     <param.company />
     <param.summary>MATLAB support for mobile and arm robots</param.summary>
     <param.description>MATLAB support for representing pose, motion, mobile and arm robots.</param.description>
-    <param.screenshot>/Users/corkep/code/rvc/doc/rtb-montage-notext.png</param.screenshot>
-    <param.version>10.1</param.version>
+    <param.screenshot>/Users/corkep/code/rvc/doc/rtb10_montage/montage-notext.png</param.screenshot>
+    <param.version>10.3.1</param.version>
     <param.output>${PROJECT_ROOT}/Robotics Toolbox for MATLAB.mltbx</param.output>
     <param.products.name>
       <item>MATLAB</item>
@@ -18,14 +18,64 @@
       <item>2</item>
     </param.products.id>
     <param.products.version>
-      <item>9.1</item>
-      <item>8.8</item>
+      <item>9.5</item>
+      <item>9.2</item>
     </param.products.version>
     <param.platforms />
     <param.guid>5456c90d-db69-4f01-b199-f3e351cfc928</param.guid>
     <param.exclude.filters />
+    <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
     <param.examples>&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;examples&gt;
+   &lt;exampleCategory name="Simulink Examples"&gt;
+      &lt;example name="Puma robot falling under gravity" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Braitenberg vehicle" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Driving to a pose" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Quadrotor flying" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+   &lt;/exampleCategory&gt;
+   &lt;exampleCategory name="Mobile robot Examples"&gt;
+      &lt;example name="Bug navigation" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="D* planning" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="PRM navigation" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="EKF SLAM" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Particle filter localization" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+   &lt;/exampleCategory&gt;
    &lt;exampleCategory name="MATLAB Examples"&gt;
       &lt;example name="Representing rotation" type="html"&gt;
          &lt;file type="source"/&gt;
@@ -88,71 +138,53 @@
          &lt;file type="thumbnail"/&gt;
       &lt;/example&gt;
    &lt;/exampleCategory&gt;
-   &lt;exampleCategory name="Mobile robot Examples"&gt;
-      &lt;example name="Bug navigation" type="html"&gt;
-         &lt;file type="source"/&gt;
-         &lt;file type="main"/&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="D* planning" type="html"&gt;
-         &lt;file type="source"/&gt;
-         &lt;file type="main"/&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="PRM navigation" type="html"&gt;
-         &lt;file type="source"/&gt;
-         &lt;file type="main"/&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="EKF SLAM" type="html"&gt;
-         &lt;file type="source"/&gt;
-         &lt;file type="main"/&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="Particle filter localization" type="html"&gt;
-         &lt;file type="source"/&gt;
-         &lt;file type="main"/&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-   &lt;/exampleCategory&gt;
-   &lt;exampleCategory name="Simulink Examples"&gt;
-      &lt;example name="Puma robot falling under gravity" type="html"&gt;
-         &lt;file type="source"/&gt;
-         &lt;file type="main"/&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="Braitenberg vehicle" type="html"&gt;
-         &lt;file type="source"/&gt;
-         &lt;file type="main"/&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="Driving to a pose" type="html"&gt;
-         &lt;file type="source"/&gt;
-         &lt;file type="main"/&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="Quadrotor flying" type="html"&gt;
-         &lt;file type="source"/&gt;
-         &lt;file type="main"/&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-   &lt;/exampleCategory&gt;
 &lt;/examples&gt;</param.examples>
     <param.demosxml />
     <param.apps />
+    <param.registered.apps />
     <param.docs>${PROJECT_ROOT}/tmp/rvctools/info.xml</param.docs>
+    <param.getting.started.guide />
     <param.matlabpath.excludes>
       <item>//Users/corkep/code/rvc/robot</item>
     </param.matlabpath.excludes>
     <param.javaclasspath.excludes />
+    <param.exported.on.package>false</param.exported.on.package>
+    <param.release.start>R2015a</param.release.start>
+    <param.release.end>latest</param.release.end>
+    <param.release.current.only>false</param.release.current.only>
+    <param.compatiblity.windows>true</param.compatiblity.windows>
+    <param.compatiblity.macos>true</param.compatiblity.macos>
+    <param.compatiblity.linux>true</param.compatiblity.linux>
+    <param.compatiblity.matlabonline>true</param.compatiblity.matlabonline>
+    <param.installation.map />
+    <param.additional.sw.names />
+    <param.additional.sw.licenses />
+    <param.additional.sw.win.url />
+    <param.additional.sw.mac.url />
+    <param.additional.sw.linux.url />
     <unset>
       <param.company />
       <param.output />
       <param.platforms />
       <param.exclude.filters />
+      <param.exclude.pcodedmfiles />
       <param.demosxml />
       <param.apps />
+      <param.registered.apps />
+      <param.getting.started.guide />
       <param.javaclasspath.excludes />
+      <param.exported.on.package />
+      <param.release.current.only />
+      <param.compatiblity.windows />
+      <param.compatiblity.macos />
+      <param.compatiblity.linux />
+      <param.compatiblity.matlabonline />
+      <param.installation.map />
+      <param.additional.sw.names />
+      <param.additional.sw.licenses />
+      <param.additional.sw.win.url />
+      <param.additional.sw.mac.url />
+      <param.additional.sw.linux.url />
     </unset>
     <fileset.rootdir>
       <file>${PROJECT_ROOT}/tmp/rvctools</file>
@@ -168,8 +200,8 @@
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded>
-      <file>/Users/corkep/code/rvc/robotics-toolbox-matlab/simulink/sl_drivepose.slx</file>
-      <file>/Users/corkep/code/rvc/robotics-toolbox-matlab/simulink/sl_quadrotor.slx</file>
+      <file>/Applications/V-REP_PRO_EDU_V3_5_0_Mac/programming/remoteApiBindings/matlab/matlab/remApi.m</file>
+      <file>/Applications/V-REP_PRO_EDU_V3_5_0_Mac/programming/remoteApiBindings/matlab/matlab/remoteApiProto.m</file>
     </fileset.depfun.excluded>
     <fileset.package />
     <build-deliverables>
@@ -177,32 +209,20 @@
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>/Applications/MATLAB_R2016b.app</root>
+      <root>/Applications/MATLAB_R2018b.app</root>
       <toolboxes>
-        <toolbox name="fixedpoint" />
         <toolbox name="matlabcoder" />
-        <toolbox name="matlabhdlcoder" />
-        <toolbox name="embeddedcoder" />
+        <toolbox name="neuralnetwork" />
       </toolboxes>
-      <toolbox>
-        <fixedpoint>
-          <enabled>true</enabled>
-        </fixedpoint>
-      </toolbox>
       <toolbox>
         <matlabcoder>
           <enabled>true</enabled>
         </matlabcoder>
       </toolbox>
       <toolbox>
-        <matlabhdlcoder>
+        <neuralnetwork>
           <enabled>true</enabled>
-        </matlabhdlcoder>
-      </toolbox>
-      <toolbox>
-        <embeddedcoder>
-          <enabled>true</enabled>
-        </embeddedcoder>
+        </neuralnetwork>
       </toolbox>
     </matlab>
     <platform>
@@ -214,7 +234,7 @@
       <vista>false</vista>
       <linux>false</linux>
       <solaris>false</solaris>
-      <osver>10.12.3</osver>
+      <osver>10.14.1</osver>
       <os32>false</os32>
       <os64>true</os64>
       <arch>maci64</arch>
