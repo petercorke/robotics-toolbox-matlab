@@ -64,9 +64,16 @@ _build:
 	# copy symbolic examples
 	cp -r $(SRC)/symbolic $(ROBOT)
 
+	# copy Apps
+	mkdir $(ROBOT)/Apps
+	cp -r $(SRC)/Apps/tripleangle_App.mlapp $(ROBOT)/Apps
+
 	# copy simulink models
-	cp -r $(SRC)/simulink/*.slx rvctools/simulink
-	cp -r $(SRC)/simulink/*.m rvctools/simulink
+	cp $(SRC)/simulink/*.slx rvctools/simulink
+	cp $(SRC)/simulink/*.m rvctools/simulink
+	cp $(SRC)/simulink/*.txt rvctools/simulink
+	rm rvctools/simulink/makeoldversions.m
+	cp -r $(SRC)/simulink/R2015a rvctools/simulink
 
 	#cp -r $(SRC)/Octave $(ROBOT)  causes the package builder to fail
 
@@ -86,8 +93,9 @@ _build:
 	cp $(ROOT)/startup_rvc.m rvctools
 
 
-	# remove all SVN files from rvctools and below
+	# remove all SVN and Simulink project files from rvctools and below
 	find rvctools -name .svn -type d | xargs rm -rf
+	find rvctools -name slprj -type d | xargs rm -rf
 
 pdf:	tmp $(MANUAL)
 
