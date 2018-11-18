@@ -342,9 +342,7 @@ classdef Dstar < Navigation
                 % a rectangular region is specified
                 for xx=xy(1,1):xy(1,2)
                     for yy=xy(2,1):xy(2,2)
-                        if ~isinf(ds.costmap(yy,xx))
                             modify(ds, xx, yy, newcost);
-                        end
                     end
                 end
             elseif numcols(xy) == numel(newcost)
