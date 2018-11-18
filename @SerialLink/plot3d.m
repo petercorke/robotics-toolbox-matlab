@@ -20,6 +20,8 @@
 % '[no]loop'        Loop over the trajectory forever
 % '[no]raise'       Autoraise the figure
 % 'movie',M         Save frames as files in the folder M
+% 'trail',L         Draw a line recording the tip path, with line style L.
+%                   L can be a cell array, eg. {'r', 'LineWidth', 2}
 %-
 % 'scale',S         Annotation scale factor
 % 'ortho'           Orthographic view (default)
@@ -55,6 +57,16 @@
 %   - 'workspace' option, the fifth element of the passed vector
 %   - 'floorlevel' option
 %   - the lowest z-coordinate in the link1.stl object
+%
+% Making an animation::
+%
+% The 'movie' options saves the animation as a movie file or separate frames in a folder
+% - 'movie','file.mp4' saves as an MP4 movie called file.mp4
+% - 'movie','folder' saves as files NNNN.png into the specified folder
+%   - The specified folder will be created
+%   - NNNN are consecutive numbers: 0000, 0001, 0002 etc.
+%   - To convert frames to a movie use a command like:
+%          ffmpeg -r 10 -i %04d.png out.avi
 %
 % Authors::
 % - Peter Corke, based on existing code for plot().
@@ -94,6 +106,10 @@ function plot3d(robot, q, varargin)
     assert( ~robot.mdh, 'RTB:plot3d:badmodel', '3D models are defined for standard, not modified, DH parameters');
     
     opt = plot_options(robot, varargin);
+    
+    if opt.movie
+        robot.movie = Animate(opt.movie);
+    end
     
     %-- load the shape if need be
     
@@ -172,6 +188,7 @@ function plot3d(robot, q, varargin)
         create_tiled_floor(opt);
     end
     
+
     %--- configure view and lighting
     if isstr(opt.view)
         switch opt.view
@@ -243,6 +260,12 @@ function plot3d(robot, q, varargin)
         h.wrist = [];
     end
     
+    if ~isempty(opt.trail)
+        h.trail = plot(0, 0, opt.trail{:});
+        robot.trail = [];
+    end
+    
+    
     % enable mouse-based 3D rotation
     rotate3d on
     
@@ -250,7 +273,13 @@ function plot3d(robot, q, varargin)
     h.link = [0 h.link];
     set(group, 'UserData', h);
     
+    robot.trail = []; % clear the previous trail
+        
     robot.animate(q);
+    
+    if opt.movie
+        robot.movie.close();
+    end
     
     if ~ish
         hold off
@@ -271,6 +300,7 @@ function opt = plot_options(robot, optin)
     
     % general appearance
     opt.scale = 1;
+    opt.trail = [];
     
     opt.workspace = [];
     opt.floorlevel = [];
@@ -301,7 +331,7 @@ function opt = plot_options(robot, optin)
     
     % misc
     opt.movie = [];
-
+    
     % build a list of options from all sources
     %   1. the M-file plotbotopt if it exists
     %   2. robot.plotopt
@@ -370,15 +400,6 @@ function opt = plot_options(robot, optin)
     opt.scale = opt.scale * reach/40;
     
     % deal with a few options that need to be stashed in the SerialLink object
-    % movie mode has not already been flagged
-    if opt.movie
-        robot.moviepath = opt.movie;
-    end 
-    
-    if ~isempty(opt.movie)
-        mkdir(opt.movie);
-        framenum = 1;
-    end
     
     robot.delay = opt.delay;
     robot.loop = opt.loop;   
