@@ -1,4 +1,5 @@
 # ignore png, gimp and pdf files
+*.mlapp
 *.swp
 *.slxc
 *.ctf
