@@ -52,7 +52,7 @@ addpath(p)
 
 p = fullfile(tbpath, 'data', 'ARTE');
 disp([' - ARTE contributed code: 3D models for robot manipulators (' p ')']);
-p = fullfile(rvcpath, 'contrib', 'pHRIWARE');
+p = fullfile(rvcpath, 'contrib', 'pHRIWARE', 'next');
 if exist(p, 'dir')
     addpath( p );
     disp([' - pHRIWARE (release ',pHRIWARE('ver'),'): ',pHRIWARE('c')]);
