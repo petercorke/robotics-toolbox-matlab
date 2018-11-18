@@ -19,7 +19,6 @@ tr2rpy      : HT/RM to roll/pitch/yaw angles
 transl      : set or extract the translational component of HT
 trchain     : sequence of HT
 trinterp    : interpolate an HT
-tripleangle : GUI for triple angle visualization
 trnorm      : normalize HT 
 trprint     : print an HT
 trotx       : HT for rotation about X-axis
@@ -107,6 +106,7 @@ SerialLink.teach       : drive a graphical  robot
 
 h2.Models : Models of serial-link manipulators
 models          : list/search all models
+mdl_3link3d     : 3DOF arm in 3D
 mdl_KR5         : Kuka KR5
 mdl_S4ABB2p8    : ABB S4 2.8 (DH, kine)
 mdl_ball        : high DOF ball robot
@@ -126,6 +126,7 @@ mdl_mico        : Kinova Mico (DH)
 mdl_MotomanHP6  : Motoman HP6 (DH, kine)
 mdl_nao         : Alderbaran Nao humanoid
 mdl_p8          : Puma 560 on an XY base
+mdl_panda       : Franka-Emika PANDA
 mdl_phantomx    : PhantomX pincher
 mdl_planar1     : 1 line planar robot
 mdl_planar2     : 1 line planar robot
@@ -133,6 +134,7 @@ mdl_planar3     : 1 line planar robot
 mdl_puma560     : Puma 560 data (DH, kine, dyn)
 mdl_puma560akb  : Puma 560 data (MDH, kine, dyn)
 mdl_quadrotor   : simple quadcopter model
+mdl_sawyer      : Rethink Sawyer
 mdl_stanford    : Stanford arm data (DH, kine, dyn)
 mdl_stanford_mdh : Stanford arm data (MDH, kine)
 mdl_twolink     : simple 2-link example (DH, kine)
@@ -141,6 +143,7 @@ mdl_twolink_sym : simple 2-link example (DH, kine, symbolic)
 mdl_ur3 : Universal Robotics UR3 (DH, kine, dyn)
 mdl_ur5 : Universal Robotics UR5 (DH, kine, dyn)
 mdl_ur10 : Universal Robotics UR10 (DH, kine, dyn)
+urdfparse : parse a URDF file
 
 h2.Kinematics : Serial-link manipulator kinematic functions
 DHFactor        : transform sequence to DH description
@@ -167,6 +170,15 @@ SerialLink.inertia     : manipulator inertia matrix
 SerialLink.itorque     : inertia torque 
 SerialLink.rne         : inverse dynamics 
 
+h2.Code generation : Symbolic simplication
+CodeGenerator  : symbolic simplification class
+ccodefunctionstring : convert symbolic expression into a C-code function
+distributeblocks : distribute blocks in Simulink block library
+doesblockexist : check existence of block in Simulink model
+multidfprintf : print formatted text to multiple streams
+simulinkext : return file extension of Simulink block diagrams
+symexpr2slblock : create symbolic embedded MATLAB Function block
+
 h1.Mobile robot : Classes for mobile robotics problems
 LandmarkMap        : point feature map object
 RandomPath         : driver for Vehicle object
@@ -189,6 +201,7 @@ Bug2   : bug navigation
 DXform : distance transform from map
 Dstar  : D* planner
 Lattice: lattice planner
+makemap : simple map editor
 PRM    : probabilistic roadmap planner
 RRT    : rapidly exploring random tree
 
@@ -218,6 +231,7 @@ xyzlabel    : label axes x, y and z
 h1.Utility : Miscellaneous functions
 about       : summary of object size and type
 angdiff     : subtract 2 angles modulo 2pi
+Animate     : create movie file
 bresenham   : Bresenhan line drawing
 colnorm     : columnwise norm of matrix
 diff2       : elementwise diff
@@ -239,6 +253,7 @@ Polygon     : general purpose polygon class
 randinit    : initialize random number generator
 ramp        : create linear ramp
 runscript   : step through a script file
+rvccheck    : check RVC installation
 unit        : unitize a vector
 tb_optparse : toolbox argument parser
 stlRead     : read an STL file
