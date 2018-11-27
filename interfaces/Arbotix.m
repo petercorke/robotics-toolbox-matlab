@@ -613,7 +613,7 @@ classdef Arbotix < Machine
             % See also Arbotix.receive, Arbotix.parse.
             
             %Flush Buffer
-            N = robot.serPort.BytesAvailable();
+            N = robot.serPort.BytesAvailable;
             data = [];
             % this returns a maximum of input buffer size
             while (N ~= 0)
