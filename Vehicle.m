@@ -316,10 +316,10 @@ classdef Vehicle < handle
             end
             
             % clip the steering angle
-            if isempty(veh.steermax)
-                u(2) = steer;
-            else
+            if isprop(veh, 'steermax') && ~isempty(veh.steermax)
                 u(2) = max(-veh.steermax, min(veh.steermax, steer));
+            else
+                u(2) = steer;
             end
         end
 

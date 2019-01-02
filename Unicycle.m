@@ -43,7 +43,7 @@
 % Odometry covariance (per timstep) is
 %       V = diag([0.02, 0.5*pi/180].^2);
 % Create a vehicle with this noisy odometry
-%       v = Unicycle( 'covar', diag([0.1 0.01].^2 );
+%       v = Unicycle( 'covar', diag([0.1 0.01].^2) );
 % and display its initial state
 %       v 
 % now apply a speed (0.2m/s) and steer angle (0.1rad) for 1 time step
