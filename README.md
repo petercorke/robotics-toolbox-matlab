@@ -12,6 +12,8 @@ Advantages of the Toolbox are that:
   * the code is mature and provides a point of comparison for other implementations of the same algorithms;
   * the routines are generally written in a straightforward manner which allows for easy understanding, perhaps at the expense of computational efficiency. If you feel strongly about computational efficiency then you can always rewrite the function to be more efficient, compile the M-file using the MATLAB compiler, or create a MEX version;
   * since source code is available there is a benefit for understanding and teaching.
+  
+This Toolbox dates back to 1993 and significantly predates the Robotics Systems Toolbox&reg; from MathWorks.  The former is free, open and not supported, while the latter is a fully supported commercial product.
 
 ## Code Example
 
