@@ -1,6 +1,10 @@
-## Synopsis
+[![GitHub stars](https://img.shields.io/github/stars/petercorke/robotics-toolbox-matlab.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/petercorke/robotics-toolbox-matlab/stargazers/)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/petercorke/robotics-toolbox-matlab/graphs/commit-activity)
 
-Robotics Toolbox for MATLAB&reg; release 10.
+
+# Robotics Toolbox for MATLAB&reg; release 10
+
+## Synopsis
 
 This toolbox brings robotics specific functionality to MATLAB, exploiting the native capabilities of MATLAB (linear algebra, portability, graphics).
 
