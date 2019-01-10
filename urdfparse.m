@@ -49,6 +49,26 @@ function urdf = urdfparse(filename)
         try
             links(i).material = find(strcmp((node.getElementsByTagName('material').item(0).getAttribute('name')), materialNames));
         end
+        try
+            inertial = node.getElementsByTagName('inertial').item(0);
+            try
+                links(i).m = str2num(inertial.getElementsByTagName('mass').item(0).getAttribute('value'));
+            end
+            try
+                I = inertial.getElementsByTagName('inertia').item(0);
+                links(i).I.xx = str2num(I.getAttribute('ixx'));
+                links(i).I.xy = str2num(I.getAttribute('ixy'));
+                links(i).I.xz = str2num(I.getAttribute('ixz'));
+                links(i).I.yy = str2num(I.getAttribute('iyy'));
+                links(i).I.yz = str2num(I.getAttribute('iyz'));
+                links(i).I.zz = str2num(I.getAttribute('izz'));
+            end
+            try
+                t = str2num( node.getElementsByTagName('origin').item(0).getAttribute('xyz'));
+                rpy = str2num( node.getElementsByTagName('origin').item(0).getAttribute('rpy'));
+                links(i).com = SE3(t) * SE3.rpy(rpy);
+            end
+        end
         t = [0 0 0]; rpy = [0 0 0]; % in case not provided
         try
             t = str2num( node.getElementsByTagName('origin').item(0).getAttribute('xyz'));
