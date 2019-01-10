@@ -2,26 +2,24 @@ function urdf = urdfparse(filename)
     
     root = xmlread(filename);
     
-    robot = root.getChildNodes.item(0);
+    robot = root.getElementsByTagName('robot').item(0);
     
     
     %% process all the materials elements
     % - these are optional but we do them first because link elements
     %   reference them
-    materialNodes = robot.getElementsByTagName('material');
+    materialNodes = getChildrenByTagName(robot, 'material');
     materials = [];
-    i = 1;
-    for j=1:materialNodes.getLength
-        node = materialNodes.item(j-1);
-        if isEqualNode(node.getParentNode, robot)
-            % only process material nodes at the top level
+    materialNames = [];
+    if ~isempty(materialNodes)
+
+        for i = 1:length(materialNodes)
+            node = materialNodes(i);
             materials(i).name = string(node.getAttribute('name'));
             materials(i).rgba = str2num(node.getElementsByTagName('color').item(0).getAttribute('rgba'));
             materials(i).node = node;
-            i = i + 1;
         end
-    end
-    if ~isempty(materials)
+        
         urdf.materials = materials;
         materialNames = [materials.name];
     end
@@ -39,11 +37,15 @@ function urdf = urdfparse(filename)
     % child      link index for downstream link
     % parent     link index for downstream link
     
-    linkNodes = robot.getElementsByTagName('link');
-    for i=1:linkNodes.getLength
-        node = linkNodes.item(i-1);
+    linkNodes = getChildrenByTagName(robot, 'link');
+    
+    for i = 1:length(linkNodes)
+        node = linkNodes(i);
         links(i).name = string(node.getAttribute('name'));
-        links(i).geometry = node.getElementsByTagName('geometry').item(0);
+        try
+            links(i).geometry = node.getElementsByTagName('geometry').item(0);
+            links(i).mesh = links(i).geometry.getElementsByTagName('mesh').item(0).getAttribute('filename');
+        end
         try
             links(i).material = find(strcmp((node.getElementsByTagName('material').item(0).getAttribute('name')), materialNames));
         end
@@ -77,10 +79,10 @@ function urdf = urdfparse(filename)
     % children   list of joint indexes attaching this link to its children
     % parent     index of joint attaching this link to its parent
     
-    jointNodes = robot.getElementsByTagName('joint');
+    jointNodes = getChildrenByTagName(robot, 'joint');
     joints = [];
-    for i=1:jointNodes.getLength
-        node = jointNodes.item(i-1);
+    for i = 1:length(jointNodes)
+        node = jointNodes(i);
         joints(i).name = string(node.getAttribute('name'));
         joints(i).type = string(node.getAttribute('type'));
         try
@@ -238,3 +240,17 @@ function t = axis2s(joint)
     end
    
 end
+
+function children = getChildrenByTagName(parent, name)
+    % return array of immediate child nodes with node name equal to name
+    % REF https://stackoverflow.com/questions/18776408/get-all-the-children-for-a-given-xml-in-java
+    children = [];
+    childnodes = parent.getChildNodes;
+    for i=1:childnodes.getLength
+        node = childnodes.item(i-1);
+        if node.getNodeType == node.ELEMENT_NODE && strcmp(node.getNodeName, name)
+            children = [children node];
+        end
+    end
+end
+    
