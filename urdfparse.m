@@ -211,22 +211,22 @@ function t = xform2s(joint)
     
     t = "";
     if joint.xyz(1) ~= 0
-        t = t + sprintf('Tx(%g) ', joint.xyz(1));
+        t = t + sprintf('Tx(%.12g) ', joint.xyz(1));
     end
     if joint.xyz(2) ~= 0
-        t = t + sprintf('Ty(%g) ', joint.xyz(2));
+        t = t + sprintf('Ty(%.12g) ', joint.xyz(2));
     end
     if joint.xyz(3) ~= 0
-        t = t + sprintf('Tz(%g) ', joint.xyz(3));
-    end
-    if joint.rpy(1) ~= 0
-        t = t + sprintf('Rz(%g) ', joint.rpy(1));
-    end
-    if joint.rpy(2) ~= 0
-        t = t + sprintf('Ry(%g) ', joint.rpy(2));
+        t = t + sprintf('Tz(%.12g) ', joint.xyz(3));
     end
     if joint.rpy(3) ~= 0
-        t = t + sprintf('Rx(%g) ', joint.rpy(3));
+        t = t + sprintf('Rz(%.12g) ', joint.rpy(3));
+    end
+    if joint.rpy(2) ~= 0
+        t = t + sprintf('Ry(%.12g) ', joint.rpy(2));
+    end
+    if joint.rpy(1) ~= 0
+        t = t + sprintf('Rx(%.12g) ', joint.rpy(1));
     end
 end
 
