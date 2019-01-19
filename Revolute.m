@@ -81,7 +81,7 @@
 %
 % http://www.petercorke.com
 
-classdef Revolute < Link
+classdef Revolute < LinkDH
     methods
         function L = Revolute(varargin)
             %Revolute.Revolute Create revolute robot link object
@@ -117,7 +117,7 @@ classdef Revolute < Link
             %   friction and interia to the link frame.
             %
             % See also Link, Prismatic, RevoluteMDH.
-            L = L@Link(varargin{:});
+            L = L@LinkDH(varargin{:});
             
             if nargin == 0
                 L.theta = [];

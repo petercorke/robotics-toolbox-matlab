@@ -310,7 +310,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                 
                 L = arg{1};
                 
-                if isa(L, 'Link')
+                if isa(L, 'LinkDH')
                     % passed an array of Link objects
                     r.links = L;
                     
@@ -1119,8 +1119,24 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         end
         
     end % methods
+    
+    methods (Static)
+        function URDF(filename)
+            
+            try
+                parse = urdfparse(filename);
+                except
+                error('RTB:SerialLink.URDF:badfile', 'File doesn''t exist or not parseable');
+            end
+            
+            assert(length(parse.endlinks) == 1, 'Robot definition must be a single serial chain, with only one end-effector');
+            
+        end
+    end
 
 end % classdef
+
+
 
 % utility function
 function s = mat2str(m)
@@ -1151,4 +1167,5 @@ function s = mat2str(m)
         s = num2str(m);
     end
 end
+
 

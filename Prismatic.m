@@ -80,7 +80,7 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
-classdef Prismatic < Link
+classdef Prismatic < LinkDH
     methods
         function L = Prismatic(varargin)
             %Prismatic.Prismatic Create prismatic robot link object
@@ -116,7 +116,7 @@ classdef Prismatic < Link
             %   friction and interia to the link frame.
             %
             % See also Link, Prismatic, RevoluteMDH.
-            L = L@Link(varargin{:});
+            L = L@LinkDH(varargin{:});
             
             if nargin == 0
                 L.d = [];

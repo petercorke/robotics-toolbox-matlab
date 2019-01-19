@@ -82,7 +82,7 @@
 %
 % http://www.petercorke.com
 
-classdef RevoluteMDH < Link
+classdef RevoluteMDH < LinkDH
     methods
         function L = RevoluteMDH(varargin)
             %RevoluteMDH.RevoluteMDH Create revolute robot link object using MDH notation
@@ -118,7 +118,7 @@ classdef RevoluteMDH < Link
             %   friction and interia to the link frame.
             %
             % See also Link, Prismatic, RevoluteMDH.
-            L = L@Link(varargin{:});
+            L = L@LinkDH(varargin{:});
             
             if nargin == 0
                 L.theta = [];
