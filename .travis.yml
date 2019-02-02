@@ -1,0 +1,6 @@
+language: java
+install: source /dev/stdin <<< "$(curl -sL https://ssd.mathworks.com/supportfiles/matlab-runner/install)"
+script:
+ - matlab-runner -xi .git -xi doc -xi lib/spatial-math/.git -xi lib/spatial-math/doc -xi lib/toolbox-common-matlab -sd unit_test "addpath ..; addpath ../lib/toolbox-common-matlab; addpath ../lib/spatial-math; RunAllTests"
+after_success:
+ - bash <(curl -s https://codecov.io/bash)
