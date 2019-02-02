@@ -120,13 +120,15 @@ function plot3d(robot, q, varargin)
         
         if isempty(opt.path)
             % first find the path to the models
-            pth = which('rotx.m');
-            if ~pth
-                error('RTB:plot3d:nomodel', 'no 3D model found, install the RTB contrib zip file');
-            end
-            
+            pth = mfilename('fullpath');
+            pth = fileparts(pth);
+            % peel off the last folder
+            s = regexp(pth, filesep, 'split');
+            pth = join(s(1:6), filesep);
+
             % find the path to this specific model
-            pth = fullfile(fileparts(pth), 'data/ARTE', robot.model3d);
+            pth = fullfile(pth{1}, 'data/ARTE', robot.model3d);
+            assert(exist(pth, 'dir') > 0, 'RTB:plot3d:nomodel', 'no 3D model found, install the RTB contrib zip file');
         else
             pth = opt.path;
         end

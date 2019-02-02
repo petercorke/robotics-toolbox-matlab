@@ -42,14 +42,17 @@
 % http://www.petercorke.com
 function name_ = models(query)
     
-    path = fileparts( which('rotx') );
-    path = fullfile(path, 'models');
-    
-    models = dir(fullfile(path, 'mdl_*.m'));
+    % first find the path to the models
+    pth = mfilename('fullpath');
+    pth = fileparts(pth);
+    pth = fullfile(pth, 'models');
+    assert(exist(pth, 'dir') > 0, 'RTB:models:nomodel', 'models folder not found');
+
+    models = dir(fullfile(pth, 'mdl_*.m'));
     info = {};
     name = {};
     for model=models'
-        fid = fopen( fullfile(path, model.name), 'r');
+        fid = fopen( fullfile(pth, model.name), 'r');
         while true
             line = fgetl(fid);
             if line == -1
