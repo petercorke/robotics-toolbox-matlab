@@ -45,13 +45,13 @@ public class DHFactor {
     }
     */
 
-    private String angle(int a)
+    private String angle(double a)
     {
         if (a == 0)
             return "0";
-        else if (a == 90)
+        else if (a == 90.0)
             return "pi/2";
-        else if (a == -90)
+        else if (a == -90.0)
             return "-pi/2";
         else
 			throw new IllegalArgumentException("bad transform angle");

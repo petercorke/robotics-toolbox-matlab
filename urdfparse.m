@@ -220,13 +220,13 @@ function t = xform2s(joint)
         t = t + sprintf('Tz(%.12g) ', joint.xyz(3));
     end
     if joint.rpy(3) ~= 0
-        t = t + sprintf('Rz(%.12g) ', joint.rpy(3));
+        t = t + sprintf('Rz(%.12g) ', round(joint.rpy(3)*180/pi, 3));
     end
     if joint.rpy(2) ~= 0
-        t = t + sprintf('Ry(%.12g) ', joint.rpy(2));
+        t = t + sprintf('Ry(%.12g) ', round(joint.rpy(2)*180/pi,3));
     end
     if joint.rpy(1) ~= 0
-        t = t + sprintf('Rx(%.12g) ', joint.rpy(1));
+        t = t + sprintf('Rx(%.12g) ', round(joint.rpy(1)*180/pi, 3));
     end
 end
 

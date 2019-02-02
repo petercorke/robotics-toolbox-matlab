@@ -40,15 +40,15 @@ class Element {
 	// transform parameters, only one of these is set
 	String	var;        // eg. q1, for joint var types
 	String	symconst;   // eg. L1, for lengths
-	int		constant;   // eg. 90, for angles
+	double	constant;   // eg. 90, for angles
 
 	// DH parameters, only set if type is DH_STANDARD/MODIFIED
-	int 	theta,	
+	double 	theta,	
             alpha;
     String  A,
             D;
     int     prismatic;
-    int     offset;
+    double  offset;
 
     // an array of counters for the application of each rule
     // just for debugging.
@@ -144,7 +144,7 @@ class Element {
                 this.prismatic = 0;
                 this.var = e.var;
                 this.offset = e.constant;
-                this.theta = 0;
+                this.theta = 0.0;
             } else
                 this.theta = e.constant;
             break;
@@ -316,24 +316,24 @@ class Element {
 
 		switch (this.type) {
 		case RX:
-			s[0] = new Element(RY, 90);
+			s[0] = new Element(RY, 90.0);
 			s[1] = new Element(this, RZ);
-			s[2] = new Element(RY, -90);
+			s[2] = new Element(RY, -90.0);
 			return s;
 		case RY:
-			s[0] = new Element(RX, -90);
+			s[0] = new Element(RX, -90.0);
 			s[1] = new Element(this, RZ);
-			s[2] = new Element(RX, 90);
+			s[2] = new Element(RX, 90.0);
 			return s;
 		case TX:
-			s[0] = new Element(RY, 90);
+			s[0] = new Element(RY, 90.0);
 			s[1] = new Element(this, TZ);
-			s[2] = new Element(RY, -90);
+			s[2] = new Element(RY, -90.0);
 			return s;
 		case TY:
-			s[0] = new Element(RX, -90);
+			s[0] = new Element(RX, -90.0);
 			s[1] = new Element(this, TZ);
-			s[2] = new Element(RX, 90);
+			s[2] = new Element(RX, 90.0);
 			return s;
 		default:
 			return null;
@@ -346,22 +346,22 @@ class Element {
 
 		switch (this.type) {
 		case RY:
-			s[0] = new Element(RZ, 90);
+			s[0] = new Element(RZ, 90.0);
 			s[1] = new Element(this, RX);
-			s[2] = new Element(RZ, -90);
+			s[2] = new Element(RZ, -90.0);
 			rules[8]++;
 			return s;
 		case TY:
 			if (prev.type == RZ) {
-				s[0] = new Element(RZ, 90);
+				s[0] = new Element(RZ, 90.0);
 				s[1] = new Element(this, TX);
-				s[2] = new Element(RZ, -90);
+				s[2] = new Element(RZ, -90.0);
 				rules[6]++;
 				return s;
 			} else {
-				s[0] = new Element(RX, -90);
+				s[0] = new Element(RX, -90.0);
 				s[1] = new Element(this, TZ);
-				s[2] = new Element(RX, 90);
+				s[2] = new Element(RX, 90.0);
 				rules[7]++;
 				return s;
 			}
@@ -416,6 +416,13 @@ class Element {
 				rules[5]++;
 				//return s;
 				return null;
+		} else if ((prev.type == TX) && (this.type == RZ)) {
+				// TX.RZ -> RZ.TY
+				s[0] = new Element(this);
+				s[1] = new Element(prev, TY, this.constant);
+				rules[5]++;
+				return s;
+				//return null;
 		} else if ((prev.type == RY) && (this.type == RX)) {
 				// RY(Q).RX -> RX.RZ(-Q)
 				s[0] = new Element(this);
@@ -442,7 +449,7 @@ class Element {
 	/*
 	 * Element constructors.  String is of the form:
 	 */
-	public Element(int type, int constant) {
+	public Element(int type, double constant) {
 		this.type = type;
 		this.var = null;
 		this.symconst = null;
@@ -469,7 +476,7 @@ class Element {
 	 * @param sign	Sign of argument, either -1 or +1.
 	 * @return a new Element with specified type and argument.
 	 */
-	public Element(Element e, int type, int sign) {	// clone of argument with new type
+	public Element(Element e, int type, double sign) {	// clone of argument with new type
 		this.type = type;
 		if (e.var != null)
 			this.var = new String(e.var);
@@ -481,46 +488,11 @@ class Element {
             this.negate();
 	}
 
+
 	public Element(Element e, int type) {	// clone of argument with new type
 		this(e, type, 1);
 	}
-
-    // negate the arguments of the element
-    public void negate() {
-        //System.out.println("negate: " + this.constant + " " + this.symconst);
-
-        // flip the numeric part, easy
-		this.constant = -this.constant;
-
-
-        if (this.symconst != null) {
-            StringBuffer s = new StringBuffer(this.symconst);
-            // if no leading sign character insert one (so we can flip it)
-            if ((s.charAt(0) != '+') &&
-                (s.charAt(0) != '-')
-            )
-                s.insert(0, '+');
-
-            // go through the string and flip all sign chars
-            for (int i=0; i<s.length(); i++)
-                switch (s.charAt(i)) {
-                case '+':
-                    s.setCharAt(i, '-');
-                    break;
-                case '-':
-                    s.setCharAt(i, '+');
-                    break;
-                default:
-                    break;
-                }
-                if (s.charAt(0) == '+')
-                	s.delete(0, 1);
-                
-            this.symconst = new String(s);
-       }
-       //System.out.println("negate: " + this.constant + " " + this.symconst);
-    }
-
+    
 	/**
 	 * Parsing constructor.
 	 * @param transform string expression, eg. Tx(q1)  Rx(90) Ty(L2)
@@ -565,7 +537,7 @@ class Element {
 			break;
 		default:
 			try {
-				constant = Integer.parseInt(sRest);
+				constant = Double.parseDouble(sRest);
 				if (negative == "-") {
 					constant = -constant;
 					negative = "";
@@ -578,6 +550,42 @@ class Element {
 		}
 		//System.out.println("ElementConstructor: " + this);
 	}
+
+// negate the arguments of the element
+    public void negate() {
+        //System.out.println("negate: " + this.constant + " " + this.symconst);
+
+        // flip the numeric part, easy
+		this.constant = -this.constant;
+
+
+        if (this.symconst != null) {
+            StringBuffer s = new StringBuffer(this.symconst);
+            // if no leading sign character insert one (so we can flip it)
+            if ((s.charAt(0) != '+') &&
+                (s.charAt(0) != '-')
+            )
+                s.insert(0, '+');
+
+            // go through the string and flip all sign chars
+            for (int i=0; i<s.length(); i++)
+                switch (s.charAt(i)) {
+                case '+':
+                    s.setCharAt(i, '-');
+                    break;
+                case '-':
+                    s.setCharAt(i, '+');
+                    break;
+                default:
+                    break;
+                }
+                if (s.charAt(0) == '+')
+                	s.delete(0, 1);
+                
+            this.symconst = new String(s);
+       }
+       //System.out.println("negate: " + this.constant + " " + this.symconst);
+    }
 
     /*
      * Return a string representation of the parameters (argument)
@@ -607,8 +615,8 @@ class Element {
 				s += symconst;
 			}
 			// constants always displayed with a sign character
-			if (constant != 0)
-				s += (constant < 0 ? "" : "+") + constant;
+			if (constant != 0.0)
+				s += (constant < 0.0 ? "" : "+") + constant;
 			break;
 		case DH_STANDARD:
 		case DH_MODIFIED:

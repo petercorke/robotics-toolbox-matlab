@@ -213,3 +213,13 @@ function tr2jac_test(tc)
 end
      
 
+function wtrans_test(tc)
+    
+    v = [1 2 3 4 5 6]';
+    
+    tc.verifyEqual( wtrans(eye(4,4), v), v, 'abstol', 1e-10 );
+    tc.verifyEqual( wtrans(trotx(pi/2), v), [1 3 -2 4 6 -5]', 'abstol', 1e-10 );       
+    tc.verifyEqual( wtrans(troty(pi/2), v), [-3 2 1 -6 5 4]', 'abstol', 1e-10 );       
+    tc.verifyEqual( wtrans(trotz(pi/2), v), [2 -1 3 5 -4 6]', 'abstol', 1e-10 ); 
+end
+

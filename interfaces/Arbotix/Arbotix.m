@@ -188,15 +188,19 @@ classdef Arbotix < Machine
             end
             
             arb.serPort = serial(arb.serPort,'BaudRate', opt.baud);
-            set(arb.serPort,'InputBufferSize',1000)
-            set(arb.serPort, 'Timeout', 1)
-            set(arb.serPort, 'Tag', 'Arbotix')
+            arb.serPort.DataBits = 8;
+            arb.serPort.Parity = 'none';
+            arb.serPort.StopBits = 1;
+            arb.serPort.Terminator = '';
+            arb.serPort.FlowControl = 'none';
+            arb.serPort.InputBufferSize = 1000;
+            arb.serPort.Timeout = 0.3;
+            arb.serPort.Tag = 'Arbotix';
             
             if opt.verbose
                 disp('Opening connection to Arbotix chain...');
             end
             
-            pause(0.5);
             try
                 fopen(arb.serPort);
             catch me
@@ -206,6 +210,22 @@ classdef Arbotix < Machine
             end
             
             arb.flush();
+            
+            % wait for serial port to open properly
+            % not quite sure what happens here, FTDI port seems to not function just
+            % after open is successful.  Also observed with python/pyserial on Mac and
+            % RPi.
+            for i=1:100
+                q = arb.getpos(1);
+                if ~isempty(q)
+                    break
+                end
+            end
+            i
+            if i >= 100
+                error('can''t communicate with servos')
+            end
+
         end
         
         function disconnect(arb)
@@ -274,15 +294,25 @@ classdef Arbotix < Machine
             
             if ~isempty(id)
                 retval = arb.readdata(id, Arbotix.ADDR_POS, 2);
-                p = Arbotix.e2a( retval.params*[1; 256] );
+                if isempty(retval)
+                    p = [];
+                else
+                    p = Arbotix.e2a( retval.params*[1; 256] );
+                end
             else
                 if isempty(arb.nservos)
                     error('RTB:Arbotix:notspec', 'Number of servos not specified');
                 end
                 p = [];
                 for j=1:arb.nservos
+                    
                     retval = arb.readdata(j, Arbotix.ADDR_POS, 2);
-                    p(j) = Arbotix.e2a( retval.params*[1; 256] );
+                    if isempty(retval)
+                        p = [];
+                        return;
+                    else
+                        p(j) = Arbotix.e2a( retval.params*[1; 256] );
+                    end
                 end
             end
         end
@@ -304,7 +334,6 @@ classdef Arbotix < Machine
             %
             % See also Arbotix.a2e.
 
-            
             if length(varargin{1}) > 1
                 % vector mode
                 pos = varargin{1};
@@ -506,9 +535,25 @@ classdef Arbotix < Machine
             %
             % See also Arbotix.receive, Arbotix.command.
             
-            arb.command(id, Arbotix.INS_READ_DATA, [addr len]);
-            
-            retval = arb.receive();
+            retval = arb.command(id, Arbotix.INS_READ_DATA, [addr len]);
+        end
+        
+        function v = readdata1(arb, id, addr)
+            retval = arb.readdata(id, addr, 1);
+            if ~isempty(retval)
+                v = retval.params;
+            else
+                v = [];
+            end
+        end
+        
+        function v = readdata2(arb, id, addr)
+            retval = arb.readdata(id, addr, 2);
+            if ~isempty(retval)
+                v = retval.params(1) + retval.params(2)*256;
+            else
+                v = [];
+            end
         end
         
         function writedata1(arb, id, addr, data)
@@ -647,11 +692,19 @@ classdef Arbotix < Machine
             %
             % See also Arbotix.command, Arbotix.flush.
             state = 0;
+            s = [];
             if arb.debug > 0
                 fprintf('receive: ');
             end
             while true
-                c = fread(arb.serPort, 1, 'uint8');
+                [c,n,msg] = fread(arb.serPort, 1, 'uint8');
+                if n == 0
+                    if arb.debug > 0
+                        warning('serial packet read timed out')
+                    end
+                    s = [];
+                    return;
+                end
                 if arb.debug > 0
                     fprintf('0x%02x ', c);
                 end

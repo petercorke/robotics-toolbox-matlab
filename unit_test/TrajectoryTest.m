@@ -525,4 +525,14 @@ function mstraj_test(tc)
      verifyTrue(tc, isa(info, 'struct'));
 end
 
+%    qplot                      - plot joint angle trajectories
+function qplot_test(tc)
+    s = linspace(0, 1, 100)';
+    qz = [0 0 0 0 0 0]; qr = [1 2 3 4 5 6];
+    q = (1-s)*qz + s*qr;
+    clf
+    qplot(s*20,q);
+
+    qplot(q);
+end
 
