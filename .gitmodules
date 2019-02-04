@@ -1,6 +1,0 @@
-[submodule "lib/toolbox-common-matlab"]
-	path = lib/toolbox-common-matlab
-	url = https://github.com/petercorke/toolbox-common-matlab
-[submodule "lib/spatial-math"]
-	path = lib/spatial-math
-	url = https://github.com/petercorke/spatial-math
