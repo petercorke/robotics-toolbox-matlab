@@ -49,6 +49,8 @@ addpath ../models
 addpath ../data
 addpath ../simulink
 
+dir('../lib/toolbox-common-matlab')
+which xaxis
 
 %% Run all unit tests in my repository.
 results = runner.run(suite);
