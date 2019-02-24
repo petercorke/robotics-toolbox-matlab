@@ -3,6 +3,10 @@ function tests = LocnTest
   clc
 end
 
+function setupOnce(testCase)
+    testCase.TestData.Duration = 50;
+end
+
 function Vehicle_test(tc)
     %%
     randinit
@@ -11,7 +15,7 @@ function Vehicle_test(tc)
     v = Bicycle('covar', V);
     v.add_driver( RandomPath(10) );
 
-    v.run(100);
+    v.run(tc.TestData.Duration);
     v.plot_xy();
     s = v.char();
 
@@ -30,7 +34,7 @@ function DeadReckoning_test(tc)
     s = char(v);
 
     ekf = EKF(v, V, P0);
-    ekf.run(100);
+    ekf.run(tc.TestData.Duration);
 
     clf
     ekf.plot_xy
@@ -62,7 +66,7 @@ function MapLocalization_test(tc)
     sensor.interval = 5;
     ekf = EKF(veh, W, P0, sensor, W, map);
 
-    ekf.run(100);
+    ekf.run(tc.TestData.Duration);
 
     clf
     map.plot()
@@ -91,7 +95,7 @@ function Mapping_test(tc)
     sensor.interval = 5;
 
     ekf = EKF(veh, [], [], sensor, W, []);
-    ekf.run(100);
+    ekf.run(tc.TestData.Duration);
     
 
     clf
@@ -124,7 +128,7 @@ function SLAM_test(tc)
     ekf = EKF(veh, V, P0, sensor, W, []);
     ekf
     ekf.verbose = false;
-    ekf.run(100);
+    ekf.run(tc.TestData.Duration);
 
 
     clf
@@ -162,7 +166,7 @@ function ParticleFilter_test(tc)
     L = diag([0.1 0.1]);
     pf = ParticleFilter(v, sensor, Q, L, 1000);
     pf
-    pf.run(200);
+    pf.run(tc.TestData.Duration);
 
     plot(pf.std)
     xlabel('time step')
