@@ -1,7 +1,7 @@
 % run the tests for Travis CI
 %
 % File system looks like this:
-%    ./
+%    ./           ** RTB is unpacked at this level, not its own folder
 %    ./unit_test  ** WORKING folder
 %	 ./lib/toolbox-common
 %    ./lib/spatial-math-toolbox
