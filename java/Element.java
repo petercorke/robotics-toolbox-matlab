@@ -24,6 +24,9 @@
  *	Element(Element e, int type) // clone of argument with new type
  *	Element(String s)
  */
+
+import java.text.*;
+
 class Element {
     static final int    TX = 0,
                         TY = 1,
@@ -594,6 +597,7 @@ class Element {
      */
 	public String argString() {
 		String s = "";
+		DecimalFormat format = new DecimalFormat("0.###");
 
 		switch (type) {
 		case RX:
@@ -616,7 +620,7 @@ class Element {
 			}
 			// constants always displayed with a sign character
 			if (constant != 0.0)
-				s += (constant < 0.0 ? "" : "+") + constant;
+				s += (constant < 0.0 ? "" : "+") + format.format(constant);
 			break;
 		case DH_STANDARD:
 		case DH_MODIFIED:
@@ -624,13 +628,15 @@ class Element {
 
             // theta
             if (prismatic == 0) {
+            	// revolute joint
                 s += var;
                 if (offset > 0)
-                    s += "+" + offset;
+                    s += "+" + format.format(offset);
                  else if (offset < 0)
-                    s += offset;
+                    s += format.format(offset);
             } else
-                s += theta;
+            	// prismatic joint
+                s += format.format(theta);
 			s += ", ";
 
             // d
@@ -645,7 +651,7 @@ class Element {
 			s += ", ";
 
             // alpha
-            s += alpha;
+            s += format.format(alpha);
 			break;
 		default:
 			throw new IllegalArgumentException("bad Element type");
