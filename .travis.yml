@@ -1,10 +1,10 @@
 language: java
 before_install:
  - mkdir lib
- - git clone https://github.com/petercorke/toolbox-common-matlab lib/toolbox-common-matlab
- - git clone https://github.com/petercorke/spatial-math lib/spatial-math
+ - git clone --depth 1 https://github.com/petercorke/toolbox-common-matlab lib/toolbox-common-matlab
+ - git clone --depth 1 https://github.com/petercorke/spatial-math lib/spatial-math
 install: source /dev/stdin <<< "$(curl -sL https://ssd.mathworks.com/supportfiles/matlab-runner/install)"
 script:
- - matlab-runner -xi .git -xi doc -xi lib/spatial-math/.git -xi lib/spatial-math/doc -xi lib/toolbox-common-matlab -sd unit_test "addpath ..; addpath ../lib/toolbox-common-matlab; addpath ../lib/spatial-math; addpath ../models; addpath ../data; addpath ../simulink; RunAllTests"
+ - matlab-runner -xi .git -xi doc -xi lib/spatial-math/.git -xi lib/spatial-math/doc -xi lib/toolbox-common-matlab -sd unit_test "RunAllTests"
 after_success:
  - bash <(curl -s https://codecov.io/bash)
