@@ -1,10 +1,10 @@
 % run the tests for Travis CI
 %
 % File system looks like this:
-%    robotics-toolbox-matlab
-%    robotics-toolbox-matlab/unit_test  ** WORKING folder
-%	 lib/toolbox-common
-%    lib/spatial-math-toolbox
+%    ./
+%    ./unit_test  ** WORKING folder
+%	 ./lib/toolbox-common
+%    ./lib/spatial-math-toolbox
 
 %% set up the test runner
 import matlab.unittest.plugins.CodeCoveragePlugin
@@ -40,18 +40,14 @@ pwd
 %% setup the path
 
 % for other toolboxes
-addpath ../../lib/toolbox-common-matlab
-addpath ../../lib/spatial-math
+addpath ../lib/toolbox-common-matlab
+addpath ../lib/spatial-math
 
 % for RTB
 addpath ..
 addpath ../models
 addpath ../data
 addpath ../simulink
-
-path
-dir('../../lib')
-dir('../../lib/spatial-math')
 
 
 %% Run all unit tests in my repository.
