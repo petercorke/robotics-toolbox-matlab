@@ -89,7 +89,8 @@ function vlooptest_test(testCase)
 end
 
 function plooptest_test(testCase)
-    sim('ploop_test', testCase.TestData.StopTime);
+    G = 107.815;   % in case not previously set by vloop_test
+    sim('ploop_test', 1);
 	close all
 
 end
