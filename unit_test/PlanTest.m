@@ -37,6 +37,9 @@ end
 
 function dxform_test(tc)
 
+    % requires MVTB
+    tc.assumeTrue( exist('imorph') == 2);
+
     nav = DXform(tc.TestData.map);
     tc.verifyInstanceOf(nav, 'DXform');
 
