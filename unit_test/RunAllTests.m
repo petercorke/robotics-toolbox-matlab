@@ -22,7 +22,7 @@ runner.addPlugin(plugin);
 
 %% compile some codecoverage
 
-originalDir = pwd;
+originalDir = pwd
 
 % build the Java classes
 cd ../java
@@ -33,8 +33,9 @@ javaaddpath DHFactor.jar
 cd ../mex
 make
 
+90
 cd(originalDir)
-
+91
 
 
 %% setup the path
@@ -49,8 +50,11 @@ addpath ../models
 addpath ../data
 addpath ../simulink
 
+92
 pwd
+93
 dir('..')
+dir('../lib')
 dir('../lib/toolbox-common-matlab')
 which xaxis
 which rotx
