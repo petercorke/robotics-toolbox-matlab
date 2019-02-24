@@ -35,6 +35,8 @@ make
 
 cd(originalDir)
 
+pwd
+
 %% setup the path
 
 % for other toolboxes
@@ -46,6 +48,11 @@ addpath ..
 addpath ../models
 addpath ../data
 addpath ../simulink
+
+path
+dir('../../lib')
+dir('../../lib/spatial-math')
+
 
 %% Run all unit tests in my repository.
 results = runner.run(suite);
