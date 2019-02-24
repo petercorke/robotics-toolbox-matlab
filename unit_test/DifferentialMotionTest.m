@@ -37,8 +37,8 @@ function vex_test(tc)
     verifyEqual(tc, vex([0 0 0;0 0 0;0 0 0]),...
             [0; 0; 0],'absTol',1e-4);
 
-    verifyError(tc, @()vex(1),'RTB:vex:badarg');
-    verifyError(tc, @()vex(zeros(4,4)),'RTB:vex:badarg');
+    verifyError(tc, @()vex(1),'SMTB:vex:badarg');
+    verifyError(tc, @()vex(zeros(4,4)),'SMTB:vex:badarg');
 
     % ---------------------------------------------------------------------
     %    wtrans                     - transform wrench between frames
@@ -61,7 +61,7 @@ function skewa_test(tc)
     verifyEqual(tc, skewa([1, 2, 3, 4, 5, 6]),...
             [0 -6 5 1; 6 0 -4 2; -5 4 0 3; 0 0 0 0],'absTol',1e-4);
 
-    verifyError(tc, @()skewa(1),'RTB:skewa:badarg');
+    verifyError(tc, @()skewa(1),'SMTB:skewa:badarg');
 
 end
 
@@ -75,7 +75,7 @@ function vexa_test(tc)
     verifyEqual(tc, vexa([0 -6 5 1; 6 0 -4 2; -5 4 0 3; 0 0 0 0]),...
             [1 2 3 4 5 6]','absTol',1e-4);
     
-    verifyError(tc, @()vexa(1),'RTB:vexa:badarg');
+    verifyError(tc, @()vexa(1),'SMTB:vexa:badarg');
 
 end
 
@@ -110,7 +110,7 @@ function eul2jac_test(tc)
 
     
      %Testing with a scalar number input 
-    verifyError(tc, @()eul2jac(1),'RTB:eul2jac:badarg');
+    verifyError(tc, @()eul2jac(1),'SMTB:eul2jac:badarg');
      
      % test Jacobian against numerical approximation 
      dth = 1e-6;
@@ -150,7 +150,7 @@ function rpy2jac_test(tc)
     
     
     %Testing with a scalar number input
-    verifyError(tc, @()rpy2jac(1),'RTB:rpy2jac:badarg');
+    verifyError(tc, @()rpy2jac(1),'SMTB:rpy2jac:badarg');
     
     % test Jacobian against numerical approximation for 3 different orders
     dth = 1e-6;
@@ -187,8 +187,8 @@ function tr2delta_test(tc)
         [0,0,0, 0.001,0,0]','absTol',1e-4);
     
     %Testing with a scalar number input
-    verifyError(tc, @()tr2delta(1),'RTB:tr2delta:badarg');
-    verifyError(tc, @()tr2delta( ones(3,3) ),'RTB:tr2delta:badarg');
+    verifyError(tc, @()tr2delta(1),'SMTB:tr2delta:badarg');
+    verifyError(tc, @()tr2delta( ones(3,3) ),'SMTB:tr2delta:badarg');
 
 end
     
@@ -209,7 +209,7 @@ function tr2jac_test(tc)
     
 
     % test with scalar value
-    verifyError(tc, @()tr2jac(1),'RTB:t2r:badarg');
+    verifyError(tc, @()tr2jac(1),'SMTB:t2r:badarg');
 end
      
 
