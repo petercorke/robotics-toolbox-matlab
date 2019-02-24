@@ -35,7 +35,7 @@ make
 
 cd(originalDir)
 
-pwd
+
 
 %% setup the path
 
@@ -49,8 +49,11 @@ addpath ../models
 addpath ../data
 addpath ../simulink
 
+pwd
+dir('..')
 dir('../lib/toolbox-common-matlab')
 which xaxis
+which rotx
 
 %% Run all unit tests in my repository.
 results = runner.run(suite);
