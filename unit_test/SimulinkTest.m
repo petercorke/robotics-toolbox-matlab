@@ -122,6 +122,8 @@ function quadcopter_test(testCase)
 
 end
 function quadcopter_vs_test(testCase)
+    testCase.assumeTrue( exist('SphericalCamera') == 2 );
+
     sim('sl_quadrotor_vs', testCase.TestData.StopTime/10);
 	close all
 end
