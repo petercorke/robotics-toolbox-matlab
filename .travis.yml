@@ -5,6 +5,6 @@ before_install:
  - git clone https://github.com/petercorke/spatial-math lib/spatial-math
 install: source /dev/stdin <<< "$(curl -sL https://ssd.mathworks.com/supportfiles/matlab-runner/install)"
 script:
- - matlab-runner -xi .git -xi doc -xi lib/spatial-math/.git -xi lib/spatial-math/doc -xi lib/toolbox-common-matlab/.git -sd unit_test "addpath ..; addpath ../lib/toolbox-common-matlab; addpath ../lib/spatial-math; addpath ../models; addpath ../data; addpath ../simulink; RunAllTests"
+ - matlab-runner --debug -xi .git -xi doc -xi lib/spatial-math/.git -xi lib/spatial-math/doc -xi lib/toolbox-common-matlab/.git -sd unit_test "addpath ..; addpath ../lib/toolbox-common-matlab; addpath ../lib/spatial-math; addpath ../models; addpath ../data; addpath ../simulink; RunAllTests"
 after_success:
  - bash <(curl -s https://codecov.io/bash)
