@@ -64,11 +64,39 @@ plot_sphere(p, 0.05, 'y');
 p560.plot3d(qrt, 'view', ae, 'movie', 'move2ball.gif');
 ```
 
-![robot animation](doc/figs/move2ball.gif)
+![Puma robot animation](doc/figs/move2ball.gif)
+
+### Quadrotor animation
+
+```matlab
+>>> sl_quadrotor
+```
+
+![Quadrotor animation](doc/figs/quad.gif)
+
+### Mobile robot animation
+
+```matlab
+V = diag([0.1, 1*pi/180].^2);
+veh = Vehicle(V);
+veh.add_driver( RandomPath(10) );
+map = Map(20, 10);
+W = diag([0.1, 1*pi/180].^2);
+L = diag([0.1 0.1]);
+Q = diag([0.1, 0.1, 1*pi/180]).^2;
+
+pf = ParticleFilter(veh, sensor, Q, L, 1000, 'movie', 'pf.mp4');
+pf.run(100);
+```
+
+A fully commented version of this is provided in the LiveScript `demos/particlefilt.mlx`.
+
+![Mobile robot particle filter animation](doc/figs/pf.gif)
 
 ## What's new
 
-* all code related to pose representation has been split out into the [Spatial Math Toolbox](https://github.com/petercorke/spatial-math).
+* Travis CI is now running on the code base
+*  all code related to pose representation has been split out into the [Spatial Math Toolbox](https://github.com/petercorke/spatial-math).
 * `SerialLink` class has a `twists` method which returns a vector of `Twist` objects, one per joint.  This supports the product of exponential formulation for forward kinematics and Jacobians.
 * a prototype URDF parser
 
