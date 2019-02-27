@@ -1,5 +1,8 @@
-[![GitHub stars](https://img.shields.io/github/stars/petercorke/robotics-toolbox-matlab.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/petercorke/robotics-toolbox-matlab/stargazers/)
+[![Build Status](https://travis-ci.com/petercorke/robotics-toolbox-matlab.svg?branch=master)](https://travis-ci.com/petercorke/robotics-toolbox-matlab)
+![Coverage](https://codecov.io/gh/petercorke/robotics-toolbox-matlab/branch/master/graph/badge.svg)
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/petercorke/robotics-toolbox-matlab/graphs/commit-activity)
+[![GitHub stars](https://img.shields.io/github/stars/petercorke/robotics-toolbox-matlab.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/petercorke/robotics-toolbox-matlab/stargazers/)
 
 
 # Robotics Toolbox for MATLAB&reg; release 10

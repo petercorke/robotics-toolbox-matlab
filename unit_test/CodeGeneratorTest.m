@@ -1,15 +1,5 @@
 function tests = CodeGeneratorTest
-    if (ismac || ispc)
-        
-        tests = functiontests(localfunctions);
-        clc
-    else
-        tests = functiontests({@passTest}); % hack for Travis
-    end
-    
-end
-
-function passTest(testCase)
+    tests = functiontests(localfunctions);
 end
 
 function setupOnce(testCase)

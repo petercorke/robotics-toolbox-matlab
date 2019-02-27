@@ -1,6 +1,6 @@
 % run the tests for Travis CI
 %
-% File system looks like this:
+% Travis file system looks like this:
 %    ./           ** RTB is unpacked at this level, not its own folder
 %    ./unit_test  ** WORKING folder
 %	 ./lib/toolbox-common
@@ -33,10 +33,7 @@ javaaddpath DHFactor.jar
 cd ../mex
 make
 
-90
 cd(originalDir)
-91
-
 
 %% setup the path
 
@@ -50,14 +47,6 @@ addpath ../models
 addpath ../data
 addpath ../simulink
 
-92
-pwd
-93
-dir('..')
-dir('../lib')
-dir('../lib/toolbox-common-matlab')
-which xaxis
-which rotx
 
 %% Run all unit tests in my repository.
 results = runner.run(suite);
