@@ -45,6 +45,8 @@ Probably easier to run the script from inside MATLAB
 ```
 you will need to have a C compiler installed and configured within MATLAB.
 
+MathWorks provide a free C compiler for Windows called [`MinGW`](http://www.mingw.org) (minimalist GNU compiler).  You can install this through the AddOns manager from MATLAB desktop.
+
 
 # Notes on performance
 
