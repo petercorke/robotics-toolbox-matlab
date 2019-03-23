@@ -23,12 +23,16 @@
 % For example, if the robot was controlled by a PD controller we can define
 % a function to compute the control
 %
-%         function tau = myftfun(t, q, qd, qstar, P, D)
-%           tau = P*(qstar-q) + D*qd;
+%         function tau = myftfun(q, qd, qstar, P, D)
+%           tau = (qstar-q)*P + qd*D;  % P, D are 6x6
+%         end
 %
-% and then integrate the robot dynamics with the control
+% and then integrate the robot dynamics with the control:
 %
-%         [t,q] = robot.fdyn(10, @myftfun, qstar, P, D);
+%         [t,q] = robot.fdyn(10, @(robot, t, q, qd) myftfun(q, qd, qstar, P, D) );
+%
+% where the lambda function ignores the passed values of robot and t but
+% adds qstar, P and D to argument list for myftfun.
 %
 % Note::
 % - This function performs poorly with non-linear joint friction, such as
