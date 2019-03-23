@@ -68,13 +68,17 @@ p560.plot3d(qrt, 'view', ae, 'movie', 'move2ball.gif');
 
 ### Quadrotor animation
 
+Mobile robot lifting off and hovering over a point following a circular trajectory, while also slowly turning.
+
 ```matlab
->>> sl_quadrotor
+>> sl_quadrotor
 ```
 
 ![Quadrotor animation](doc/figs/quad.gif)
 
 ### Mobile robot animation
+
+Mobile robot localizing from beacons using a particle filter.
 
 ```matlab
 V = diag([0.1, 1*pi/180].^2);
