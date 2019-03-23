@@ -25,17 +25,22 @@ runner.addPlugin(plugin);
 originalDir = pwd
 
 % build the Java classes
+fprintf('---------------------------------- Build Java classes ------------------------------------\n')
 cd ../java
 system('make')
 javaaddpath DHFactor.jar
 
 % build the MEX file
+fprintf('---------------------------------- Build MEX files ------------------------------------\n')
 cd ../mex
 make
+check
 
 cd(originalDir)
 
 %% setup the path
+fprintf('---------------------------------- Setup path ------------------------------------\n')
+
 
 % for other toolboxes
 addpath ../lib/toolbox-common-matlab
@@ -47,9 +52,12 @@ addpath ../models
 addpath ../data
 addpath ../simulink
 
+path
 
-%% Run all unit tests in my repository.
+%% Run all unit tests in my repository
+fprintf('---------------------------------- Run the unit tests ------------------------------------\n')
+
 results = runner.run(suite);
 
-%% Assert no tests failed.
+%% Assert no tests failed
 assert(all(~[results.Failed]));
