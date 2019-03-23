@@ -391,6 +391,8 @@ function opt = plot_options(robot, optin)
             % set xy limits to be integer multiple of tilesize
             opt.ws(1:4) = opt.tilesize * round(opt.workspace(1:4)/opt.tilesize);
             opt.ws(5:6) = opt.workspace(5:6);
+        else
+            opt.ws=opt.workspace; 
         end
     end
     
