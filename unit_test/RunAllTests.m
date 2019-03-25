@@ -22,6 +22,22 @@ runner.addPlugin(plugin);
 
 %% compile some codecoverage
 
+
+%% setup the path
+fprintf('---------------------------------- Setup path ------------------------------------\n')
+
+% for other toolboxes
+addpath ../lib/toolbox-common-matlab
+addpath ../lib/spatial-math
+
+% for RTB
+addpath ..
+addpath ../models
+addpath ../data
+addpath ../simulink
+
+path
+
 originalDir = pwd
 
 % build the Java classes
@@ -37,22 +53,6 @@ make
 check
 
 cd(originalDir)
-
-%% setup the path
-fprintf('---------------------------------- Setup path ------------------------------------\n')
-
-
-% for other toolboxes
-addpath ../lib/toolbox-common-matlab
-addpath ../lib/spatial-math
-
-% for RTB
-addpath ..
-addpath ../models
-addpath ../data
-addpath ../simulink
-
-path
 
 %% Run all unit tests in my repository
 fprintf('---------------------------------- Run the unit tests ------------------------------------\n')
