@@ -36,7 +36,8 @@ addpath ../models
 addpath ../data
 addpath ../simulink
 
-path
+%path
+system('mount');
 
 originalDir = pwd
 
