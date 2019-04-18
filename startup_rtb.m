@@ -47,12 +47,16 @@ function startup_rtb(tbpath)
     addpath( fullfile(tbpath, 'mex') );
     addpath( fullfile(tbpath, 'models') );
     addpath( fullfile(tbpath, 'data') );
-    javaaddpath( fullfile(tbpath, 'java', 'DHFactor.jar') );
+    if ~exist('DHFactor')
+        javaaddpath( fullfile(tbpath, 'java', 'DHFactor.jar') );
+    end
     addpath( fullfile(tbpath, 'interfaces', 'VREP') );
     % add the contrib code to the path
     rvcpath = fileparts(tbpath);  % strip one folder off path
     p = fullfile(rvcpath, 'contrib');
-    addpath(p)
+    if exist(p, 'dir')
+        addpath(p)
+    end
 
     p = fullfile(tbpath, 'data', 'ARTE');
     disp([' - ARTE contributed code: 3D models for robot manipulators (' p ')']);
