@@ -485,7 +485,11 @@ function h = create_robot(robot, opt)
     end
     
     if ~isempty(opt.trail)
-        h.trail = plot(0, 0, opt.trail{:});
+        if iscell(opt.trail)
+            h.trail = plot(0, 0, opt.trail{:});
+        else
+            h.trail = plot(0, 0, opt.trail);
+        end
         robot.trail = [];
     end
     
