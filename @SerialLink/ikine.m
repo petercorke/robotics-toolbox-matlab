@@ -109,7 +109,7 @@ function qt = ikine(robot, tr, varargin)
     
     n = robot.n;
     
-    TT = SE3.check(tr);
+    TT = SE3.convert(tr);
         
     %  set default parameters for solution
     opt.ilimit = 500;
