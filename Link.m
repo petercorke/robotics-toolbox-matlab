@@ -664,6 +664,11 @@ classdef Link < matlab.mixin.Copyable
             % - The link offset parameter is added to Q before computation of the transformation matrix.
             %
             % See also SerialLink.fkine.
+            
+            if iscell(q)
+                q = q{1};  % get value of cell, happens for the symfun case
+            end
+            
             sa = sin(L.alpha); ca = cos(L.alpha);
             if L.flip
                 q = -q + L.offset;
