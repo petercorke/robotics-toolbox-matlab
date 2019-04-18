@@ -100,7 +100,7 @@ A fully commented version of this is provided in the LiveScript `demos/particlef
 ## What's new
 
 * Travis CI is now running on the code base
-*  all code related to pose representation has been split out into the [Spatial Math Toolbox](https://github.com/petercorke/spatial-math).
+* All code related to pose representation has been split out into the [Spatial Math Toolbox](https://github.com/petercorke/spatial-math).
 * `SerialLink` class has a `twists` method which returns a vector of `Twist` objects, one per joint.  This supports the product of exponential formulation for forward kinematics and Jacobians.
 * a prototype URDF parser
 
@@ -115,12 +115,13 @@ To install the Toolbox on your computer from github follow these simple instruct
 From the shell:
 
 ```shell
-% mkdir rvctools
-% cd rvctools
-% git clone https://github.com/petercorke/robotics-toolbox-matlab.git robot
-% git clone https://github.com/petercorke/spatial-math.git sm
-% git clone https://github.com/petercorke/toolbox-common-matlab.git common
-% mv common/startup_rvc.m .
+mkdir rvctools
+cd rvctools
+git clone https://github.com/petercorke/robotics-toolbox-matlab.git robot
+git clone https://github.com/petercorke/spatial-math.git smtb
+git clone https://github.com/petercorke/toolbox-common-matlab.git common
+make -C robot
+mv common/startup_rvc.m .
 ```
 
 Then, from within MATLAB
@@ -130,8 +131,8 @@ Then, from within MATLAB
 ```
 The second line sets up the MATLAB path appropriately but it's only for the current session.  You can either:
 1. Repeat this everytime you start MATLAB
-2. Add it to your `startup.m` file
-3. Once you have run startup_rvc, run `pathtool` and push the `Save` button
+2. Add the MATLAB commands above to your `startup.m` file
+3. Once you have run startup_rvc, run `pathtool` and push the `Save` button, this will save the path settings for subsequent sessions.
 
 
 ## Online resources:
