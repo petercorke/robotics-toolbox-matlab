@@ -174,7 +174,7 @@ classdef ParticleFilter < handle
             opt.seed = [];
             opt.history = true;
             opt.x0 = [];
-            opt.movie = [];
+
 
 
             opt = tb_optparse(opt, varargin);
@@ -203,10 +203,8 @@ classdef ParticleFilter < handle
             if opt.x0
                 pf.x0 = opt.x0;
             end
+            
 
-            if ~isempty(opt.movie)
-                pf.anim = Animate(opt.movie);
-            end
         end
 
 
@@ -249,7 +247,10 @@ classdef ParticleFilter < handle
             %   cleared.
 
             opt.plot = true;
+            opt.movie = [];
             opt = tb_optparse(opt, varargin);
+
+            anim = Animate(opt.movie);
 
             pf.init();
             pf.sensor.map.plot();
@@ -263,15 +264,15 @@ classdef ParticleFilter < handle
             set(pf.h, 'Tag', 'particles');
             
             pf.robot.plot();
-            
-            if ~isempty(pf.anim)
-                pf.anim.add();
-            end
 
             % iterate over time
             for i=1:niter
                 pf.step(opt);
+                anim.add();
+
             end
+            
+            anim.close();
          end
 
          function step(pf, opt)
