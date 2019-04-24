@@ -124,7 +124,8 @@ function plot3d(robot, q, varargin)
             pth = fileparts(pth);
             % peel off the last folder
             s = regexp(pth, filesep, 'split');
-            pth = join(s(1:6), filesep);
+            robotDirInd = find(strcmp(s,'robot')); % Find the index of the folder 'robot'
+            pth = join(s(1:robotDirInd), filesep);
 
             % find the path to this specific model
             pth = fullfile(pth{1}, 'data/ARTE', robot.model3d);
