@@ -447,6 +447,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             
             R.links = [R.links L];
             r2 = R;
+            r2.n = length(R.links);
 
         end
         
