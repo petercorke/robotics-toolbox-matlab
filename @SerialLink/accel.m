@@ -51,9 +51,8 @@ function qdd = accel(robot, Q, qd, torque)
 	n = robot.n;
 
     if nargin == 2
-        if length(Q) ~= (3*robot.n)
-            error('RTB:accel:badarg', 'Input vector X is length %d, should be %d (q, qd, tau)', length(Q), 3*robot.n);
-        end
+        assert(length(Q) == (3*robot.n), 'RTB:accel:badarg', 'Input vector X is length %d, should be %d (q, qd, tau)', length(Q), 3*robot.n);
+
         % accel(X)
         Q = Q(:)';   % make it a row vector
 	    q = Q(1:n);
@@ -64,12 +63,9 @@ function qdd = accel(robot, Q, qd, torque)
         
         if numrows(Q) > 1
             % handle trajectory by recursion
-            if numrows(Q) ~= numrows(qd)
-                error('for trajectory q and qd must have same number of rows');
-            end
-            if numrows(Q) ~= numrows(torque)
-                error('for trajectory q and torque must have same number of rows');
-            end
+            assert(numrows(Q) == numrows(qd), 'RTB:accel:badarg', 'for trajectory q and qd must have same number of rows');
+            assert(numrows(Q) == numrows(torque), 'RTB:accel:badarg', 'for trajectory q and torque must have same number of rows');
+
             qdd = [];
             for i=1:numrows(Q)
                 qdd = cat(1, qdd, robot.accel(Q(i,:), qd(i,:), torque(i,:))');
@@ -81,18 +77,12 @@ function qdd = accel(robot, Q, qd, torque)
                 q = q(:)';
                 qd = qd(:)';
             end
-            if numcols(Q) ~= n
-                error('q must have %d columns', n);
-            end
-            if numcols(qd) ~= robot.n
-                error('qd must have %d columns', n);
-            end
-            if numcols(torque) ~= robot.n
-                error('torque must have %d columns', n);
-            end
+            assert(numcols(Q) == n, 'RTB:accel:badarg', 'q must have %d columns', n);
+            assert(numcols(qd) == robot.n, 'RTB:accel:badarg', 'qd must have %d columns', n);
+            assert(numcols(torque) == robot.n, 'RTB:accel:badarg', 'torque must have %d columns', n);
         end
     else
-        error('RTB:accel:badargs', 'insufficient arguments');
+        error('RTB:accel:badarg', 'insufficient arguments');
     end
 
 
@@ -107,3 +97,4 @@ function qdd = accel(robot, Q, qd, torque)
 	tau = rne(robot, q, qd, zeros(1,n));	
 
 	qdd = M \ (torque - tau)';
+end
