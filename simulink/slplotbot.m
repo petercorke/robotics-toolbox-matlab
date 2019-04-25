@@ -13,6 +13,7 @@ function [sys,x0,str,ts] = splotbot(t,x,u,flag, robot, fps, holdplot)
 		% initialize the robot graphics
 		[sys,x0,str,ts] = mdlInitializeSizes(fps);	% Init
         if ~isempty(robot)
+            clf
             robot.plot(zeros(1, robot.n), 'delay', 0, 'noraise')
         end
         if holdplot
