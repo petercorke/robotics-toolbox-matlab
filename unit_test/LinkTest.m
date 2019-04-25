@@ -1,9 +1,491 @@
 %% This is for testing the Link functions in the robotics Toolbox
 function tests = LinkTest
-  tests = functiontests(localfunctions);
+    tests = functiontests(localfunctions);
 end
-  
-%%    Link                       - construct a robot link object
+
+
+function constructor_classic_dh_test(tc)
+    L = Link();
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    
+    tc.verifyEqual(L.theta, 0);
+    tc.verifyEqual(L.d, 0);
+    tc.verifyEqual(L.a, 0);
+    tc.verifyEqual(L.alpha, 0);
+    tc.verifyEqual(L.offset, 0);
+    tc.verifyEqual(L.type, 'R');
+    tc.verifyTrue(isrevolute(L));
+    tc.verifyFalse(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    
+    L = Link([1 2 3 4]);
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    
+    tc.verifyEqual(L.theta, 1);
+    tc.verifyEqual(L.d, 2);
+    tc.verifyEqual(L.a, 3);
+    tc.verifyEqual(L.alpha, 4);
+    tc.verifyEqual(L.offset, 0);
+    tc.verifyEqual(L.type, 'R');
+    tc.verifyTrue(isrevolute(L));
+    tc.verifyFalse(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    
+    L = Link([1 2 3 4 1]);
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    
+    tc.verifyEqual(L.theta, 1);
+    tc.verifyEqual(L.d, 2);
+    tc.verifyEqual(L.a, 3);
+    tc.verifyEqual(L.alpha, 4);
+    tc.verifyEqual(L.offset, 0);
+    tc.verifyEqual(L.type, 'P');
+    tc.verifyFalse(isrevolute(L));
+    tc.verifyTrue(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    
+    L = Link([1 2 3 4 1 5]);
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    
+    tc.verifyEqual(L.theta, 1);
+    tc.verifyEqual(L.d, 2);
+    tc.verifyEqual(L.a, 3);
+    tc.verifyEqual(L.alpha, 4);
+    tc.verifyEqual(L.offset, 5);
+    tc.verifyEqual(L.type, 'P');
+    tc.verifyFalse(isrevolute(L));
+    tc.verifyTrue(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    
+    L = Link([1 2 3 4 1 5], 'standard');
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    
+    tc.verifyEqual(L.theta, 1);
+    tc.verifyEqual(L.d, 2);
+    tc.verifyEqual(L.a, 3);
+    tc.verifyEqual(L.alpha, 4);
+    tc.verifyEqual(L.offset, 5);
+    tc.verifyEqual(L.type, 'P');
+    tc.verifyFalse(isrevolute(L));
+    tc.verifyTrue(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    
+    verifyError(tc, @() Link(1), 'RTB:Link:badarg');
+    verifyError(tc, @() Link([1 2 3]), 'RTB:Link:badarg');
+    
+    % dynamics  standard revolute
+    L = Link([1 2 3 4 0 6:19 -20]);
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    
+    tc.verifyEqual(L.theta, 1);
+    tc.verifyEqual(L.d, 2);
+    tc.verifyEqual(L.a, 3);
+    tc.verifyEqual(L.alpha, 4);
+    tc.verifyEqual(L.offset, 0);
+    tc.verifyEqual(L.type, 'R');
+    tc.verifyTrue(isrevolute(L));
+    tc.verifyFalse(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    
+    tc.verifyEqual(L.m, 6);
+    tc.verifyEqual(L.r, [7:9]);
+    tc.verifyEqual(diag(L.I)', [10:12]);
+    tc.verifyEqual(diag(L.I,1)', [13:14]);
+    tc.verifyEqual(diag(L.I,2), 15);
+    tc.verifyEqual(L.Jm, 16);
+    tc.verifyEqual(L.G, 17);
+    tc.verifyEqual(L.B, 18);
+    tc.verifyEqual(L.Tc, [19 -20]);
+    
+    % dynamics standard prismatic
+    L = Link([1 2 3 4 1 6:19 -20]);
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    
+    tc.verifyEqual(L.theta, 1);
+    tc.verifyEqual(L.d, 2);
+    tc.verifyEqual(L.a, 3);
+    tc.verifyEqual(L.alpha, 4);
+    tc.verifyEqual(L.offset, 0);
+    tc.verifyEqual(L.type, 'P');
+    tc.verifyFalse(isrevolute(L));
+    tc.verifyTrue(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    
+    tc.verifyEqual(L.m, 6);
+    tc.verifyEqual(L.r, [7:9]);
+    tc.verifyEqual(diag(L.I)', [10:12]);
+    tc.verifyEqual(diag(L.I,1)', [13:14]);
+    tc.verifyEqual(diag(L.I,2), 15);
+    tc.verifyEqual(L.Jm, 16);
+    tc.verifyEqual(L.G, 17);
+    tc.verifyEqual(L.B, 18);
+    tc.verifyEqual(L.Tc, [19 -20]);
+    
+    
+end
+
+function constructor_classic_mdh_test(tc)
+    %     L = Link('modified');
+    %     tc.verifyTrue( isa(L, 'Link') );
+    %     tc.verifyEqual(L.theta, 0);
+    %     tc.verifyEqual(L.d, 0);
+    %     tc.verifyEqual(L.a, 0);
+    %     tc.verifyEqual(L.alpha, 0);
+    %     tc.verifyEqual(L.offset, 0);
+    %     tc.verifyEqual(L.type, 'R');
+    %     tc.verifyTrue(isrevolute(L));
+    %     tc.verifyFalse(isprismatic(L));
+    %     tc.verifyEqual(L.mdh, 1);
+    
+    L = Link([1 2 3 4], 'modified');
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.theta, 1);
+    tc.verifyEqual(L.d, 2);
+    tc.verifyEqual(L.a, 3);
+    tc.verifyEqual(L.alpha, 4);
+    tc.verifyEqual(L.offset, 0);
+    tc.verifyEqual(L.type, 'R');
+    tc.verifyTrue(isrevolute(L));
+    tc.verifyFalse(isprismatic(L));
+    tc.verifyEqual(L.mdh, 1);
+    
+    L = Link([1 2 3 4 1], 'modified');
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    
+    tc.verifyEqual(L.theta, 1);
+    tc.verifyEqual(L.d, 2);
+    tc.verifyEqual(L.a, 3);
+    tc.verifyEqual(L.alpha, 4);
+    tc.verifyEqual(L.offset, 0);
+    tc.verifyEqual(L.type, 'P');
+    tc.verifyFalse(isrevolute(L));
+    tc.verifyTrue(isprismatic(L));
+    tc.verifyEqual(L.mdh, 1);
+    
+    L = Link([1 2 3 4 1 5], 'modified');
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.theta, 1);
+    tc.verifyEqual(L.d, 2);
+    tc.verifyEqual(L.a, 3);
+    tc.verifyEqual(L.alpha, 4);
+    tc.verifyEqual(L.offset, 5);
+    tc.verifyEqual(L.type, 'P');
+    tc.verifyFalse(isrevolute(L));
+    tc.verifyTrue(isprismatic(L));
+    tc.verifyEqual(L.mdh, 1);
+    
+end
+
+function constructor_test(tc)
+    
+    % standard revolute
+    L = Link('d', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
+        'r', [10 11 12], 'I', [21:26], 'qlim', [30 31]);
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.d, 1);
+    tc.verifyEqual(L.a, 2);
+    tc.verifyEqual(L.alpha, 3);
+    tc.verifyEqual(L.B, 4);
+    tc.verifyEqual(L.m, 5);
+    tc.verifyEqual(L.G, 6);
+    tc.verifyEqual(L.Jm, 7);
+    tc.verifyEqual(L.Tc, [8 -9]);
+    tc.verifyEqual(L.r, [10 11 12]);
+    tc.verifyEqual(diag(L.I)', [21:23]);
+    tc.verifyEqual(diag(L.I,1)', [24:25]);
+    tc.verifyEqual(diag(L.I,2), 26);
+    tc.verifyEqual(L.qlim, [30 31]);
+    tc.verifyTrue(isrevolute(L));
+    tc.verifyFalse(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    
+    % standard revolute
+    L = Link('d', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
+        'r', [10 11 12], 'I', [21:26], 'qlim', [30 31], 'revolute', 'standard');
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.d, 1);
+    tc.verifyEqual(L.a, 2);
+    tc.verifyEqual(L.alpha, 3);
+    tc.verifyEqual(L.B, 4);
+    tc.verifyEqual(L.m, 5);
+    tc.verifyEqual(L.G, 6);
+    tc.verifyEqual(L.Jm, 7);
+    tc.verifyEqual(L.Tc, [8 -9]);
+    tc.verifyEqual(L.r, [10 11 12]);
+    tc.verifyEqual(diag(L.I)', [21:23]);
+    tc.verifyEqual(diag(L.I,1)', [24:25]);
+    tc.verifyEqual(diag(L.I,2), 26);
+    tc.verifyEqual(L.qlim, [30 31]);
+    tc.verifyTrue(isrevolute(L));
+    tc.verifyFalse(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    
+    % standard prismatic
+    L = Link('d', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
+        'r', [10 11 12], 'I', [21:26], 'qlim', [30 31], 'prismatic');
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.d, 1);
+    tc.verifyEqual(L.a, 2);
+    tc.verifyEqual(L.alpha, 3);
+    tc.verifyEqual(L.B, 4);
+    tc.verifyEqual(L.m, 5);
+    tc.verifyEqual(L.G, 6);
+    tc.verifyEqual(L.Jm, 7);
+    tc.verifyEqual(L.Tc, [8 -9]);
+    tc.verifyEqual(L.r, [10 11 12]);
+    tc.verifyEqual(diag(L.I)', [21:23]);
+    tc.verifyEqual(diag(L.I,1)', [24:25]);
+    tc.verifyEqual(diag(L.I,2), 26);
+    tc.verifyEqual(L.qlim, [30 31]);
+    tc.verifyFalse(isrevolute(L));
+    tc.verifyTrue(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    
+    % modified revolute
+    L = Link('d', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
+        'r', [10 11 12], 'I', [21:26], 'qlim', [30 31], 'modified');
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.d, 1);
+    tc.verifyEqual(L.a, 2);
+    tc.verifyEqual(L.alpha, 3);
+    tc.verifyEqual(L.B, 4);
+    tc.verifyEqual(L.m, 5);
+    tc.verifyEqual(L.G, 6);
+    tc.verifyEqual(L.Jm, 7);
+    tc.verifyEqual(L.Tc, [8 -9]);
+    tc.verifyEqual(L.r, [10 11 12]);
+    tc.verifyEqual(diag(L.I)', [21:23]);
+    tc.verifyEqual(diag(L.I,1)', [24:25]);
+    tc.verifyEqual(diag(L.I,2), 26);
+    tc.verifyEqual(L.qlim, [30 31]);
+    tc.verifyTrue(isrevolute(L));
+    tc.verifyFalse(isprismatic(L));
+    tc.verifyEqual(L.mdh, 1);
+    
+    % modified prismatic
+    L = Link('d', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
+        'r', [10 11 12], 'I', [21:26], 'qlim', [30 31], 'modified', 'prismatic');
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.d, 1);
+    tc.verifyEqual(L.a, 2);
+    tc.verifyEqual(L.alpha, 3);
+    tc.verifyEqual(L.B, 4);
+    tc.verifyEqual(L.m, 5);
+    tc.verifyEqual(L.G, 6);
+    tc.verifyEqual(L.Jm, 7);
+    tc.verifyEqual(L.Tc, [8 -9]);
+    tc.verifyEqual(L.r, [10 11 12]);
+    tc.verifyEqual(diag(L.I)', [21:23]);
+    tc.verifyEqual(diag(L.I,1)', [24:25]);
+    tc.verifyEqual(diag(L.I,2), 26);
+    tc.verifyEqual(L.qlim, [30 31]);
+    tc.verifyFalse(isrevolute(L));
+    tc.verifyTrue(isprismatic(L));
+    tc.verifyEqual(L.mdh, 1);
+    
+    verifyError(tc, @() Link('theta', 1, 'd', 2), 'RTB:Link:badarg');
+    
+    % symbolic
+    L = Link('d', 1, 'a', 2, 'alpha', 3, 'sym');
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyTrue(L.issym);
+    
+    tc.verifyTrue(isa(L.d, 'sym'));
+    tc.verifyTrue(eval(L.d == 1));
+    
+    tc.verifyTrue(isa(L.a, 'sym'));
+    tc.verifyTrue(eval(L.a == 2));
+    
+    tc.verifyTrue(isa(L.alpha, 'sym'));
+    tc.verifyTrue(eval(L.alpha == 3));
+    
+    L = Link('theta', 1, 'a', 2, 'alpha', 3, 'sym');
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyTrue(L.issym);
+    
+    tc.verifyTrue(isa(L.theta, 'sym'));
+    tc.verifyTrue(eval(L.theta == 1));
+    
+    tc.verifyTrue(isa(L.a, 'sym'));
+    tc.verifyTrue(eval(L.a == 2));
+    
+    tc.verifyTrue(isa(L.alpha, 'sym'));
+    tc.verifyTrue(eval(L.alpha == 3));
+    
+end
+
+%% test the convenience subclasses
+function constructor_revolute_test(tc)
+    L = Revolute();
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.d, 0);
+    tc.verifyEqual(L.a, 0);
+    tc.verifyEqual(L.alpha, 0);
+    tc.verifyEqual(L.offset, 0);
+    tc.verifyEqual(L.type, 'R');
+    tc.verifyTrue(isrevolute(L));
+    tc.verifyFalse(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    
+    L = Revolute('d', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
+        'r', [10 11 12], 'I', [21:26], 'qlim', [30 31]);
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.d, 1);
+    tc.verifyEqual(L.a, 2);
+    tc.verifyEqual(L.alpha, 3);
+    tc.verifyEqual(L.B, 4);
+    tc.verifyEqual(L.m, 5);
+    tc.verifyEqual(L.G, 6);
+    tc.verifyEqual(L.Jm, 7);
+    tc.verifyEqual(L.Tc, [8 -9]);
+    tc.verifyEqual(L.r, [10 11 12]);
+    tc.verifyEqual(diag(L.I)', [21:23]);
+    tc.verifyEqual(diag(L.I,1)', [24:25]);
+    tc.verifyEqual(diag(L.I,2), 26);
+    tc.verifyEqual(L.qlim, [30 31]);
+    tc.verifyTrue(isrevolute(L));
+    tc.verifyFalse(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    tc.verifyEqual(L.type, 'R');
+    
+end
+
+
+
+function constructor_prismatic_test(tc)
+    L = Prismatic();
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.theta, 0);
+    tc.verifyEqual(L.a, 0);
+    tc.verifyEqual(L.alpha, 0);
+    tc.verifyEqual(L.offset, 0);
+    tc.verifyEqual(L.type, 'P');
+    tc.verifyFalse(isrevolute(L));
+    tc.verifyTrue(isprismatic(L));
+    tc.verifyEqual(L.mdh, 0);
+    
+    L = Prismatic('theta', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
+        'r', [10 11 12], 'I', [21:26], 'qlim', [30 31]);
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.theta, 1);
+    tc.verifyEqual(L.a, 2);
+    tc.verifyEqual(L.alpha, 3);
+    tc.verifyEqual(L.B, 4);
+    tc.verifyEqual(L.m, 5);
+    tc.verifyEqual(L.G, 6);
+    tc.verifyEqual(L.Jm, 7);
+    tc.verifyEqual(L.Tc, [8 -9]);
+    tc.verifyEqual(L.r, [10 11 12]);
+    tc.verifyEqual(diag(L.I)', [21:23]);
+    tc.verifyEqual(diag(L.I,1)', [24:25]);
+    tc.verifyEqual(diag(L.I,2), 26);
+    tc.verifyEqual(L.qlim, [30 31]);
+    tc.verifyEqual(L.type, 'P');
+    tc.verifyFalse(isrevolute(L));
+    tc.verifyTrue(isprismatic(L));
+    
+    tc.verifyEqual(L.mdh, 0);
+    
+end
+
+
+
+function constructor_revolute_mdh_test(tc)
+    L = RevoluteMDH();
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.d, 0);
+    tc.verifyEqual(L.a, 0);
+    tc.verifyEqual(L.alpha, 0);
+    tc.verifyEqual(L.offset, 0);
+    tc.verifyEqual(L.type, 'R');
+    tc.verifyTrue(isrevolute(L));
+    tc.verifyFalse(isprismatic(L));
+    tc.verifyEqual(L.mdh, 1);
+    
+    L = RevoluteMDH('d', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
+        'r', [10 11 12], 'I', [21:26], 'qlim', [30 31]);
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.d, 1);
+    tc.verifyEqual(L.a, 2);
+    tc.verifyEqual(L.alpha, 3);
+    tc.verifyEqual(L.B, 4);
+    tc.verifyEqual(L.m, 5);
+    tc.verifyEqual(L.G, 6);
+    tc.verifyEqual(L.Jm, 7);
+    tc.verifyEqual(L.Tc, [8 -9]);
+    tc.verifyEqual(L.r, [10 11 12]);
+    tc.verifyEqual(diag(L.I)', [21:23]);
+    tc.verifyEqual(diag(L.I,1)', [24:25]);
+    tc.verifyEqual(diag(L.I,2), 26);
+    tc.verifyEqual(L.qlim, [30 31]);
+    tc.verifyTrue(isrevolute(L));
+    tc.verifyFalse(isprismatic(L));
+    tc.verifyEqual(L.type, 'R');
+    
+    tc.verifyEqual(L.mdh, 1);
+end
+
+function constructor_prismatic_mdh_test(tc)
+    L = PrismaticMDH();
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.theta, 0);
+    tc.verifyEqual(L.a, 0);
+    tc.verifyEqual(L.alpha, 0);
+    tc.verifyEqual(L.offset, 0);
+    tc.verifyEqual(L.type, 'P');
+    tc.verifyFalse(isrevolute(L));
+    tc.verifyTrue(isprismatic(L));
+    tc.verifyEqual(L.mdh, 1);
+    
+    L = PrismaticMDH('theta', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
+        'r', [10 11 12], 'I', [21:26], 'qlim', [30 31]);
+    tc.verifyTrue( isa(L, 'Link') );
+    tc.verifyFalse(L.issym);
+    tc.verifyEqual(L.theta, 1);
+    tc.verifyEqual(L.a, 2);
+    tc.verifyEqual(L.alpha, 3);
+    tc.verifyEqual(L.B, 4);
+    tc.verifyEqual(L.m, 5);
+    tc.verifyEqual(L.G, 6);
+    tc.verifyEqual(L.Jm, 7);
+    tc.verifyEqual(L.Tc, [8 -9]);
+    tc.verifyEqual(L.r, [10 11 12]);
+    tc.verifyEqual(diag(L.I)', [21:23]);
+    tc.verifyEqual(diag(L.I,1)', [24:25]);
+    tc.verifyEqual(diag(L.I,2), 26);
+    tc.verifyEqual(L.qlim, [30 31]);
+    tc.verifyEqual(L.type, 'P');
+    tc.verifyFalse(isrevolute(L));
+    tc.verifyTrue(isprismatic(L));
+    tc.verifyEqual(L.mdh, 1);
+end
+
+
+
+%%  construct a robot link object
 function Link_test(tc)
     %create a 2 link arm with Link
     L(1)=Link([1 1 1 1 1]);
@@ -80,6 +562,18 @@ function deepcopy_test(tc)
     L.a = 10;
     verifyEqual(tc, L.a, 10);
     verifyEqual(tc, L2.a, 3);
+end
+
+function RP_test(tc)
+    L = Link();
+    
+    tc.verifyEqual(L.RP, 'R');
+    tc.verifyWarning( @() L.RP, 'RTB:Link:deprecated');
+end
+
+function type_test(tc)
+    L = [ Revolute() Prismatic()  Prismatic() Revolute()];
+    tc.verifyEqual(L.type, 'RPPR');
 end
 
 function set_test(tc)
@@ -170,6 +664,18 @@ function coulomb_friction_test(tc)
 
     verifyEqual(tc, L.friction(1), -Tc(1)*G);
     verifyEqual(tc, L.friction(-1), -Tc(2)*G);
+    
+    L.Tc = [];  % does nothing
+    verifyEqual(tc, L.friction(1), -Tc(1)*G);
+    verifyEqual(tc, L.friction(-1), -Tc(2)*G);
+        
+    %tc.verifyError( @() L.Tc = [1 2 3], 'RTB:Link:badarg');
+    
+    function wrapper()
+        L.Tc = [1 2 3]
+    end
+    
+    tc.verifyError( @wrapper, 'RTB:Link:badarg');
 end
 
 
@@ -200,76 +706,54 @@ function nofriction_test(tc)
     verifyTrue(tc,  all(Lnf.Tc == 0) );
 end
 
-% test the convenience subclasses
-function revolute_test(tc)
-    L = Revolute();
-    
-    tc.verifyTrue( isa(L, 'Link') );
-    tc.verifyTrue( L.isrevolute );
-    
-    tc.verifyEqual(L.a, 0);
-    tc.verifyEqual(L.d, 0);
-    tc.verifyEqual(L.alpha, 0);
-    tc.verifyEqual(L.mdh, 0);
-    
-    L = Revolute('d', 1, 'a', 2, 'alpha', 3, 'B', 4);
-    tc.verifyEqual(L.d, 1);
-    tc.verifyEqual(L.a, 2);
-    tc.verifyEqual(L.alpha, 3);
-    tc.verifyEqual(L.B, 4);
+function flip_test(tc)
+    L = Link();
+    tc.verifyFalse(L.flip);
+    L = Link('flip');
+    tc.verifyTrue(L.flip);
 end
 
-function prismatic_test(tc)
-    L = Prismatic();
+function A_test(tc)
+    L = Link([1 2 3 pi/2]);
+    tc.verifyEqual(L.A(0).T, [1 0 0 3; 0 0 -1 0; 0 1 0 2; 0 0 0 1], 'AbsTol', 1e-10);
+    tc.verifyEqual(L.A({0}).T, [1 0 0 3; 0 0 -1 0; 0 1 0 2; 0 0 0 1], 'AbsTol', 1e-10);
     
-    tc.verifyTrue( isa(L, 'Link') );
-    tc.verifyTrue( L.isprismatic );
     
-    tc.verifyEqual(L.a, 0);
-    tc.verifyEqual(L.theta, 0);
-    tc.verifyEqual(L.alpha, 0);
-    tc.verifyEqual(L.mdh, 0);
+    A = [0 0 1 0; 1 0 0 3; 0 1 0 2; 0 0 0 1];
     
-    L = Prismatic('theta', 1, 'a', 2, 'alpha', 3, 'B', 4);
-    tc.verifyEqual(L.theta, 1);
-    tc.verifyEqual(L.a, 2);
-    tc.verifyEqual(L.alpha, 3);
-    tc.verifyEqual(L.B, 4);
+    tc.verifyEqual(L.A(pi/2).T, A, 'AbsTol', 1e-10);
+    L.flip = true;
+    tc.verifyEqual(L.A(-pi/2).T, A, 'AbsTol', 1e-10);
+    
 end
 
-function revolute_mdh_test(tc)
-    L = RevoluteMDH();
+function char_test(tc)
     
-    tc.verifyTrue( isa(L, 'Link') );
-    tc.verifyTrue( L.isrevolute );
+    L = [ Revolute() Prismatic()  Prismatic() Revolute()];
+    s = char(L);
+    tc.verifyTrue(ischar(s));
+    tc.verifyEqual(size(s,1), 4);
     
-    tc.verifyEqual(L.a, 0);
-    tc.verifyEqual(L.d, 0);
-    tc.verifyEqual(L.alpha, 0);
-    tc.verifyEqual(L.mdh, 1);
+    s = char(L, true);
+    tc.verifyTrue(ischar(s));
+    tc.verifyEqual(size(s,1), 4);
     
-    L = RevoluteMDH('d', 1, 'a', 2, 'alpha', 3, 'B', 4);
-    tc.verifyEqual(L.d, 1);
-    tc.verifyEqual(L.a, 2);
-    tc.verifyEqual(L.alpha, 3);
-    tc.verifyEqual(L.B, 4);
+    
+        L = [ RevoluteMDH() PrismaticMDH()  PrismaticMDH() RevoluteMDH()];
+    s = char(L);
+    tc.verifyTrue(ischar(s));
+    tc.verifyEqual(size(s,1), 4);
+    
+    s = char(L, true);
+    tc.verifyTrue(ischar(s));
+    tc.verifyEqual(size(s,1), 4);
 end
 
-function prismatic_mdh_test(tc)
-    L = PrismaticMDH();
+function plus_test(tc)
+    R = Revolute()+Prismatic()+Prismatic()+ Revolute();
     
-    tc.verifyTrue( isa(L, 'Link') );
-    tc.verifyTrue( L.isprismatic );
-    
-    tc.verifyEqual(L.a, 0);
-    tc.verifyEqual(L.theta, 0);
-    tc.verifyEqual(L.alpha, 0);
-    tc.verifyEqual(L.mdh, 1);
-    
-    L = PrismaticMDH('theta', 1, 'a', 2, 'alpha', 3, 'B', 4);
-    tc.verifyEqual(L.theta, 1);
-    tc.verifyEqual(L.a, 2);
-    tc.verifyEqual(L.alpha, 3);
-    tc.verifyEqual(L.B, 4);
+    tc.verifyTrue(isa(R, 'SerialLink'));
+    tc.verifyEqual(R.n, 4);
+    tc.verifyEqual(R.config, 'RPPR');
 end
 
