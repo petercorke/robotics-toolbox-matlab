@@ -52,7 +52,9 @@ L(2) = Link([ 0     0.154   0    pi/2     0]);
 L(3) = Link([ -pi/2 0       0    0        1]);  % PRISMATIC link
 L(4) = Link([ 0     0       0   -pi/2     0]);
 L(5) = Link([ 0     0       0    pi/2     0]);
-L(6) = Link([ 0     0.263   0    0        0]);
+L(6) = Link([ 0     0       0    0        0]);
+
+tool = transl(0, 0, 0.263);
 
 % guestimates of some parameters
 %
@@ -110,3 +112,4 @@ qz = [0 0 0 0 0 0];
 stanf = SerialLink(L, 'name', 'Stanford arm');
 stanf.plotopt = {'workspace', [-2 2 -2 2 -2 2]};
 stanf.model3d = 'example/stanford';
+stanf.tool = tool;
