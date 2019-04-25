@@ -221,9 +221,9 @@ classdef Link < matlab.mixin.Copyable
             %   inertia will be considered if they are non-zero.
             %
             % See also Revolute, Prismatic, RevoluteMDH, PrismaticMDH.
-            
-            %TODO eliminate legacy dyn matrix
-            
+                        
+
+                
             if nargin == 0
                 % create an 'empty' Link object
                 % this call signature is needed to support arrays of Links
@@ -250,6 +250,7 @@ classdef Link < matlab.mixin.Copyable
                 l.G = 1;
                 l.B = 0;
                 l.Tc = [0 0];
+                
             elseif nargin == 1 && isa(varargin{1}, 'Link')
                 % clone the passed Link object
                 this = varargin{1};
@@ -318,6 +319,13 @@ classdef Link < matlab.mixin.Copyable
                     l.flip = value( opt.flip, opt);
 
                     l.qlim =   value( opt.qlim, opt);
+                    
+                    switch (opt.type) 
+                        case 'revolute'
+                            l.jointtype = 'R';
+                        case 'prismatic'
+                            l.jointtype = 'P';
+                    end
                     
                     l.m = value( opt.m, opt);
                     l.r = value( opt.r, opt);
