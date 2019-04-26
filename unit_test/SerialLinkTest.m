@@ -216,26 +216,32 @@ end
 
 function ikine_sym_test(tc)
 
-    sol = tc.TestData.p2.ikine_sym(2);
+    p2 = SerialLink(tc.TestData.p2); % clone it
     
-    tc.verifyEqual(length(sol), 2);
-    tc.verifyTrue(iscell(sol));
-    tc.verifyTrue(isa(sol{1}, 'sym'));
-    tc.verifyEqual(length(sol{1}), 2);
-    tc.verifyTrue(isa(sol{2}, 'sym'));
-    tc.verifyEqual(length(sol{1}), 2);
+    q = p2.ikine_sym(2);
     
+    % is the solution sane
+    tc.verifyLength(q, 2);
+    tc.verifyTrue(iscell(q));
+    tc.verifyTrue(isa(q{1}, 'sym'));
+    tc.verifyLength(q{1}, 2);
+    tc.verifyTrue(isa(q{2}, 'sym'));
+    tc.verifyLength(q{1}, 2);
     
-    mdl_planar2
-    
-    q = eval( subs(sol{1}, {'tx', 'ty'}, {1,1}));
-    tc.verifyEqual( transl(p2.fkine(q)), [1 1 0]);
-    
-    tc.assumeTrue(false);  %HACK
+    % process the solutions
+    q1 = subs(q{1}, {'tx', 'ty'}, {1,1});   % convert to numeric
+    sol = eval(q1)';
+    q2 = subs(q{2}, {'tx', 'ty', 'q1'}, {1,1, q1(1)});
+    x = eval(q2);  % first solution
+    sol(1,2) = x(1);
+    q2 = subs(q{2}, {'tx', 'ty', 'q1'}, {1,1, q1(2)}); % second solution
+    x = eval(q2);  
+    sol(2,2) = x(1);
 
-    q = eval( subs(sol{2}, {'tx', 'ty'}, {1,1}));   
-    tc.verifyEqual( transl(p2.fkine(q)), [1 1 0]);
-    
+    % check the FK is good
+    tc.verifyEqual(transl(tc.TestData.p2.fkine(sol(1,:))), [1 1 0]);
+    tc.verifyEqual(transl(tc.TestData.p2.fkine(sol(2,:))), [1 1 0]);
+
     tc.verifyError( @() tc.TestData.p2.ikine_sym(4), 'RTB:ikine_sym:badarg');
 end
 
