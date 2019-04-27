@@ -6,6 +6,22 @@ function tests = SerialLinkTest
     
 end
 
+function setupOnce(tc)
+    
+    mdl_puma560;
+    tc.TestData.p560 = p560;
+    mdl_planar2
+    tc.TestData.p2 = p2;
+    mdl_puma560akb
+    tc.TestData.p560m = p560m;
+    mdl_stanford
+    tc.TestData.stanf = stanf;
+end
+
+function teardownOnce(tc)
+    close all
+end
+
 %% Serial-link manipulator
 %    SerialLink                 - construct a serial-link robot object
 function SerialLink_test(tc)
@@ -82,8 +98,7 @@ function fkine_test(tc)
     tc.verifyEqual(length(T), 2, 'SE3' );;
 end
 
-%    plot                       - plot/animate robot
-function SerialLink_plot_test(tc)
+function plot_test(tc)
     L(1)=Link([1 1 1 1 0]);
     L(1).qlim = [-5 5];
     L(2)=Link([0 1 0 1 0]);
@@ -92,7 +107,13 @@ function SerialLink_plot_test(tc)
     R1.plot([1 1]);
 end
 
-%    teach                      - drive a graphical  robot
+function plot3d_test(tc)
+    clf
+    tc.TestData.p560.plot3d( tc.TestData.p560.qn );
+    close(gcf)
+end
+
+
 function teach_test(tc)
     L(1)=Link([1 1 1 1 0]);
     L(2)=Link([0 1 0 1 0]);
@@ -103,34 +124,124 @@ function teach_test(tc)
     pause(0.5);
 end
 
-%        ikine                  - inverse kinematics (numeric)
-function ikine_test(tc)
-    mdl_puma560;
-    qn = [0 pi/4 -pi 0 pi/4 0];
-    T = p560.fkine(qn);
-    qik = p560.ikine(T, [0 0 3 0 0 0]);
+%%-------------------------------------------------------------------------- 
+%inverse kinematics for 6-axis arm with sph.wrist
+function ikine6s_puma_test(tc)
     
-    T2 = p560.fkine(qik);
-    tc.verifyEqual(T.T, T2.T,'absTol',1e-6);
-    
-end
-
-%        ikine6s                - inverse kinematics for 6-axis arm with sph.wrist
-function ikine6s_test(tc)
+    % puma case
     mdl_puma560;
     qn = [0 pi/4 -pi 1 pi/4 0];
     T = p560.fkine(qn);
     qik = p560.ikine6s(T,'ru');
-    tc.verifyEqual(p560.fkine(qik).T, T.T,'absTol',1e-6);
+    tc.verifyEqual(p560.fkine(qik).T, T.T, 'absTol', 1e-6);
     tc.verifyTrue(qik(2) > 0);
     
     T = p560.fkine(qn);
     qik = p560.ikine6s(T,'ld');
-    tc.verifyEqual(p560.fkine(qik).T, T.T,'absTol',1e-6);
+    tc.verifyEqual(p560.fkine(qik).T, T.T, 'absTol', 1e-6);
     tc.verifyTrue(qik(2) < 0);
+    
+    
+    % error handling
+    mdl_puma560akb
+    
+    tc.verifyError( @() p560m.ikine6s(T), 'RTB:ikine:notsupported' );
+    tc.verifyError( @() tc.TestData.p2.ikine6s(T), 'RTB:ikine:notsupported' );
+    
 end
 
-%        jacob0                 - Jacobian in base coordinate frame
+
+function ikine6s_stanford_test(tc)
+   
+    % stanford arm case
+    q = [pi/4 pi/4 0.3 pi/4 -pi/4 pi/4];
+    T = tc.TestData.stanf.fkine(q);
+    qik = tc.TestData.stanf.ikine6s(T);
+    tc.verifyEqual(tc.TestData.stanf.fkine(qik).T, T.T, 'absTol', 1e-6);
+    
+end
+
+function ikine6s_KR5_test(tc)
+   
+    % kr5 arm case
+    mdl_KR5
+    q = [0 pi/4 -pi 1 pi/4 0];
+    T = KR5.fkine(q);
+    qik = KR5.ikine6s(T);
+    tc.verifyEqual(KR5.fkine(qik).T, T.T, 'absTol', 1e-6);
+
+end
+
+function ikine6s_IRB140_test(tc)
+
+    tc.assumeTrue(false);  %HACK
+    
+    % nooffset type
+    mdl_irb140
+    q = [0 -3*pi/4 0 0 pi/4 0];
+    T = irb140.fkine(q);
+    qik = irb140.ikine6s(T);
+    tc.verifyEqual(irb140.fkine(qik).T, T.T, 'absTol', 1e-6);
+    
+
+end
+
+function ikine_test(tc)
+    T = tc.TestData.p560.fkine(tc.TestData.p560.qn);
+    qik = tc.TestData.p560.ikine(T, [0 0 3 0 0 0]);
+    
+    T2 = tc.TestData.p560.fkine(qik);
+    tc.verifyEqual(T.T, T2.T,'absTol',1e-6);
+end
+
+function ikunc_optim_test(tc)
+    T = tc.TestData.p560.fkine(tc.TestData.p560.qn);
+    qik = tc.TestData.p560.ikunc(T);
+    
+    T2 = tc.TestData.p560.fkine(qik);
+    tc.verifyEqual(T.T, T2.T,'absTol',1e-6);
+end
+
+function ikcon_optim_test(tc)
+    
+        tc.assumeTrue(false);  %HACK
+
+    qn = [0 pi/4 -pi 0 pi/4 0];
+    T = tc.TestData.p560.fkine(qn);
+    qik = tc.TestData.p560.ikcon(T);
+    
+    T2 = tc.TestData.p560.fkine(qik);
+    tc.verifyEqual(T.T, T2.T,'absTol',1e-6);
+end
+
+function ikine_sym_test(tc)
+
+    sol = tc.TestData.p2.ikine_sym(2);
+    
+    tc.verifyEqual(length(sol), 2);
+    tc.verifyTrue(iscell(sol));
+    tc.verifyTrue(isa(sol{1}, 'sym'));
+    tc.verifyEqual(length(sol{1}), 2);
+    tc.verifyTrue(isa(sol{2}, 'sym'));
+    tc.verifyEqual(length(sol{1}), 2);
+    
+    
+    mdl_planar2
+    
+    q = eval( subs(sol{1}, {'tx', 'ty'}, {1,1}));
+    tc.verifyEqual( transl(p2.fkine(q)), [1 1 0]);
+    
+    tc.assumeTrue(false);  %HACK
+
+    q = eval( subs(sol{2}, {'tx', 'ty'}, {1,1}));   
+    tc.verifyEqual( transl(p2.fkine(q)), [1 1 0]);
+    
+    tc.verifyError( @() tc.TestData.p2.ikine_sym(4), 'RTB:ikine_sym:badarg');
+end
+
+
+%%--------------------------------------------------------------------------
+
 function jacob0_test(tc)
     mdl_puma560;
     qz = [0 1 0 0 2 0];
@@ -153,7 +264,6 @@ function jacob0_test(tc)
     tc.verifyEqual(out,expected_out,'absTol',1e-4);
 end
 
-%        jacobn                 - Jacobian in end-effector coordinate frame
 function jacobe_test(tc)
     mdl_puma560;
     qz = [0 1 0 0 2 0];
@@ -176,7 +286,6 @@ function jacobe_test(tc)
     tc.verifyEqual(out,expected_out,'absTol',1e-4);
 end
 
-%    maniplty                   - compute manipulability
 function maniplty_test(tc)
     mdl_puma560;
     q = [0 pi/4 -pi 1 pi/4 0];
@@ -186,7 +295,6 @@ function maniplty_test(tc)
     tc.verifyEqual(p560.maniplty(q, 'asada', 'trans'), 0.2733, 'absTol',1e-4);
 end
 
-%
 %%     Dynamics methods
 
 function rne_test(tc)
@@ -249,19 +357,19 @@ end
 
 %        accel                  - forward dynamics
 function accel_test(tc)
-    mdl_puma560;
     qd = 0.5 * [1 1 1 1 1 1];
     qz = [0 1 0 0 2 0];
-    Q = p560.rne(qn,qz,qz);
-    out = p560.accel(qz, qd, Q);
+    Q = tc.TestData.p560.rne(tc.TestData.p560.qn, qz, qz);
+    
+    out = tc.TestData.p560.accel(qz, qd, Q);
     expected_out = [  -9.3397 4.9666 1.6095 -5.4305 5.9885 -2.1228]';
     
     tc.verifyEqual(out, expected_out,'absTol',1e-4);
     
-    out = p560.accel([qz, qd,Q]);
+    out = tc.TestData.p560.accel([qz, qd,Q]);
     tc.verifyEqual(out, expected_out,'absTol',1e-4);
     
-    out = p560.accel([qz, qd,Q]');
+    out = tc.TestData.p560.accel([qz, qd,Q]');
     tc.verifyEqual(out,expected_out,'absTol',1e-4);
     
     
@@ -274,16 +382,28 @@ function accel_test(tc)
     qn1 = [0 pi/4 -pi 1 pi/4 0];
     qn2 = [0 pi/2 -pi 1 pi/2 0];
     
-    Q1 = p560.rne(qn1,qz1,qz1);
-    Q2 = p560.rne(qn2,qz2,qz2);
+    Q1 = tc.TestData.p560.rne(qn1,qz1,qz1);
+    Q2 = tc.TestData.p560.rne(qn2,qz2,qz2);
     
     q3 = [Q1;Q2];
     
-    out = p560.accel(qz, qd,q3);
+    out = tc.TestData.p560.accel(qz, qd,q3);
     expected_out = [
         -8.2760    5.8119    3.1487   -4.6392    6.9558   -1.6774
         -8.3467   -4.8514    6.0575   -4.9232    3.1244   -1.7861 ];
     tc.verifyEqual(out,expected_out,'absTol',1e-4);
+    
+    tc.verifyError( @() tc.TestData.p560.accel(), 'RTB:accel:badarg');
+    tc.verifyError( @() tc.TestData.p560.accel( [ 1 2]), 'RTB:accel:badarg');
+    tc.verifyError( @() tc.TestData.p560.accel( qz, qz, qd1), 'RTB:accel:badarg');
+    tc.verifyError( @() tc.TestData.p560.accel( qz, qd1, qd1), 'RTB:accel:badarg');
+    
+    tc.verifyError( @() tc.TestData.p560.accel( [1 2], qd1, qd1), 'RTB:accel:badarg');
+    tc.verifyError( @() tc.TestData.p560.accel( qz1, [1 2], qd1), 'RTB:accel:badarg');
+    tc.verifyError( @() tc.TestData.p560.accel( qz1, qz1, [1 2]), 'RTB:accel:badarg');
+
+    tc.verifyError( @() tc.TestData.p560.accel( [ 1 2]), 'RTB:accel:badarg');
+
 end
 
 %        cinertia               - Cartesian manipulator inertia matrix
@@ -341,23 +461,26 @@ function coriolis_test(tc)
 end
 
 
-%        gravload               - gravity loading
 function gravload_test(tc)
-    mdl_puma560;
     qn = [0 pi/4 -pi 1 pi/4 0];
-    out = p560.gravload(qn);
+    out = tc.TestData.p560.gravload(qn);
     expected_out = [-0.0000 31.6334 6.0286 -0.0119 0.0218 0];
-    tc.verifyEqual(out,expected_out,'absTol',1e-4);
+    tc.verifyEqual(out, expected_out, 'absTol',1e-4);
     
-    mdl_puma560;
+
     qn = [0 pi/4 -pi 1 pi/4 0; 0 pi/2 -pi 1 pi/2 0];
-    out = p560.gravload(qn);
+    out = tc.TestData.p560.gravload(qn);
     expected_out = [-0.0000   31.6334    6.0286   -0.0119    0.0218         0
         0.0000    7.7198    8.7439   -0.0238   -0.0000         0];
-    tc.verifyEqual(out,expected_out,'absTol',1e-4);
+    tc.verifyEqual(out, expected_out, 'absTol', 1e-4);
+    
+    % zero gravity
+    out = tc.TestData.p560.gravload(tc.TestData.p560.qn, [0 0 0]);
+    tc.verifyEqual(out, [0 0 0 0 0 0], 'absTol', 1e-4);
+    
+    tc.verifyError( @() tc.TestData.p560.gravload([1 2 3]), 'RTB:SerialLink:gravload:badarg' );
 end
 
-%        inertia                - manipulator inertia matrix
 function inertia_test(tc)
     mdl_puma560;
     qn = [0 pi/4 -pi 1 pi/4 0];
@@ -457,3 +580,173 @@ function jtraj_test(tc)
     %tc.verifyEqual(qt(1,:), qz, 'abstol', 1e-10);
     %tc.verifyEqual(qt(end,:), qr, 'abstol', 1e-10);
 end
+
+function edit_test(tc)
+    robot = SerialLink(tc.TestData.p560);
+    
+    robot.edit()
+    
+    table = findobj('Type', 'uitable');
+    table.Data(1,2) = 7;
+    
+    button = findobj('String', 'Save')
+    f = button.Callback{1};
+    f(button, [], table);
+
+
+    tc.verifyEqual(robot.links(1).d, 7);
+    close(gcf)
+    
+    robot.edit('dyn')
+    
+    table = findobj('Type', 'uitable');
+    table.Data(1,9) = 7;
+    
+    button = findobj('String', 'Save')
+    f = button.Callback{1};
+    f(button, [], table);
+
+
+    tc.verifyEqual(robot.links(1).m, 7);
+    close(gcf)
+end
+
+function ellipse_test(tc)
+    tc.TestData.p560.plot( tc.TestData.p560.qn );
+    tc.TestData.p560.fellipse( tc.TestData.p560.qn );
+    tc.TestData.p560.fellipse( tc.TestData.p560.qn, 'trans' );
+    tc.TestData.p560.fellipse( tc.TestData.p560.qn, 'rot' );
+    
+    clf
+    tc.TestData.p560.fellipse( tc.TestData.p560.qn, '2d' );
+    
+    close(gcf)
+    
+    tc.TestData.p560.plot( tc.TestData.p560.qn );
+    tc.TestData.p560.vellipse( tc.TestData.p560.qn );
+    tc.TestData.p560.vellipse( tc.TestData.p560.qn, 'trans' );
+    tc.TestData.p560.vellipse( tc.TestData.p560.qn, 'rot' );
+    clf
+    tc.TestData.p560.fellipse( tc.TestData.p560.qn, '2d' );
+    
+    close(gcf)
+end
+
+function dh_mdh_test(tc)
+
+    tc.verifyTrue(tc.TestData.p560.isdh)
+    tc.verifyFalse(tc.TestData.p560.ismdh)
+    
+    tc.verifyClass(tc.TestData.p560.isdh, 'logical')
+    tc.verifyClass(tc.TestData.p560.ismdh, 'logical')
+
+    tc.verifyFalse(tc.TestData.p560m.isdh)
+    tc.verifyTrue(tc.TestData.p560m.ismdh)
+    
+    p560m = tc.TestData.p560.MDH;
+    tc.verifyTrue(isa(p560m, 'SerialLink'));
+    tc.verifyEqual(p560m.n, 6);
+    tc.verifyTrue(p560m.ismdh);
+
+    p560 = tc.TestData.p560m.DH;
+    tc.verifyTrue(isa(p560, 'SerialLink'));
+    tc.verifyEqual(p560.n, 6);
+    tc.verifyTrue(p560.isdh);
+    
+    p560m = tc.TestData.p560.MDH;
+    p560 = p560m.DH;  % should be the same robot
+    
+    T1 = tc.TestData.p560.fkine(tc.TestData.p560.qn);
+    T2 = p560.fkine(tc.TestData.p560.qn);
+    tc.verifyEqual(T1, T2);
+    
+
+end
+
+function twists_test(tc)
+    [tw,T0] = tc.TestData.p560.twists(tc.TestData.p560.qz);
+    tc.verifyClass(tw, 'Twist');
+    tc.verifyLength(tw, 6);
+    tc.verifyClass(T0, 'SE3');
+    tc.verifyLength(T0, 1);
+    
+    tc.verifyEqual( double(prod( [tw.exp(tc.TestData.p560.qn) T0] )), ...
+        double(tc.TestData.p560.fkine(tc.TestData.p560.qn)), ...
+        'absTol', 1e-6);
+end
+
+function predicates_test(tc)
+    % isdh
+    x = tc.TestData.p560.isdh
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 1); tc.verifyTrue(x);
+    x = tc.TestData.p560m.isdh
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 1); tc.verifyFalse(x);
+    
+    % ismdh
+    x = tc.TestData.p560.ismdh
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 1); tc.verifyFalse(x);
+    x = tc.TestData.p560m.ismdh
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 1); tc.verifyTrue(x);
+    
+    % isspherical
+    x = tc.TestData.p560.isspherical
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 1); tc.verifyTrue(x);
+    x = tc.TestData.p560.isspherical
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 1); tc.verifyTrue(x);
+    
+    % isprismatic
+    x = tc.TestData.stanf.isprismatic
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 6); tc.verifyEqual(x, logical([0 0 1 0 0 0]));
+    % isrevolute
+    x = tc.TestData.stanf.isrevolute
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 6); tc.verifyEqual(x, ~logical([0 0 1 0 0 0]));
+    
+    % issym
+    x = tc.TestData.p560.issym
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 1); tc.verifyFalse(x);
+    mdl_twolink_sym;
+    x = twolink.issym
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 1); tc.verifyTrue(x);
+    
+    % isconfig
+    x = tc.TestData.p560.isconfig('RRRRRR');
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 1); tc.verifyTrue(x);
+    x = tc.TestData.p560.isconfig('RRPRRR');
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 1); tc.verifyFalse(x);
+    x = tc.TestData.stanf.isconfig('RRRRRR');
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 1); tc.verifyFalse(x);
+    x = tc.TestData.stanf.isconfig('RRPRRR');
+    tc.verifyClass(x, 'logical'); tc.verifyLength(x, 1); tc.verifyTrue(x);
+    
+    % islimit
+    x = tc.TestData.p560.islimit([0 0 0 0 0 0]);
+    tc.verifyClass(x, 'double'); tc.verifySize(x, [6 2]);
+    tc.verifyEqual(x, zeros(6,2));
+    x = tc.TestData.p560.islimit([0 10 0 0 0 0]);
+    tc.verifyClass(x, 'double'); tc.verifySize(x, [6 2]);
+    tc.verifyEqual(x, [0 1 0 0 0 0]'*[1 1]);
+end
+
+function test_get(tc)
+    x = tc.TestData.p560.d;
+    tc.verifyClass(x, 'double'); tc.verifyLength(x, 6);
+    tc.verifyEqual(x, [0  0  0.15005  0.4318  0  0], 'absTol', 1e-6);
+    
+    x = tc.TestData.p560.a;
+    tc.verifyClass(x, 'double'); tc.verifyLength(x, 6);
+    tc.verifyEqual(x, [0 0.4318 0.0203  0  0 0], 'absTol', 1e-6);
+    
+    x = tc.TestData.p560.alpha;
+    tc.verifyClass(x, 'double'); tc.verifyLength(x, 6);
+    tc.verifyEqual(x, [1 0 -1 1 -1 0]*pi/2, 'absTol', 1e-6);
+    
+    x = tc.TestData.p560.theta;
+    tc.verifyClass(x, 'double'); tc.verifyLength(x, 0);
+    
+end
+
+function mat2str_test(tc)
+    mdl_twolink_sym;
+    twolink
+end
+    

@@ -37,9 +37,8 @@
 % http://www.petercorke.com
 
 function tg = gravload(robot, q, grav)
-	if numcols(q) ~= robot.n
-		error('Insufficient columns in q')
-	end
+	assert(numcols(q) == robot.n, 'RTB:SerialLink:gravload:badarg', 'Insufficient columns in q');
+
 	if nargin == 2
 		tg = rne(robot, q, zeros(size(q)), zeros(size(q)));
 	elseif nargin == 3

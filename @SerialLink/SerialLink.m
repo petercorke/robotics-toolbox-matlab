@@ -447,6 +447,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             
             R.links = [R.links L];
             r2 = R;
+            r2.n = length(R.links);
 
         end
         
@@ -775,7 +776,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             %        robot.isconfig('RRRRRR');
             %
             % See also SerialLink.config.
-            v = strcmpi(r.config(), s);
+            v = strcmpi(r.config, s);
         end
         
         function payload(r, m, p)
@@ -968,7 +969,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             assert(isdh(r), 'RTB:SerialLink:badmodel', 'this method can only be applied to a model with standard DH parameters');
             
             % first joint
-            switch r.links(1).jointtype()
+            switch r.config(1)
                 case 'R'
                     link(1) = Link('modified', 'revolute', ...
                         'd', r.links(1).d, ...
@@ -983,7 +984,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
 
             % middle joints
             for i=2:r.n
-                switch r.links(i).jointtype()
+                switch r.config(i)
                     case 'R'
                         link(i) = Link('modified', 'revolute', ...
                             'a', r.links(i-1).a, ...
@@ -1024,16 +1025,16 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
 
             % middle joints
             for i=1:r.n-1
-                switch r.links(i).jointtype()
+                switch r.config(i)
                     case 'R'
-                        link(i) = Link('modified', 'revolute', ...
+                        link(i) = Link('standard', 'revolute', ...
                             'a', r.links(i+1).a, ...
                             'alpha', r.links(i+1).alpha, ...
                             'd', r.links(i).d, ...
                             'offset', r.links(i).offset, ...
                             'qlim', r.links(i).qlim );
                     case 'P'
-                        link(i) = Link('modified', 'prismatic', ...
+                        link(i) = Link('standard', 'prismatic', ...
                             'a', r.links(i+1).a, ...
                             'alpha', r.links(i+1).alpha, ...
                             'theta', r.links(i).theta, ...
@@ -1043,14 +1044,14 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             end
             
             % last joint
-            switch r.links(1).jointtype()
+            switch r.config(r.n)
                 case 'R'
-                    link(r.n) = Link('modified', 'revolute', ...
+                    link(r.n) = Link('standard', 'revolute', ...
                         'd', r.links(r.n).d, ...
                         'offset', r.links(r.n).offset, ...
                         'qlim', r.links(r.n).qlim );
                 case 'P'
-                    link(r.n) = Link('modified', 'prismatic', ...
+                    link(r.n) = Link('standard', 'prismatic', ...
                         'theta', r.links(r.n).theta, ...
                         'offset', r.links(r.n).offset, ...
                         'qlim', r.links(r.n).qlim );
@@ -1106,7 +1107,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % v = R.ismdh() is true if the SerialLink manipulator R has a modified DH model
         %
         % See also: isdh
-            v = r.mdh;
+            v = logical(r.mdh);
         end
         
         function v = isdh(r)

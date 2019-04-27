@@ -824,8 +824,8 @@ classdef RTBPlot
                 if opt.tiles
                     % set xy limits to be integer multiple of tilesize
                     opt.workspace(1:4) = opt.tilesize * round(opt.workspace(1:4)/opt.tilesize);
-                    opt.floorlevel = opt.workspace(5);
                 end
+                opt.floorlevel = opt.workspace(5);
             end
             
             % update the fundamental scale factor (given by the user as a multiplier) by a length derived from
