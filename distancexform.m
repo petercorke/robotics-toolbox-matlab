@@ -14,11 +14,16 @@
 % Options:
 % 'euclidean'    Use Euclidean (L2) distance metric (default)
 % 'cityblock'    Use cityblock or Manhattan (L1) distance metric
-% 'show',D       Show the iterations of the computation, with a delay of D seconds
-%                between frames.
+%
+% 'animate'      Show the iterations of the computation
+% 'delay',D      Delay of D seconds between animation frames (default 0.2s)
+% 'movie',M      Save animation to a movie file or folder
+%
 % 'noipt'        Don't use Image Processing Toolbox, even if available
 % 'novlfeat'     Don't use VLFeat, even if available
 % 'nofast'       Don't use IPT, VLFeat or imorph, even if available.
+%
+% 'delay'
 %
 % Notes::
 % - For the first case Image Processing Toolbox (IPT) or VLFeat will be used if
@@ -27,13 +32,13 @@
 % - Options can be used to disable use of IPT or VLFeat.
 % - If IPT or VLFeat are not available, or disabled, then imorph is used.
 % - If IPT, VLFeat or imorph are not available a slower M-function is used.
-% - If the 'show' option is given then imorph is used.
-%   - Using imorph requires iteration and is slow.
+% - If the 'animate' option is given then the MATLAB implementation is used.
+% - Using imorph requires iteration and is slow.
 %   - For the second case the Machine Vision Toolbox function imorph is required.
 %   - imorph is a mex file and must be compiled.
 % - The goal is given as [X,Y] not MATLAB [row,col] format.
 %
-% See also IMORPH, DXform.
+% See also IMORPH, DXform, Animate.
 
 
 
@@ -58,15 +63,22 @@
 
 function dx = distancexform(occgrid, varargin)
     
-    opt.show = 0;
+    opt.delay = 0.2;
     opt.ipt = true;
     opt.vlfeat = true;
     opt.fast = true;
     opt.metric = {'euclidean', 'cityblock'};
+    opt.animate = false;
+    opt.movie = [];
     [opt,args] = tb_optparse(opt, varargin);
-    if opt.show
+    if opt.movie
+        opt.animate = true;
+    end
+    if opt.animate
+        opt.fast = false;
         opt.ipt = false;
         opt.vlfeat = false;
+        clf
     end
     count = [];
     switch opt.metric
@@ -111,14 +123,14 @@ function dx = distancexform(occgrid, varargin)
                 
                 occgrid = imorph(occgrid, m, 'plusmin');
                 count = count+1;
-                if opt.show
+                if opt.animate
                     cmap = [1 0 0; gray(count)];
                     colormap(cmap)
                     image(occgrid+1, 'CDataMapping', 'direct');
                     set(gca, 'Ydir', 'normal');
                     xlabel('x');
                     ylabel('y');
-                    pause(opt.show);
+                    pause(opt.delay);
                 end
                 
                 ninfnow = sum( isinf(occgrid(:)) ); % current number of Infs
@@ -152,20 +164,25 @@ function dx = distancexform(occgrid, varargin)
             
             count = 0;
             ninf = Inf;  % number of infinities in the map
+            anim = Animate(opt.movie);
             while 1
                 
                 occgrid = dxstep(occgrid, m);
                 occgrid(nans) = NaN;
                 
                 count = count+1;
-                if opt.show
+                if opt.animate
                     cmap = [1 0 0; gray(count)];
                     colormap(cmap)
                     image(occgrid+1, 'CDataMapping', 'direct');
                     set(gca, 'Ydir', 'normal');
                     xlabel('x');
                     ylabel('y');
-                    pause(opt.show);
+                    if opt.animate
+                        anim.add();
+                    else
+                        pause(opt.delay);
+                    end
                 end
                 
                 ninfnow = sum( isinf(occgrid(:)) ); % current number of Infs
@@ -176,10 +193,11 @@ function dx = distancexform(occgrid, varargin)
                 end
                 ninf = ninfnow;
             end
+            anim.close();
             dx = occgrid;
         end
         
-        if opt.show && ~isempty(count)
+        if opt.animate && ~isempty(count)
             fprintf('%d iterations, %d unreachable cells\n', count, ninf);
         end
         
@@ -200,6 +218,7 @@ function dx = distancexform(occgrid, varargin)
             occgrid(isfinite(occgrid)) = 0;
             
             count = 0;
+            anim = Animate(opt.movie);
             while 1
                 occgrid = imorph(occgrid, m, 'plusmin');
                 count = count+1;
@@ -210,7 +229,11 @@ function dx = distancexform(occgrid, varargin)
                     set(gca, 'Ydir', 'normal');
                     xlabel('x');
                     ylabel('y');
-                    pause(opt.show);
+                    if opt.animate
+                        anim.add();
+                    else
+                        pause(opt.delay);
+                    end
                 end
                 
                 ninfnow = sum( isinf(occgrid(:)) ); % current number of Infs
@@ -219,6 +242,7 @@ function dx = distancexform(occgrid, varargin)
                     break;
                 end
             end
+            anim.close();
             dx = occgrid;
         elseif exist('bwdist') && opt.ipt
             if opt.verbose
