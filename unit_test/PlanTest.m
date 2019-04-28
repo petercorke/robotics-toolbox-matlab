@@ -32,6 +32,21 @@ function bug2_test(tc)
     
     nav.plot()
     nav.plot(p);
+    
+    fname = fullfile(tempdir, 'bug.mp4');
+    p = nav.query(tc.TestData.start, tc.TestData.goal, 'animate', 'movie', fname);
+    tc.verifyTrue(exist(fname, 'file') == 2);
+    delete(fname);
+    
+    tc.verifyError( @() nav.plan(), 'RTB:Bug2:badcall');
+    
+    map = zeros(10,10);
+    map(3:7,3:7) = 1;
+    map(4:6,4:6) = 0;
+    nav = Bug2(map);
+    tc.verifyError( @() nav.query([5 5], [2 2]), 'RTB:bug2:noplan');
+    
+    
 end
 
 
@@ -65,6 +80,47 @@ function dxform_test(tc)
     
     nav.plot3d();
     nav.plot3d(p);
+end
+
+function distancexform_test(tc)
+    map = zeros(10,10);
+    map(4:6,4:6) =1;
+    %args= {'verbose'}
+    args = {};
+    
+    dx1 = distancexform(map, [5 8], 'fast', 'noipt', args{:});
+    tc.verifyClass(dx1, 'double');
+    tc.verifyEqual(dx1(8,5), 0);
+    tc.verifyTrue(all(all(isnan(dx1(map==1)))));
+    i=sub2ind(size(dx1), 8, 5);
+    tc.verifyTrue(all(dx1(i+[-11 -10 -9 -1 1 11 10 9])) > 0);
+    
+    tc.verifySize(dx1, size(map));
+    dx2 = distancexform(map, [5 8], 'nofast', 'ipt', args{:});
+    tc.verifyClass(dx1, 'double');
+    tc.verifySize(dx1, size(map));
+    dx3 = distancexform(map, [5 8], 'nofast', 'noipt', args{:});
+    tc.verifyClass(dx1, 'double');
+    tc.verifySize(dx1, size(map));
+    
+    tc.verifyEqual(dx1, dx2, 'absTol', 1e-6, 'MEX ~= bwdist');
+    tc.verifyEqual(dx1, dx3, 'MEX ~= MATLAB');
+    
+    dx1 = distancexform(map, [5 8], 'cityblock', 'fast', 'noipt', args{:});
+    tc.verifyClass(dx1, 'double');
+    tc.verifyTrue(all(all(isnan(dx1(map==1)))));
+    i=sub2ind(size(dx1), 8, 5);
+    tc.verifyTrue(all(dx1(i+[-11 -10 -9 -1 1 11 10 9])) > 0);
+    tc.verifySize(dx1, size(map));
+    dx2 = distancexform(map, [5 8], 'cityblock', 'nofast', 'ipt', args{:});
+    tc.verifyClass(dx1, 'double');
+    tc.verifySize(dx1, size(map));
+    dx3 = distancexform(map, [5 8], 'cityblock', 'nofast', 'noipt', args{:});
+    tc.verifyClass(dx1, 'double');
+    tc.verifySize(dx1, size(map));
+    
+    tc.verifyEqual(dx1, dx2, 'absTol', 1e-6, 'MEX ~= bwdist');
+    tc.verifyEqual(dx1, dx3, 'MEX ~= MATLAB');
 end
 
 function dstar_test(tc)
