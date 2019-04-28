@@ -33,6 +33,7 @@ function bug2_test(tc)
     nav.plot()
     nav.plot(p);
     
+    tc.assumeTrue(ispc || ismac);
     fname = fullfile(tempdir, 'bug.mp4');
     p = nav.query(tc.TestData.start, tc.TestData.goal, 'animate', 'movie', fname);
     tc.verifyTrue(exist(fname, 'file') == 2);
@@ -121,6 +122,15 @@ function distancexform_test(tc)
     
     tc.verifyEqual(dx1, dx2, 'absTol', 1e-6, 'MEX ~= bwdist');
     tc.verifyEqual(dx1, dx3, 'MEX ~= MATLAB');
+    
+    dx1 = distancexform(map, [5 8], 'cityblock', 'animate');
+    dx1 = distancexform(map, [5 8], 'cityblock', 'animate', 'delay', 0.1);
+    
+    tc.assumeTrue(ispc || ismac);
+    fname = fullfile(tempdir, 'bug.mp4');
+    dx1 = distancexform(map, [5 8], 'cityblock', 'animate', 'movie', fname);
+    tc.verifyTrue(exist(fname, 'file') == 2);
+    delete(fname)
 end
 
 function dstar_test(tc)
