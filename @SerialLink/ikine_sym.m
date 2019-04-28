@@ -66,7 +66,7 @@
 %
 % http://www.petercorke.com
 
-function out = ikine_sym(srobot, N, varargin)
+function out = ikine_sym(robot, N, varargin)
     
     %
     % Given a robot model the following steps are performed:
@@ -85,7 +85,8 @@ function out = ikine_sym(srobot, N, varargin)
     opt = tb_optparse(opt, varargin);
     
     % make a symbolic representation of the passed robot
-    srobot = sym(srobot);
+    srobot = SerialLink(robot);  % make a deep copy
+    srobot = sym(srobot);  % convert to symbolic
     q = srobot.gencoords();
 
     % test N DOF has an allowable value
