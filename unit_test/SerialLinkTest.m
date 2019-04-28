@@ -99,12 +99,23 @@ function fkine_test(tc)
 end
 
 function plot_test(tc)
+    clf
     L(1)=Link([1 1 1 1 0]);
     L(1).qlim = [-5 5];
     L(2)=Link([0 1 0 1 0]);
     R1 = SerialLink(L,'name','robot1','comment', 'test robot','manufacturer', 'test',...
         'base', eye(4,4), 'tool', eye(4,4), 'offset', [1 1 0 0 0 0 ] );
     R1.plot([1 1]);
+    close all
+end
+
+function plot_animate_test(tc)
+    tc.assumeTrue(ispc || ismac);
+    fname = fullfile(tempdir, 'puma.mp4');
+    qt = jtraj(tc.TestData.p560.qz, tc.TestData.p560.qr, 50);
+    tc.TestData.p560.plot(qt, 'movie', fname);
+    tc.verifyTrue(exist(fname, 'file') == 2);
+    delete(fname)
 end
 
 function plot3d_test(tc)
