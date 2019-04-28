@@ -108,7 +108,7 @@ A fully commented version of this is provided in the LiveScript `demos/particlef
 
 You need to have a recent version of MATLAB, R2016b or later.
 
-The Robotics Toolbox for MATLAB has dependency on two other repositorys `spatial-math` and `toolbox-common-matlab`.  
+The Robotics Toolbox for MATLAB has dependency on two other GitHub repositories: [`spatial-math`](https://github.com/petercorke/spatial-math) and [`toolbox-common-matlab`](https://github.com/petercorke/toolbox-common-matlab).  
 
 To install the Toolbox on your computer from github follow these simple instructions.
 
