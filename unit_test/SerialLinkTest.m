@@ -22,8 +22,7 @@ function teardownOnce(tc)
     close all
 end
 
-%% Serial-link manipulator
-%    SerialLink                 - construct a serial-link robot object
+
 function SerialLink_test(tc)
     % test making a robot from links
     L(1)=Link([1 1 1 1 1]);
@@ -460,7 +459,8 @@ function rne_test(tc)
 end
 
 function rne_mdh_test(tc)
-    tc.TestData.p560m.rne();
+    q = rand(1,6);
+    tc.TestData.p560m.rne(q, q, q);
 end
 
 
