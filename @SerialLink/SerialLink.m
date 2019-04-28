@@ -184,14 +184,13 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
     end
 
     properties (SetAccess = private)
+        % needs to be public readable for access by MEX file
         n
         links
         T
-    end
-    
-    properties (Access = private)
         mdh
     end
+    
 
     properties (Dependent = true, SetAccess = private)
         config
