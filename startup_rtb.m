@@ -50,6 +50,10 @@ function startup_rtb(tbpath)
     if ~exist('DHFactor')
         javaaddpath( fullfile(tbpath, 'java', 'DHFactor.jar') );
     end
+    p = fullfile(tbpath, 'simulink');
+    if exist(p, 'dir')
+        addpath( p );
+    end
     addpath( fullfile(tbpath, 'interfaces', 'VREP') );
     % add the contrib code to the path
     rvcpath = fileparts(tbpath);  % strip one folder off path
@@ -57,8 +61,9 @@ function startup_rtb(tbpath)
     if exist(p, 'dir')
         addpath(p)
     end
+    
 
-    p = fullfile(tbpath, 'data', 'ARTE');
+    p = fullfile(tbpath, 'data', 'meshes');
     disp([' - ARTE contributed code: 3D models for robot manipulators (' p ')']);
     p = fullfile(rvcpath, 'contrib', 'pHRIWARE', 'next');
     if exist(p, 'dir')

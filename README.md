@@ -121,12 +121,10 @@ git clone https://github.com/petercorke/robotics-toolbox-matlab.git robot
 git clone https://github.com/petercorke/spatial-math.git smtb
 git clone https://github.com/petercorke/toolbox-common-matlab.git common
 make -C robot
-mv common/startup_rvc.m .
 ```
-
-Then, from within MATLAB
+The last command builds the MEX files and Java class files. Then, from within MATLAB
 ```matlab
->> cd rvctools  % this is the same folder as above
+>> addpath rvctools/common  %  rvctools is the same folder as above
 >> startup_rvc
 ```
 The second line sets up the MATLAB path appropriately but it's only for the current session.  You can either:
