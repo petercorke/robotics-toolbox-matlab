@@ -107,9 +107,9 @@ function plot3d(robot, q, varargin)
     
     opt = plot_options(robot, varargin);
     
-    if opt.movie
-        robot.movie = Animate(opt.movie);
-    end
+
+    robot.movie = Animate(opt.movie);
+
     
     %-- load the shape if need be
     
