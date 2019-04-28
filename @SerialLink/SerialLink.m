@@ -934,7 +934,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % See also SerialiLink.toradians.
             k = robot.isrevolute;
             qdeg = q;
-            qdeg(:,k) = qdeg(:,k) * pi/180;
+            qdeg(:,k) = qdeg(:,k) * 180/pi;
         end
         
         function qrad = toradians(robot, q)
@@ -947,7 +947,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % See also SerialiLink.todegrees.
             k = robot.isrevolute;
             qrad = q;
-            qrad(:,k) = qrad(:,k) * 180/pi;
+            qrad(:,k) = qrad(:,k) * pi/180;
         end
         
         function J = jacobn(robot, varargin)

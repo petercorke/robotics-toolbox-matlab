@@ -58,7 +58,7 @@ function J0 = jacob0(robot, q, varargin)
     opt = tb_optparse(opt, varargin);
         if opt.deg
     % in degrees mode, scale the columns corresponding to revolute axes
-    q = robot.todegrees(q);
+    q = robot.toradians(q);
 end
     
 	%
