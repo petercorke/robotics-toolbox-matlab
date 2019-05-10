@@ -184,14 +184,13 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
     end
 
     properties (SetAccess = private)
+        % needs to be public readable for access by MEX file
         n
         links
         T
-    end
-    
-    properties (Access = private)
         mdh
     end
+    
 
     properties (Dependent = true, SetAccess = private)
         config
@@ -934,7 +933,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % See also SerialiLink.toradians.
             k = robot.isrevolute;
             qdeg = q;
-            qdeg(:,k) = qdeg(:,k) * pi/180;
+            qdeg(:,k) = qdeg(:,k) * 180/pi;
         end
         
         function qrad = toradians(robot, q)
@@ -947,7 +946,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % See also SerialiLink.todegrees.
             k = robot.isrevolute;
             qrad = q;
-            qrad(:,k) = qrad(:,k) * 180/pi;
+            qrad(:,k) = qrad(:,k) * pi/180;
         end
         
         function J = jacobn(robot, varargin)

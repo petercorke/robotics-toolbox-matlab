@@ -254,13 +254,11 @@ mexFunction(
     /*
      * rotate gravity if base transform is set
      */
-    //robot.dhtype = mstruct_getint(mx_robot, 0, "mdh");
-    {
-        mxArray *lhs[1];
-        mexCallMATLAB(1, lhs, 1, prhs, "ismdh");
-        robot.dhtype = (int) mxGetScalar(lhs[0]);
-        //mexPrintf("dhtype = %d\n", robot.dhtype);
-    }
+
+    /*
+     * get MDH flag
+     */
+    robot.dhtype = mstruct_getint(mx_robot, 0, "mdh");
 
     /* build link structure */
     robot.links = (Link *)mxCalloc((mwSize) njoints, (mwSize) sizeof(Link));

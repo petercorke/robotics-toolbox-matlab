@@ -218,7 +218,7 @@ classdef PoseGraph < handle
             
             h = waitbar(0, 'rendering a map');
             
-            world = zeros(opt.ngrid, opt.ngrid, 'int32');
+            world = zeros(pg.ngrid, pg.ngrid, 'int32');
             for i=1:1:pg.graph.n
                 
                 if rem(i, 20) == 0

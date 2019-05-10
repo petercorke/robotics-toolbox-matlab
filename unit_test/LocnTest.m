@@ -182,9 +182,62 @@ end
 
 function posegraph_test(tc)
     pg = PoseGraph('pg1.g2o')
+    tc.verifyClass(pg, 'PoseGraph');
+    tc.verifyEqual(pg.graph.n, 4);
     
     clf
     pg.plot()
-    
     pg.optimize('animate')
+    close all
+    
+    pg = PoseGraph('killian-small.toro')
+    tc.verifyClass(pg, 'PoseGraph');
+    tc.verifyEqual(pg.graph.n, 1941);
+    
+    pg = PoseGraph('killian.g2o', 'laser')
+    tc.verifyClass(pg, 'PoseGraph');
+    tc.verifyEqual(pg.graph.n, 3873);
+    
+    [r,theta] = pg.scan(1);
+    tc.verifyClass(r, 'double');
+    tc.verifyLength(r, 180);
+    tc.verifyClass(theta, 'double');
+    tc.verifyLength(theta, 180);
+    
+    [x,y] = pg.scan(1);
+    tc.verifyClass(x, 'double');
+    tc.verifyLength(x, 180);
+    tc.verifyClass(y, 'double');
+    tc.verifyLength(y, 180);
+    
+    pose = pg.pose(1);
+    tc.verifyClass(pose, 'double');
+    tc.verifySize(pose, [3 1]);
+    
+    t = pg.time(1);
+    tc.verifyClass(t, 'double');
+    tc.verifySize(t, [1 1]);
+    
+    w = pg.scanmap('ngrid', 3000);
+    tc.verifyClass(w, 'int32');
+    tc.verifySize(w, [3000 3000]);
+    
+    clf
+    pg.plot_occgrid(w);
+    close all
+    
+end
+
+function makemap_test(tc)
+        tc.assumeTrue(false);  %REMINDER
+
+end
+
+function chi2inv_test(tc)
+    tc.verifyEqual( chi2inv_rtb(0,2), 0);
+    tc.verifyEqual( chi2inv_rtb(1,2), Inf);
+    tc.verifyEqual( chi2inv_rtb(3,2), NaN);
+    
+    tc.verifyError( @() chi2inv_rtb(1,1), 'RTB:chi2inv_rtb:badarg');
+    
 end

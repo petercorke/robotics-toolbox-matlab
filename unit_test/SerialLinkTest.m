@@ -22,8 +22,7 @@ function teardownOnce(tc)
     close all
 end
 
-%% Serial-link manipulator
-%    SerialLink                 - construct a serial-link robot object
+
 function SerialLink_test(tc)
     % test making a robot from links
     L(1)=Link([1 1 1 1 1]);
@@ -99,12 +98,23 @@ function fkine_test(tc)
 end
 
 function plot_test(tc)
+    clf
     L(1)=Link([1 1 1 1 0]);
     L(1).qlim = [-5 5];
     L(2)=Link([0 1 0 1 0]);
     R1 = SerialLink(L,'name','robot1','comment', 'test robot','manufacturer', 'test',...
         'base', eye(4,4), 'tool', eye(4,4), 'offset', [1 1 0 0 0 0 ] );
     R1.plot([1 1]);
+    close all
+end
+
+function plot_animate_test(tc)
+    tc.assumeTrue(ispc || ismac);
+    fname = fullfile(tempdir, 'puma.mp4');
+    qt = jtraj(tc.TestData.p560.qz, tc.TestData.p560.qr, 50);
+    tc.TestData.p560.plot(qt, 'movie', fname);
+    tc.verifyTrue(exist(fname, 'file') == 2);
+    delete(fname)
 end
 
 function plot3d_test(tc)
@@ -204,7 +214,7 @@ end
 
 function ikcon_optim_test(tc)
     
-        tc.assumeTrue(false);  %HACK
+    tc.assumeTrue(false);  %HACK
 
     qn = [0 pi/4 -pi 0 pi/4 0];
     T = tc.TestData.p560.fkine(qn);
@@ -216,26 +226,32 @@ end
 
 function ikine_sym_test(tc)
 
-    sol = tc.TestData.p2.ikine_sym(2);
+    p2 = SerialLink(tc.TestData.p2); % clone it
     
-    tc.verifyEqual(length(sol), 2);
-    tc.verifyTrue(iscell(sol));
-    tc.verifyTrue(isa(sol{1}, 'sym'));
-    tc.verifyEqual(length(sol{1}), 2);
-    tc.verifyTrue(isa(sol{2}, 'sym'));
-    tc.verifyEqual(length(sol{1}), 2);
+    q = p2.ikine_sym(2);
     
+    % is the solution sane
+    tc.verifyLength(q, 2);
+    tc.verifyTrue(iscell(q));
+    tc.verifyTrue(isa(q{1}, 'sym'));
+    tc.verifyLength(q{1}, 2);
+    tc.verifyTrue(isa(q{2}, 'sym'));
+    tc.verifyLength(q{1}, 2);
     
-    mdl_planar2
-    
-    q = eval( subs(sol{1}, {'tx', 'ty'}, {1,1}));
-    tc.verifyEqual( transl(p2.fkine(q)), [1 1 0]);
-    
-    tc.assumeTrue(false);  %HACK
+    % process the solutions
+    q1 = subs(q{1}, {'tx', 'ty'}, {1,1});   % convert to numeric
+    sol = eval(q1)';
+    q2 = subs(q{2}, {'tx', 'ty', 'q1'}, {1,1, q1(1)});
+    x = eval(q2);  % first solution
+    sol(1,2) = x(1);
+    q2 = subs(q{2}, {'tx', 'ty', 'q1'}, {1,1, q1(2)}); % second solution
+    x = eval(q2);  
+    sol(2,2) = x(1);
 
-    q = eval( subs(sol{2}, {'tx', 'ty'}, {1,1}));   
-    tc.verifyEqual( transl(p2.fkine(q)), [1 1 0]);
-    
+    % check the FK is good
+    tc.verifyEqual(transl(tc.TestData.p2.fkine(sol(1,:))), [1 1 0]);
+    tc.verifyEqual(transl(tc.TestData.p2.fkine(sol(2,:))), [1 1 0]);
+
     tc.verifyError( @() tc.TestData.p2.ikine_sym(4), 'RTB:ikine_sym:badarg');
 end
 
@@ -243,47 +259,112 @@ end
 %%--------------------------------------------------------------------------
 
 function jacob0_test(tc)
-    mdl_puma560;
+    
+    function J = jacob0_approx(robot, q, d)
+        e = eye(robot.n);
+        T0 = robot.fkine(q);
+        R0 = t2r(T0);
+        J = [];
+        for i=1:robot.n
+            Ji = (robot.fkine(q + e(i,:)*d) - T0) / d;
+            J = [J [Ji(1:3,4); vex(Ji(1:3,1:3)*R0')]];
+        end
+    end
+    % implictly tests jacobe
     qz = [0 1 0 0 2 0];
     qn = [0 pi/4 -pi 1 pi/4 0];
-    out = p560.jacob0(qz);
-    expected_out = [0.1501   -0.6137   -0.2504         0         0         0
-        -0.1191   -0.0000   -0.0000         0         0         0
-        -0.0000   -0.1191   -0.3524         0         0         0
-        0   -0.0000   -0.0000   -0.8415   -0.0000   -0.1411
-        0.0000   -1.0000   -1.0000   -0.0000   -1.0000   -0.0000
-        1.0000    0.0000    0.0000    0.5403    0.0000   -0.9900];
+    out = tc.TestData.p560.jacob0(qz);
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [6 6]);
+    
+    tc.verifyEqual(tc.TestData.p560.jacob0(qz), jacob0_approx(tc.TestData.p560, qz, 1e-8), 'absTol', 1e-4);
+    tc.verifyEqual(tc.TestData.p560.jacob0(qn), jacob0_approx(tc.TestData.p560, qn, 1e-8), 'absTol', 1e-4);
+    
+    expected_out = jacob0_approx(tc.TestData.p560, qn, 1e-8)
+    out = tc.TestData.p560.jacob0(qn*180/pi, 'deg');
     tc.verifyEqual(out,expected_out,'absTol',1e-4);
-    out = p560.jacob0(qn);
-    expected_out = [0.1501    0.0144    0.3197         0         0         0
-        0.5963   -0.0000   -0.0000         0         0         0
-        -0.0000    0.5963    0.2910         0         0         0
-        0.0000   -0.0000   -0.0000    0.7071   -0.5950    0.7702
-        -0.0000   -1.0000   -1.0000         0   -0.5403   -0.5950
-        1.0000    0.0000    0.0000   -0.7071   -0.5950   -0.2298];
-    tc.verifyEqual(out,expected_out,'absTol',1e-4);
+    
+    out = tc.TestData.p560.jacob0(qn, 'rpy');
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [6 6]);
+    
+    out = tc.TestData.p560.jacob0(qn, 'eul');
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [6 6]);
+    
+    out = tc.TestData.p560.jacob0(qn, 'exp');
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [6 6]);
+    
+    out = tc.TestData.p560.jacob0(qn, 'trans');
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [3 6]);
+    out = tc.TestData.p560.jacob0(qn, 'rot');
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [3 6]);
+    
+    tc.verifyEqual(tc.TestData.p560.jacob0(qn), jacob0_approx(tc.TestData.p560, qn, 1e-8), 'absTol', 1e-4);
+    
+    out = tc.TestData.stanf.jacob0([0 0 0 0 0 0]);
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [6 6]);
+    tc.verifyEqual(tc.TestData.stanf.jacob0(qn), jacob0_approx(tc.TestData.stanf, qn, 1e-8), 'absTol', 1e-4);
+    
 end
 
 function jacobe_test(tc)
-    mdl_puma560;
+    
+    function J = jacobe_approx(robot, q, d)
+        e = eye(robot.n);
+        T0 = robot.fkine(q);
+        R0 = t2r(T0);
+        J = [];
+        for i=1:robot.n
+            Ji = (robot.fkine(q + e(i,:)*d) - T0) / d;
+            J = [J [R0'*Ji(1:3,4); vex(R0'*Ji(1:3,1:3))]];
+        end
+    end
+    
+
     qz = [0 1 0 0 2 0];
     qn = [0 pi/4 -pi 1 pi/4 0];
-    out = p560.jacobe(qz);
-    expected_out = [-0.1485    0.5908    0.1982         0         0         0
-        -0.1191    0.0000    0.0000         0         0         0
-        -0.0212    0.2045    0.3842         0         0         0
-        0.1411         0         0    0.9093         0         0
-        -0.0000   -1.0000   -1.0000   -0.0000   -1.0000         0
-        -0.9900    0.0000    0.0000   -0.4161    0.0000    1.0000];
+    
+    out = tc.TestData.p560.jacobe(qz)
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [6 6]);
+    expected_out = jacobe_approx(tc.TestData.p560, qz, 1e-8)
     tc.verifyEqual(out,expected_out,'absTol',1e-4);
-    out = p560.jacobe(qn);
-    expected_out = [0.3893   -0.4559   -0.1506         0         0         0
-        0.4115    0.3633    0.3633         0         0         0
-        -0.2392   -0.1260    0.1793         0         0         0
-        -0.7702   -0.5950   -0.5950    0.7071         0         0
-        0.5950   -0.5403   -0.5403   -0.0000   -1.0000         0
-        -0.2298    0.5950    0.5950    0.7071    0.0000    1.0000];
+    
+    out = tc.TestData.p560.jacobe(qz*180/pi, 'deg');
+    tc.verifyEqual(out,expected_out,'absTol',1e-4);    
+    
+    out = tc.TestData.p560.jacobe(qn);
+    expected_out = jacobe_approx(tc.TestData.p560, qn, 1e-8)
+
     tc.verifyEqual(out,expected_out,'absTol',1e-4);
+    out = tc.TestData.p560.jacobe(qn*180/pi, 'deg');
+    tc.verifyEqual(out,expected_out,'absTol',1e-4);
+    
+    out = tc.TestData.p560.jacob0(qn, 'rpy');
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [6 6]);
+    
+    out = tc.TestData.p560.jacob0(qn, 'eul');
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [6 6]);
+    
+    out = tc.TestData.p560.jacob0(qn, 'exp');
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [6 6]);
+    
+    out = tc.TestData.p560.jacob0(qn, 'trans');
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [3 6]);
+    out = tc.TestData.p560.jacob0(qn, 'rot');
+    tc.verifyClass(out, 'double');
+    tc.verifySize(out, [3 6]);
+    
+    tc.verifyWarning( @() tc.TestData.p560.jacobn(qn), 'RTB:SerialLink:deprecated');
 end
 
 function maniplty_test(tc)
@@ -294,6 +375,28 @@ function maniplty_test(tc)
     tc.verifyEqual(p560.maniplty(q, 'rot'), 2.5936, 'absTol',1e-4);
     tc.verifyEqual(p560.maniplty(q, 'asada', 'trans'), 0.2733, 'absTol',1e-4);
 end
+
+function jacob_dot_test(tc)
+    
+    tc.assumeTrue(false);  %HACK
+
+    function Jdqd = jacob_dot_approx(robot, q, qd, d)
+        e = eye(robot.n);
+        J0 = robot.jacob0(q);
+        Jdqd = zeros(6,1);
+        for i=1:robot.n
+            Ji = (robot.jacob0(q + e(i,:)*d) - J0) / d;
+            Jdqd = Jdqd + Ji * qd(i);
+        end
+    end
+    
+    q = rand(1,6);
+    qd = rand(1,6);
+    
+    jacob_dot_approx(tc.TestData.p560, q, qd, 1e-8)*qd'
+    tc.TestData.p560.jacob_dot(q, qd)
+end
+
 
 %%     Dynamics methods
 
@@ -354,6 +457,12 @@ function rne_test(tc)
     % probably should do a robot with a prismatic axis (or two)
     
 end
+
+function rne_mdh_test(tc)
+    q = rand(1,6);
+    tc.TestData.p560m.rne(q, q, q);
+end
+
 
 %        accel                  - forward dynamics
 function accel_test(tc)
@@ -509,6 +618,24 @@ function inertia_test(tc)
         0.0000    0.0000    0.0000    0.0000    0.0000    0.1941];
     tc.verifyEqual(out,expected_out,'absTol',1e-4);
 end
+
+function dynamic_component_test(tc)
+    % test that inertial components 
+    q = rand(1,6);
+    qd = rand(1,6);
+    qdd = rand(1,6);
+    
+    robot = tc.TestData.p560.nofriction('all');
+    
+    I = robot.inertia(q);
+    C = robot.coriolis(q, qd);
+    g = robot.gravload(q)';
+    
+    tau = robot.rne(q, qd, qdd)';
+    
+    tc.verifyEqual(norm(I*qdd'+C*qd'+g-tau), 0, 'absTol', 1e-8);
+end
+
 
 %        itorque                - inertia torque
 function itorque_test(tc)
@@ -749,4 +876,36 @@ function mat2str_test(tc)
     mdl_twolink_sym;
     twolink
 end
+
+function rad_deg_test(tc)
+    q = [1 2 3 4 5 6];
     
+    q2 = tc.TestData.p560.todegrees(q);
+    tc.verifyEqual(q*180/pi, q2);
+    q2 = tc.TestData.p560.toradians(q);
+    tc.verifyEqual(q*pi/180, q2);
+    
+    q2 = tc.TestData.stanf.todegrees(q);
+    qq = q*180/pi;
+    qq(3) = q(3);
+    tc.verifyEqual(qq, q2);
+    q2 = tc.TestData.stanf.toradians(q);
+    qq = q*pi/180;
+    qq(3) = q(3);
+    tc.verifyEqual(qq, q2);
+    
+
+end
+
+function trchain_test(tc)
+    
+    s = tc.TestData.p560.trchain();
+    tc.verifyClass(s, 'char');
+end
+
+function jointdynamics_test(tc)
+    jd = tc.TestData.p560.jointdynamics( zeros(1,6), zeros(1,6));
+    
+    tc.verifySize(jd, [1 6]);
+    tc.verifyClass(jd, 'tf');
+end

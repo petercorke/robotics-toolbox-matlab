@@ -282,7 +282,7 @@ classdef Link < matlab.mixin.Copyable
                 opt.r = [0 0 0];
                 opt.offset = 0;
                 opt.qlim = [];
-                opt.type = {'revolute', 'prismatic', 'fixed'};
+                opt.type = {[], 'revolute', 'prismatic', 'fixed'};
                 opt.convention = {'standard', 'modified'};
                 opt.sym = false;
                 opt.flip = false;
@@ -297,6 +297,26 @@ classdef Link < matlab.mixin.Copyable
                     % given by key/value pairs
                     %
                     % eg. L3 = Link('d', 0.15005, 'a', 0.0203, 'alpha', -pi/2);
+                    
+                    assert(isempty(opt.d) || isempty(opt.theta), 'RTB:Link:badarg', 'cannot specify ''d'' and ''theta''');
+                    
+                    if opt.type
+                        switch (opt.type)
+                        case 'revolute'
+                            l.jointtype = 'R';
+                            assert(isempty(opt.theta), 'RTB:Link:badarg', 'cannot specify ''theta'' for revolute link');
+                            if isempty(opt.d)
+                                opt.d = 0;
+                            end
+                        case 'prismatic'
+                            l.jointtype = 'P';
+                            assert(isempty(opt.d), 'RTB:Link:badarg', 'cannot specify ''d'' for prismatic link');
+                            if isempty(opt.theta)
+                                opt.theta = 0;
+                            end
+                        end
+                    end
+                    
                     if ~isempty(opt.theta)
                         % constant value of theta means it must be prismatic
                         l.theta = value( opt.theta, opt);
@@ -308,25 +328,15 @@ classdef Link < matlab.mixin.Copyable
                         l.d = value( opt.d, opt);
                         l.jointtype = 'R';
                     end
-                    if ~isempty(opt.d) && ~isempty(opt.theta)
-                        error('RTB:Link:badarg', 'specify only one of ''d'' or ''theta''');
-                    end
                     
                     l.a =     value( opt.a, opt);
                     l.alpha = value( opt.alpha, opt);
                     
                     l.offset = value( opt.offset, opt);
                     l.flip = value( opt.flip, opt);
-
                     l.qlim =   value( opt.qlim, opt);
                     
-                    switch (opt.type) 
-                        case 'revolute'
-                            l.jointtype = 'R';
-                        case 'prismatic'
-                            l.jointtype = 'P';
-                    end
-                    
+           
                     l.m = value( opt.m, opt);
                     l.r = value( opt.r, opt);
                     l.I = value( opt.I, opt);
@@ -341,9 +351,7 @@ classdef Link < matlab.mixin.Copyable
                     %
                     % eg. L3 = Link([ 0, 0.15005, 0.0203, -pi/2, 0], 'standard');
                     dh = args{1};
-                    if length(dh) < 4
-                        error('RTB:Link:badarg', 'must provide params (theta d a alpha)');
-                    end
+                    assert(length(dh) >= 4, 'RTB:Link:badarg', 'must provide params (theta d a alpha)');
                     
                     % set the kinematic parameters
                     l.theta = dh(1);
@@ -611,9 +619,7 @@ classdef Link < matlab.mixin.Copyable
                 return;
             end
             if all(size(v) == [3 3])
-                if isa(v, 'double') && norm(v-v') > eps
-                    error('RTB:Link:badarg', 'inertia matrix must be symmetric');
-                end
+                assert(isa(v, 'sym') || (norm(v-v') < eps), 'RTB:Link:badarg', 'inertia matrix must be symmetric');
                 l.I = v;
             elseif length(v) == 3
                 l.I = diag(v);
@@ -997,7 +1003,7 @@ function s = render(v, fmt)
         fmt = '%-11.4g';
     end
     if length(v) == 1
-                if isa(v, 'double')
+        if isa(v, 'double')
             s = sprintf(fmt, v);
         elseif isa(v, 'sym')
             s = char(v);
@@ -1006,14 +1012,14 @@ function s = render(v, fmt)
         end
     else
         
-    for i=1:length(v)
-        if isa(v, 'double')
-            s{i} = sprintf(fmt, v(i));
-        elseif isa(v, 'sym')
-            s{i} = char(v(i));
-        else
-            error('RTB:Link:badarg', 'Link parameter must be numeric or symbolic');
+        for i=1:length(v)
+            if isa(v, 'double')
+                s{i} = sprintf(fmt, v(i));
+            elseif isa(v, 'sym')
+                s{i} = char(v(i));
+            else
+                error('RTB:Link:badarg', 'Link parameter must be numeric or symbolic');
+            end
         end
-    end
     end
 end

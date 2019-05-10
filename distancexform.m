@@ -14,11 +14,16 @@
 % Options:
 % 'euclidean'    Use Euclidean (L2) distance metric (default)
 % 'cityblock'    Use cityblock or Manhattan (L1) distance metric
-% 'show',D       Show the iterations of the computation, with a delay of D seconds
-%                between frames.
+%
+% 'animate'      Show the iterations of the computation
+% 'delay',D      Delay of D seconds between animation frames (default 0.2s)
+% 'movie',M      Save animation to a movie file or folder
+%
 % 'noipt'        Don't use Image Processing Toolbox, even if available
 % 'novlfeat'     Don't use VLFeat, even if available
 % 'nofast'       Don't use IPT, VLFeat or imorph, even if available.
+%
+% 'delay'
 %
 % Notes::
 % - For the first case Image Processing Toolbox (IPT) or VLFeat will be used if
@@ -27,46 +32,67 @@
 % - Options can be used to disable use of IPT or VLFeat.
 % - If IPT or VLFeat are not available, or disabled, then imorph is used.
 % - If IPT, VLFeat or imorph are not available a slower M-function is used.
-% - If the 'show' option is given then imorph is used.
-%   - Using imorph requires iteration and is slow.
+% - If the 'animate' option is given then the MATLAB implementation is used.
+% - Using imorph requires iteration and is slow.
 %   - For the second case the Machine Vision Toolbox function imorph is required.
 %   - imorph is a mex file and must be compiled.
 % - The goal is given as [X,Y] not MATLAB [row,col] format.
 %
-% See also IMORPH, DXform.
+% See also IMORPH, DXform, Animate.
 
 
 
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
-function d = distancexform(occgrid, varargin)
+function dx = distancexform(occgrid, varargin)
     
-    opt.show = 0;
+    opt.delay = 0.2;
     opt.ipt = true;
     opt.vlfeat = true;
     opt.fast = true;
     opt.metric = {'euclidean', 'cityblock'};
+    opt.animate = false;
+    opt.movie = [];
     [opt,args] = tb_optparse(opt, varargin);
-    if opt.show
+    if opt.movie
+        opt.animate = true;
+    end
+    if opt.animate
+        opt.fast = false;
         opt.ipt = false;
         opt.vlfeat = false;
+        clf
+    end
+    count = [];
+    switch opt.metric
+        case 'cityblock'
+            ipt_metric = opt.metric;  % if we use bwdistgeodesic
+            m = [ inf   1   inf
+                1   0     1
+                inf   1   inf  ];
+        case 'euclidean'
+            ipt_metric = 'quasi-euclidean';  % if we use bwdistgeodesic
+            r2 = sqrt(2);
+            m = [ r2   1   r2
+                1   0    1
+                r2   1   r2  ];
     end
     
     if ~isempty(args) && isvec(args{1}, 2)
@@ -76,30 +102,13 @@ function d = distancexform(occgrid, varargin)
         goal = args{1};
         occgrid = double(occgrid);
         
-        if exist('imorph', 'file') ~= 3
-            error('Machine Vision Toolbox is required by this function');
-        end
-        
-        switch opt.metric
-            case 'cityblock'
-                m = [ inf  1  inf
-                        1  0    1
-                      inf  1  inf  ];
-            case 'euclidean'
-                r2 = sqrt(2);
-                m = [ r2  1 r2
-                       1  0  1
-                      r2  1 r2  ];
-            otherwise
-                error('unknown distance metric');
-        end
-        
         % check the goal point is sane
-        if occgrid(goal(2), goal(1)) > 0
-            error('goal inside obstacle')
-        end
+        assert(occgrid(goal(2), goal(1)) == 0, 'RTB:distancexform:badarg', 'goal inside obstacle')
         
-        if opt.fast && exist('imorph', 'file') == 3
+        if exist('imorph', 'file') && opt.fast
+            if opt.verbose
+                fprintf('using MVTB:imorph\n');
+            end
             % setup to use imorph
             %   - set obstacles to NaN
             %   - set free space to Inf
@@ -114,14 +123,14 @@ function d = distancexform(occgrid, varargin)
                 
                 occgrid = imorph(occgrid, m, 'plusmin');
                 count = count+1;
-                if opt.show
+                if opt.animate
                     cmap = [1 0 0; gray(count)];
                     colormap(cmap)
                     image(occgrid+1, 'CDataMapping', 'direct');
                     set(gca, 'Ydir', 'normal');
                     xlabel('x');
                     ylabel('y');
-                    pause(opt.show);
+                    pause(opt.delay);
                 end
                 
                 ninfnow = sum( isinf(occgrid(:)) ); % current number of Infs
@@ -132,7 +141,20 @@ function d = distancexform(occgrid, varargin)
                 end
                 ninf = ninfnow;
             end
+            dx = occgrid;
+            
+        elseif exist('bwdistgeodesic', 'file') && opt.ipt
+            if opt.verbose
+                fprintf('using IPT:bwdistgeodesic\n');
+            end
+            % solve using IPT
+            
+            dx = double( bwdistgeodesic(occgrid==0, goal(1), goal(2), ipt_metric) );
+            
         else
+            if opt.verbose
+                fprintf('using MATLAB code, faster if you install MVTB\n');
+            end
             % setup to use M-function
             
             occgrid(occgrid>0) = NaN;
@@ -142,20 +164,25 @@ function d = distancexform(occgrid, varargin)
             
             count = 0;
             ninf = Inf;  % number of infinities in the map
+            anim = Animate(opt.movie);
             while 1
                 
                 occgrid = dxstep(occgrid, m);
                 occgrid(nans) = NaN;
-
+                
                 count = count+1;
-                if opt.show
+                if opt.animate
                     cmap = [1 0 0; gray(count)];
                     colormap(cmap)
                     image(occgrid+1, 'CDataMapping', 'direct');
                     set(gca, 'Ydir', 'normal');
                     xlabel('x');
                     ylabel('y');
-                    pause(opt.show);
+                    if opt.animate
+                        anim.add();
+                    else
+                        pause(opt.delay);
+                    end
                 end
                 
                 ninfnow = sum( isinf(occgrid(:)) ); % current number of Infs
@@ -166,39 +193,21 @@ function d = distancexform(occgrid, varargin)
                 end
                 ninf = ninfnow;
             end
+            anim.close();
+            dx = occgrid;
         end
         
-        if opt.show
+        if opt.animate && ~isempty(count)
             fprintf('%d iterations, %d unreachable cells\n', count, ninf);
         end
         
-        d = occgrid;
     else
         %% image processing interpretation
         %   distancexform(world, [metric])
         
-        % use other toolboxes if they exist
-        if opt.fast && exist('bwdist') && opt.ipt
-            d = bwdist(occgrid, opt.metric);
-            
-        elseif exist('vl_imdisttf') == 3 && opt.vlfeat
-            im = double(occgrid);
-            im(im==0) = inf;
-            im(im==1) = 0;
-            d2 = vl_imdisttf(im);
-            d = sqrt(d2);
-            
-        elseif opt.fast && exist('imorph', 'file') == 3
-            
-            switch opt.metric
-                case 'cityblock'
-                    m = ones(3,3);
-                    m(2,2) = 0;
-                case 'euclidean'
-                    r2 = sqrt(2);
-                    m = [r2 1 r2; 1 0 1; r2 1 r2];
-                otherwise
-                    error('unknown distance metric');
+        if exist('imorph', 'file') && opt.fast
+            if opt.verbose
+                fprintf('using MVTB:imorph\n');
             end
             
             % setup to use imorph
@@ -209,6 +218,7 @@ function d = distancexform(occgrid, varargin)
             occgrid(isfinite(occgrid)) = 0;
             
             count = 0;
+            anim = Animate(opt.movie);
             while 1
                 occgrid = imorph(occgrid, m, 'plusmin');
                 count = count+1;
@@ -219,7 +229,11 @@ function d = distancexform(occgrid, varargin)
                     set(gca, 'Ydir', 'normal');
                     xlabel('x');
                     ylabel('y');
-                    pause(opt.show);
+                    if opt.animate
+                        anim.add();
+                    else
+                        pause(opt.delay);
+                    end
                 end
                 
                 ninfnow = sum( isinf(occgrid(:)) ); % current number of Infs
@@ -228,17 +242,28 @@ function d = distancexform(occgrid, varargin)
                     break;
                 end
             end
-            d = occgrid;
+            anim.close();
+            dx = occgrid;
+        elseif exist('bwdist') && opt.ipt
+            if opt.verbose
+                fprintf('using IPT:bwdist\n');
+            end
+            % use IPT
+            dx = bwdist(occgrid, ipt_metric);
+            
+        elseif exist('vl_imdisttf') && opt.vlfeat
+            if opt.verbose
+                fprintf('using VLFEAT:vl_imsdisttf\n');
+            end
+            im = double(occgrid);
+            im(im==0) = inf;
+            im(im==1) = 0;
+            d2 = vl_imdisttf(im);
+            dx = sqrt(d2);
+            
         else
-            switch opt.metric
-                case 'cityblock'
-                    m = ones(3,3);
-                    m(2,2) = 0;
-                case 'euclidean'
-                    r2 = sqrt(2);
-                    m = [r2 1 r2; 1 0 1; r2 1 r2];
-                otherwise
-                    error('unknown distance metric');
+            if opt.verbose
+                fprintf('using MATLAB code, faster if you install MVTB\n');
             end
             
             occgrid = double(occgrid);
@@ -265,10 +290,12 @@ function d = distancexform(occgrid, varargin)
                     break;
                 end
             end
-            d = occgrid;
+            dx = occgrid;
         end
     end
 end
+
+% MATLAB implementation of computational kernel
 
 function out = dxstep(G, m)
     
