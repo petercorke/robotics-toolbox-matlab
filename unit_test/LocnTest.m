@@ -222,6 +222,7 @@ function posegraph_test(tc)
     tc.verifyClass(w, 'int32');
     tc.verifySize(w, [3000 3000]);
     
+    tc.assumeTrue(exist('idisp', 'file'));  %REMINDER
     clf
     pg.plot_occgrid(w);
     close all
