@@ -125,13 +125,39 @@ end
 
 
 function teach_test(tc)
-    L(1)=Link([1 1 1 1 0]);
-    L(2)=Link([0 1 0 1 0]);
-    L(1).qlim = [-5 5];
-    R1 = SerialLink(L,'name','robot1','comment', 'test robot','manufacturer', 'test',...
-        'base', eye(4,4), 'tool', eye(4,4), 'offset', [1 1 0 0 0 0 ] );
-    R1.teach;
-    pause(0.5);
+    tc.TestData.p560.teach();
+    close all
+    
+    tc.TestData.p560.teach('eul');
+    close all
+    tc.TestData.p560.teach('eul', 'deg');
+    close all
+    tc.TestData.p560.teach('rpy');
+    close all
+    tc.TestData.p560.teach('rpy/xyz');
+    close all
+    tc.TestData.p560.teach('rpy/zyx');
+    close all
+    tc.TestData.p560.teach('approach');
+    close all
+
+    tc.TestData.p560.teach('callback', @(r, q) fprintf('hello') );
+    close all
+    
+    tc.TestData.p2.teach();
+    close all
+    
+    tc.TestData.p2.teach('2d');
+    close all
+    
+  
+    figure
+    figure
+    tc.TestData.p2.teach([0.2 0.3]);
+    close all
+    
+    close all
+
 end
 
 %%-------------------------------------------------------------------------- 
