@@ -901,7 +901,29 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                 sr.links(i) = r.links(i).sym;
             end
         end
-
+		
+		function dr = double(r)
+            % SerialLink.double converts SerialLink object parameters to numeric (double) type
+            %
+            % dr = r.double is a SerialLink object in which all the parameters are
+            % numeric ('double') type.
+            % 
+            % Useful when you are using Pi=sym('pi') to avoid round off errors
+            % e.g in sin(Pi/2)), but later you want to pass the SerialLink object to
+            % a method (e.g. ikine) which only supports real numbers. 
+            % 
+            % Will give an error if a symbolic variable is not convertable to
+            % double number.
+            %
+            % See also Link.double
+            %
+            % Author: Amin Yahyaabadi (aminyahyaabadi74@gmail.com)
+            
+            dr = SerialLink(r);
+            for i=1:r.n
+                dr.links(i) = r.links(i).double;
+            end
+        end
                  
         function p = isprismatic(robot)
         %SerialLink.isprismatic identify prismatic joints
