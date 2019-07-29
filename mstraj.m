@@ -41,6 +41,8 @@
 %   coordinate.
 % - Can be used to create Cartesian trajectories where the "axes"
 %   correspond to translation and orientation in RPY or Euler angle form.
+% - If qdmax is a scalar then all axes are assumed to have the same
+%   maximum speed.
 %
 % See also MTRAJ, LSPB, CTRAJ.
 
@@ -74,7 +76,12 @@ function [TG, t, info]  = mstraj(segments, qdmax, tsegment, q0, dt, Tacc, vararg
     assert(xor(~isempty(qdmax), ~isempty(tsegment)), 'RTB:mstraj:badarg', 'Must specify either qdmax or tsegment, but not both');
     if isempty(qdmax)
         assert(length(tsegment) == size(segments,1), 'RTB:mstraj:badarg', 'Length of TSEG does not match number of segments');
-    else
+    end
+    if isempty(tsegment)
+        if length(qdmax) == 1
+            % if qdmax is a scalar assume all axes have the same speed
+            qdmax = repmat(qdmax, 1, numcols(segments));
+        end
         assert(length(qdmax) == size(segments,2), 'RTB:mstraj:badarg', 'Length of QDMAX does not match number of axes'); 
     end
     
