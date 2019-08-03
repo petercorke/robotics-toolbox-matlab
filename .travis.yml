@@ -1,12 +1,15 @@
 language: java
-os: osx
-osx_image: xcode9.3
+dist: xenial
+
 before_install:
- - mkdir lib
- - git clone --depth 50 https://github.com/petercorke/toolbox-common-matlab lib/toolbox-common-matlab
- - git clone --depth 50 https://github.com/petercorke/spatial-math lib/spatial-math
-install: source /dev/stdin <<< "$(curl -sL https://ssd.mathworks.com/supportfiles/matlab-runner/install)"
+- mkdir lib
+- git clone --depth 50 https://github.com/petercorke/toolbox-common-matlab lib/toolbox-common-matlab
+- git clone --depth 50 https://github.com/petercorke/spatial-math lib/spatial-math
+
+install: curl -sL https://storage.googleapis.com/matlabimagesus/public/install.sh | sudo -E bash
+
 script:
- - matlab-runner -xi .git -xi doc -xi lib/spatial-math/.git -xi lib/spatial-math/doc -xi lib/toolbox-common-matlab/.git -sd unit_test "RunAllTests"
+- matlab -sd unit_test -batch "RunAllTests"
+
 after_success:
- - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
