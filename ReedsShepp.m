@@ -8,14 +8,14 @@
 % - robot can move forward or backward
 % - the robot turns at zero or maximum curvature
 % - there are discontinuities in velocity and steering commands (cusps)
-% to see what it does run 
+% to see what it does run
 %
 % >> ReedsShepp.test
 %
 % References::
-% - Reeds, J. A.; Shepp, L. A. 
-%   Optimal paths for a car that goes both forwards and backwards. 
-%   Pacific J. Math. 145 (1990), no. 2, 367--393. 
+% - Reeds, J. A.; Shepp, L. A.
+%   Optimal paths for a car that goes both forwards and backwards.
+%   Pacific J. Math. 145 (1990), no. 2, 367--393.
 %   https://projecteuclid.org/euclid.pjm/1102645450
 
 % each path is described by a 3-letter word.
@@ -71,6 +71,7 @@ classdef ReedsShepp < handle
         function plot(obj, varargin)
             
             opt.circles = [];
+            opt.join = [];
             
             opt = tb_optparse(opt, varargin);
             
@@ -81,7 +82,7 @@ classdef ReedsShepp < handle
             word = obj.best;
             
             for i=1:3
-
+                
                 if word.dir(i) > 0
                     color = 'b';
                 else
@@ -96,6 +97,9 @@ classdef ReedsShepp < handle
                     y = [y(end) word.traj{i}(2,:)];
                 end
                 
+                if ~isempty(opt.join) && i<3
+                    plot(x(end), y(end), opt.join{:});
+                end
                 if ~isempty(opt.circles)
                     T = SE2(word.traj{i}(:,1));
                     R = 1/obj.maxc;
@@ -110,6 +114,7 @@ classdef ReedsShepp < handle
             grid on; xlabel('X'); ylabel('Y')
             hold off
             axis equal
+            title('Reeds-Shepp path');
         end
         
         function s = char(obj)
@@ -130,10 +135,10 @@ classdef ReedsShepp < handle
             q0 = [0 0 pi/4]'; qf = [0 0 pi]';
             p = ReedsShepp(q0, qf, maxcurv, dl)
             
-            p.plot();
+            p.plot('circles', 'k--', 'join', {'Marker', 'o', 'MarkerFaceColor', 'k'});
         end
     end
-end
+end % class ReedsShepp
 
 function out = generate_trajectories(word, maxc, d, q0)
     
@@ -158,7 +163,7 @@ function out = generate_trajectories(word, maxc, d, q0)
         if i == 1
             out.traj{i} = p;
         else
-            % for subsequent segments skip the first point, same as last 
+            % for subsequent segments skip the first point, same as last
             % point of previous segment
             out.traj{i} = p(:,2:end);
         end
@@ -172,10 +177,10 @@ end
 function q = pathseg(l, dir, m, maxc, p0)
     q0 = p0(:);
     switch m
-    case 'S'
-        f = @(t,q) dir*[cos(q(3)), sin(q(3)), 0]';
-    case {'L', 'R'}
-        f = @(t,q) dir*[cos(q(3)), sin(q(3)), dir*maxc]';
+        case 'S'
+            f = @(t,q) dir*[cos(q(3)), sin(q(3)), 0]';
+        case {'L', 'R'}
+            f = @(t,q) dir*[cos(q(3)), sin(q(3)), dir*maxc]';
     end
     [t,q] = ode45(f, l, q0);
     q = q';  % points are column vectors
