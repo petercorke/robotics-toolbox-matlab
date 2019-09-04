@@ -2,9 +2,9 @@
 %
 % Q = R.IKINE_SYM(K, OPTIONS) is a cell array (Cx1) of inverse kinematic
 % solutions of the SerialLink object ROBOT.  The cells of Q represent the
-% different possible configurations.  Each cell of Q is a vector (Nx1), and
-% the J'th element is the symbolic expression for the J'th joint angle.  The
-% solution is in terms of the desired end-point pose of the robot which is
+% solutions for each joint, ie. Q{1} is the solution for joint 1.  A
+% cell may contain an array of solutions. The solution is expressed in terms
+% of other joint angles and elements of the desired end-point pose which is
 % represented by the symbolic matrix (3x4) with elements
 %      nx ox ax tx
 %      ny oy ay ty
@@ -26,11 +26,14 @@
 %         mdl_planar2
 %         sol = p2.ikine_sym(2);
 %         length(sol)
-%         ans = 
-%               2       % there are 2 solutions
-%         s1 = sol{1}  % is one solution
-%         q1 = s1(1);      % the expression for q1
-%         q2 = s1(2);      % the expression for q2
+%
+%         q1 = sol{1}   % are the solution for joint 1
+%         q2 = sol{2}   % is the solution for joint 2
+%         length(q1)
+%         ans =
+%               2     % there are 2 solutions for this joint
+%         q1(1)       % one solution for q1
+%         q1(2);      % the other solution for q1
 %
 % References::
 % - Robot manipulators: mathematics, programming and control
@@ -63,7 +66,7 @@
 %
 % http://www.petercorke.com
 
-function out = ikine_sym(srobot, N, varargin)
+function out = ikine_sym(robot, N, varargin)
     
     %
     % Given a robot model the following steps are performed:
@@ -82,7 +85,8 @@ function out = ikine_sym(srobot, N, varargin)
     opt = tb_optparse(opt, varargin);
     
     % make a symbolic representation of the passed robot
-    srobot = sym(srobot);
+    srobot = SerialLink(robot);  % make a deep copy
+    srobot = sym(srobot);  % convert to symbolic
     q = srobot.gencoords();
 
     % test N DOF has an allowable value
@@ -222,6 +226,8 @@ function out = ikine_sym(srobot, N, varargin)
             % seem to need to iterate this, not quite sure why
             Q{j} = simplify( expand( subs(Q{j}, tsubOld, tsubNew) ) );
         end
+        % subs Sx, Cx to sin(qx), cos(qx)
+        Q{j} = simplify( subs(Q{j}, trigsubNew, trigsubOld) );
     end
 
     % Q is a cell array of equations for joint variables

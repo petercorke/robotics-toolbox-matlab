@@ -45,7 +45,7 @@ function [sys,x0,str,ts] = quadrotor_plot(t,x,u,flag,s,plot,enable,vehicle)
         vehicle.nrotors = 4;    % sensible default for quadrotor function
     end
     
-    switch flag,
+    switch flag
         case 0
             [sys,x0,str,ts] = mdlInitializeSizes(ts,plot,enable); % Initialization
         case 3
@@ -187,9 +187,6 @@ function sys = mdlOutputs(t,u,s, plot, enable, quad)
         xlabel('x');
         ylabel('y');
         zlabel('z (height above ground)');
-        
-        %global anim
-        %anim.add();
     end
         
     sys = [];

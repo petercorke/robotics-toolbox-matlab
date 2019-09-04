@@ -258,7 +258,7 @@ classdef Bug2 < Navigation
                 else
                     % we are at the end of the list of edge points, we
                     % are back where we started.  Step 2.c test.
-                    error('robot is trapped')
+                    error('RTB:bug2:noplan', 'robot is trapped')
                     return;
                 end
 

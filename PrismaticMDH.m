@@ -117,7 +117,7 @@ classdef PrismaticMDH < Link
             %   friction and interia to the link frame.
             %
             % See also Link, Prismatic, RevoluteMDH.
-            L = L@Link(varargin{:});
+            L = L@Link('prismatic', varargin{:});
             
             if nargin == 0
                 L.d = [];

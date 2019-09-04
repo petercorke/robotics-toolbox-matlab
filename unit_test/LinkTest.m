@@ -233,11 +233,11 @@ function constructor_test(tc)
     tc.verifyEqual(L.mdh, 0);
     
     % standard prismatic
-    L = Link('d', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
+    L = Link('theta', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
         'r', [10 11 12], 'I', [21:26], 'qlim', [30 31], 'prismatic');
     tc.verifyTrue( isa(L, 'Link') );
     tc.verifyFalse(L.issym);
-    tc.verifyEqual(L.d, 1);
+    tc.verifyEqual(L.theta, 1);
     tc.verifyEqual(L.a, 2);
     tc.verifyEqual(L.alpha, 3);
     tc.verifyEqual(L.B, 4);
@@ -277,11 +277,11 @@ function constructor_test(tc)
     tc.verifyEqual(L.mdh, 1);
     
     % modified prismatic
-    L = Link('d', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
+    L = Link('theta', 1, 'a', 2, 'alpha', 3, 'B', 4, 'm', 5, 'G', 6, 'Jm', 7, 'Tc', [8 -9], ...
         'r', [10 11 12], 'I', [21:26], 'qlim', [30 31], 'modified', 'prismatic');
     tc.verifyTrue( isa(L, 'Link') );
     tc.verifyFalse(L.issym);
-    tc.verifyEqual(L.d, 1);
+    tc.verifyEqual(L.theta, 1);
     tc.verifyEqual(L.a, 2);
     tc.verifyEqual(L.alpha, 3);
     tc.verifyEqual(L.B, 4);

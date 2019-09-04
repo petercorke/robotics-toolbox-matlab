@@ -117,7 +117,7 @@ classdef Revolute < Link
             %   friction and interia to the link frame.
             %
             % See also Link, Prismatic, RevoluteMDH.
-            L = L@Link(varargin{:});
+            L = L@Link('revolute', varargin{:});
             
             if nargin == 0
                 L.theta = [];

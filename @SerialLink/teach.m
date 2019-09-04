@@ -67,7 +67,7 @@ function teach(robot, varargin)
     
     %---- handle options
     opt.deg = true;
-    opt.orientation = {'rpy', 'rpy/zyx', 'eul', 'approach'};
+    opt.orientation = {'rpy', 'rpy/zyx', 'rpy/xyz', 'eul', 'approach'};
     opt.d_2d = false;
     opt.callback = [];
     opt.record = [];

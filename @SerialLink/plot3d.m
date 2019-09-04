@@ -48,7 +48,7 @@
 % Notes::
 % - Solid models of the robot links are required as STL files (ascii or
 %   binary) with extension .stl.
-% - The solid models live in RVCTOOLS/robot/data/ARTE.
+% - The solid models live in RVCTOOLS/robot/data/meshes.
 % - Each STL model is called 'linkN'.stl where N is the link number 0 to N
 % - The specific folder to use comes from the SerialLink.model3d property
 % - The path of the folder containing the STL files can be overridden using
@@ -107,9 +107,9 @@ function plot3d(robot, q, varargin)
     
     opt = plot_options(robot, varargin);
     
-    if opt.movie
-        robot.movie = Animate(opt.movie);
-    end
+
+    robot.movie = Animate(opt.movie);
+
     
     %-- load the shape if need be
     
@@ -128,7 +128,7 @@ function plot3d(robot, q, varargin)
             pth = join(s(1:robotDirInd), filesep);
 
             % find the path to this specific model
-            pth = fullfile(pth{1}, 'data/ARTE', robot.model3d);
+            pth = fullfile(pth{1}, 'data/meshes', robot.model3d);
             assert(exist(pth, 'dir') > 0, 'RTB:plot3d:nomodel', 'no 3D model found, install the RTB contrib zip file');
         else
             pth = opt.path;
