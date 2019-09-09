@@ -33,7 +33,7 @@ function bug2_test(tc)
     nav.plot()
     nav.plot(p);
     
-    tc.assumeTrue(ispc || ismac);
+    tc.assumeTrue(ispc || ismac);  % FILTER video generation for Travis
     fname = fullfile(tempdir, 'bug.mp4');
     p = nav.query(tc.TestData.start, tc.TestData.goal, 'animate', 'movie', fname);
     tc.verifyTrue(exist(fname, 'file') == 2);
@@ -123,7 +123,7 @@ function distancexform_test(tc)
     dx1 = distancexform(map, [5 8], 'cityblock', 'animate');
     dx1 = distancexform(map, [5 8], 'cityblock', 'animate', 'delay', 0.1);
     
-    tc.assumeTrue(ispc || ismac);
+    tc.assumeTrue(ispc || ismac);  % FILTER video generation for Travis
     fname = fullfile(tempdir, 'bug.mp4');
     dx1 = distancexform(map, [5 8], 'cityblock', 'animate', 'movie', fname);
     tc.verifyTrue(exist(fname, 'file') == 2);

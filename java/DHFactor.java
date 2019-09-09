@@ -53,8 +53,12 @@ public class DHFactor {
             return "pi/2";
         else if (a == -90.0)
             return "-pi/2";
+        else if (a == 180.0)
+            return "pi";
+        else if (a == -180.0)
+            return "-pi";
         else
-			throw new IllegalArgumentException("bad transform angle");
+			throw new IllegalArgumentException("bad transform angle: " + a);
     }
 
     private String el2matlab(int from, int to)
@@ -263,6 +267,7 @@ public class DHFactor {
 		l.factorize(Element.DH_STANDARD, 0);
 		System.out.println(l);
 
+
         return l;
 	}
 
@@ -275,7 +280,6 @@ public class DHFactor {
 
             ElementList l  = parseString(args[0]);
             System.err.println( l );
-            
         } else {
             ElementList l  = parseStdin();
             System.err.println( l );
