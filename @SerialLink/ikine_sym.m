@@ -12,14 +12,12 @@
 % where the first three columns specify orientation and the last column
 % specifies translation.
 %
-% K <= N can have only specific values:
-%  - 2 solve for translation tx and ty
-%  - 3 solve for translation tx, ty and tz
-%  - 6 solve for translation and orientation
+% K <= N is the number of joint angles solved for.
 %
 % Options::
 %
 % 'file',F    Write the solution to an m-file named F
+% 'Tpost',T   Add a symbolic 4x4 matrix T to the end of the chain
 %
 % Example::
 %
@@ -34,6 +32,9 @@
 %               2     % there are 2 solutions for this joint
 %         q1(1)       % one solution for q1
 %         q1(2);      % the other solution for q1
+%
+% Notes::
+% - ignores tool and base transforms.
 %
 % References::
 % - Robot manipulators: mathematics, programming and control
@@ -82,6 +83,7 @@ function out = ikine_sym(robot, N, varargin)
     %  - handle base and tool transforms
     
     opt.file = [];
+    opt.Tpost = [];
     opt = tb_optparse(opt, varargin);
     
     % make a symbolic representation of the passed robot
@@ -89,20 +91,12 @@ function out = ikine_sym(robot, N, varargin)
     srobot = sym(srobot);  % convert to symbolic
     q = srobot.gencoords();
 
-    % test N DOF has an allowable value
-    switch N
-        case 2
-        case 3
-        case 6
-        otherwise
-            error('RTB:ikine_sym:badarg', 'Can only solve for 2,3,6 DOF');
-    end
     
     % define symbolic elements of the homogeneous transform
-    syms nx ox ax tx
-    syms ny oy ay ty
-    syms nz oz az tz
-    syms d3
+    syms nx ox ax tx real
+    syms ny oy ay ty real
+    syms nz oz az tz real
+    syms d4 real
     
     % inits
     Q = {};
@@ -114,7 +108,7 @@ function out = ikine_sym(robot, N, varargin)
         fprintf('----- solving for joint %d\n', j);
         
         % create some equations to sift through
-        [left,right] = pieper(srobot, j, 'left');
+        [left,right] = pieper(srobot, j, 'left', opt.Tpost);
         
         % decide which equations to look at
         if j <= 3
@@ -127,7 +121,7 @@ function out = ikine_sym(robot, N, varargin)
             right = right(1:3, 1:3); right = right(:);
         end
         
-        % substitute sin/cos for preceding joint as S/C, essentially removes
+        % substitute sin/cos for preceding joint as Sj/Cj, essentially removes
         % the joint variables from the equations and treats them as constants.
         if ~isempty(trigsubOld)
             left = subs(left, trigsubOld, trigsubNew);
@@ -162,24 +156,31 @@ function out = ikine_sym(robot, N, varargin)
             
             k = [];
             for i=1:length(left)
-                % has qj on the left and constant on the right
+                % has qj on the left
                 if hasonly(left(i), j)
                     k = [k i];
                 end
             end
             
-            % hopefully we found two of them
+            % hopefully we found at least two of them
             if length(k) < 2
                 continue;
             end
             
             % we did, lets see if the sum square RHS is constant
-            rhs = simplify(right(k(1))^2 + right(k(2))^2); % was simple
-            if isconstant( rhs )
-                % it is, let's sum and square the LHS
-                fprintf('lets square and add %d %d\n', k);
-                
-                eq = simplify( expand( left(k(1))^2 + left(k(2))^2 ) ) - rhs; % was simple
+            for kk = nchoosek(k, 2)'
+                fprintf('let''s square and add RHS %d %d\n', kk);
+                rhs = simplify(right(kk(1))^2 + right(kk(2))^2); % was simple
+                if isconstant( rhs )
+                    eq = simplify( expand( left(kk(1))^2 + left(kk(2))^2 ) ) - rhs;
+                    break
+                end
+            end
+            if isempty(eq)
+                fprintf('** can''t solve this equation, out of options');
+                k
+                left(k)==right(k)
+                error('can''t solve this equation');
             end
         end
         
@@ -188,18 +189,12 @@ function out = ikine_sym(robot, N, varargin)
         trigsubOld = [trigsubOld mvar('sin(q%d)', j) mvar('cos(q%d)', j)];
         trigsubNew = [trigsubNew mvar('S%d', j) mvar('C%d', j)];
         
-        if isempty(eq)
-            fprintf('cant solve this equation');
-            k
-            left(k)==right(k)
-            error('cant solve');
-        end
         % now solve the equation
         if srobot.links(j).isrevolute()
             % for revolute joint it will be a trig equation, do we know how to solve it?
             Q{j} = solve_joint(eq, j );
             if isempty(Q)
-                warning('cant solve this kind of equation');
+                warning('RTB:ikine_sym', 'can''t solve this kind of equation');
             end
         else
             fprintf('prismatic case\n')
@@ -212,23 +207,7 @@ function out = ikine_sym(robot, N, varargin)
     %  get rid of C^2+S^2 and C^4, S^4 terms
     fprintf('**final simplification pass\n')
     
-    % create a list of simplifications
-    %  substitute S^2 = 1-C^2, S^4=(1-C^2)^2
-    tsubOld = [];
-    tsubNew = [];
-    for j=1:N
-        tsubOld = [tsubOld mvar('S%d', j)^2 mvar('S%d', j)^4];
-        tsubNew = [tsubNew 1-mvar('C%d', j)^2 (1-mvar('C%d', j)^2)^2];
-    end
-    
-    for j=1:N
-        for k=1:5
-            % seem to need to iterate this, not quite sure why
-            Q{j} = simplify( expand( subs(Q{j}, tsubOld, tsubNew) ) );
-        end
-        % subs Sx, Cx to sin(qx), cos(qx)
-        Q{j} = simplify( subs(Q{j}, trigsubNew, trigsubOld) );
-    end
+    Q = simplify_powers(Q, N, trigsubOld, trigsubNew);
 
     % Q is a cell array of equations for joint variables
     if nargout > 0
@@ -240,6 +219,7 @@ function out = ikine_sym(robot, N, varargin)
         gencode(Q);
     end
 end
+
 
 %PIEPER Return a set of equations using Pieper's method
 %
@@ -255,13 +235,19 @@ end
 %  T A4' A3' = A1 A2    n=2, which='right'
 %  T A4' A3' A2' = A1   n=3, which='right'
 %
+% A' denotes inversion not transposition
+%
 % Judicious choice of the equations can lead to joint solutions
 
-function [L,R] = pieper(robot, n, which)
+function [L,R] = pieper(robot, n, which, Tpost)
     
     if nargin < 3
         which = 'left';
     end
+    if nargin < 4 || isempty(Tpost)
+        Tpost = transl(zeros(robot.n, 3));
+    end
+    assert(n <= robot.n, 'RTB:ikine_sym:badarg', 'N is greater than number of joints');
     
     syms nx ox ax tx real
     syms ny oy ay ty real
@@ -279,7 +265,7 @@ function [L,R] = pieper(robot, n, which)
     
     % Create the symbolic A matrices
     for j=1:robot.n
-        A{j} = robot.links(j).A(q(j)).T;
+        A{j} = robot.links(j).A(q(j)).T * Tpost(:,:,j);
     end
     
     switch which
@@ -322,7 +308,7 @@ end
 %SOLVE_JOINT Solve a trigonometric equation
 %
 % S = SOLVE_JOINT(EQ, J) solves the equation EQ=0 for the joint variable qJ.
-% The result is a cell array of solutions.
+% The result is a vector of symbolic solutions.
 %
 % The equations must be of the form:
 %  A cos(qJ) + B sin(qJ) = 0
@@ -330,8 +316,19 @@ end
 %
 % where A, B, C are arbitrarily complex expressions.  qJ can be the only
 % joint variable in the expression.
+%
+% Notes::
+% - In general there are two solutions, but if A^2+B^2-C^2 = 0, then only one
+%   solution is returned.
+% - The one solution case may not be detected symbolically, in which case
+%   the two returned solutions will have the same value after numerical
+%   substitution
+% - The symbolic solution may not be evaluteable numerically with
+%   certain parameter values, ie. if A^2+B^2-C^2 < 0
 
 function s = solve_joint(eq, j)
+    
+    % see http://petercorke.com/wordpress/solving-trigonometric-equations
     
     sinj = mvar('sin(q%d)', j);
     cosj = mvar('cos(q%d)', j);
@@ -346,17 +343,26 @@ function s = solve_joint(eq, j)
     C = -simplify(eq - A*cosj - B*sinj);  % was simple
     
     if C == 0
+        fprintf('C == 0\n');
         % A cos(q) + B sin(q) = 0
         s(2) = atan2(A, -B);
         s(1) = atan2(-A, B);
     else
+        fprintf('C != 0\n');
         % A cos(q) + B sin(q) = C
         r = sqrt(A^2 + B^2 - C^2);
-        phi = atan2(A, B);
-        
-        s(2) = atan2(C, r) - phi;
-        s(1) = atan2(C, -r) - phi;
+%         phi = atan2(A, B);
+%         
+%         s(2) = atan2(C, r) - phi;
+%         s(1) = atan2(C, -r) - phi;
+        if r == 0
+            s = atan2(B*C, A*C) 
+        else
+            s(1) = atan2(B*C + A*r, A*C - B*r);
+            s(2) = atan2(B*C + A*r, A*C - B*r);
+        end
     end
+    
     if nargout == 0
         try
             eval(s)
@@ -365,6 +371,28 @@ function s = solve_joint(eq, j)
         end
     end
 end
+
+function Qout = simplify_powers(Q, N, trigsubOld, trigsubNew)
+        % create a list of simplifications
+    %  substitute S^2 = 1-C^2, S^4=(1-C^2)^2
+    fprintf('power simplification');
+    tsubOld = [];
+    tsubNew = [];
+    for j=1:N
+        tsubOld = [tsubOld mvar('S%d', j)^2 mvar('S%d', j)^4];
+        tsubNew = [tsubNew 1-mvar('C%d', j)^2 (1-mvar('C%d', j)^2)^2];
+    end
+    
+    for j=1:length(Q)
+        for k=1:5
+            % seem to need to iterate this, not quite sure why
+            Q{j} = simplify( expand( subs(Q{j}, tsubOld, tsubNew) ) );
+        end
+        % subs Sx, Cx to sin(qx), cos(qx)
+        Qout{j} = simplify( subs(Q{j}, trigsubNew, trigsubOld) );
+    end
+end
+
 
 %MVAR Create a symbolic variable
 %
