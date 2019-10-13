@@ -33,7 +33,7 @@
 V = diag([0.1, 1*pi/180].^2);
 
 % then use this to create an instance of a Vehicle class
-veh = Vehicle(V);
+veh = Bicycle(V);
 
 % and then add a "driver" to move it between random waypoints in a square
 % region with dimensions from -10 to +10
@@ -42,14 +42,14 @@ veh.add_driver( RandomPath(10) );
 
 % Creating the map.  The map covers a square region with dimensions from 
 % -10 to +10 and contains 20 randomly placed landmarks
-map = Map(20, 10);
+map = LandmarkMap(20, 10);
 
 % Creating the sensor.  We firstly define the covariance of the sensor measurements
 % which report distance and bearing angle
 W = diag([0.1, 1*pi/180].^2);
 
 % and then use this to create an instance of the Sensor class.
-sensor = RangeBearingSensor(veh, map, W, 'animate');
+sensor = RangeBearingSensor(veh, map, 'covar', W, 'animate');
 % Note that the sensor is mounted on the moving robot and observes the features
 % in the world so it is connected to the already created Vehicle and Map objects.
 
@@ -80,7 +80,7 @@ pf = ParticleFilter(veh, sensor, Q, L, 1000);
 % hypotheses are very spread out, but soon start to cluster around the actual pose
 % of the robot.  The pose is 3D (x,y, theta) so if you rotate the graph while the
 % simulation is running you can see the theta dimension as well.
-pf.run(200);
+pf.run(100);
 % all the results of the simulation are stored within the ParticleFilter object
 
 % First let's plot the map
