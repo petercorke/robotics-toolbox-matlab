@@ -606,28 +606,11 @@ classdef RTBPlot
             xmin = opt.workspace(1);
             xmax = opt.workspace(2);
             ymin = opt.workspace(3);
-            ymax = opt.workspace(4);
+            ymax = opt.workspace(4);           
             
             % create a colored tiled floor
             xt = xmin:opt.tilesize:xmax;
             yt = ymin:opt.tilesize:ymax;
-            
-            % check how many tiles are to be rendered and reduce it if too many
-            % too many tiles can lead to MATLAB crashing with lack of memory
-            n = max(length(xt), length(yt)); % number requested
-            if n > 20
-                n = n/20;  % reduce by this factor
-                p = 10^floor(log10(n));  % figure a scale factor 1,2,5 * 10^N
-                v = n/p;
-                s = [1 2 5 10];
-                k = find(v > s);
-                f = k(end)+1;
-                f = f*p;
-                warning('RTB:SerialLink:plot', 'floor tiles too small, making them %f x bigger - change the size or disable them', f);
-                opt.tilesize = opt.tilesize * f;
-                xt = xmin:opt.tilesize:xmax;
-                yt = ymin:opt.tilesize:ymax;
-            end
             
             Z = opt.floorlevel*ones( numel(yt), numel(xt));
             C = zeros(size(Z));
@@ -678,7 +661,7 @@ classdef RTBPlot
             opt.tile1color = [0.5 1 0.5];  % light green
             opt.tile2color = [1 1 1];  % white
             opt.floorlevel = [];
-            opt.tilesize = 0.2;
+            opt.tilesize = [];
             
             opt.floorimage = [];
             
@@ -795,6 +778,17 @@ classdef RTBPlot
             if isempty(opt.workspace)
                 % now create a 3D volume based on this reach
                 opt.workspace = [-reach reach -reach reach -reach reach];
+            end
+            
+            if opt.tiles && isempty(opt.tilesize)
+                d = max(opt.workspace(2)-opt.workspace(1), opt.workspace(4)-opt.workspace(3));
+
+                ts = d / 20;  % go for 20 tiles to span the distance as first guess
+                scale = 10^floor(log10(ts));  % figure a scale factor 1,2,5 * 10^N
+                ts = ts/scale;
+                allowed = [1 2 5 10];
+                k = find(ts >= allowed);
+                opt.tilesize = allowed(k(end)) * scale;            
             end
             
             if opt.wrist
