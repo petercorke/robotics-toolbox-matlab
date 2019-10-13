@@ -5,14 +5,14 @@
 % transform matrix (4x4), and N is the number of robot joints. OPTIONS is
 % an optional list of name/value pairs than can be passed to fminunc.
 %
-% [Q,ERR] = robot.ikunc(T,OPTIONS) as above but also returns ERR which is the
+% Q = robot.ikunc(T, Q0, OPTIONS) as above but specify the
+% initial joint coordinates Q0 used for the minimisation.
+%
+% [Q,ERR] = robot.ikunc(T,...) as above but also returns ERR which is the
 % scalar final value of the objective function.
 %
-% [Q,ERR,EXITFLAG] = robot.ikunc(T,OPTIONS) as above but also returns the
+% [Q,ERR,EXITFLAG] = robot.ikunc(T,...) as above but also returns the
 % status EXITFLAG from fminunc.
-%
-% [Q,ERR,EXITFLAG] = robot.ikunc(T, Q0, OPTIONS) as above but specify the
-% initial joint coordinates Q0 used for the minimisation.
 %
 % Trajectory operation::
 %
