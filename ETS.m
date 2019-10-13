@@ -68,6 +68,14 @@ classdef ETS < handle
         constant    % eg. 90, for angles
         sign
         symconstant  % eg. L1, for lengths
+        
+        % DH parameters
+        theta
+        D
+        A
+        alpha
+        offset
+        prismatic
     end
     
     properties (Constant)
@@ -77,8 +85,10 @@ classdef ETS < handle
         RX = 3;
         RY = 4;
         RZ = 5;
+        DH = 6;
+        DHM = 7;
         
-        names = {'Tx', 'Ty', 'Tz', 'Rx', 'Ry', 'Rz'};
+        names = {'Tx', 'Ty', 'Tz', 'Rx', 'Ry', 'Rz', 'DH', 'DHm' };
     end
     % Element.java
     %         // one of ETS.TX, ETS.TY ... ETS.RZ, DH_STANDARD/MODIFIED
@@ -388,8 +398,8 @@ classdef ETS < handle
             b = char( mod([ets.type],3) + 'x' );
             
         end
-
-                function v = sametype(ets, next)
+        
+        function v = sametype(ets, next)
             v = ets.type == next.type;
         end
         
@@ -451,7 +461,11 @@ classdef ETS < handle
         
         
         
-        function plus(ets, e)
+        function v = plus(ets, e)
+            if isstring(ets) && isa(e, 'ETS')
+                % string concatenate
+                v = ets + char(e);
+            end
         end
         
         function symPlus(ets, e)
@@ -628,37 +642,37 @@ classdef ETS < handle
             
             % note that if rotation is -90 we must make the displacement -ve */
             if ((prev.type == ETS.RX) && (this.type == ETS.TY))
-                % ETS.RX.TY -> ETS.TZ.RX
+                % RX.TY -> TZ.RX
                 s(1) = ETS(this, ETS.TZ, prev.constant);
                 s(2) = ETS(prev);
             elseif ((prev.type == ETS.RX) && (this.type == ETS.TZ))
-                % ETS.RX.TZ -> ETS.TY.RX
+                % RX.TZ -> TY.RX
                 s(1) = ETS(this, ETS.TY, -prev.constant);
                 s(2) = ETS(prev);
             elseif ((prev.type == ETS.RY) && (this.type == ETS.TX))
-                % ETS.RY.TX-> ETS.TZ.RY
+                % RY.TX-> TZ.RY
                 s(1) = ETS(this, ETS.TZ, -prev.constant);
                 s(2) = ETS(prev);
             elseif ((prev.type == ETS.RY) && (this.type == ETS.TZ))
-                % ETS.RY.TZ-> ETS.TX.RY
+                % RY.TZ-> TX.RY
                 s(1) = ETS(this, ETS.TX, prev.constant);
                 s(2) = ETS(prev);
             elseif ((prev.type == ETS.TY) && (this.type == ETS.RX))
-                % ETS.TY.RX -> ETS.RX.TZ
+                % TY.RX -> RX.TZ
                 s(1) = ETS(this);
                 s(2) = ETS(prev, ETS.TZ, -this.constant);
                 %%return s;
                 s = [];
             elseif ((prev.type == ETS.RY) && (this.type == ETS.RX))
-                % ETS.RY(Q).RX -> ETS.RX.RZ(-Q)
+                % RY(Q).RX -> RX.RZ(-Q)
                 s(1) = ETS(this);
                 s(2) = ETS(prev, ETS.RZ, -1);
             elseif ((prev.type == ETS.RX) && (this.type == ETS.RY))
-                % ETS.RX.RY -> ETS.RZ.RX
+                % RX.RY -> RZ.RX
                 s(1) = ETS(this, ETS.RZ);
                 s(2) = ETS(prev);
             elseif ((prev.type == ETS.RZ) && (this.type == ETS.RX))
-                % ETS.RZ.RX -> ETS.RX.RY
+                % RZ.RX -> RX.RY
                 s(1) = ETS(this);
                 s(2) = ETS(prev, ETS.RY);
                 s = [];
@@ -701,7 +715,7 @@ classdef ETS < handle
                 end
                 
                 % RX TX -> TX RX
-                if cur.type == ETS.RX && next.type == ETS.TX && next.isjoint()
+                if cur.type == ETS.RX && next.type == ETS.TX && ~next.isjoint()
                     ets(i) = next;
                     ets(i+1) = cur;
                     fprintf('  Swap:  %s <--> %s\n', char(cur), char(next));
@@ -727,6 +741,17 @@ classdef ETS < handle
             out = ets;
         end
         
+
+        function v = contains(ets, which)
+            w = ETS.name2type(which);
+            for e = ets
+                v = e.type == w;
+                if v
+                    return
+                end
+            end
+        end
+        
         function dhfactor(ets)
             disp(char(ets))
             
@@ -744,34 +769,192 @@ classdef ETS < handle
             ets = simplify(ets);
             disp(char(ets))           
             
-            % now remove all Ry
-            fprintf('--------- eliminate RY\n');
+            % now eliminate all Ry
+            if ets.contains('Ry')
+                fprintf('--------- eliminate RY\n');
+                
+                fixup = find( [ets.type] == ETS.RY );
+                
+                for k=fliplr(fixup)   % work right to left so indices are not broken
+                    new = substituteRY(ets(k));
+                    ets = subs(ets, k, new);
+                end
+                
+                disp(char(ets))
+                
+                ets = simplify(ets);
+            end
+            
+            % now eliminate all Ty
+            if ets.contains('Ty')
+                fprintf('--------- eliminate TY\n');
+                fixup = find( [ets.type] == ETS.TY );
+                
+                for k=fliplr(fixup)   % work right to left so indices are not broken
+                    new = substituteTY(ets, k);
+                    ets = subs(ets, k, new);
+                end
+                
+                disp(char(ets))
+                
+                ets = simplify(ets);
+            end
+            
+            ets = ordering(ets);
+            
+            disp(char(ets))
+            
+            factorize(ets)
+        end
+        
+        function nfactors = factorize(ets, mdh)
+            if nargin < 2
+                mdh = false;
+            end
+            verbose = true;
+            nfactors = 0;
+            
+            out = [];
+            
+            for i=1:length(ets)
+                j = i;
+                jvars = 0; match = 0;
+                
+                % scan next 4 terms
+                if verbose
+                    fprintf("start at " + ets(i));
+                end
+                
+                match = 0; jvars = 0; j = i;
+                for f=1:4
+                    if j > length(ets)
+                        break;
+                    else
+                        e = ets(j);
+                    end
+                    
+                    if e.factormatch(f, mdh)
+                        j = j + 1;
+                        match = match + 1;
+                        if (e.isjoint())
+                            jvars = jvars + 1;
+                        end
+                        if jvars > 1	% can only have 1 joint var per DH
+                            break;
+                        end
+                    end
+                end
+                
+                if match == 0 || jvars == 0
+                    continue;		% no DH subexpression found, keep looking
+                end
+                
+                
+                if verbose
+                    fprintf(" found subexpression " + match + " " + jvars + "\n");
+                end
+                
+                if jvars == 0
+                    continue;
+                end
+                
+                first = i;
+                last = j;
+                if jvars > 1
+                    last = last - 1;
+                end
+                
+                [first last]
+                
+%                 dh = ETS();
+%                 dh.type = ETS.DH;
+%                 
+%                 for j=first:last
+%                     dh.add( this.get(i) );
+%                     this.remove(i);
+%                 end
+%                 
+%                 this.add(i, dh);
+%                 nfactors = nfactors + 1;
+%                 if verbose
+%                     fprintf(" result: " + dh);
+%                 end
+                
+            end
+        end
+        
+        function match = factormatch(ets, i, mdh)
+            
+            if nargin < 2
+                mdh = false;
+            end
+            
+            if mdh
+                dhFactors = [
+                    ETS.RX 0
+                    ETS.TX 0
+                    ETS.RZ 1
+                    ETS.RZ 1 ];
+            else
+                dhFactors = [
+                    ETS.RZ 1
+                    ETS.TX 0
+                    ETS.TZ 1
+                    ETS.RX 0 ];
+            end
+            
+            match =	(ets.type == dhFactors(i,1)) && ...
+            ~((dhFactors(i,2) == 0) && ets.isjoint());
+            
+            fprintf(" matching " + ets + " (i=" + i + ") " + " to " + ...
+                op(dhFactors(i,1)) + "<" + dhFactors(i,2) + ">" + ...
+                " -> " + match + "\n");
+        end
+        
+        function new = 	add(e1, e2)
+            assert(e1.type == DH || e1.type == DHM, 'wrong element type');
+            
+            
+            fprintf("  adding: " + e1 + " += "  + e2);
+            switch e2.type
+                case RZ
+                    if e2.isjoint()
+                        e1.prismatic = 0;
+                        e1.var = e1.var;
+                        e1.offset = e1.constant;
+                        e1.theta = 0.0;
+                    else
+                        e1.theta = e1.constant;
+                    end
+                case TX
+                    e1.A = e2.symconst;
+                case TZ
+                    if e1.isjoint()
+                        e1.prismatic = 1;
+                        e1.var = e2.var;
+                        e1.D = null;
+                    else
+                        e1.D = e2.symconst;
+                    end
+                case RX
+                    e1.alpha = e2.constant;
+                otherwise
+                    
+                    error("cant factorize " + e);
+            end
+        end
+    end
 
-            fixup = find( [ets.type] == ETS.RY );
-            
-            for k=fliplr(fixup)   % work right to left so indices are not broken
-                new = substituteRY(ets(k));
-                ets = subs(ets, k, new);
+    methods (Static)
+        function t = name2type(name)
+            switch lower(name)
+                case 'rx', t = ETS.RX;
+                case 'ry', t = ETS.RY;
+                case 'rz', t = ETS.RZ;
+                case 'tx', t = ETS.TX;
+                case 'ty', t = ETS.TY;
+                case 'tz', t = ETS.TZ;
             end
-            
-            disp(char(ets))
-            
-            ets = simplify(ets);
-            
-            % now remove all Ty
-            fprintf('--------- eliminate TY\n');
-            fixup = find( [ets.type] == ETS.TY );
-            
-            for k=fliplr(fixup)   % work right to left so indices are not broken
-                new = substituteTY(ets, k);
-                ets = subs(ets, k, new);
-            end
-            
-            disp(char(ets))
-            
-            ets = simplify(ets);
-            
-            disp(char(ets))
         end
     end
 end
