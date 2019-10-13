@@ -44,28 +44,23 @@ function r = mdl_panda()
     deg = pi/180;
     mm = 1e-3;
     
-    % robot length values (metres)
-    d = [333 0 316 0 384 0 0]'*mm;
-
-    a = [0 0 0 82.5 -82.5 0 88]'*mm;
-
-    alpha = [0 -pi/2 pi/2 pi/2 -pi/2 pi/2 pi/2]';
+    d7 = 107*mm;
     
-    theta = zeros(7,1);
-    
-    DH = [theta d a alpha];
+    %% Define links (thanks Alex Smith for this code)
+    L1 = Link('revolute', 'a',     0.0, 'd', 0.333, 'alpha',   0.0, 'qlim', [-2.8973 2.8973], 'modified');
+    L2 = Link('revolute', 'a',     0.0, 'd',   0.0, 'alpha', -pi/2, 'qlim', [-1.7628 1.7628], 'modified');
+    L3 = Link('revolute', 'a',     0.0, 'd', 0.316, 'alpha',  pi/2, 'qlim', [-2.8973 2.8973], 'modified');
+    L4 = Link('revolute', 'a',  0.0825, 'd',   0.0, 'alpha',  pi/2, 'qlim', [-3.0718 -0.0698], 'modified');
+    L5 = Link('revolute', 'a', -0.0825, 'd', 0.384, 'alpha', -pi/2, 'qlim', [-2.8973 2.8973], 'modified');
+    L6 = Link('revolute', 'a',     0.0, 'd',   0.0, 'alpha',  pi/2, 'qlim', [-0.0175 3.7525], 'modified');
+    L7 = Link('revolute', 'a',   0.088, 'd',   0.0, 'alpha',  pi/2, 'qlim', [-2.8973 2.8973], 'modified');
 
-    % and build a serial link manipulator
-    
-    % offsets from the table on page 4, "Mico" angles are the passed joint
-    % angles.  "DH Algo" are the result after adding the joint angle offset.
+    %% Create SerialLink object
+    robot = SerialLink([L1 L2 L3 L4 L5 L6 L7], 'name', 'PANDA', 'manufacturer', 'Franka-Emika', 'tool', transl([0 0 d7]));
+
     qz = [0 0 0 0 0 0 0];
     qr = [0 -90 -90 90 0 -90 90]*deg;
-    
-    robot = SerialLink(DH, ...
-        'configs', {'qz', qz, 'qr', qr}, ...
-        'name', 'PANDA', 'manufacturer', 'Franka-Emika');
-    
+        
     % place the variables into the global workspace
     if nargin == 1
         r = robot;
