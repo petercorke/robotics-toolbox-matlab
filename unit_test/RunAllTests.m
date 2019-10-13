@@ -62,3 +62,6 @@ results = runner.run(suite);
 
 %% Assert no tests failed
 assert(all(~[results.Failed]));
+
+%% Build the toolbox distribution file
+matlab.addons.toolbox.packageToolbox('../distrib/RTB.prj')
