@@ -64,4 +64,4 @@ results = runner.run(suite);
 assert(all(~[results.Failed]));
 
 %% Build the toolbox distribution file
-matlab.addons.toolbox.packageToolbox('../distrib/RTB.prj')
+%matlab.addons.toolbox.packageToolbox('../distrib/RTB.prj')
