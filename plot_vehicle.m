@@ -36,6 +36,7 @@
 %  'model',M       animate an image of the vehicle.  M is a structure with
 %                  elements: image, alpha, rotation (deg), centre (pix), length (m).
 %  'axis',h        handle of axis or UIAxis to draw into (default is current axis)
+%  'movie',M       create a movie file in file M
 %
 % Example::
 %          [car.image,~,car.alpha] = imread('car2.png');  % image and alpha layer
@@ -57,7 +58,7 @@
 %   car, the image is scaled to be that length in the plot.
 % - Set 'fps' to Inf to have zero pause
 %
-% See also Vehicle.plot, plot_poly, demos/car_animation
+% See also Vehicle.plot, Animate, plot_poly, demos/car_animation
 
 
 % Copyright (C) 1993-2017, by Peter I. Corke
@@ -93,14 +94,14 @@ function h_ = plot_vehicle(x, varargin)
     opt.retain = false;
     opt.axis = [];
     opt.trail = '';
+    opt.movie = [];
     
     if numel(x) == 3
         x = x(:)';   % enforce row vector
     end
     
     [opt,args] = tb_optparse(opt, varargin);
-    
-
+            
     if isempty(opt.handle)
         % create a new robot
         % compute some default dimensions based on axis scaling
@@ -122,11 +123,12 @@ function h_ = plot_vehicle(x, varargin)
         end
         h.opt = opt;
         
-        plot_vehicle(x, 'handle', h);
+        plot_vehicle(x, 'handle', h, varargin{:});
     else
         % we are animating
         h = opt.handle;
-        
+        anim = Animate(opt.movie);
+
         for i=1:numrows(x)
             h.vehicle.Matrix = SE2(x(i,:)).SE3.T;  % convert (x,y,th) to SE(3)
             
@@ -144,10 +146,12 @@ function h_ = plot_vehicle(x, varargin)
             end
             
             % pause a while
+            anim.add();
             if ~isinf(h.opt.fps)
                 pause(1/h.opt.fps)
             end
         end
+        anim.close();
     end
  
     if nargout > 0
