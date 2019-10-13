@@ -38,14 +38,11 @@
 % - This function performs poorly with non-linear joint friction, such as
 %   Coulomb friction.  The R.nofriction() method can be used to set this 
 %   friction to zero.
-% - If FTFUN is not specified, or is given as 0 or [],  then zero torque
+% - If FTFUN is not specified, or is given as [],  then zero torque
 %   is applied to the manipulator joints.
 % - The MATLAB builtin integration function ode45() is used.
 %
 % See also SerialLink.accel, SerialLink.nofriction, SerialLink.rne, ode45.
-
-
-
 
 
 % Copyright (C) 1993-2017, by Peter I. Corke
@@ -71,14 +68,13 @@ function [t, q, qd] = fdyn(robot, t1, torqfun, q0, qd0, varargin)
 
     % check the Matlab version, since ode45 syntax has changed
     if verLessThan('matlab', '7')  
-        error('fdyn now requires Matlab version >= 7');
+        error('fdyn now requires MATLAB version >= 7');
     end
 
-    assert(isa(torqfun, 'function_handle'), 'RTB:fdyn:badarg', 'must pass a function handle');
     
     n = robot.n;
     if nargin == 2
-        torqfun = 0;
+        torqfun = [];
         q0 = zeros(1,n);
         qd0 = zeros(1,n);
     elseif nargin == 3
@@ -87,6 +83,9 @@ function [t, q, qd] = fdyn(robot, t1, torqfun, q0, qd0, varargin)
     elseif nargin == 4
         qd0 = zeros(1,n);
     end
+    
+    assert(isempty(torqfun) || isa(torqfun,'function_handle') , 'RTB:fdyn:badarg', 'must pass a function handle or []');
+
 
     % concatenate q and qd into the initial state vector
     q0 = [q0(:); qd0(:)];
