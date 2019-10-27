@@ -25,7 +25,7 @@ runner.addPlugin(plugin);
 
 %% setup the path
 fprintf('---------------------------------- Setup path ------------------------------------\n')
-fprintf('-->> current working folder is %s\n, pwd)
+fprintf('-->> current working folder is %s\n', pwd)
 
 % for other toolboxes
 addpath ../lib/toolbox-common-matlab
