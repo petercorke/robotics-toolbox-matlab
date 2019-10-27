@@ -1,15 +1,48 @@
+## build Robotics Toolbox for MATLAB
+
 language: java
 dist: xenial
+services: docker
 
 before_install:
+# build the local file system
+#   .                             where RTB is cloned ($TRAVIS_BUILD_DIR)
+#   ./lib/toolbox-common-matlab   where toolbox common is cloned
+#   ./lib/spatial-math            where spatial math is cloned
 - mkdir lib
 - git clone --depth 50 https://github.com/petercorke/toolbox-common-matlab lib/toolbox-common-matlab
 - git clone --depth 50 https://github.com/petercorke/spatial-math lib/spatial-math
 
-install: curl -sL https://storage.googleapis.com/matlabimagesus/public/install.sh | sudo -E bash
+install:
+ # install help2doc converter
+ - git clone https://github.com/petercorke/help2doc $HOME/bin
+ - export PATH="$(dirname "$HOME/bin"):$PATH"
+ # install MATLAB unit test runner
+ - curl -sL https://storage.googleapis.com/matlabimagesus/public/install.sh | sudo -E bash
+
+before_script:
+## build the doco PDF and place it in the src folder so it gets shipped to MATLAB cloud
+ # create the LaTeX code
+ - help2doc -l --include *.m models/*.m lib/*/*.m
+ # create the release file
+ - printf '\\def\\release{%s}\n' `cat ./RELEASE` > release.tex
+ - printf '\\def\\reldate{%s}\n' "`date '+%B %Y'`" >> release.tex
+ - mv all.tex release.tex doc/manual
+ # Compile all the LaTex code
+ - docker run --mount src=$TRAVIS_BUILD_DIR/doc/manual,target=/usr/src/tex,type=bind dxjoke/tectonic-docker /bin/sh -c "tectonic spatialmath.tex"
+ # copy to src folder
+ - mv doc/manual/robot.pdf ./robot-`cat ./RELEASE`.pdf
 
 script:
-- matlab -sd unit_test -batch "RunAllTests"
+ # run the unit tests with MATLAB on Travis cloud
+ - matlab -sd unit_test -batch "RunAllTests"
 
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+ # send code coverage xml report to codecov for display
+ #- bash <(curl -s https://codecov.io/bash)
+
+deploy:
+  provider: releases
+  api_key: $GITRELEASE
+  file:
+    - robot-`cat ./RELEASE`.pdf
