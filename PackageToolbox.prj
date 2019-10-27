@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
-  <configuration build-checksum="2968101904" file="/private/tmp/travis-image/PackageToolbox.prj" location="/private/tmp/travis-image" name="PackageToolbox" target="target.toolbox" target-name="Package Toolbox">
+  <configuration build-checksum="2968101904" file="/Users/corkep/code/rvc/robotics-toolbox-matlab/PackageToolbox.prj" location="/Users/corkep/code/rvc/robotics-toolbox-matlab" name="PackageToolbox" target="target.toolbox" target-name="Package Toolbox">
     <param.appname>Robotics Toolbox for MATLAB</param.appname>
     <param.authnamewatermark>Peter Corke</param.authnamewatermark>
     <param.email>rvc@petercorke.com</param.email>
@@ -39,7 +39,8 @@ doc/*
 distrib
 lib
 Octave
-unit_test/old</param.exclude.filters>
+unit_test/old
+coverage.xml</param.exclude.filters>
     <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
     <param.examples>&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;examples&gt;
@@ -272,7 +273,6 @@ unit_test/old</param.exclude.filters>
       <file>${PROJECT_ROOT}/Vehicle.m</file>
       <file>${PROJECT_ROOT}/ccodefunctionstring.m</file>
       <file>${PROJECT_ROOT}/chi2inv_rtb.m</file>
-      <file>${PROJECT_ROOT}/coverage.xml</file>
       <file>${PROJECT_ROOT}/ctraj.m</file>
       <file>${PROJECT_ROOT}/data</file>
       <file>${PROJECT_ROOT}/delta2tr.m</file>
@@ -323,11 +323,11 @@ unit_test/old</param.exclude.filters>
     <fileset.depfun.excluded />
     <fileset.package />
     <build-deliverables>
-      <file location="${PROJECT_ROOT}" name="Robotics Toolbox for MATLAB.mltbx" optional="false">/private/tmp/travis-image/Robotics Toolbox for MATLAB.mltbx</file>
+      <file location="${PROJECT_ROOT}" name="Robotics Toolbox for MATLAB.mltbx" optional="false">/Users/corkep/code/rvc/robotics-toolbox-matlab/Robotics Toolbox for MATLAB.mltbx</file>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>/Applications/MATLAB_R2019a.app</root>
+      <root>/Applications/MATLAB_R2019b.app</root>
       <toolboxes />
     </matlab>
     <platform>
