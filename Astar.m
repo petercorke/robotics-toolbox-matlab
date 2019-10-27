@@ -1,4 +1,4 @@
-% Astar (A*)
+% Astar 
 % A* navigation class
 % 
 % A concrete subclass of the Navigation class that implements the A*
@@ -29,21 +29,21 @@
 %        as.plan(goal,2,3,0);   % setup costmap for specified goal; 
 %                               % standard D* algorithm w/ 2 objectives
 %                               % and 3 costmap layers
-%        as.path(start);		% plan solution path start-to-goal, animate
-%        P = as.path(start);	% plan solution path start-to-goal, return 
+%        as.path(start);        % plan solution path start-to-goal, animate
+%        P = as.path(start);    % plan solution path start-to-goal, return 
 %                               % path
 % Example 2::
-%       goal = [100;100];
-%       start = [1;1];
-%       as = Astar(0);          % create Navigation object with pseudo-
-%                               % random occupancy grid
-%       ds.addCost(terrain);    % terrain is a 100x100 matrix of 
-%                               % elevations [0,1]
-% 	    ds.plan(goal,3,4,0);    % setup costmap for specified goal
-%                               % (3 and 4 include the added terrain cost)
-%       as.path(start);         % plan solution path start-goal, animate
-%       P = as.path(start);     % plan solution path start-goal, return 
-%                               % path
+%        goal = [100;100];
+%        start = [1;1];
+%        as = Astar(0);          % create Navigation object with pseudo-
+%                                % random occupancy grid
+%        ds.addCost(terrain);    % terrain is a 100x100 matrix of 
+%                                % elevations [0,1]
+% 	     ds.plan(goal,3,4,0);    % setup costmap for specified goal
+%                                % (3 and 4 include the added terrain cost)
+%        as.path(start);         % plan solution path start-goal, animate
+%        P = as.path(start);     % plan solution path start-goal, return 
+%                                % path
 %     
 % Notes
 % - Obstacles are represented by Inf in the costmap.

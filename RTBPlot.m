@@ -23,8 +23,7 @@ classdef RTBPlot
     methods (Static)
         
         function th = install_teach_panel(name, robot, q, opt)
-            %
-            % robot like object, has n fkine animate methods
+
             
             %-------------------------------
             % parameters for teach panel
