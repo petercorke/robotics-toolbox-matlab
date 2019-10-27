@@ -65,4 +65,5 @@ fprintf('---------------------------------- Run the unit tests -----------------
 %assert(all(~[results.Failed]));
 
 %% Build the toolbox distribution file
+cd ..
 matlab.addons.toolbox.packageToolbox('PackageToolbox.prj')
