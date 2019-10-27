@@ -1,4 +1,10 @@
 ## build Robotics Toolbox for MATLAB
+#  ____       _           _   _            _____           _ _               
+# |  _ \ ___ | |__   ___ | |_(_) ___ ___  |_   _|__   ___ | | |__   _____  __
+# | |_) / _ \| '_ \ / _ \| __| |/ __/ __|   | |/ _ \ / _ \| | '_ \ / _ \ \/ /
+# |  _ < (_) | |_) | (_) | |_| | (__\__ \   | | (_) | (_) | | |_) | (_) >  < 
+# |_| \_\___/|_.__/ \___/ \__|_|\___|___/   |_|\___/ \___/|_|_.__/ \___/_/\_\
+
 
 language: java
 dist: xenial
@@ -46,3 +52,4 @@ deploy:
   api_key: $GITRELEASE
   file:
     - robot-`cat ./RELEASE`.pdf
+    - Robotics\ Toolbox\ for\ MATLAB.mltbx
