@@ -30,8 +30,6 @@ before_script:
  - mv all.tex release.tex doc/manual
  # Compile all the LaTex code
  - docker run --mount src=$TRAVIS_BUILD_DIR/doc/manual,target=/usr/src/tex,type=bind dxjoke/tectonic-docker /bin/sh -c "tectonic robot.tex"
- - sh funcidx_make.sh
- - docker run --mount src=$TRAVIS_BUILD_DIR/doc/manual,target=/usr/src/tex,type=bind dxjoke/tectonic-docker /bin/sh -c "tectonic robot.tex"
  # copy to src folder
  - mv doc/manual/robot.pdf ./robot-`cat ./RELEASE`.pdf
 
