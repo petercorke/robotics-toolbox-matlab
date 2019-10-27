@@ -59,7 +59,7 @@ cd(originalDir)
 %% Run all unit tests in my repository
 fprintf('---------------------------------- Run the unit tests ------------------------------------\n')
 
-results = runner.run(suite);
+%results = runner.run(suite);
 
 %% Assert no tests failed
 %assert(all(~[results.Failed]));
