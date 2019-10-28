@@ -218,7 +218,6 @@ coverage.xml</param.exclude.filters>
     <fileset.rootfiles>
       <file>${PROJECT_ROOT}/+ETS2</file>
       <file>${PROJECT_ROOT}/+ETS3</file>
-      <file>${PROJECT_ROOT}/.gitmodules</file>
       <file>${PROJECT_ROOT}/@CodeGenerator</file>
       <file>${PROJECT_ROOT}/@SerialLink</file>
       <file>${PROJECT_ROOT}/Apps</file>
@@ -229,7 +228,6 @@ coverage.xml</param.exclude.filters>
       <file>${PROJECT_ROOT}/Bug2.m</file>
       <file>${PROJECT_ROOT}/CITATION</file>
       <file>${PROJECT_ROOT}/CONTRIB</file>
-      <file>${PROJECT_ROOT}/Cover_9783319544137.tif</file>
       <file>${PROJECT_ROOT}/DEPENDENCIES</file>
       <file>${PROJECT_ROOT}/DHFactor.m</file>
       <file>${PROJECT_ROOT}/DXform.m</file>
