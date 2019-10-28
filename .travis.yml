@@ -48,7 +48,7 @@ script:
 
 after_success:
  # send code coverage xml report to codecov for display
- #- bash <(curl -s https://codecov.io/bash)
+ - bash <(curl -s https://codecov.io/bash)
 
 deploy:
   provider: releases
@@ -56,3 +56,5 @@ deploy:
   file:
     - robot-`cat ./RELEASE`.pdf
     - Robotics\ Toolbox\ for\ MATLAB.mltbx
+  skip_cleanup: true
+  draft: true 
