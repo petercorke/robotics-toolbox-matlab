@@ -6,7 +6,7 @@
     <param.company />
     <param.summary>MATLAB support for mobile and arm robots</param.summary>
     <param.description>MATLAB support for representing pose, motion, mobile and arm robots.</param.description>
-    <param.screenshot>/Users/corkep/code/rvc/doc/rtb10_montage/montage-notext.png</param.screenshot>
+    <param.screenshot>/Users/corkep/code/rvc/robotics-toolbox-matlab/doc/figs/montage-notext.png</param.screenshot>
     <param.version>10.4</param.version>
     <param.output>${PROJECT_ROOT}/Robotics Toolbox for MATLAB.mltbx</param.output>
     <param.products.name />
