@@ -33,14 +33,15 @@ before_script:
  # create the release file
  - printf '\\def\\release{%s}\n' `cat ./RELEASE` > release.tex
  - printf '\\def\\reldate{%s}\n' "`date '+%B %Y'`" >> release.tex
+ # all LaTeX source into manual build folder
  - mv all.tex release.tex doc/manual
+ # convert all the included figures to PDF since we are using tectonic not pdflatex
+ - mogrify -density 300 -format pdf -verbose doc/manual/figs/*.eps
  # Compile all the LaTex code
  - docker run --mount src=$TRAVIS_BUILD_DIR/doc/manual,target=/usr/src/tex,type=bind dxjoke/tectonic-docker /bin/sh -c "tectonic robot.tex"
- # copy to src folder
+ # rename PDF and copy to src folder
  - mv doc/manual/robot.pdf ./robot-`cat ./RELEASE`.pdf
- - which gs || true
- - which ps2pdf || true
- - which convert || true
+
 
 script:
  # run the unit tests with MATLAB on Travis cloud
