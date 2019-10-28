@@ -55,6 +55,6 @@ deploy:
   api_key: $GITRELEASE
   file:
     - robot-`cat ./RELEASE`.pdf
-    - Robotics\ Toolbox\ for\ MATLAB.mltbx
+    - "Robotics Toolbox for MATLAB.mltbx"
   skip_cleanup: true
   draft: true 
