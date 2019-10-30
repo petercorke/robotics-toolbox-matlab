@@ -7,6 +7,11 @@
 
 # Robotics Toolbox for MATLAB&reg; release 10
 
+---
+For support please use the [Google group forum](http://groups.google.com/group/robotics-tool-box?hl=en)rather than GitHub issues.  There are more people participating and you'll likely get a quicker response.
+
+---
+
 ## Synopsis
 
 This toolbox brings robotics specific functionality to MATLAB, exploiting the native capabilities of MATLAB (linear algebra, portability, graphics).
