@@ -4,13 +4,14 @@
 % the time  interval 0 to TMAX and returns vectors of time T (Kx1), joint
 % position Q (KxN) and joint velocity QD (KxN).  The initial joint position
 % and velocity are zero. The torque applied to the joints is computed by
-% the user-supplied control
-% function FTFUN:
+% the user-supplied control function FTFUN:
 %
 %        TAU = FTFUN(ROBOT, T, Q, QD)
 %
-% where Q (1xN) and QD (1xN) are the manipulator joint coordinate and
-% velocity state respectively, and T is the current time.
+% where TAU (1xN) is the joint torques to be applied at this time instant,
+% ROBOT is the robot object being simulated, T is the current time, and Q
+% (1xN) and QD (1xN) are the manipulator joint coordinate and velocity
+% state respectively.
 %
 % [TI,Q,QD] = R.fdyn(T, FTFUN, Q0, QD0) as above but allows the initial
 % joint position Q0 (1xN) and velocity QD0 (1x)  to be specified.
@@ -121,6 +122,8 @@ function xd = fdyn2(t, x, robot, torqfun, varargin)
     % evaluate the torque function if one is given
     if isa(torqfun, 'function_handle')
         tau = torqfun(robot, t, q, qd, varargin{:});
+        tau = tau(:)';
+        assert(isreal(tau) && length(tau) == n, 'rtb:fdyn:badretval', 'torque function must return vector with N real elements');
     else
         tau = zeros(1,n);
     end
