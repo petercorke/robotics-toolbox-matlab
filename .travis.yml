@@ -37,7 +37,10 @@ before_script:
  - mv all.tex release.tex doc/manual
  # convert all the included figures to PDF since we are using tectonic not pdflatex
  # - mogrify -density 300 -format pdf -verbose doc/manual/figs/*.eps  ## fails because of new security settings of magick
+ # see https://github.com/pothitos/ACvsBC-Figure/blob/master/.travis.yml
+ #
  # Compile all the LaTex code
+ #  see https://hub.docker.com/r/dxjoke/tectonic-docker
  - docker run --mount src=$TRAVIS_BUILD_DIR/doc/manual,target=/usr/src/tex,type=bind dxjoke/tectonic-docker /bin/sh -c "tectonic robot.tex"
  # rename PDF and copy to src folder
  - mv doc/manual/robot.pdf ./robot-`cat ./RELEASE`.pdf
