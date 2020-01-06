@@ -203,3 +203,12 @@ Contributions welcome.  There's a user forum at http://tiny.cc/rvcforum
 ## License
 
 This toolbox is released under GNU LGPL.
+
+# Other MATLAB toolboxes for robotics
+
+* [Compliant joint toolbox](https://github.com/geez0x1/CompliantJointToolbox), MATLAB and Simulink blocks to simulate robots with compliant joints
+* [ARTE: Robotics Toolbox for Education](http://arvc.umh.es/arte), a MATLAB toolbox focussed on industrial robotic manipulators, with rich 3D graphics, teach pendants and the ABB RAPID language.
+* [RTB interface to V-REP](https://github.com/Rhys-Davies/rtb-sim), a MATLAB class-based interface to the V-REP robotics simulator.  Includes an implementation for the TRS task.
+* [MATLAB Interface for Mobile Robots (US NPL)](http://faculty.nps.edu/yun/mri.html), a pure MATLAB toolbox for control of P3 mobile robots.
+* [Kuka-Sunrise toolbox](https://github.com/Modi1987/KST-Kuka-Sunrise-Toolbox), A Toolbox used to control KUKA iiwa 7 R 800 robot from an external computer using MATLAB.
+* [Robotics System Toolbox](https://au.mathworks.com/products/robotics.html), MathWorks proprietary.
