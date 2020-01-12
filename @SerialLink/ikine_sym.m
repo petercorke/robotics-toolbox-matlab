@@ -81,9 +81,11 @@ function out = ikine_sym(robot, N, varargin)
     % TODO:
     %  - handle the wrist joints, only first 3 joints so far
     %  - handle base and tool transforms
+    %  - allow 3DOF solution which is rotation, ie. wrist
     
     opt.file = [];
     opt.Tpost = [];
+    opt.all = false;
     opt = tb_optparse(opt, varargin);
     
     % make a symbolic representation of the passed robot
@@ -124,8 +126,8 @@ function out = ikine_sym(robot, N, varargin)
         % substitute sin/cos for preceding joint as Sj/Cj, essentially removes
         % the joint variables from the equations and treats them as constants.
         if ~isempty(trigsubOld)
-            left = subs(left, trigsubOld, trigsubNew);
-            right = subs(right, trigsubOld, trigsubNew);
+            left = rsubs(left, trigsubOld, trigsubNew);
+            right = rsubs(right, trigsubOld, trigsubNew);
         end
         
         % then simplify the LHS
@@ -137,9 +139,9 @@ function out = ikine_sym(robot, N, varargin)
         %    constant element on the RHS
         k = NaN;
         for i=1:length(left)
+            fprintf('%d: %s\n', i, char(left(i) == right(i)));
             if hasonly(left(i), j) && isconstant(right(i))
                 k = i;
-                break;
             end
         end
         
@@ -147,6 +149,8 @@ function out = ikine_sym(robot, N, varargin)
         
         if ~isnan(k)
             % create the equation to solve: LHS-RHS == 0
+            fprintf('choosing equation %d\n', k);
+
             eq = left(k) - right(k);
         else
             % ok, we weren't lucky, try another strategy
@@ -169,7 +173,7 @@ function out = ikine_sym(robot, N, varargin)
             
             % we did, lets see if the sum square RHS is constant
             for kk = nchoosek(k, 2)'
-                fprintf('let''s square and add RHS %d %d\n', kk);
+                fprintf('No simple equation, let''s square and add RHS %d %d\n', kk);
                 rhs = simplify(right(kk(1))^2 + right(kk(2))^2); % was simple
                 if isconstant( rhs )
                     eq = simplify( expand( left(kk(1))^2 + left(kk(2))^2 ) ) - rhs;
@@ -182,12 +186,15 @@ function out = ikine_sym(robot, N, varargin)
                 left(k)==right(k)
                 error('can''t solve this equation');
             end
+            % ensure that S^2+C^2=1 substitutions are made
+            eq = subs(eq, trigsubOld, trigsubNew);
+            disp(eq)
         end
         
         % expand the list of joint variable subsitutions
         fprintf('subs sin/cos q%d for S/C\n', j);
-        trigsubOld = [trigsubOld mvar('sin(q%d)', j) mvar('cos(q%d)', j)];
-        trigsubNew = [trigsubNew mvar('S%d', j) mvar('C%d', j)];
+        trigsubOld = [trigsubOld mvar('sin(q%d)', j)^2+mvar('cos(q%d)', j)^2 mvar('sin(q%d)', j) mvar('cos(q%d)', j) ];
+        trigsubNew = [trigsubNew 1 mvar('S%d', j) mvar('C%d', j) ];
         
         % now solve the equation
         if srobot.links(j).isrevolute()
@@ -198,7 +205,7 @@ function out = ikine_sym(robot, N, varargin)
             end
         else
             fprintf('prismatic case\n')
-            q = sym( sprintf('q%d', j) );
+            q = mvar('q%d', j);
             Q{j} = solve( eq == 0, q);
         end
     end
@@ -206,6 +213,13 @@ function out = ikine_sym(robot, N, varargin)
     % final simplification
     %  get rid of C^2+S^2 and C^4, S^4 terms
     fprintf('**final simplification pass\n')
+    
+    trigsubOld = [];
+    trigsubNew = [];
+    for j=1:N
+        trigsubOld = [trigsubOld mvar('S%d', j) mvar('C%d', j) ];
+        trigsubNew = [trigsubNew mvar('sin(q%d)', j) mvar('cos(q%d)', j) ];
+    end
     
     Q = simplify_powers(Q, N, trigsubOld, trigsubNew);
 
@@ -340,28 +354,44 @@ function s = solve_joint(eq, j)
         warning('don''t know how to solve this kind of equation');
     end
     
-    C = -simplify(eq - A*cosj - B*sinj);  % was simple
+    C = -simplify(eq - A*cosj - B*sinj);
+    
+    A = simplify_sumsq(A, j);
+    B = simplify_sumsq(B, j);
+    C = simplify_sumsq(C, j);
+    
+    fprintf('A = %s\n', char(A));
+    fprintf('B = %s\n', char(B));
+    fprintf('C = %s\n', char(C));
     
     if C == 0
-        fprintf('C == 0\n');
+        fprintf('Solve for C == 0\n');
         % A cos(q) + B sin(q) = 0
-        s(2) = atan2(A, -B);
-        s(1) = atan2(-A, B);
+        s(1) = atan2(A, -B);
+        s(2) = atan2(-A, B);
     else
-        fprintf('C != 0\n');
+        fprintf('Solve for C != 0\n');
         % A cos(q) + B sin(q) = C
-        r = sqrt(A^2 + B^2 - C^2);
-%         phi = atan2(A, B);
-%         
-%         s(2) = atan2(C, r) - phi;
-%         s(1) = atan2(C, -r) - phi;
-        if r == 0
-            s = atan2(B*C, A*C) 
-        else
-            s(1) = atan2(B*C + A*r, A*C - B*r);
-            s(2) = atan2(B*C + A*r, A*C - B*r);
-        end
+%         r = sqrt(A^2 + B^2 - C^2);
+% %         phi = atan2(A, B);
+% %         
+% %         s(2) = atan2(C, r) - phi;
+% %         s(1) = atan2(C, -r) - phi;
+%         if r == 0
+%             s = atan2(B*C, A*C) 
+%         else
+%             s(1) = atan2(B*C + A*r, A*C - B*r);
+%             s(2) = atan2(B*C - A*r, A*C + B*r);
+%         end
+        d = sqrt( simplify(B^2-C^2+A^2) );
+        fprintf('d = %s\n', char(d));
+        
+        s(1) = atan2(B*C + A*d, A*C - B*d);
+        s(2) = atan2(B*C - A*d, A*C + B*d);
     end
+    
+%     simplify( A*cos(s(1)) + B*sin(s(1)) - C )
+%     simplify( A*cos(s(2)) + B*sin(s(2)) - C )
     
     if nargout == 0
         try
@@ -372,15 +402,30 @@ function s = solve_joint(eq, j)
     end
 end
 
-function Qout = simplify_powers(Q, N, trigsubOld, trigsubNew)
-        % create a list of simplifications
-    %  substitute S^2 = 1-C^2, S^4=(1-C^2)^2
-    fprintf('power simplification');
+
+function Qout = simplify_sumsq(Q, N)
+
     tsubOld = [];
     tsubNew = [];
     for j=1:N
-        tsubOld = [tsubOld mvar('S%d', j)^2 mvar('S%d', j)^4];
-        tsubNew = [tsubNew 1-mvar('C%d', j)^2 (1-mvar('C%d', j)^2)^2];
+        tsubOld = [tsubOld mvar('S%d', j)^2+mvar('C%d', j)^2];
+        tsubNew = [tsubNew         1                        ];
+    end
+    Q = simplify( rsubs(Q, tsubOld, tsubNew) );
+    Qout = simplify( rsubs(Q, tsubOld, tsubNew) );
+end
+
+function Qout = simplify_powers(Q, N, trigsubOld, trigsubNew)
+
+    
+        % create a list of simplifications
+    %  substitute S^2 = 1-C^2, S^4=(1-C^2)^2
+    fprintf('power simplification\n');
+    tsubOld = [];
+    tsubNew = [];
+    for j=1:N
+        tsubOld = [tsubOld mvar('S%d', j)^2+mvar('C%d', j)^2 mvar('S%d', j)^4];
+        tsubNew = [tsubNew         1                        (1-mvar('C%d', j)^2)^2];
     end
     
     for j=1:length(Q)
@@ -389,10 +434,16 @@ function Qout = simplify_powers(Q, N, trigsubOld, trigsubNew)
             Q{j} = simplify( expand( subs(Q{j}, tsubOld, tsubNew) ) );
         end
         % subs Sx, Cx to sin(qx), cos(qx)
-        Qout{j} = simplify( subs(Q{j}, trigsubNew, trigsubOld) );
+        Qout{j} = simplify( subs(Q{j}, trigsubOld, trigsubNew) );
     end
 end
 
+function out = rsubs(eq, old, new)
+    for i = 1:length(old)
+        eq = subs(eq, old(i), new(i));
+    end
+    out = eq;
+end
 
 %MVAR Create a symbolic variable
 %
