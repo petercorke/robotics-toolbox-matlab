@@ -21,19 +21,33 @@
 %
 %        TAU = FTFUN(ROBOT, T, Q, QD, ARG1, ARG2, ...)
 %
-% For example, if the robot was controlled by a PD controller we can define
-% a function to compute the control
+% Example 1: to apply zero joint torque to the robot without Coulomb friction:
 %
-%         function tau = myftfun(q, qd, qstar, P, D)
-%           tau = (qstar-q)*P + qd*D;  % P, D are 6x6
+%          [t,q] = robot.nofriction().fdyn(5, @my_torque_function);
+%
+%          function tau = my_torque_function(robot, t, q)
+%              tau = zeros(1, robot.n);
+%          end
+%
+% Example 2: as above, but using a lambda function
+%
+%          [t,q] = robot.nofriction().fdyn(5, @(robot, t, q, qd) zeros(1, robot.n) );
+%
+%
+% Example 3: the robot is controlled by a PD controller. We first define
+% a function to compute the control which has additional parameters for
+% the setpoint and control gains (qstar, P, D)
+%
+%         function tau = myfunc(q, qd, qstar, P, D)
+%             tau = (qstar-q)*P + qd*D;  % P, D are 6x6
 %         end
 %
 % and then integrate the robot dynamics with the control:
 %
-%         [t,q] = robot.fdyn(10, @(robot, t, q, qd) myftfun(q, qd, qstar, P, D) );
+%         [t,q] = robot.fdyn(10, @(robot, t, q, qd) myfunc(q, qd, qstar, P, D) );
 %
 % where the lambda function ignores the passed values of robot and t but
-% adds qstar, P and D to argument list for myftfun.
+% adds qstar, P and D to argument list for myfunc.
 %
 % Note::
 % - This function performs poorly with non-linear joint friction, such as
