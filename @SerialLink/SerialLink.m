@@ -723,8 +723,36 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                 v(i) = r.links(i).type;
             end
         end
-
+        
         % general methods
+                
+        function v = configstr(r)
+        %SerialLink.configstr
+        %
+        % V = R.configstr is a string describing the joint types and successive
+        % joint relative orientation. The symbol R is used to denote a revolute
+        % joint and P for a prismatic joint.  The symbol between these letters
+        % indicates whether the adjacent joints are parallel or orthogonal.
+        %
+        % See also: SerialLink.config.
+        
+            v = '';
+            for i=1:r.n
+                v = [v r.links(i).type];
+                if i < r.n
+                    if r.links(i).alpha == 0
+                        v = [v char(hex2dec('007c'))];  % pipe
+                    elseif abs(abs(r.links(i).alpha) - pi/2) < 1*eps
+                        v = [v char(hex2dec('27c2'))];  % perp
+                    else
+                        v = [v '?'];
+                    end
+                end
+            end
+        end
+        
+
+
 
         function v = islimit(r,q)
         %SerialLink.islimit Joint limit test
