@@ -60,4 +60,4 @@ deploy:
     - robot-`cat ./RELEASE`.pdf
     - "Robotics Toolbox for MATLAB.mltbx"
   skip_cleanup: true
-  draft: true 
+  overwrite: true 
