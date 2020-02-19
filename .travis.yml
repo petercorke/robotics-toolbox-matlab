@@ -16,7 +16,7 @@ before_install:
 #   ./lib/common                  where toolbox common is cloned
 #   ./lib/spatial-math            where spatial math is cloned
 - mkdir lib
-- git clone --depth 50 https://github.com/petercorke/toolbox-common-matlab lib/toolbox-common-matlab
+- git clone --depth 50 https://github.com/petercorke/toolbox-common-matlab lib/common
 - git clone --depth 50 https://github.com/petercorke/spatial-math lib/spatial-math
 
 install:
