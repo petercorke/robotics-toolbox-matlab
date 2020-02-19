@@ -52,38 +52,97 @@ function s = trchain(robot, varargin)
     
     s = '';
     varcount = 1;
-    
+            
     for j=1:robot.n
         L = robot.links(j);
         
-        if L.isrevolute()
-            s = append(s, 'Rz(q%d)', j);
-            if L.d ~= 0
+        if robot.ismdh()
+            % Method for modified DH parameters
+            
+            % Append Tx(a)
+            if L.a ~= 0
                 if opt.sym
-                    s = append(s, 'Tz(L%d)', varcount);
+                    s = append(s, 'Tx(L%d)', varcount);
                     varcount = varcount+1;
                 else
-                    s = append(s, 'Tz(%g)', L.d);
+                    s = append(s, 'Tx(%g)', L.a);
                 end
-            end
-        else
-            if L.theta ~= 0
-                s = append(s, 'Rz(%g)', (L.alpha*conv));
-            end
-            s = append(s, 'Tz(q%d)', j);
-        end
-        
-        if L.a ~= 0
-            if opt.sym
-                s = append(s, 'Tx(L%d)', varcount);
-                varcount = varcount+1;
-            else
-                s = append(s, 'Tx(%g)', L.a);
+
             end
             
-        end
-        if L.alpha ~= 0
-            s = append(s, 'Rx(%g)', (L.alpha*conv));
+            % Append Rx(alpha)
+            if L.alpha ~= 0
+                s = append(s, 'Rx(%g)', (L.alpha*conv));
+            end
+            
+            if L.isrevolute()
+
+                % Append Tz(d)
+                if L.d ~= 0
+                    if opt.sym
+                        s = append(s, 'Tz(L%d)', varcount);
+                        varcount = varcount+1;
+                    else
+                        s = append(s, 'Tz(%g)', L.d);
+                    end
+                end
+                
+                % Append Rz(q)
+                s = append(s, 'Rz(q%d)', j);
+            else
+                
+                % Append Rz(theta)
+                if L.theta ~= 0
+                    s = append(s, 'Rz(%g)', (L.alpha*conv));
+                end
+                
+                % Append Tz(q)
+                s = append(s, 'Tz(q%d)', j);
+            end
+
+        else
+            % Method for standard DH parameters
+            
+            if L.isrevolute()
+                
+                % Append Rz(q)
+                s = append(s, 'Rz(q%d)', j);
+                
+                % Append Tz(d)
+                if L.d ~= 0
+                    if opt.sym
+                        s = append(s, 'Tz(L%d)', varcount);
+                        varcount = varcount+1;
+                    else
+                        s = append(s, 'Tz(%g)', L.d);
+                    end
+                end
+            else
+                
+                % Append Rz(theta)
+                if L.theta ~= 0
+                    s = append(s, 'Rz(%g)', (L.alpha*conv));
+                end
+                
+                % Append Tz(q)
+                s = append(s, 'Tz(q%d)', j);
+            end
+
+            % Append Tx(a)
+            if L.a ~= 0
+                if opt.sym
+                    s = append(s, 'Tx(L%d)', varcount);
+                    varcount = varcount+1;
+                else
+                    s = append(s, 'Tx(%g)', L.a);
+                end
+
+            end
+            
+            % Append Rx(alpha)
+            if L.alpha ~= 0
+                s = append(s, 'Rx(%g)', (L.alpha*conv));
+            end
         end
     end
 end
