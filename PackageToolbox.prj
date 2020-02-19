@@ -316,8 +316,7 @@ coverage.xml</param.exclude.filters>
       <file>${PROJECT_ROOT}/urdf</file>
       <file>${PROJECT_ROOT}/urdfparse.m</file>
       <file>${PROJECT_ROOT}/wtrans.m</file>
-      <file>${PROJECT_ROOT}/common/edgelist.m</file>
-      <file>${PROJECT_ROOT}/common/bresenham.m</file>
+      <file>${PROJECT_ROOT}/common</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />
