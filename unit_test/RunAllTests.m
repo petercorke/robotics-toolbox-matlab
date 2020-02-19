@@ -28,7 +28,7 @@ fprintf('---------------------------------- Setup path -------------------------
 fprintf('-->> current working folder is %s\n', pwd)
 
 % for other toolboxes
-addpath ../lib/toolbox-common-matlab
+addpath ../lib/common
 addpath ../lib/spatial-math
 
 % for RTB
@@ -59,11 +59,12 @@ cd(originalDir)
 %% Run all unit tests in my repository
 fprintf('---------------------------------- Run the unit tests ------------------------------------\n')
 
-%results = runner.run(suite);
+results = runner.run(suite);
 
-%% Assert no tests failed
-%assert(all(~[results.Failed]));
+% Assert no tests failed
+assert(all(~[results.Failed]));
 
 %% Build the toolbox distribution file
+fprintf('---------------------------------- Build the MLTBX file ------------------------------------\n')
 cd ..
 matlab.addons.toolbox.packageToolbox('PackageToolbox.prj')
