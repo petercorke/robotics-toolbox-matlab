@@ -13,7 +13,7 @@ services: docker
 before_install:
 # build the local file system
 #   .                             where RTB is cloned ($TRAVIS_BUILD_DIR)
-#   ./lib/toolbox-common-matlab   where toolbox common is cloned
+#   ./lib/common                  where toolbox common is cloned
 #   ./lib/spatial-math            where spatial math is cloned
 - mkdir lib
 - git clone --depth 50 https://github.com/petercorke/toolbox-common-matlab lib/toolbox-common-matlab

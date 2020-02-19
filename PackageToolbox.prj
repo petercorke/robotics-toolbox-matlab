@@ -1,12 +1,12 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
-  <configuration build-checksum="2968101904" file="/Users/corkep/code/rvc/robotics-toolbox-matlab/PackageToolbox.prj" location="/Users/corkep/code/rvc/robotics-toolbox-matlab" name="PackageToolbox" target="target.toolbox" target-name="Package Toolbox">
+  <configuration build-checksum="2968101904" file="/Users/corkep/code/MATLAB toolboxes/robotics-toolbox-matlab/PackageToolbox.prj" location="/Users/corkep/code/MATLAB toolboxes/robotics-toolbox-matlab" name="PackageToolbox" target="target.toolbox" target-name="Package Toolbox">
     <param.appname>Robotics Toolbox for MATLAB</param.appname>
     <param.authnamewatermark>Peter Corke</param.authnamewatermark>
     <param.email>rvc@petercorke.com</param.email>
     <param.company />
     <param.summary>MATLAB support for mobile and arm robots</param.summary>
     <param.description>MATLAB support for representing pose, motion, mobile and arm robots.</param.description>
-    <param.screenshot>./doc/figs/montage-notext.png</param.screenshot>
+    <param.screenshot>/Users/corkep/code/MATLAB toolboxes/robotics-toolbox-matlab/./doc/figs/montage-notext.png</param.screenshot>
     <param.version>10.4</param.version>
     <param.output>${PROJECT_ROOT}/Robotics Toolbox for MATLAB.mltbx</param.output>
     <param.products.name />
@@ -316,12 +316,14 @@ coverage.xml</param.exclude.filters>
       <file>${PROJECT_ROOT}/urdf</file>
       <file>${PROJECT_ROOT}/urdfparse.m</file>
       <file>${PROJECT_ROOT}/wtrans.m</file>
+      <file>${PROJECT_ROOT}/common/edgelist.m</file>
+      <file>${PROJECT_ROOT}/common/bresenham.m</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />
     <fileset.package />
     <build-deliverables>
-      <file location="${PROJECT_ROOT}" name="Robotics Toolbox for MATLAB.mltbx" optional="false">/Users/corkep/code/rvc/robotics-toolbox-matlab/Robotics Toolbox for MATLAB.mltbx</file>
+      <file location="${PROJECT_ROOT}" name="Robotics Toolbox for MATLAB.mltbx" optional="false">/Users/corkep/code/MATLAB toolboxes/robotics-toolbox-matlab/Robotics Toolbox for MATLAB.mltbx</file>
     </build-deliverables>
     <workflow />
     <matlab>
@@ -337,7 +339,7 @@ coverage.xml</param.exclude.filters>
       <vista>false</vista>
       <linux>false</linux>
       <solaris>false</solaris>
-      <osver>10.14.4</osver>
+      <osver>10.15.2</osver>
       <os32>false</os32>
       <os64>true</os64>
       <arch>maci64</arch>
