@@ -43,7 +43,7 @@ before_script:
  #  see https://hub.docker.com/r/dxjoke/tectonic-docker
  - docker run --mount src=$TRAVIS_BUILD_DIR/doc/manual,target=/usr/src/tex,type=bind dxjoke/tectonic-docker /bin/sh -c "tectonic robot.tex"
  # rename PDF and copy to src folder
- - mv doc/manual/robot.pdf ./robot-`cat ./RELEASE`.pdf
+ - mv doc/manual/robot.pdf ./robot.pdf
 
 script:
  # run the unit tests with MATLAB on Travis cloud
