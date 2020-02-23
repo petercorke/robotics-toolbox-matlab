@@ -37,7 +37,6 @@
 **/.travis*
 doc/*
 distrib
-lib
 Octave
 *.md
 *.html
