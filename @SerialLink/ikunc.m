@@ -113,7 +113,8 @@ function [qstar, error, exitflag, output] = ikunc(robot, T, varargin)
             if T_sz > 1
                 warning('step %d: errflag = %d, err = %f\n', t, ef_t, err_t);
             else
-                warning('errflag = %d, err = %f\n', t, ef_t, err_t);
+                warning('errflag = %d, err = %f\n', ef_t, err_t);
+                out_t
             end
         end
         qstar(t,:) = q_t;
