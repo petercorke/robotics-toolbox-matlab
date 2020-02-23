@@ -3,8 +3,8 @@
 % Travis file system looks like this:
 %    ./           ** RTB is unpacked at this level, not its own folder
 %    ./unit_test  ** WORKING folder
-%	 ./lib/toolbox-common
-%    ./lib/spatial-math-toolbox
+%	 ./lib/common
+%    ./lib/spatial-math
 
 %% set up the test runner
 import matlab.unittest.plugins.CodeCoveragePlugin
@@ -38,9 +38,9 @@ addpath ../data
 addpath ../simulink
 
 %path
-system('mount');
+%system('mount');
 
-originalDir = pwd
+originalDir = pwd; % this is the working dir, unit_test folder
 
 % build the Java classes
 fprintf('---------------------------------- Build Java classes ------------------------------------\n')
@@ -55,6 +55,7 @@ make
 check
 
 cd(originalDir)
+addpath ../mex
 
 %% Run all unit tests in my repository
 fprintf('---------------------------------- Run the unit tests ------------------------------------\n')
@@ -67,4 +68,8 @@ assert(all(~[results.Failed]));
 %% Build the toolbox distribution file
 fprintf('---------------------------------- Build the MLTBX file ------------------------------------\n')
 cd ..
+addpath demos
+addpath examples
+addpath Apps
+
 matlab.addons.toolbox.packageToolbox('PackageToolbox.prj')
