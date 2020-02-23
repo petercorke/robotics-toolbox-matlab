@@ -322,6 +322,7 @@ coverage.xml</param.exclude.filters>
       <file>${PROJECT_ROOT}/Apps</file>
       <file>${PROJECT_ROOT}/data</file>
       <file>${PROJECT_ROOT}/models</file>
+      <file>${PROJECT_ROOT}/lib</file>
       <file>${PROJECT_ROOT}/lib/common</file>
       <file>${PROJECT_ROOT}/lib/spatial-math</file>
     </fileset.rootfiles>
