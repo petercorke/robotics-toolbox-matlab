@@ -39,6 +39,12 @@ doc/*
 distrib
 lib
 Octave
+*.md
+*.html
+*.slxc
+*.yml
+*.swp
+*.DS_Store
 unit_test/old
 coverage.xml</param.exclude.filters>
     <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
@@ -220,7 +226,6 @@ coverage.xml</param.exclude.filters>
       <file>${PROJECT_ROOT}/+ETS3</file>
       <file>${PROJECT_ROOT}/@CodeGenerator</file>
       <file>${PROJECT_ROOT}/@SerialLink</file>
-      <file>${PROJECT_ROOT}/Apps</file>
       <file>${PROJECT_ROOT}/Astar.m</file>
       <file>${PROJECT_ROOT}/AstarMOO.m</file>
       <file>${PROJECT_ROOT}/AstarPO.m</file>
@@ -272,15 +277,12 @@ coverage.xml</param.exclude.filters>
       <file>${PROJECT_ROOT}/ccodefunctionstring.m</file>
       <file>${PROJECT_ROOT}/chi2inv_rtb.m</file>
       <file>${PROJECT_ROOT}/ctraj.m</file>
-      <file>${PROJECT_ROOT}/data</file>
       <file>${PROJECT_ROOT}/delta2tr.m</file>
-      <file>${PROJECT_ROOT}/demos</file>
       <file>${PROJECT_ROOT}/distancexform.m</file>
       <file>${PROJECT_ROOT}/distributeblocks.m</file>
       <file>${PROJECT_ROOT}/doc</file>
       <file>${PROJECT_ROOT}/doesblockexist.m</file>
       <file>${PROJECT_ROOT}/eulplot.m</file>
-      <file>${PROJECT_ROOT}/examples</file>
       <file>${PROJECT_ROOT}/getprofilefunctionstats.m</file>
       <file>${PROJECT_ROOT}/helpinfo.xml</file>
       <file>${PROJECT_ROOT}/interfaces</file>
@@ -292,7 +294,6 @@ coverage.xml</param.exclude.filters>
       <file>${PROJECT_ROOT}/lspb.m</file>
       <file>${PROJECT_ROOT}/makemap.m</file>
       <file>${PROJECT_ROOT}/mex</file>
-      <file>${PROJECT_ROOT}/models</file>
       <file>${PROJECT_ROOT}/models.m</file>
       <file>${PROJECT_ROOT}/mstraj.m</file>
       <file>${PROJECT_ROOT}/mtraj.m</file>
@@ -316,7 +317,13 @@ coverage.xml</param.exclude.filters>
       <file>${PROJECT_ROOT}/urdf</file>
       <file>${PROJECT_ROOT}/urdfparse.m</file>
       <file>${PROJECT_ROOT}/wtrans.m</file>
+      <file>${PROJECT_ROOT}/demos</file>
+      <file>${PROJECT_ROOT}/examples</file>
+      <file>${PROJECT_ROOT}/Apps</file>
+      <file>${PROJECT_ROOT}/data</file>
+      <file>${PROJECT_ROOT}/models</file>
       <file>${PROJECT_ROOT}/common</file>
+      <file>${PROJECT_ROOT}/spatial-math</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />
