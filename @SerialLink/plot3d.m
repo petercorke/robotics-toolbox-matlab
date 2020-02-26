@@ -124,7 +124,7 @@ function plot3d(robot, q, varargin)
             pth = fileparts(pth);
             % peel off the last folder
             s = regexp(pth, filesep, 'split');
-            pth = join(s(1:6), filesep);
+            pth = join(s(1:end-1), filesep);
 
             % find the path to this specific model
             pth = fullfile(pth{1}, 'data/meshes', robot.model3d);
@@ -142,6 +142,7 @@ function plot3d(robot, q, varargin)
             robot.points{i} = P;
             robot.faces{i} = F;
             fprintf('.');
+            
         end
         fprintf('\n');
     end
