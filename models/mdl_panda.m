@@ -47,7 +47,11 @@ function r = mdl_panda()
     deg = pi/180;
     mm = 1e-3;
     
-    d7 = 107*mm;
+    flange = 107*mm;
+    tool_offset = 58.4*mm;
+
+    # The transform has the tools two fingers aligned in the x-axis
+    tool = transl([0 0 tool_offset]) * trotz(-pi/4);
     
     %% Define links (thanks Alex Smith for this code)
     L1 = RevoluteMDH('a',     0.0, 'd', 0.333, 'alpha',   0.0, 'qlim', [-2.8973 2.8973], ...
@@ -62,11 +66,11 @@ function r = mdl_panda()
     	'm', 1.225946, 'r', [-1.1953e-02 4.1065e-02 -3.8437e-02], 'I', [3.55490e-02  2.94740e-02  8.62700e-03 -2.11700e-03  2.29000e-04 -4.03700e-03], 'G', 1);
     L6 = RevoluteMDH('a',     0.0, 'd',   0.0, 'alpha',  pi/2, 'qlim', [-0.0175 3.7525], ...
     	'm', 1.666555, 'r', [6.0149e-02 -1.4117e-02 -1.0517e-02], 'I', [1.96400e-03  4.35400e-03  5.43300e-03  1.09000e-04  3.41000e-04 -1.15800e-03], 'G', 1);
-    L7 = RevoluteMDH('a',   0.088, 'd',   0.0, 'alpha',  pi/2, 'qlim', [-2.8973 2.8973], ...
+    L7 = RevoluteMDH('a',   0.088, 'd',  flange, 'alpha',  pi/2, 'qlim', [-2.8973 2.8973], ...
     	'm', 7.35522e-01, 'r', [1.0517e-02 -4.252e-03 6.1597e-02 ], 'I', [1.25160e-02  1.00270e-02  4.81500e-03 -4.28000e-04 -7.41000e-04 -1.19600e-03], 'G', 1);
 
     %% Create SerialLink object
-    robot = SerialLink([L1 L2 L3 L4 L5 L6 L7], 'name', 'PANDA', 'manufacturer', 'Franka-Emika', 'tool', transl([0 0 d7]));
+    robot = SerialLink([L1 L2 L3 L4 L5 L6 L7], 'name', 'PANDA', 'manufacturer', 'Franka-Emika', 'tool', tool);
 
     qz = [0 0 0 0 0 0 0];
     qr = [0 -90 -90 90 0 -90 90]*deg;
