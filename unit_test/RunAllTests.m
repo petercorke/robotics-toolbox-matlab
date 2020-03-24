@@ -3,8 +3,8 @@
 % Travis file system looks like this:
 %    ./           ** RTB is unpacked at this level, not its own folder
 %    ./unit_test  ** WORKING folder
-%	 ./lib/toolbox-common
-%    ./lib/spatial-math-toolbox
+%	 ./lib/common
+%    ./lib/spatial-math
 
 %% set up the test runner
 import matlab.unittest.plugins.CodeCoveragePlugin
@@ -25,9 +25,10 @@ runner.addPlugin(plugin);
 
 %% setup the path
 fprintf('---------------------------------- Setup path ------------------------------------\n')
+fprintf('-->> current working folder is %s\n', pwd)
 
 % for other toolboxes
-addpath ../lib/toolbox-common-matlab
+addpath ../lib/common
 addpath ../lib/spatial-math
 
 % for RTB
@@ -37,9 +38,9 @@ addpath ../data
 addpath ../simulink
 
 %path
-system('mount');
+%system('mount');
 
-originalDir = pwd
+originalDir = pwd; % this is the working dir, unit_test folder
 
 % build the Java classes
 fprintf('---------------------------------- Build Java classes ------------------------------------\n')
@@ -54,11 +55,22 @@ make
 check
 
 cd(originalDir)
+addpath ../mex
 
 %% Run all unit tests in my repository
 fprintf('---------------------------------- Run the unit tests ------------------------------------\n')
 
 results = runner.run(suite);
 
-%% Assert no tests failed
+% Assert no tests failed
 assert(all(~[results.Failed]));
+
+%% Build the toolbox distribution file
+fprintf('---------------------------------- Build the MLTBX file ------------------------------------\n')
+cd ..
+% add more folders to the path to ensure they go in the MLTBX file
+addpath demos
+addpath examples
+addpath Apps
+
+matlab.addons.toolbox.packageToolbox('PackageToolbox.prj', 'RTB.mltbx')

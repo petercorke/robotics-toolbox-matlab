@@ -30,6 +30,7 @@ function jsingu(J)
 
     % convert to row-echelon form
     [R, jb] = rref(J);
+    R(abs(R) < 100*eps) = 0;
 
     depcols = setdiff( 1:numcols(J), jb);
 

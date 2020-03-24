@@ -12,7 +12,7 @@
 % See also PATH, ADDPATH, PATHTOOL, JAVAADDPATH.
 
 
-% Copyright (C) 1993-2017, by Peter I. Corke
+% Copyright (C) 1993-2019, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -47,9 +47,9 @@ function startup_rtb(tbpath)
     addpath( fullfile(tbpath, 'mex') );
     addpath( fullfile(tbpath, 'models') );
     addpath( fullfile(tbpath, 'data') );
-    if ~exist('DHFactor')
-        javaaddpath( fullfile(tbpath, 'java', 'DHFactor.jar') );
-    end
+
+    javaaddpath( fullfile(tbpath, 'java', 'DHFactor.jar') );
+
     p = fullfile(tbpath, 'simulink');
     if exist(p, 'dir')
         addpath( p );

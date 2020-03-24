@@ -25,14 +25,14 @@ q0 = [0 0 0]'; qf = [0 0 pi]';
 maxcurv = 1/5;   % 5m turning circle
 rs = ReedsShepp(q0, qf, maxcurv, dl)
 
-%% set up a vehicle model
+% set up a vehicle model
 [car.image,~,car.alpha] = imread('car2.png');
 car.rotation = 180;
 car.centre = [81,110];
 car.centre = [648; 173];
 car.length = 4.2;
 
-%% now animate
+% now animate
 clf; plotvol([-4 8 -6 6])
 
 a = gca;

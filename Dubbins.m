@@ -186,7 +186,10 @@ function out = generate_trajectories(word, maxc, d, q0)
         m = word.word(i);
         l = word.lengths(i);
         
-        x = [0:d:abs(l) abs(l)];
+        x = 0:d:abs(l);
+        if x(end) ~= abs(l)
+            x = [x abs(l)];
+        end
         
         p = pathseg(x, m, maxc, p0);
         

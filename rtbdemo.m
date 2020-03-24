@@ -23,6 +23,7 @@
 % - By default the scripts require the user to periodically hit <Enter> in
 %   order to move through the explanation.
 % - Some demos require Simulink
+% - To quit, close the rtbdemo window
 
 % TODO: triple angle, pose graph slam example, lattice planner
 

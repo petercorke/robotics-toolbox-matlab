@@ -251,7 +251,7 @@ function ikcon_optim_test(tc)
 end
 
 function ikine_sym_test(tc)
-
+    % 2DOF test
     p2 = SerialLink(tc.TestData.p2); % clone it
     
     q = p2.ikine_sym(2);
@@ -279,6 +279,73 @@ function ikine_sym_test(tc)
     tc.verifyEqual(transl(tc.TestData.p2.fkine(sol(2,:))), [1 1 0]);
 
     tc.verifyError( @() tc.TestData.p2.ikine_sym(4), 'RTB:ikine_sym:badarg');
+end
+
+function ikine_sym2_test(tc)
+    tc.assumeTrue(false);  %HACK
+    % 3DOF test
+    
+    % create robot arm with no offset (IRB140 style)
+    robot = SerialLink([0 0.5 0 pi/2; 0 0 0.5 0; 0 0 0.5 0])
+    test_sym_ik(robot)
+    
+    % create robot arm with offset (Puma560 style)
+    robot = SerialLink(tc.TestData.p560.links(1:3));
+    robot = SerialLink(robot); % clone it
+    test_sym_ik(robot)
+    
+    function test_sym_ik(robot)
+        % test all 8 solutions are good
+        
+        q = robot.ikine_sym(3);
+        
+        % process the solutions
+        T = robot.fkine([0.2, 0.3, 0.4]); % choose joint angles
+        
+        pe = num2cell(T.t');
+        
+        q1 = subs(q{1}, {'tx', 'ty', 'tz'}, pe);   % convert to numeric
+        
+        qik = [];
+        ss = [];
+        
+        for s1=1:2
+            try
+                sol1 = eval(q1(s1));
+            catch
+                fprintf('** q1(%d) eval failure\n', s1);
+            end
+            
+            q2 = subs(q{2}, {'tx', 'ty', 'tz', 'q1'}, [pe q1(s1)]);
+            
+            for s2=1:2
+                try
+                    sol2 = eval(q2(s2));
+                catch
+                    fprintf('** q2(%d) eval failure\n', s2);
+                    continue;
+                end
+                q3 = subs(q{3}, {'tx', 'ty', 'tz', 'q1', 'q2'}, [pe q1(s1), q2(s2)]);
+                
+                for s3=1:2
+                    try
+                        sol3 = eval(q3(s3));
+                        qik = [qik; sol1 sol2 sol3];
+                        ss = [ss; s1 s2 s3];
+                    catch
+                        fprintf('** q3(%d) eval failure\n', s3);
+                    end
+                end
+            end
+        end
+        
+        % check the FK is good, zero residual
+        nn = [];
+        for qq=qik'
+            nn = [nn; norm(transl(robot.fkine(qq')-T))];
+        end
+        tc.verifyEqual(sum(nn), 0, 'absTol', 1e-6);
+    end
 end
 
 
@@ -924,8 +991,11 @@ function rad_deg_test(tc)
 end
 
 function trchain_test(tc)
-    
+    % TODO need to test return values here
     s = tc.TestData.p560.trchain();
+    tc.verifyClass(s, 'char');
+
+    s = tc.TestData.p560m.trchain();
     tc.verifyClass(s, 'char');
 end
 

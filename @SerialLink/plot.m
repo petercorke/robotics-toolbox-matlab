@@ -37,7 +37,7 @@
 % '[no]arrow'       Display wrist frame with 3D arrows
 %-
 % '[no]tiles'       Enable tiled floor (default true)
-% 'tilesize',S      Side length of square tiles on the floor (default 0.2)
+% 'tilesize',S      Side length of square tiles on the floor
 % 'tile1color',C   Color of even tiles [r g b] (default [0.5 1 0.5]  light green)
 % 'tile2color',C   Color of odd tiles [r g b] (default [1 1 1] white)
 %-
@@ -338,6 +338,7 @@ function h = create_robot(robot, opt)
         bt(1,3) = opt.floorlevel;
         line(bt(:,1), bt(:,2), bt(:,3), 'LineWidth', opt.basewidth, 'Color', opt.basecolor);
     end
+    view(3)
     
     % add the robot's name
     if opt.name
@@ -465,7 +466,7 @@ function h = create_robot(robot, opt)
     if opt.wrist
         if opt.arrow
             % compute arrow3 scale factor...
-            d = axis(gca);
+            ax = gca; d = [ax.XLim ax.YLim ax.ZLim];
             d = norm( d(4:6)-d(1:3) ) / 72;
             extra = {'arrow', 'width', 1.5*s/d};
         else

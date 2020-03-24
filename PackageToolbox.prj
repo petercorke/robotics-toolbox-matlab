@@ -1,0 +1,356 @@
+<deployment-project plugin="plugin.toolbox" plugin-version="1.0">
+  <configuration build-checksum="2968101904" file="/Users/corkep/code/MATLAB toolboxes/robotics-toolbox-matlab/PackageToolbox.prj" location="/Users/corkep/code/MATLAB toolboxes/robotics-toolbox-matlab" name="PackageToolbox" target="target.toolbox" target-name="Package Toolbox">
+    <param.appname>Robotics Toolbox for MATLAB</param.appname>
+    <param.authnamewatermark>Peter Corke</param.authnamewatermark>
+    <param.email>rvc@petercorke.com</param.email>
+    <param.company />
+    <param.summary>MATLAB support for mobile and arm robots</param.summary>
+    <param.description>MATLAB support for representing pose, motion, mobile and arm robots.</param.description>
+    <param.screenshot>doc/figs/montage-notext.png</param.screenshot>
+    <param.version>10.4</param.version>
+    <param.output>${PROJECT_ROOT}/Robotics_Toolbox_for_MATLAB.mltbx</param.output>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
+    <param.platforms />
+    <param.guid>5456c90d-db69-4f01-b199-f3e351cfc928</param.guid>
+    <param.exclude.filters>% List files contained in your toolbox folder that you would like to exclude
+% from packaging.  Excludes should be listed relative to the toolbox folder.
+% Some examples of how to specify excludes are provided below:
+%
+% A single file in the toolbox folder:
+% .svn
+%
+% A single file in a subfolder of the toolbox folder:
+% example/.svn
+%
+% All files in a subfolder of the toolbox folder:
+% example/*
+%
+% All files of a certain name in all subfolders of the toolbox folder:
+% **/.svn
+%
+% All files matching a pattern in all subfolders of the toolbox folder:
+% **/*.bak
+**/*.git
+**/.gitignore
+**/.travis*
+doc/*
+distrib
+Octave
+*.md
+*.html
+*.slxc
+*.yml
+*.swp
+*.DS_Store
+unit_test/old
+coverage.xml</param.exclude.filters>
+    <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
+    <param.examples>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;examples&gt;
+   &lt;exampleCategory name="Simulink Examples"&gt;
+      &lt;example name="Puma robot falling under gravity" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Braitenberg vehicle" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Driving to a pose" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Quadrotor flying" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+   &lt;/exampleCategory&gt;
+   &lt;exampleCategory name="Mobile robot Examples"&gt;
+      &lt;example name="Bug navigation" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="D* planning" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="PRM navigation" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="EKF SLAM" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Particle filter localization" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+   &lt;/exampleCategory&gt;
+   &lt;exampleCategory name="MATLAB Examples"&gt;
+      &lt;example name="Representing rotation" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Representing pose" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Trajectories" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Creating a robot" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Forward kinematics" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Inverse kinematics" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Robot graphics and animation" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Jacobians" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Inverse dynamics" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Forward dynamics" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Symbolics" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="Code generation" type="html"&gt;
+         &lt;file type="source"/&gt;
+         &lt;file type="main"/&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+   &lt;/exampleCategory&gt;
+&lt;/examples&gt;</param.examples>
+    <param.demosxml />
+    <param.apps>
+      <file>${PROJECT_ROOT}/Apps/Polynomialspirals.mlappinstall</file>
+      <file>${PROJECT_ROOT}/Apps/Triple angle visualizer.mlappinstall</file>
+    </param.apps>
+    <param.registered.apps />
+    <param.docs>${PROJECT_ROOT}/doc/info.xml</param.docs>
+    <param.getting.started.guide />
+    <param.matlabpath.excludes />
+    <param.javaclasspath.excludes />
+    <param.exported.on.package>false</param.exported.on.package>
+    <param.required.addons />
+    <param.matlab.project.id />
+    <param.matlab.project.name />
+    <param.release.start>R2015a</param.release.start>
+    <param.release.end>latest</param.release.end>
+    <param.release.current.only>false</param.release.current.only>
+    <param.compatiblity.windows>true</param.compatiblity.windows>
+    <param.compatiblity.macos>true</param.compatiblity.macos>
+    <param.compatiblity.linux>true</param.compatiblity.linux>
+    <param.compatiblity.matlabonline>true</param.compatiblity.matlabonline>
+    <param.installation.map />
+    <param.additional.sw.names />
+    <param.additional.sw.licenses />
+    <param.additional.sw.win.url />
+    <param.additional.sw.mac.url />
+    <param.additional.sw.linux.url />
+    <unset>
+      <param.company />
+      <param.output />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
+      <param.platforms />
+      <param.exclude.pcodedmfiles />
+      <param.demosxml />
+      <param.registered.apps />
+      <param.getting.started.guide />
+      <param.matlabpath.excludes />
+      <param.javaclasspath.excludes />
+      <param.exported.on.package />
+      <param.required.addons />
+      <param.matlab.project.id />
+      <param.matlab.project.name />
+      <param.release.current.only />
+      <param.compatiblity.windows />
+      <param.compatiblity.macos />
+      <param.compatiblity.linux />
+      <param.compatiblity.matlabonline />
+      <param.installation.map />
+      <param.additional.sw.names />
+      <param.additional.sw.licenses />
+      <param.additional.sw.win.url />
+      <param.additional.sw.mac.url />
+      <param.additional.sw.linux.url />
+    </unset>
+    <fileset.rootdir>
+      <file>${PROJECT_ROOT}</file>
+    </fileset.rootdir>
+    <fileset.rootfiles>
+      <file>${PROJECT_ROOT}/Contents.m</file>
+      <file>${PROJECT_ROOT}/+ETS2</file>
+      <file>${PROJECT_ROOT}/+ETS3</file>
+      <file>${PROJECT_ROOT}/@CodeGenerator</file>
+      <file>${PROJECT_ROOT}/@SerialLink</file>
+      <file>${PROJECT_ROOT}/Astar.m</file>
+      <file>${PROJECT_ROOT}/AstarMOO.m</file>
+      <file>${PROJECT_ROOT}/AstarPO.m</file>
+      <file>${PROJECT_ROOT}/Bicycle.m</file>
+      <file>${PROJECT_ROOT}/Bug2.m</file>
+      <file>${PROJECT_ROOT}/CITATION</file>
+      <file>${PROJECT_ROOT}/CONTRIB</file>
+      <file>${PROJECT_ROOT}/DEPENDENCIES</file>
+      <file>${PROJECT_ROOT}/DHFactor.m</file>
+      <file>${PROJECT_ROOT}/DXform.m</file>
+      <file>${PROJECT_ROOT}/Dstar.m</file>
+      <file>${PROJECT_ROOT}/DstarMOO.m</file>
+      <file>${PROJECT_ROOT}/DstarPO.m</file>
+      <file>${PROJECT_ROOT}/Dubbins.m</file>
+      <file>${PROJECT_ROOT}/EKF.m</file>
+      <file>${PROJECT_ROOT}/ETS.m</file>
+      <file>${PROJECT_ROOT}/ETS2.m</file>
+      <file>${PROJECT_ROOT}/ETS3.m</file>
+      <file>${PROJECT_ROOT}/Frame.m</file>
+      <file>${PROJECT_ROOT}/LGPL-LICENCE.txt</file>
+      <file>${PROJECT_ROOT}/LICENSE</file>
+      <file>${PROJECT_ROOT}/LandmarkMap.m</file>
+      <file>${PROJECT_ROOT}/Lattice.m</file>
+      <file>${PROJECT_ROOT}/Link.m</file>
+      <file>${PROJECT_ROOT}/Makefile</file>
+      <file>${PROJECT_ROOT}/NOTES</file>
+      <file>${PROJECT_ROOT}/Navigation.m</file>
+      <file>${PROJECT_ROOT}/OccGrid.m</file>
+      <file>${PROJECT_ROOT}/PRM.m</file>
+      <file>${PROJECT_ROOT}/ParticleFilter.m</file>
+      <file>${PROJECT_ROOT}/PoseGraph.m</file>
+      <file>${PROJECT_ROOT}/Prismatic.m</file>
+      <file>${PROJECT_ROOT}/PrismaticMDH.m</file>
+      <file>${PROJECT_ROOT}/README.md</file>
+      <file>${PROJECT_ROOT}/RELEASE</file>
+      <file>${PROJECT_ROOT}/RRT.m</file>
+      <file>${PROJECT_ROOT}/RST</file>
+      <file>${PROJECT_ROOT}/RTBPlot.m</file>
+      <file>${PROJECT_ROOT}/RandomPath.m</file>
+      <file>${PROJECT_ROOT}/RangeBearingSensor.m</file>
+      <file>${PROJECT_ROOT}/ReedsShepp.m</file>
+      <file>${PROJECT_ROOT}/Revolute.m</file>
+      <file>${PROJECT_ROOT}/RevoluteMDH.m</file>
+      <file>${PROJECT_ROOT}/RobotArm.m</file>
+      <file>${PROJECT_ROOT}/Sensor.m</file>
+      <file>${PROJECT_ROOT}/URDF.m</file>
+      <file>${PROJECT_ROOT}/Unicycle.m</file>
+      <file>${PROJECT_ROOT}/Vehicle.m</file>
+      <file>${PROJECT_ROOT}/ccodefunctionstring.m</file>
+      <file>${PROJECT_ROOT}/chi2inv_rtb.m</file>
+      <file>${PROJECT_ROOT}/ctraj.m</file>
+      <file>${PROJECT_ROOT}/delta2tr.m</file>
+      <file>${PROJECT_ROOT}/distancexform.m</file>
+      <file>${PROJECT_ROOT}/distributeblocks.m</file>
+      <file>${PROJECT_ROOT}/doc</file>
+      <file>${PROJECT_ROOT}/doesblockexist.m</file>
+      <file>${PROJECT_ROOT}/eulplot.m</file>
+      <file>${PROJECT_ROOT}/getprofilefunctionstats.m</file>
+      <file>${PROJECT_ROOT}/helpinfo.xml</file>
+      <file>${PROJECT_ROOT}/interfaces</file>
+      <file>${PROJECT_ROOT}/java</file>
+      <file>${PROJECT_ROOT}/joy2tr.m</file>
+      <file>${PROJECT_ROOT}/joystick.m</file>
+      <file>${PROJECT_ROOT}/jsingu.m</file>
+      <file>${PROJECT_ROOT}/jtraj.m</file>
+      <file>${PROJECT_ROOT}/lspb.m</file>
+      <file>${PROJECT_ROOT}/makemap.m</file>
+      <file>${PROJECT_ROOT}/mex</file>
+      <file>${PROJECT_ROOT}/models.m</file>
+      <file>${PROJECT_ROOT}/mstraj.m</file>
+      <file>${PROJECT_ROOT}/mtraj.m</file>
+      <file>${PROJECT_ROOT}/multidfprintf.m</file>
+      <file>${PROJECT_ROOT}/plot_vehicle.m</file>
+      <file>${PROJECT_ROOT}/plotbotopt.m</file>
+      <file>${PROJECT_ROOT}/private</file>
+      <file>${PROJECT_ROOT}/purepursuit.m</file>
+      <file>${PROJECT_ROOT}/qplot.m</file>
+      <file>${PROJECT_ROOT}/rtbdemo.m</file>
+      <file>${PROJECT_ROOT}/simulink</file>
+      <file>${PROJECT_ROOT}/simulinkext.m</file>
+      <file>${PROJECT_ROOT}/startup_rtb.m</file>
+      <file>${PROJECT_ROOT}/sym2.m</file>
+      <file>${PROJECT_ROOT}/symbolic</file>
+      <file>${PROJECT_ROOT}/symexpr2slblock.m</file>
+      <file>${PROJECT_ROOT}/test</file>
+      <file>${PROJECT_ROOT}/test_jacob_dot.m</file>
+      <file>${PROJECT_ROOT}/tpoly.m</file>
+      <file>${PROJECT_ROOT}/unit_test</file>
+      <file>${PROJECT_ROOT}/urdf</file>
+      <file>${PROJECT_ROOT}/urdfparse.m</file>
+      <file>${PROJECT_ROOT}/wtrans.m</file>
+      <file>${PROJECT_ROOT}/demos</file>
+      <file>${PROJECT_ROOT}/examples</file>
+      <file>${PROJECT_ROOT}/Apps</file>
+      <file>${PROJECT_ROOT}/data</file>
+      <file>${PROJECT_ROOT}/models</file>
+      <file>${PROJECT_ROOT}/lib</file>
+      <file>${PROJECT_ROOT}/lib/common</file>
+      <file>${PROJECT_ROOT}/lib/spatial-math</file>
+    </fileset.rootfiles>
+    <fileset.depfun.included />
+    <fileset.depfun.excluded />
+    <fileset.package />
+    <build-deliverables>
+      <file location="${PROJECT_ROOT}" name="Robotics Toolbox for MATLAB.mltbx" optional="false">/Users/corkep/code/MATLAB toolboxes/robotics-toolbox-matlab/Robotics Toolbox for MATLAB.mltbx</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/Applications/MATLAB_R2019b.app</root>
+      <toolboxes />
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>true</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.15.2</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>maci64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

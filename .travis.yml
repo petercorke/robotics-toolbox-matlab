@@ -1,15 +1,66 @@
+## build Robotics Toolbox for MATLAB
+#  ____       _           _   _            _____           _ _               
+# |  _ \ ___ | |__   ___ | |_(_) ___ ___  |_   _|__   ___ | | |__   _____  __
+# | |_) / _ \| '_ \ / _ \| __| |/ __/ __|   | |/ _ \ / _ \| | '_ \ / _ \ \/ /
+# |  _ < (_) | |_) | (_) | |_| | (__\__ \   | | (_) | (_) | | |_) | (_) >  < 
+# |_| \_\___/|_.__/ \___/ \__|_|\___|___/   |_|\___/ \___/|_|_.__/ \___/_/\_\
+
+
 language: java
 dist: xenial
+services: docker
 
 before_install:
+# build the local file system
+#   .                             where RTB is cloned ($TRAVIS_BUILD_DIR)
+#   ./lib/common                  where toolbox common is cloned
+#   ./lib/spatial-math            where spatial math is cloned
 - mkdir lib
-- git clone --depth 50 https://github.com/petercorke/toolbox-common-matlab lib/toolbox-common-matlab
+- git clone --depth 50 https://github.com/petercorke/toolbox-common-matlab lib/common
 - git clone --depth 50 https://github.com/petercorke/spatial-math lib/spatial-math
 
-install: curl -sL https://storage.googleapis.com/matlabimagesus/public/install.sh | sudo -E bash
+install:
+ # install help2doc converter
+ - git clone https://github.com/petercorke/help2doc $HOME/bin
+ - export PATH="$(dirname "$HOME/bin"):$PATH"
+ # install MATLAB unit test runner
+ - curl -sL https://storage.googleapis.com/matlabimagesus/public/install.sh | sudo -E bash
+
+before_script:
+## build the doco PDF and place it in the src folder so it gets shipped to MATLAB cloud
+ # create the LaTeX code
+ - help2doc -l --include *.m models/*.m lib/*/*.m
+ # create the release file
+ - printf '\\def\\release{%s}\n' `cat ./RELEASE` > release.tex
+ - printf '\\def\\reldate{%s}\n' "`date '+%B %Y'`" >> release.tex
+ # all LaTeX source into manual build folder
+ - mv all.tex release.tex doc/manual
+ # convert all the included figures to PDF since we are using tectonic not pdflatex
+ # - mogrify -density 300 -format pdf -verbose doc/manual/figs/*.eps  ## fails because of new security settings of magick
+ # see https://github.com/pothitos/ACvsBC-Figure/blob/master/.travis.yml
+ #
+ # Compile all the LaTex code
+ #  see https://hub.docker.com/r/dxjoke/tectonic-docker
+ - docker run --mount src=$TRAVIS_BUILD_DIR/doc/manual,target=/usr/src/tex,type=bind dxjoke/tectonic-docker /bin/sh -c "tectonic robot.tex"
+ # rename PDF and copy to src folder
+ - mv doc/manual/robot.pdf ./robot.pdf
+## build a minimalist Contents.m file
+echo "% Robotics Toolbox for MATLAB" > Contents.m
+echo "% Version " `cat RELEASE` `date "+%e-%b-%G"`  >> Contents.m
 
 script:
-- matlab -sd unit_test -batch "RunAllTests"
+ # run the unit tests with MATLAB on Travis cloud
+ - matlab -sd unit_test -batch "RunAllTests"
 
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+ # send code coverage xml report to codecov for display
+ - bash <(curl -s https://codecov.io/bash)
+
+deploy:
+  provider: releases
+  api_key: $GITRELEASE
+  file:
+    - robot.pdf
+    - RTB.mltbx
+  skip_cleanup: true
+  overwrite: true 

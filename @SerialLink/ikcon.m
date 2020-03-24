@@ -5,14 +5,18 @@
 % transform matrix (4x4), and N is the number of robot joints. OPTIONS is
 % an optional list of name/value pairs than can be passed to fmincon.
 %
-% [Q,ERR] = robot.ikcon(T, OPTIONS) as above but also returns ERR which is the
+% Q = robot.ikunc(T, Q0, OPTIONS) as above but specify the
+% initial joint coordinates Q0 used for the minimisation.
+%
+% [Q,ERR] = robot.ikcon(T, ...) as above but also returns ERR which is the
 % scalar final value of the objective function.
 %
-% [Q,ERR,EXITFLAG] = robot.ikcon(T, OPTIONS) as above but also returns the
+% [Q,ERR,EXITFLAG] = robot.ikcon(T, ...) as above but also returns the
 % status EXITFLAG from fmincon.  
 %
-% [Q,ERR,EXITFLAG] = robot.ikcon(T, Q0, OPTIONS) as above but specify the
-% initial joint coordinates Q0 used for the minimisation.
+% [Q,ERR,EXITFLAG,OUTPUT] = robot.ikcon(T, ...) as above but also returns
+% a structure with information such as total number of iterations, and final 
+% objective function value. See the documentation of fmincon for a complete list.
 %
 % Trajectory operation::
 %
@@ -64,7 +68,7 @@
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 
-function [qstar, error, exitflag] = ikcon(robot, T, varargin)
+function [qstar, error_, exitflag_, out_] = ikcon(robot, T, varargin)
     
     % check if Optimization Toolbox exists, we need it
     assert( exist('fmincon', 'file')>0, 'rtb:ikcon:nosupport', 'Optimization Toolbox required');
@@ -108,13 +112,23 @@ function [qstar, error, exitflag] = ikcon(robot, T, varargin)
         problem.objective = ...
             @(x) sumsqr(((T(:,:,t) \ robot.fkine(x).T) - eye(4)) * omega);
         
-        [q_t, err_t, ef_t] = fmincon(problem);
+        [q_t, err_t, ef_t, out] = fmincon(problem);
         
         qstar(t,:) = q_t;
         error(t) = err_t;
         exitflag(t) = ef_t;
         
         problem.x0 = q_t;
+    end
+    
+    if nargout > 1
+        error_ = error;
+    end
+    if nargout > 2
+        exitflag_ = exitflag
+    end
+    if nargout > 3
+        out_ = out;
     end
     
 end

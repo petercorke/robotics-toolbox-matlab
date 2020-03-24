@@ -5,14 +5,17 @@
 % transform matrix (4x4), and N is the number of robot joints. OPTIONS is
 % an optional list of name/value pairs than can be passed to fminunc.
 %
-% [Q,ERR] = robot.ikunc(T,OPTIONS) as above but also returns ERR which is the
+% Q = robot.ikunc(T, Q0, OPTIONS) as above but specify the
+% initial joint coordinates Q0 used for the minimisation.
+%
+% [Q,ERR] = robot.ikunc(T,...) as above but also returns ERR which is the
 % scalar final value of the objective function.
 %
-% [Q,ERR,EXITFLAG] = robot.ikunc(T,OPTIONS) as above but also returns the
+% [Q,ERR,EXITFLAG] = robot.ikunc(T,...) as above but also returns the
 % status EXITFLAG from fminunc.
 %
-% [Q,ERR,EXITFLAG] = robot.ikunc(T, Q0, OPTIONS) as above but specify the
-% initial joint coordinates Q0 used for the minimisation.
+% [Q,ERR,EXITFLAG,OUTPUT] = robot.ikunc(T,...) as above but also returns the
+% structure OUTPUT from fminunc which contains details about the optimization.
 %
 % Trajectory operation::
 %
@@ -64,7 +67,7 @@
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 
-function [qstar, error, exitflag] = ikunc(robot, T, varargin)
+function [qstar, error, exitflag, output] = ikunc(robot, T, varargin)
 
     % check if Optimization Toolbox exists, we need it
     assert( exist('fminunc', 'file')>0, 'rtb:ikunc:nosupport', 'Optimization Toolbox required');
@@ -104,11 +107,20 @@ function [qstar, error, exitflag] = ikunc(robot, T, varargin)
         problem.objective = ...
             @(x) sumsqr(((T(:,:,t) \ robot.fkine(x).T) - eye(4)) * omega);
         
-        [q_t, err_t, ef_t] = fminunc(problem);
+        [q_t, err_t, ef_t, out_t] = fminunc(problem);
         
+        if ef_t ~= 1
+            if T_sz > 1
+                warning('step %d: errflag = %d, err = %f\n', t, ef_t, err_t);
+            else
+                warning('errflag = %d, err = %f\n', ef_t, err_t);
+                out_t
+            end
+        end
         qstar(t,:) = q_t;
         error(t) = err_t;
         exitflag(t) = ef_t;
+        output(t) = out_t;
         
         problem.x0 = q_t;
     end

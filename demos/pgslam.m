@@ -31,7 +31,7 @@ pg = PoseGraph('killian-small.toro');
 clf; pg.plot()
 
 % we optimize the pose graph
-pg.optimize();
+pg2 = pg.optimize();
 
 % and then plot the optimized graph in a new figure
 figure; pg2.plot

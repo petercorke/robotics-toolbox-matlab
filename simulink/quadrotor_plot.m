@@ -187,6 +187,7 @@ function sys = mdlOutputs(t,u,s, plot, enable, quad)
         xlabel('x');
         ylabel('y');
         zlabel('z (height above ground)');
+        view(3)
     end
         
     sys = [];

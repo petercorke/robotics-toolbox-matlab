@@ -4,13 +4,14 @@
 % the time  interval 0 to TMAX and returns vectors of time T (Kx1), joint
 % position Q (KxN) and joint velocity QD (KxN).  The initial joint position
 % and velocity are zero. The torque applied to the joints is computed by
-% the user-supplied control
-% function FTFUN:
+% the user-supplied control function FTFUN:
 %
 %        TAU = FTFUN(ROBOT, T, Q, QD)
 %
-% where Q (1xN) and QD (1xN) are the manipulator joint coordinate and
-% velocity state respectively, and T is the current time.
+% where TAU (1xN) is the joint torques to be applied at this time instant,
+% ROBOT is the robot object being simulated, T is the current time, and Q
+% (1xN) and QD (1xN) are the manipulator joint coordinate and velocity
+% state respectively.
 %
 % [TI,Q,QD] = R.fdyn(T, FTFUN, Q0, QD0) as above but allows the initial
 % joint position Q0 (1xN) and velocity QD0 (1x)  to be specified.
@@ -20,32 +21,43 @@
 %
 %        TAU = FTFUN(ROBOT, T, Q, QD, ARG1, ARG2, ...)
 %
-% For example, if the robot was controlled by a PD controller we can define
-% a function to compute the control
+% Example 1: to apply zero joint torque to the robot without Coulomb friction:
 %
-%         function tau = myftfun(q, qd, qstar, P, D)
-%           tau = (qstar-q)*P + qd*D;  % P, D are 6x6
+%          [t,q] = robot.nofriction().fdyn(5, @my_torque_function);
+%
+%          function tau = my_torque_function(robot, t, q)
+%              tau = zeros(1, robot.n);
+%          end
+%
+% Example 2: as above, but using a lambda function
+%
+%          [t,q] = robot.nofriction().fdyn(5, @(robot, t, q, qd) zeros(1, robot.n) );
+%
+%
+% Example 3: the robot is controlled by a PD controller. We first define
+% a function to compute the control which has additional parameters for
+% the setpoint and control gains (qstar, P, D)
+%
+%         function tau = myfunc(q, qd, qstar, P, D)
+%             tau = (qstar-q)*P + qd*D;  % P, D are 6x6
 %         end
 %
 % and then integrate the robot dynamics with the control:
 %
-%         [t,q] = robot.fdyn(10, @(robot, t, q, qd) myftfun(q, qd, qstar, P, D) );
+%         [t,q] = robot.fdyn(10, @(robot, t, q, qd) myfunc(q, qd, qstar, P, D) );
 %
 % where the lambda function ignores the passed values of robot and t but
-% adds qstar, P and D to argument list for myftfun.
+% adds qstar, P and D to argument list for myfunc.
 %
 % Note::
 % - This function performs poorly with non-linear joint friction, such as
 %   Coulomb friction.  The R.nofriction() method can be used to set this 
 %   friction to zero.
-% - If FTFUN is not specified, or is given as 0 or [],  then zero torque
+% - If FTFUN is not specified, or is given as [],  then zero torque
 %   is applied to the manipulator joints.
 % - The MATLAB builtin integration function ode45() is used.
 %
 % See also SerialLink.accel, SerialLink.nofriction, SerialLink.rne, ode45.
-
-
-
 
 
 % Copyright (C) 1993-2017, by Peter I. Corke
@@ -71,14 +83,13 @@ function [t, q, qd] = fdyn(robot, t1, torqfun, q0, qd0, varargin)
 
     % check the Matlab version, since ode45 syntax has changed
     if verLessThan('matlab', '7')  
-        error('fdyn now requires Matlab version >= 7');
+        error('fdyn now requires MATLAB version >= 7');
     end
 
-    assert(isa(torqfun, 'function_handle'), 'RTB:fdyn:badarg', 'must pass a function handle');
     
     n = robot.n;
     if nargin == 2
-        torqfun = 0;
+        torqfun = [];
         q0 = zeros(1,n);
         qd0 = zeros(1,n);
     elseif nargin == 3
@@ -87,6 +98,9 @@ function [t, q, qd] = fdyn(robot, t1, torqfun, q0, qd0, varargin)
     elseif nargin == 4
         qd0 = zeros(1,n);
     end
+    
+    assert(isempty(torqfun) || isa(torqfun,'function_handle') , 'RTB:fdyn:badarg', 'must pass a function handle or []');
+
 
     % concatenate q and qd into the initial state vector
     q0 = [q0(:); qd0(:)];
@@ -122,6 +136,8 @@ function xd = fdyn2(t, x, robot, torqfun, varargin)
     % evaluate the torque function if one is given
     if isa(torqfun, 'function_handle')
         tau = torqfun(robot, t, q, qd, varargin{:});
+        tau = tau(:)';
+        assert(isreal(tau) && length(tau) == n, 'rtb:fdyn:badretval', 'torque function must return vector with N real elements');
     else
         tau = zeros(1,n);
     end
