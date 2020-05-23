@@ -45,8 +45,8 @@ before_script:
  # rename PDF and copy to src folder
  - mv doc/manual/robot.pdf ./robot.pdf
 ## build a minimalist Contents.m file
-echo "% Robotics Toolbox for MATLAB" > Contents.m
-echo "% Version " `cat RELEASE` `date "+%e-%b-%G"`  >> Contents.m
+ - echo "% Robotics Toolbox for MATLAB" > Contents.m
+ - echo "% Version " `cat RELEASE` `date "+%e-%b-%G"`  >> Contents.m
 
 script:
  # run the unit tests with MATLAB on Travis cloud
