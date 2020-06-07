@@ -6,8 +6,8 @@
 # |_| \_\___/|_.__/ \___/ \__|_|\___|___/   |_|\___/ \___/|_|_.__/ \___/_/\_\
 
 
-language: java
-dist: xenial
+language: minimal
+dist: bionic
 services: docker
 
 before_install:
@@ -24,7 +24,8 @@ install:
  - git clone https://github.com/petercorke/help2doc $HOME/bin
  - export PATH="$(dirname "$HOME/bin"):$PATH"
  # install MATLAB unit test runner
- - curl -sL https://storage.googleapis.com/matlabimagesus/public/install.sh | sudo -E bash
+ - wget -qO- --retry-connrefused https://ssd.mathworks.com/supportfiles/ci/ephemeral-matlab/v0/install.sh | sudo -E bash
+
 
 before_script:
 ## build the doco PDF and place it in the src folder so it gets shipped to MATLAB cloud
