@@ -161,7 +161,7 @@ function qt = ikine(robot, tr, varargin)
     end
     
     assert(numel(opt.mask) == 6, 'RTB:ikine:badarg', 'Mask matrix should have 6 elements');
-    assert(n >= numel(find(opt.mask)), 'RTB:ikine:badarg', 'Number of robot DOF must be >= the same number of 1s in the mask matrix');
+    assert(n >= numel(find(opt.mask)), 'RTB:ikine:badarg', 'Number of robot DOF must be >= the number of 1s in the mask matrix');
     W = diag(opt.mask);
     
     
@@ -212,6 +212,7 @@ function qt = ikine(robot, tr, varargin)
             if ~isnan(opt.transpose)
                 % do the simple Jacobian transpose with constant gain
                 dq = opt.transpose * J' * e;
+                q = q + dq';
             else
                 % do the damped inverse Gauss-Newton with Levenberg-Marquadt
                 dq = inv(JtJ + (lambda + opt.lambdamin) * eye(size(JtJ)) ) * J' * W * e;
