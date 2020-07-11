@@ -99,6 +99,7 @@ classdef ETS3
                     obj.what = x.what;
                     obj.qvar = x.qvar;
                     obj.param = x.param;
+                    obj.qlim = x.qlim;
                 else
                     assert(ismember(what, {'Tx','Ty','Tz','Rx','Ry','Rz'}), 'ETS3: invalid transform type given');
                     if ischar(x)
