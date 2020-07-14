@@ -25,7 +25,7 @@
 %
 %          [t,q] = robot.nofriction().fdyn(5, @my_torque_function);
 %
-%          function tau = my_torque_function(robot, t, q)
+%          function tau = my_torque_function(robot, t, q, qd)
 %              tau = zeros(1, robot.n);
 %          end
 %

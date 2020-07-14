@@ -95,9 +95,9 @@ cfilelist = [cfilelist, ' ', fullfile(srcDir,'matvecprod.c')];
 cfilelist = [cfilelist, ' ', fullfile(srcDir,'gaussjordan.c')];
 
 if CGen.verbose
-    eval(['mex ',mexcfilename, ' ',cfilelist,' -I',hdrDir, ' -v -outdir ',CGen.robjpath]);   
+    eval(['mex ',mexcfilename, ' ',cfilelist,' -I',hdrDir, ' CFLAGS=-Wno-incompatible-pointer-types -v -outdir ',CGen.robjpath]);   
 else
-    eval(['mex ',mexcfilename, ' ',cfilelist,' -I',hdrDir,' -outdir ',CGen.robjpath]);
+    eval(['mex ',mexcfilename, ' ',cfilelist,' -I',hdrDir,' CFLAGS=-Wno-incompatible-pointer-types -outdir ',CGen.robjpath]);
 end
 
 CGen.logmsg('\t%s\n',' done!');

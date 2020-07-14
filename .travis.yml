@@ -6,8 +6,8 @@
 # |_| \_\___/|_.__/ \___/ \__|_|\___|___/   |_|\___/ \___/|_|_.__/ \___/_/\_\
 
 
-language: java
-dist: xenial
+language: minimal
+dist: bionic
 services: docker
 
 before_install:
@@ -18,13 +18,15 @@ before_install:
 - mkdir lib
 - git clone --depth 50 https://github.com/petercorke/toolbox-common-matlab lib/common
 - git clone --depth 50 https://github.com/petercorke/spatial-math lib/spatial-math
+- sudo apt-get -y install libatk1.0-0 libxcursor1
 
 install:
  # install help2doc converter
  - git clone https://github.com/petercorke/help2doc $HOME/bin
  - export PATH="$(dirname "$HOME/bin"):$PATH"
  # install MATLAB unit test runner
- - curl -sL https://storage.googleapis.com/matlabimagesus/public/install.sh | sudo -E bash
+ - wget -qO- --retry-connrefused https://ssd.mathworks.com/supportfiles/ci/ephemeral-matlab/v0/install.sh | sudo -E bash
+
 
 before_script:
 ## build the doco PDF and place it in the src folder so it gets shipped to MATLAB cloud
@@ -45,8 +47,8 @@ before_script:
  # rename PDF and copy to src folder
  - mv doc/manual/robot.pdf ./robot.pdf
 ## build a minimalist Contents.m file
-echo "% Robotics Toolbox for MATLAB" > Contents.m
-echo "% Version " `cat RELEASE` `date "+%e-%b-%G"`  >> Contents.m
+ - echo "% Robotics Toolbox for MATLAB" > Contents.m
+ - echo "% Version " `cat RELEASE` `date "+%e-%b-%G"`  >> Contents.m
 
 script:
  # run the unit tests with MATLAB on Travis cloud

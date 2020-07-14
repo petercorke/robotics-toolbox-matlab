@@ -109,9 +109,9 @@ cprNote = regexprep(cprNote, '%', '//');
 srcDir = fullfile(CGen.ccodepath,'src');
 hdrDir = fullfile(CGen.ccodepath,'include');
 if CGen.verbose
-    mexCompCmnd = ['mex ',opt.funfilename, ' ',fullfile(srcDir,[opt.funname,'.c']),' -I',hdrDir, ' -v -outdir ',CGen.robjpath];   
+    mexCompCmnd = ['mex ',opt.funfilename, ' ',fullfile(srcDir,[opt.funname,'.c']),' CFLAGS=-Wno-incompatible-pointer-types -I',hdrDir, ' -v -outdir ',CGen.robjpath];   
 else
-    mexCompCmnd = ['mex ',opt.funfilename, ' ',fullfile(srcDir,[opt.funname,'.c']),' -I',hdrDir,' -outdir ',CGen.robjpath];
+    mexCompCmnd = ['mex ',opt.funfilename, ' ',fullfile(srcDir,[opt.funname,'.c']),' CFLAGS=-Wno-incompatible-pointer-types -I',hdrDir,' -outdir ',CGen.robjpath];
 end
 
 %% Generate C code

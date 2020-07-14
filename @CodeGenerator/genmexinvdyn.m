@@ -91,9 +91,9 @@ cfilelist = [cfilelist, ' ', fullfile(srcDir,[CGen.getrobfname,'_friction.c'])];
 cfilelist = [cfilelist, ' ', fullfile(srcDir,'dotprod.c')];
 
 if CGen.verbose
-    eval(['mex ',mexcfilename, ' ',cfilelist,' -I',hdrDir, ' -v -outdir ',CGen.robjpath]);   
+    eval(['mex ',mexcfilename, ' ',cfilelist,' -I',hdrDir, ' CFLAGS=-Wno-incompatible-pointer-types -v -outdir ',CGen.robjpath]);   
 else
-    eval(['mex ',mexcfilename, ' ',cfilelist,' -I',hdrDir,' -outdir ',CGen.robjpath]);
+    eval(['mex ',mexcfilename, ' ',cfilelist,' -I',hdrDir,' CFLAGS=-Wno-incompatible-pointer-types -outdir ',CGen.robjpath]);
 end
 
 

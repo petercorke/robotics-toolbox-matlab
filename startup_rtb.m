@@ -48,7 +48,9 @@ function startup_rtb(tbpath)
     addpath( fullfile(tbpath, 'models') );
     addpath( fullfile(tbpath, 'data') );
 
+    w = warning ('off', 'MATLAB:javaclasspath:jarAlreadySpecified');
     javaaddpath( fullfile(tbpath, 'java', 'DHFactor.jar') );
+    warning(w)
 
     p = fullfile(tbpath, 'simulink');
     if exist(p, 'dir')
