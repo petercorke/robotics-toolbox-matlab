@@ -9,7 +9,7 @@
 %   qr         arm along +ve x-axis configuration
 %
 % Reference::
-% - https://www.universal-robots.com/how-tos-and-faqs/faq/ur-faq/actual-center-of-mass-for-robot-17264/
+% - https://www.universal-robots.com/articles/ur/parameters-for-calculations-of-kinematics-and-dynamics/
 %
 % Notes::
 % - SI units of metres are used.
