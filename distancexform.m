@@ -105,7 +105,9 @@ function dx = distancexform(occgrid, varargin)
         % check the goal point is sane
         assert(occgrid(goal(2), goal(1)) == 0, 'RTB:distancexform:badarg', 'goal inside obstacle')
         
-        if exist('imorph', 'file') && opt.fast
+        if exist('imorph', 'file') == 3 && opt.fast
+            % using MEX version of imorph
+            
             if opt.verbose
                 fprintf('using MVTB:imorph\n');
             end
