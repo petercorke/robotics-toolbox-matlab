@@ -322,10 +322,10 @@ classdef ETS3
             
             for e = ets
                 if e.isjoint
-                    s = [s sprintf('%s(q%d)', e.what, e.qvar) ];
+                    s = [s ' ' sprintf('%s(q%d)', e.what, e.qvar) ];
                     
                 else
-                    s = [s sprintf('%s(%s)', e.what, render(e.param))];
+                    s = [s ' ' sprintf('%s(%s)', e.what, render(e.param))];
                     
                 end
             end
@@ -503,7 +503,7 @@ classdef ETS3
                 end
             end
             
-            opt = RTBPlot.plot_options([], [varargin 'reach', reach])
+            opt = RTBPlot.plot_options([], [varargin 'reach', reach]);
             
             if isempty(findobj('Tag', 'ETS3'))
                 h = draw_ets(ets, qq, opt);
@@ -578,7 +578,7 @@ classdef ETS3
                 % update the wrist frame
                 T = ets.fkine(q, 'setopt', opt);
                 if ~isempty(h.wrist)
-                    trplot2(T, 'handle', h.wrist);
+                    trplot(T, 'handle', h.wrist);
                 end
                 
                 % render and pause
@@ -600,6 +600,7 @@ classdef ETS3
             
             
             axis(opt.workspace);
+            view(3); % 3D plot
             
             s = opt.scale;
             % create an axis
@@ -724,6 +725,12 @@ classdef ETS3
             zlabel('Z')
             grid on
             
+            % deal with some display options
+            if opt.shading
+                lighting gouraud
+                light('position', opt.lightpos)
+            end
+    
             % restore hold setting
             if ~ish
                 hold off
