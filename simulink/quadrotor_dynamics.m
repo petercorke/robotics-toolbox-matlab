@@ -1,4 +1,3 @@
-
 function [sys,x0,str,ts] = quadrotor_dynamics(t,x,u,flag, quad, x0, groundflag)
     % Flyer2dynamics lovingly coded by Paul Pounds, first coded 12/4/04
     % A simulation of idealised X-4 Flyer II flight dynamics.
