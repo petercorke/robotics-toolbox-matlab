@@ -240,7 +240,8 @@ classdef ParticleFilter < handle
             % PF.run(N, OPTIONS) runs the filter for N time steps.
             %
             % Options::
-            % 'noplot'   Do not show animation.
+            % 'noplot'    Do not show animation.
+            % 'movie',M   Create an animation movie file M
             %
             % Notes::
             % - All previously estimated states and estimation history is
