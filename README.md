@@ -8,7 +8,7 @@
 # Robotics Toolbox for MATLAB&reg; release 10
 
 ---
-For support please use the [Google group forum](http://groups.google.com/group/robotics-tool-box?hl=en)rather than GitHub issues.  There are more people participating and you'll likely get a quicker response.
+For support please use the [Google group forum](http://groups.google.com/group/robotics-tool-box?hl=en) rather than GitHub issues.  There are more people participating and you'll likely get a quicker response.  Checkout the [FAQ](https://petercorke.com/toolboxes/faq) before you post a question, it covers common problems that arise with incorrect MATLAB paths.
 
 ---
 
