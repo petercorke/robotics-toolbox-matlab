@@ -9,7 +9,7 @@
 %   qr         arm along +ve x-axis configuration
 %
 % Reference::
-% - https://www.universal-robots.com/how-tos-and-faqs/faq/ur-faq/actual-center-of-mass-for-robot-17264/
+% - https://www.universal-robots.com/articles/ur/parameters-for-calculations-of-kinematics-and-dynamics/
 %
 % Notes::
 % - SI units of metres are used.
@@ -48,7 +48,7 @@ function r = mdl_ur5()
     % robot length values (metres)
     a = [0, -0.42500, -0.39225, 0, 0, 0]';
 
-    d = [0.089459, 0, 0, 0.10915, 0.09465, 0.0823]';
+    d = [0.089159, 0, 0, 0.10915, 0.09465, 0.0823]';
 
     alpha = [1.570796327, 0, 0, 1.570796327, -1.570796327, 0]';
     
