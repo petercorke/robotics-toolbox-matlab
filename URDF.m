@@ -36,18 +36,19 @@ classdef URDF
             
             dom = xmlread(urdffile);
             
-            links = dom.getElementsByTagName('link');
-            joints = dom.getElementsByTagName('joint');
-            properties = dom.getElementsByTagName('property');
             robot = dom.getElementsByTagName('robot');
-            urdf.attr = urdf.getattr(robot.item(0))
+            ro = robot.item(0);
+            links = URDF.getChildElementsByTagName(ro,'link');
+            joints = URDF.getChildElementsByTagName(ro,'joint');
+            properties = URDF.getChildElementsByTagName(ro,'property');
+            urdf.attr = urdf.getattr(robot.item(0));
             
             % get the properties
-            fprintf('%d properties\n', properties.getLength);
+            fprintf('%d properties\n', length(properties));
             
             Props = [];
-            for k = 0:properties.getLength-1
-                property = properties.item(k)
+            for k = 1:length(properties)
+                property = properties(k);
                 if property.hasAttributes
                     attributes = property.getAttributes;
                     
@@ -96,11 +97,69 @@ classdef URDF
                 link = urdf.joints{jj}.child.link;
             end
         end
-        
-        function r = robot(urdf)
+
+        % So far Link/SerialLink is not enough expressive (really?) for supporting URDF
+        % the following code exports a links and joints structure that can
+        % be easily solved. This structure separates links from joints
+        % allowing to hide fixed joints
+        function r = asstructure(urdf)
+            links = {};
+            njoints = 0;
+            linksbyname = [];    
+            linkparent = zeros(urdf.nlinks);
+            linkjoint = zeros(urdf.nlinks);
+            joints = [];
+            for i=1:urdf.nlinks
+                linksbyname.(urdf.links{i}.name) = i;
+            end
             for i=1:urdf.njoints
-                % create link objects
-                % attach the STL model to them
+                T = rpy2tr(urdf.joints{i}.origin.rpy);
+                T(1:3,4) = urdf.joints{i}.origin.xyz;
+                s = [];
+                s.rel = T;
+                s.type = urdf.joints{i}.type;
+                s.name = urdf.joints{i}.child.link;
+                s.parent = urdf.joints{i}.parent.link;
+                s.id = length(links)+1;
+                s.parentid = linksbyname.(s.parent);
+                
+                if isfield(urdf.joints{i},'axis')
+                    s.axis = urdf.joints{i}.axis.xyz;
+                end
+                
+                switch(urdf.joints{i}.type)
+                    case 'revolute'
+                        njoints = njoints+1;
+                        s.joint = njoints;
+                        joints.(s.name) = njoints;
+                        linkjoint(s.id,njoints) = 1;
+                    case 'fixed'
+                        s.joint = 0;
+                    otherwise
+                        error(['Joint type unsupported ' urdf.joints{i}.type]);
+                end                
+                linkparent(s.id,s.parentid) = 1;
+                links{end+1} = s;
+                linksbyname.(s.name) = s.id;
+            end
+            linkjoint = linkjoint(:,1:njoints);
+            r = [];
+            r.name = urdf.attr.name;
+            r.links = links; % struct of links
+            r.jointsbyname = joints; % struct child link name => joint identifier
+            r.njoints = njoints;
+            r.linksbyname = linksbyname; % links byname
+            r.linkjoint = linkjoint;
+            r.linkparent = linkparent; % parent relationship
+        end
+
+        function r = robot(urdf)
+            links = [];
+            for i=1:urdf.njoints
+                switch(urdf.joints{i}.type)
+                    otherwise
+                        error(['Joint type unsupported ' urdf.joints{i}.type]);
+                end
             end
             r = SerialLink(links, 'name', urdf.attr.name);
         end
@@ -144,14 +203,28 @@ classdef URDF
     end
     
     methods (Static)
+       function r = getChildElementsByTagName(node,name)
+            r = [];
+            nodeChildren = node.getChildNodes;
+            for i=1:nodeChildren.getLength
+                child = nodeChildren.item(i-1);
+                if child.getNodeType == 3
+                    continue;
+                end
+                if strcmp(char(child.getNodeName),name)
+                    r = [r; child];
+                end
+            end
+        end
+        
         function List = get_elements(doc, elname, props)
-            elements  = doc.getElementsByTagName(elname);
+            elements  = URDF.getChildElementsByTagName(doc.getDocumentElement(),elname);
             % get the links
             List = {};
-            fprintf('%d %s\n', elements.getLength, elname);
+            fprintf('%d %s\n', length(elements), elname);
             % step through the list of  elements found
-            for k = 1:elements.getLength
-                element = elements.item(k-1);
+            for k = 1: length(elements)
+                element = elements(k);
                 
                 info = URDF.descend(element, props);
                 info = URDF.getattr(element, info, props);
@@ -182,6 +255,10 @@ classdef URDF
             end
         end
         
+
+
+
+
         function att = getattr(node, att, props)
             if nargin < 2
                 att = [];
