@@ -69,7 +69,11 @@ function animate(robot, qq)
                             end
                         end
                         T = T * links(L).A(q(L));
-                        set(h.link(L), 'Matrix', T.T); 
+                        if isempty(robot.faces)
+                            set(h.link(L), 'Matrix', T.T); 
+                        else
+                            set(h.link(L+1), 'Matrix', T.T); 
+                        end
                         vert = [vert; T.t'];
                     end
                     % update the transform for link N+1 (the tool)
