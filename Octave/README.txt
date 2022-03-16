@@ -4,7 +4,7 @@ Software
 This version of the toolbox was developed using Octave 3.4.3 for windows but should still 
 run on all distributions of octave. 
 
-The latest version of octave can be found here: http://octave.sourceforge.net/
+The latest version of octave can be found here: https://www.gnu.org/software/octave/download.html
 
 
 ---------------------------------------------------------------------------------------------
