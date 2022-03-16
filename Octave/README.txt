@@ -11,7 +11,7 @@ The latest version of octave can be found here: http://octave.sourceforge.net/
 Installation 
 ---------------------------------------------------------------------------------------------
 To install the toolbox in octave the latest version of RVCTools is needed you can get this 
-form https://petercorke.com/toolboxes/robotics-toolbox/
+from https://petercorke.com/toolboxes/robotics-toolbox/
 
 Unzip the toolbox and place it in the m directory in your octave install (share\octave\3.4.3\m)  
 
