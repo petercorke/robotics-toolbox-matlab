@@ -339,12 +339,12 @@ classdef PRM < Navigation
                 end
                 new = [x; y];
                 
-                % add it to the graph
-                vnew = prm.graph.add_node(new);
-
                 % find the closest node already in the graph
                 [d,v] = prm.graph.distances(new);
                 
+                % add it to the graph
+                vnew = prm.graph.add_node(new);
+
                 % test neighbours in order of increasing distance and check for a clear
                 % path
                 for i=1:length(d)
