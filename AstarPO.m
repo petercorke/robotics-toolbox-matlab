@@ -5,6 +5,7 @@
 % navigation algorithm for multiobjective optimization (MOO) - i.e.
 % optimizes over several objectives/criteria.
 % 
+
 % Methods::
 % plan              Compute the cost map given a goal and map
 % path              Compute a path to the goal
