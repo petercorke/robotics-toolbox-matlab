@@ -70,7 +70,7 @@ qqr = p560.ikine6s(T, 'ru');
 qrt = jtraj(qr, qqr, 50);
 
 plot_sphere(p, 0.05, 'y');
-p560.plot3d(qrt, 'view', ae, 'movie', 'move2ball.gif');
+p560.plot3d(qrt, 'movie', 'move2ball.gif');
 ```
 
 ### Quadrotor animation
