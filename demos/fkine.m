@@ -74,11 +74,11 @@ plot(t, p(:,1))
 xlabel('Time (s)');
 ylabel('X (m)')
 subplot(3,1,2)
-plot(t, p(:,1))
+plot(t, p(:,2))
 xlabel('Time (s)');
 ylabel('Y (m)')
 subplot(3,1,3)
-plot(t, p(:,1))
+plot(t, p(:,3))
 xlabel('Time (s)');
 ylabel('Z (m)')
 
