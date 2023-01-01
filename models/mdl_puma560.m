@@ -7,7 +7,7 @@
 % Also define the workspace vectors:
 %   qz         zero joint angle configuration
 %   qr         vertical 'READY' configuration
-%   qstretch   arm is stretched out in the X direction
+%   qs         arm is stretched out in the X direction
 %   qn         arm is at a nominal non-singular configuration
 %
 % Notes::
@@ -146,7 +146,7 @@ L(6) = Revolute('d', 0, 'a', 0, 'alpha', 0,  ...
 qz = [0 0 0 0 0 0]; % zero angles, L shaped pose
 qr = [0 pi/2 -pi/2 0 0 0]; % ready pose, arm up
 qs = [0 0 -pi/2 0 0 0];
-qn=[0 pi/4 pi 0 pi/4  0];
+qn = [0 pi/4 pi 0 pi/4  0];
 
 p560 = SerialLink(L, 'name', 'Puma 560', ...
     'configs', {'qz', qz, 'qr', qr, 'qs', qs, 'qn', qn}, ...
