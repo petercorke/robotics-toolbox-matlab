@@ -1,14 +1,20 @@
-[![Build Status](https://travis-ci.com/petercorke/robotics-toolbox-matlab.svg?branch=master)](https://travis-ci.com/petercorke/robotics-toolbox-matlab)
-![Coverage](https://codecov.io/gh/petercorke/robotics-toolbox-matlab/branch/master/graph/badge.svg)
+[![Project Status: Inactive – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#inactive)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/petercorke/robotics-toolbox-matlab/graphs/commit-activity)
 [![GitHub stars](https://img.shields.io/github/stars/petercorke/robotics-toolbox-matlab.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/petercorke/robotics-toolbox-matlab/stargazers/)
 
 
 # Robotics Toolbox for MATLAB&reg; release 10
 
----
-For support please use the [Google group forum](http://groups.google.com/group/robotics-tool-box?hl=en) rather than GitHub issues.  There are more people participating and you'll likely get a quicker response.  Checkout the [FAQ](https://petercorke.com/toolboxes/faq) before you post a question, it covers common problems that arise with incorrect MATLAB paths.
+## Which toolbox do I want?
+
+| If you are… | use | get it from |
+|---|---|---|
+| starting something new | **Robotics Toolbox for Python**, actively developed, and used by the 3rd edition of *Robotics, Vision & Control* | `pip install roboticstoolbox-python`, or [GitHub](https://github.com/petercorke/robotics-toolbox-python) |
+| working in MATLAB, or using the 2nd edition of *Robotics, Vision & Control* (2017) | **this toolbox, release 10.4** | [`RTB.mltbx`](https://github.com/petercorke/robotics-toolbox-matlab/releases/latest/download/RTB.mltbx): open it in MATLAB and it installs itself (see [Installation](#installation)) |
+| using the 1st edition of *Robotics, Vision & Control* (2011), or a course built on release 9 | **release 9.10** | the [Robotics Toolbox page](https://petercorke.com/toolboxes/robotics-toolbox/), with the older releases |
+| using the MATLAB version of the 3rd edition of *Robotics, Vision & Control* (2023) | MathWorks' **Robotics System Toolbox** and related toolboxes, not this one | [MathWorks](https://www.mathworks.com/products/robotics.html) |
+
+This toolbox is no longer actively developed, and questions and issues here may go unanswered. The [FAQ](https://petercorke.com/toolboxes/faq) covers the common problems, most of which come from an incorrect MATLAB path; the [Google group](https://groups.google.com/g/robotics-tool-box) has years of past discussion.
 
 ---
 
@@ -135,14 +141,17 @@ pf.run(100);
 
 A fully commented version of this is provided in the LiveScript `demos/particlefilt.mlx`.
 
-## What's new
+## What's new in release 10
 
-* Travis CI is now running on the code base
-* All code related to pose representation has been split out into the [Spatial Math Toolbox](https://github.com/petercorke/spatial-math).  This repo is now a dependency.
+* All code related to pose representation has been split out into the [Spatial Math Toolbox](https://github.com/petercorke/spatialmath-matlab).  This repo is now a dependency.
 * `SerialLink` class has a `twists` method which returns a vector of `Twist` objects, one per joint.  This supports the product of exponential formulation for forward kinematics and Jacobians.
 * a prototype URDF parser
 
 ## Installation
+
+### Install the packaged toolbox (simplest)
+
+Download [`RTB.mltbx`](https://github.com/petercorke/robotics-toolbox-matlab/releases/latest/download/RTB.mltbx) and open it in MATLAB (double-click it, or drag it into the Command Window). MATLAB installs the toolbox and sets up its path, permanently. Everything it needs, including the spatial maths functions, is included. Manage or remove it later from Home → Add-Ons → Manage Add-Ons.
 
 ### Install from shared MATLAB Drive folder
 
@@ -163,7 +172,7 @@ Note that this is a combo-installation that includes the Machine Vision Toolbox 
 
 You need to have a recent version of MATLAB, R2016b or later.
 
-The Robotics Toolbox for MATLAB has dependency on two other GitHub repositories: [`spatial-math`](https://github.com/petercorke/spatial-math) and [`toolbox-common-matlab`](https://github.com/petercorke/toolbox-common-matlab).  
+The Robotics Toolbox for MATLAB has dependency on two other GitHub repositories: [`spatialmath-matlab`](https://github.com/petercorke/spatialmath-matlab) and [`toolbox-common-matlab`](https://github.com/petercorke/toolbox-common-matlab).  
 
 To install the Toolbox on your computer from github follow these simple instructions.
 
@@ -173,7 +182,7 @@ From the shell:
 mkdir rvctools
 cd rvctools
 git clone https://github.com/petercorke/robotics-toolbox-matlab.git robot
-git clone https://github.com/petercorke/spatial-math.git smtb
+git clone https://github.com/petercorke/spatialmath-matlab.git smtb
 git clone https://github.com/petercorke/toolbox-common-matlab.git common
 make -C robot
 ```
@@ -188,17 +197,12 @@ The second line sets up the MATLAB path appropriately but it's only for the curr
 3. Once you have run startup_rvc, run `pathtool` and push the `Save` button, this will save the path settings for subsequent sessions.
 
 
-## Online resources:
+## Online resources
 
-* [Home page](http://www.petercorke.com)
-* [Discussion group](http://groups.google.com/group/robotics-tool-box?hl=en)
-
-Please email bug reports, comments or code contribtions to me at rvc@petercorke.com
-  
-
-## Contributors
-
-Contributions welcome.  There's a user forum at http://tiny.cc/rvcforum
+* [Robotics Toolbox page](https://petercorke.com/toolboxes/robotics-toolbox/), with all releases
+* [FAQ](https://petercorke.com/toolboxes/faq)
+* [Discussion group](https://groups.google.com/g/robotics-tool-box) (archive of past questions)
+* [Robotics Toolbox for Python](https://github.com/petercorke/robotics-toolbox-python), the actively developed successor
 
 ## License
 
