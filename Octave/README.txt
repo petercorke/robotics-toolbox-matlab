@@ -4,14 +4,14 @@ Software
 This version of the toolbox was developed using Octave 3.4.3 for windows but should still 
 run on all distributions of octave. 
 
-The latest version of octave can be found here: http://octave.sourceforge.net/
+The latest version of octave can be found here: https://www.gnu.org/software/octave/download.html
 
 
 ---------------------------------------------------------------------------------------------
 Installation 
 ---------------------------------------------------------------------------------------------
 To install the toolbox in octave the latest version of RVCTools is needed you can get this 
-form http://www.petercorke.com/Robotics_Toolbox.html
+from https://petercorke.com/toolboxes/robotics-toolbox/
 
 Unzip the toolbox and place it in the m directory in your octave install (share\octave\3.4.3\m)  
 
