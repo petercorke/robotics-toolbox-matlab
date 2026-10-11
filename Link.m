@@ -991,6 +991,48 @@ classdef Link < matlab.mixin.Copyable
             l.B = sym(l.B);
             l.Tc = sym(l.Tc);
         end
+		
+		function l = double(l)
+            %Link.double converts link parameters to numeric (double) type
+            %
+            % dl = l.double is a Link object in which all the parameters are
+            % numeric ('double') type.
+            % 
+            % Useful when you are using Pi=sym('pi') to avoid round off errors
+            % (e.g in sin(Pi/2)), but later you want to pass the link object to
+            % a method (e.g. ikine) which only supports real numbers. 
+            % 
+            % Will give an error if a symbolic variable is not convertable to
+            % double number.
+            %
+            % See also SerialLink.double
+            %
+            % Author: Amin Yahyaabadi (aminyahyaabadi74@gmail.com)
+           
+            if l.issym % we can disable the check, we should compare the speed.
+                
+                if ~isempty(l.theta) % && isa(l.d,'sym') % we can check for sym class individually, speed should be compared.
+                    l.d=double(l.d);
+                end
+                
+                if ~isempty(l.theta)
+                    l.theta=double(l.theta);
+                end
+                
+                    l.alpha=double(l.alpha);                              
+                    l.a=double(l.a);              
+                    l.offset=double(l.offset);
+                
+                    l.offset=double(l.I);                              
+                    l.offset=double(l.r);               
+                    l.offset=double(l.m);
+                
+                    l.Jm = double(l.Jm);
+                    l.G = double(l.G);
+                    l.B = double(l.B);
+                    l.Tc = double(l.Tc);
+            end        
+        end
         
 
     end % methods
